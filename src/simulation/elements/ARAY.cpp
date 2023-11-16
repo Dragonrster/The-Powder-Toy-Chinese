@@ -29,7 +29,7 @@ void Element::Element_ARAY()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = ByteString("A射线发射器,射线碰撞时产生BRAY").FromUtf8();
+	Description = ByteString("A射線發射器,射線碰撞時產生BRAY").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

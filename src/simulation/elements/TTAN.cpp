@@ -30,7 +30,7 @@ void Element::Element_TTAN()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("钛,金属固体坚固的材料熔点很高能导电,会吸收中子").FromUtf8();
+	Description = ByteString("鈦,金屬固體堅固的材料熔點很高能導電,會吸收中子").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC;
 

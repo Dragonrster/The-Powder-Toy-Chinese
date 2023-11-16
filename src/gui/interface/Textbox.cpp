@@ -31,9 +31,9 @@ Textbox::Textbox(Point position, Point size, String textboxText, String textboxP
 	cursor = text.length();
 
 	menu->RemoveItem(0);
-	menu->AddItem(ContextMenuItem(ByteString("剪切").FromUtf8(), 1, true));
-	menu->AddItem(ContextMenuItem(ByteString("复制").FromUtf8(), 0, true));
-	menu->AddItem(ContextMenuItem(ByteString("粘贴").FromUtf8(), 2, true));
+	menu->AddItem(ContextMenuItem(ByteString("剪下").FromUtf8(), 1, true));
+	menu->AddItem(ContextMenuItem(ByteString("複製").FromUtf8(), 0, true));
+	menu->AddItem(ContextMenuItem(ByteString("貼上").FromUtf8(), 2, true));
 }
 
 void Textbox::SetHidden(bool hidden)
@@ -41,9 +41,9 @@ void Textbox::SetHidden(bool hidden)
 	menu->RemoveItem(0);
 	menu->RemoveItem(1);
 	menu->RemoveItem(2);
-	menu->AddItem(ContextMenuItem(ByteString("剪切").FromUtf8(), 1, !hidden));
-	menu->AddItem(ContextMenuItem(ByteString("复制").FromUtf8(), 0, !hidden));
-	menu->AddItem(ContextMenuItem(ByteString("粘贴").FromUtf8(), 2, true));
+	menu->AddItem(ContextMenuItem(ByteString("剪下").FromUtf8(), 1, !hidden));
+	menu->AddItem(ContextMenuItem(ByteString("複製").FromUtf8(), 0, !hidden));
+	menu->AddItem(ContextMenuItem(ByteString("貼上").FromUtf8(), 2, true));
 
 	masked = hidden;
 }

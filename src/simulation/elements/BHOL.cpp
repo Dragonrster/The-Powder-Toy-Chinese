@@ -28,7 +28,7 @@ void Element::Element_BHOL()
 
 	DefaultProperties.temp = R_TEMP + 70.0f + 273.15f;
 	HeatConduct = 255;
-	Description = ByteString("黑洞,产生引力吸入物质并升温").FromUtf8();
+	Description = ByteString("黑洞,產生引力吸入物質並升溫").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

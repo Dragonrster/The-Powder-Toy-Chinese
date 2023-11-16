@@ -29,7 +29,7 @@ void Element::Element_BRMT()
 	Weight = 90;
 
 	HeatConduct = 211;
-	Description = ByteString("金属粉,铁生锈或金属暴露在压力下碎裂时产生").FromUtf8();
+	Description = ByteString("金屬粉,鐵生鏽或金屬暴露在壓力下碎裂時產生").FromUtf8();
 
 	Properties = TYPE_PART|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 

@@ -27,7 +27,7 @@ void Element::Element_SALT()
 	Weight = 75;
 
 	HeatConduct = 110;
-	Description = ByteString("盐,能溶于WATR形成SLTW").FromUtf8();
+	Description = ByteString("鹽,能溶於WATR形成SLTW").FromUtf8();
 
 	Properties = TYPE_PART;
 

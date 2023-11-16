@@ -29,7 +29,7 @@ void Element::Element_TSNS()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = ByteString("温度传感器,可以用HEAT/COOL来改变自身温度,当周围有温度比它高的物质时会发出电脉冲").FromUtf8();
+	Description = ByteString("溫度感測器,可以用HEAT/COOL來改變自身溫度,當週圍有溫度比它高的物質時會發出電脈衝").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

@@ -31,7 +31,7 @@ void Element::Element_DLAY()
 
 	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
-	Description = ByteString("延时器,当电脉冲通过延时计时会延迟X帧,X等于延时计的温度").FromUtf8();
+	Description = ByteString("延時器,當電脈衝透過延時計時會延遲X幀,X等於延時計的溫度").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

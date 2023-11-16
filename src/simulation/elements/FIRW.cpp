@@ -30,7 +30,7 @@ void Element::Element_FIRW()
 	Weight = 55;
 
 	HeatConduct = 70;
-	Description = ByteString("烟花,点燃后会升高并爆炸,产生高温和七彩的余烬").FromUtf8();
+	Description = ByteString("煙花,點燃後會升高並爆炸,產生高溫和七彩的餘燼").FromUtf8();
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

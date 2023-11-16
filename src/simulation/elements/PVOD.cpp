@@ -30,7 +30,7 @@ void Element::Element_PVOD()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("可控虚空,一旦激活就如同虚空(VOID)一样,吸收一切物质").FromUtf8();
+	Description = ByteString("可控虛空,一旦啟用就如同虛空(VOID)一樣,吸收一切物質").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

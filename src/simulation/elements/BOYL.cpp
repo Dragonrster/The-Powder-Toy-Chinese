@@ -30,7 +30,7 @@ void Element::Element_BOYL()
 
 	DefaultProperties.temp = R_TEMP + 2.0f + 273.15f;
 	HeatConduct = 42;
-	Description = ByteString("波义耳气(,不可燃气体,热胀冷缩").FromUtf8();
+	Description = ByteString("波義耳氣(,不可燃氣體,熱脹冷縮").FromUtf8();
 
 	Properties = TYPE_GAS;
 

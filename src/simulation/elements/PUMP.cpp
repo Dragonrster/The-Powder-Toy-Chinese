@@ -31,7 +31,7 @@ void Element::Element_PUMP()
 
 	DefaultProperties.temp = 273.15f;
 	HeatConduct = 0;
-	Description = ByteString("压力泵,激活时改变使周围压力变为自身温度值,可用HEAT/COOL控制").FromUtf8();
+	Description = ByteString("壓力泵,啟用時改變使周圍壓力變為自身溫度值,可用HEAT/COOL控制").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

@@ -31,7 +31,7 @@ void Element::Element_SLCN()
 	Weight = 90;
 
 	HeatConduct = 100;
-	Description = ByteString("硅粉,一种非常闪亮的粉末,像黄金一样导电").FromUtf8();
+	Description = ByteString("矽粉,一種非常閃亮的粉末,像黃金一樣導電").FromUtf8();
 
 	Properties = TYPE_PART | PROP_CONDUCTS | PROP_HOT_GLOW | PROP_LIFE_DEC;
 

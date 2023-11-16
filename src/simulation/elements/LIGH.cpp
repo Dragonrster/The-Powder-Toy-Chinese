@@ -32,7 +32,7 @@ void Element::Element_LIGH()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = ByteString("闪电,改变笔刷大小可以调整闪电大小和威力").FromUtf8();
+	Description = ByteString("閃電,改變筆刷大小可以調整閃電大小和威力").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

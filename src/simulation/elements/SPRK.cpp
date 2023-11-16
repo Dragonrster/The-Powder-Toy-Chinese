@@ -32,7 +32,7 @@ void Element::Element_SPRK()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("电脉冲,所有电子设备的基础,电脉冲不能单独放置(并不是一个真实的粒子)你需要将其放在导体上").FromUtf8();
+	Description = ByteString("電脈衝,所有電子裝置的基礎,電脈衝不能單獨放置(並不是一個真實的粒子)你需要將其放在導體上").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

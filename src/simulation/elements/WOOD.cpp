@@ -31,7 +31,7 @@ void Element::Element_WOOD()
 	Weight = 100;
 
 	HeatConduct = 164;
-	Description = ByteString("木头,可燃物允许NEUT通过").FromUtf8();
+	Description = ByteString("木頭,可燃物允許NEUT透過").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 

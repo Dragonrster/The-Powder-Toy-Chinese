@@ -30,7 +30,7 @@ void Element::Element_ROCK()
 	Weight = 100;
 
 	HeatConduct = 200;
-	Description = ByteString("岩石,坚固的材料,CNCT可以堆叠在它上面").FromUtf8();
+	Description = ByteString("岩石,堅固的材料,CNCT可以堆疊在它上面").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_HOT_GLOW;
 

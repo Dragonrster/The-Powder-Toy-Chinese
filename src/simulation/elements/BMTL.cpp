@@ -29,7 +29,7 @@ void Element::Element_BMTL()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("脆金属,在压力下破坏,高温下熔化").FromUtf8();
+	Description = ByteString("脆金屬,在壓力下破壞,高溫下熔化").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 

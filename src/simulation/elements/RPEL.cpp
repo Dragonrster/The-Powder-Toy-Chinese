@@ -30,7 +30,7 @@ void Element::Element_RPEL()
 
 	DefaultProperties.temp = 20.0f + 273.15f;
 	HeatConduct = 0;
-	Description = ByteString("反射极,无需通电,和FRAY一样,根据温度来吸引或推开物质").FromUtf8();
+	Description = ByteString("反射極,無需通電,和FRAY一樣,根據溫度來吸引或推開物質").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

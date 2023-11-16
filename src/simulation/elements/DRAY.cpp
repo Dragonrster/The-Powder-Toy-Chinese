@@ -29,7 +29,7 @@ void Element::Element_DRAY()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = ByteString("D射线发射器,会将沿电流方向对前方的所有粒子").FromUtf8();
+	Description = ByteString("D射線發射器,會將沿電流方向對前方的所有粒子").FromUtf8();
 
 	Properties = TYPE_SOLID;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

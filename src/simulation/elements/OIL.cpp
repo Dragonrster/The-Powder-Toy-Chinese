@@ -27,7 +27,7 @@ void Element::Element_OIL()
 	Weight = 20;
 
 	HeatConduct = 42;
-	Description = ByteString("石油,易燃,较低压力/加热下会变成石油气").FromUtf8();
+	Description = ByteString("石油,易燃,較低壓力/加熱下會變成石油氣").FromUtf8();
 
 	Properties = TYPE_LIQUID | PROP_NEUTPASS;
 

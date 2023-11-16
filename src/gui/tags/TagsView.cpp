@@ -26,7 +26,7 @@ TagsView::TagsView():
 	AddComponent(closeButton);
 	SetCancelButton(closeButton);
 
-	tagInput = new ui::Textbox(ui::Point(8, Size.Y-40), ui::Point(Size.X-60, 16), "",  ByteString("[新标签]").FromUtf8());
+	tagInput = new ui::Textbox(ui::Point(8, Size.Y-40), ui::Point(Size.X-60, 16), "",  ByteString("[新標籤]").FromUtf8());
 	tagInput->Appearance.icon = IconTag;
 	tagInput->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tagInput->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -42,7 +42,7 @@ TagsView::TagsView():
 	if (!Client::Ref().GetAuthUser().UserID)
 		addButton->Enabled = false;
 
-	title = new ui::Label(ui::Point(5, 5), ui::Point(185, 28),  ByteString("管理标签:\n\bg标签仅用于提升搜索效率").FromUtf8());
+	title = new ui::Label(ui::Point(5, 5), ui::Point(185, 28),  ByteString("管理標籤:\n\bg標籤僅用於提升搜尋效率").FromUtf8());
 	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	title->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	title->SetMultiline(true);
@@ -120,7 +120,7 @@ void TagsView::addTag()
 {
 	if (tagInput->GetText().length() < 4)
 	{
-		new ErrorMessage( ByteString("标签长度过短").FromUtf8(), ByteString("标签长度至少为4字节").FromUtf8());
+		new ErrorMessage( ByteString("標籤長度過短").FromUtf8(), ByteString("標籤長度至少為4位元組").FromUtf8());
 		return;
 	}
 	c->AddTag(tagInput->GetText().ToUtf8());

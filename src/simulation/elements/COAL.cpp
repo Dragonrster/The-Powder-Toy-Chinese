@@ -31,7 +31,7 @@ void Element::Element_COAL()
 	Weight = 100;
 
 	HeatConduct = 200;
-	Description = ByteString("煤,缓慢燃烧,燃烧时发红").FromUtf8();
+	Description = ByteString("煤,緩慢燃燒,燃燒時發紅").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

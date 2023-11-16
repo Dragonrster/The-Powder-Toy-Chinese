@@ -27,7 +27,7 @@ void Element::Element_GUNP()
 	Weight = 85;
 
 	HeatConduct = 97;
-	Description = ByteString("黑火药,可以被电脉冲和明火引爆").FromUtf8();
+	Description = ByteString("黑火藥,可以被電脈衝和明火引爆").FromUtf8();
 
 	Properties = TYPE_PART;
 

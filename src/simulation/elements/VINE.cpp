@@ -31,7 +31,7 @@ void Element::Element_VINE()
 	Weight = 100;
 
 	HeatConduct = 65;
-	Description = ByteString("藤蔓,吸水生长,中心部分是PLNT").FromUtf8();
+	Description = ByteString("藤蔓,吸水生長,中心部分是PLNT").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

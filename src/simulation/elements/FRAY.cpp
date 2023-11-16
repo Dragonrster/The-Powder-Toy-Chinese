@@ -30,7 +30,7 @@ void Element::Element_FRAY()
 
 	DefaultProperties.temp = 20.0f + 273.15f;
 	HeatConduct = 0;
-	Description = ByteString("F射线发射器,会沿着电流方向寻找物质并施加力(与ARAY的方向判定规则一样)").FromUtf8();
+	Description = ByteString("F射線發射器,會沿著電流方向尋找物質並施加力(與ARAY的方向判定規則一樣)").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

@@ -31,7 +31,7 @@ void Element::Element_LIFE()
 
 	DefaultProperties.temp = 9000.0f;
 	HeatConduct = 40;
-	Description = ByteString("生命游戏! B3/S23").FromUtf8();
+	Description = ByteString("生命遊戲! B3/S23").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_LIFE;
 

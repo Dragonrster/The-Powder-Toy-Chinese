@@ -33,7 +33,7 @@ void Element::Element_LAVA()
 
 	DefaultProperties.temp = R_TEMP + 1500.0f + 273.15f;
 	HeatConduct = 60;
-	Description = ByteString("岩浆,冷却后变成固体,所有熔融物都是一个样子,区别在于其Ctype").FromUtf8();
+	Description = ByteString("岩漿,冷卻後變成固體,所有熔融物都是一個樣子,區別在於其Ctype").FromUtf8();
 
 	Properties = TYPE_LIQUID|PROP_LIFE_DEC;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

@@ -30,7 +30,7 @@ void Element::Element_ISZS()
 
 	DefaultProperties.temp = 140.00f;
 	HeatConduct = 251;
-	Description = ByteString("固态同位素,会随时间流逝慢慢衰减成光子,负压会加快衰变速度").FromUtf8();
+	Description = ByteString("固態同位素,會隨時間流逝慢慢衰減成光子,負壓會加快衰變速度").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

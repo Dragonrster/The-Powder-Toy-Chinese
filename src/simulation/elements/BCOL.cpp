@@ -31,7 +31,7 @@ void Element::Element_BCOL()
 	Weight = 90;
 
 	HeatConduct = 150;
-	Description = ByteString("煤粉,重粉末,点然后缓慢燃烧").FromUtf8();
+	Description = ByteString("煤粉,重粉末,點然後緩慢燃燒").FromUtf8();
 
 	Properties = TYPE_PART;
 

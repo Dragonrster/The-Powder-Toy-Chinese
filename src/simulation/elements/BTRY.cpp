@@ -29,7 +29,7 @@ void Element::Element_BTRY()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("电池,产生无限的电脉冲").FromUtf8();
+	Description = ByteString("電池,產生無限的電脈衝").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

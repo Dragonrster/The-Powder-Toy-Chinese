@@ -30,7 +30,7 @@ void Element::Element_SING()
 	Weight = 86;
 
 	HeatConduct = 70;
-	Description = ByteString("奇点,会产生超低压的粉末,可以破坏其它物质,本质上是粉末状的黑洞").FromUtf8();
+	Description = ByteString("奇點,會產生超低壓的粉末,可以破壞其它物質,本質上是粉末狀的黑洞").FromUtf8();
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

@@ -27,7 +27,7 @@ void Element::Element_BGLA()
 	Weight = 90;
 
 	HeatConduct = 150;
-	Description = ByteString("碎玻璃,玻璃在压力下破碎,熔化后能重新变回玻璃").FromUtf8();
+	Description = ByteString("碎玻璃,玻璃在壓力下破碎,熔化後能重新變回玻璃").FromUtf8();
 
 	Properties = TYPE_PART | PROP_NEUTPASS | PROP_HOT_GLOW;
 

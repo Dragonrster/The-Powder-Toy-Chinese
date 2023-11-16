@@ -32,7 +32,7 @@ void Element::Element_STOR()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = ByteString("堆栈,吸收一个像素的与之接触的物质,修改它的Ctype值可以使它吸收特定的物质").FromUtf8();
+	Description = ByteString("堆疊,吸收一個畫素的與之接觸的物質,修改它的Ctype值可以使它吸收特定的物質").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = (1U << FIELD_CTYPE) | (1U << FIELD_TMP);

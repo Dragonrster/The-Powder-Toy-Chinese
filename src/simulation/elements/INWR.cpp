@@ -27,7 +27,7 @@ void Element::Element_INWR()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("绝缘线,只能在P型硅与N型硅之间传递电脉冲(双向)").FromUtf8();
+	Description = ByteString("絕緣線,只能在P型矽與N型矽之間傳遞電脈衝(雙向)").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

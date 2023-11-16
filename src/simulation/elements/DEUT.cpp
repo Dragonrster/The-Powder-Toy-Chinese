@@ -32,7 +32,7 @@ void Element::Element_DEUT()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 251;
-	Description = ByteString("重水,热胀冷缩,会被中子激发").FromUtf8();
+	Description = ByteString("重水,熱脹冷縮,會被中子激發").FromUtf8();
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 

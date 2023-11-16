@@ -31,7 +31,7 @@ void Element::Element_CBNW()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
-	Description = ByteString("苏打水,缓慢释放CO2").FromUtf8();
+	Description = ByteString("蘇打水,緩慢釋放CO2").FromUtf8();
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
 

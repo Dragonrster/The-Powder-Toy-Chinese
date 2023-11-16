@@ -64,13 +64,13 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	AddComponent(titleLabel);
 	CheckName(save->GetName()); // set titleLabel text
 
-	ui::Label *previewLabel = new ui::Label(ui::Point((Size.X / 2) + 4, 5), ui::Point((Size.X / 2) - 8, 16), ByteString("预览").FromUtf8());
+	ui::Label *previewLabel = new ui::Label(ui::Point((Size.X / 2) + 4, 5), ui::Point((Size.X / 2) - 8, 16), ByteString("預覽").FromUtf8());
 	previewLabel->SetTextColour(style::Colour::InformationTitle);
 	previewLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	previewLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(previewLabel);
 
-	nameField = new ui::Textbox(ui::Point(8, 25), ui::Point((Size.X / 2) - 16, 16), save->GetName(), ByteString("[沙盘名]").FromUtf8());
+	nameField = new ui::Textbox(ui::Point(8, 25), ui::Point((Size.X / 2) - 16, 16), save->GetName(), ByteString("[沙盤名]").FromUtf8());
 	nameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	nameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	nameField->SetActionCallback({[this]
@@ -78,14 +78,14 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	AddComponent(nameField);
 	FocusComponent(nameField);
 
-	descriptionField = new ui::Textbox(ui::Point(8, 65), ui::Point((Size.X / 2) - 16, Size.Y - (65 + 16 + 4)), save->GetDescription(), ByteString("[沙盘描述]").FromUtf8());
+	descriptionField = new ui::Textbox(ui::Point(8, 65), ui::Point((Size.X / 2) - 16, Size.Y - (65 + 16 + 4)), save->GetDescription(), ByteString("[沙盤描述]").FromUtf8());
 	descriptionField->SetMultiline(true);
 	descriptionField->SetLimit(254);
 	descriptionField->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	descriptionField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(descriptionField);
 
-	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X / 2) - 80, 16), ByteString("公开").FromUtf8(), "");
+	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X / 2) - 80, 16), ByteString("公開").FromUtf8(), "");
 	if (Client::Ref().GetAuthUser().Username != save->GetUserName())
 	{
 		// Save is not owned by the user, disable by default
@@ -98,7 +98,7 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	}
 	AddComponent(publishedCheckbox);
 
-	pausedCheckbox = new ui::Checkbox(ui::Point(130, 45), ui::Point(55, 16), ByteString("启动时暂停").FromUtf8(), "");
+	pausedCheckbox = new ui::Checkbox(ui::Point(130, 45), ui::Point(55, 16), ByteString("啟動時暫停").FromUtf8(), "");
 	pausedCheckbox->SetChecked(save->GetGameSave()->paused);
 	AddComponent(pausedCheckbox);
 
@@ -113,7 +113,7 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	AddComponent(cancelButton);
 	SetCancelButton(cancelButton);
 
-	ui::Button *okayButton = new ui::Button(ui::Point((Size.X / 2) - 76, Size.Y - 16), ui::Point(76, 16), ByteString("保存").FromUtf8());
+	ui::Button *okayButton = new ui::Button(ui::Point((Size.X / 2) - 76, Size.Y - 16), ui::Point(76, 16), ByteString("儲存").FromUtf8());
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.TextInactive = style::Colour::InformationTitle;
@@ -124,7 +124,7 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 
-	ui::Button *PublishingInfoButton = new ui::Button(ui::Point((Size.X * 3 / 4) - 75, Size.Y - 42), ui::Point(150, 16), ByteString("发布须知").FromUtf8());
+	ui::Button *PublishingInfoButton = new ui::Button(ui::Point((Size.X * 3 / 4) - 75, Size.Y - 42), ui::Point(150, 16), ByteString("釋出須知").FromUtf8());
 	PublishingInfoButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	PublishingInfoButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	PublishingInfoButton->Appearance.TextInactive = style::Colour::InformationTitle;
@@ -134,7 +134,7 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 											 }});
 	AddComponent(PublishingInfoButton);
 
-	ui::Button *RulesButton = new ui::Button(ui::Point((Size.X * 3 / 4) - 75, Size.Y - 22), ui::Point(150, 16), ByteString("沙盘上传须知").FromUtf8());
+	ui::Button *RulesButton = new ui::Button(ui::Point((Size.X * 3 / 4) - 75, Size.Y - 22), ui::Point(150, 16), ByteString("沙盤上傳須知").FromUtf8());
 	RulesButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	RulesButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	RulesButton->Appearance.TextInactive = style::Colour::InformationTitle;
@@ -157,7 +157,7 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, bool s
 																												  onUploaded(onUploaded_),
 																												  saveUploadTask(NULL)
 {
-	ui::Label *titleLabel = new ui::Label(ui::Point(0, 0), Size, ByteString("正在保存到云端...").FromUtf8());
+	ui::Label *titleLabel = new ui::Label(ui::Point(0, 0), Size, ByteString("正在儲存到雲端...").FromUtf8());
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -261,7 +261,7 @@ void ServerSaveActivity::ShowPublishingInfo()
 		"If a save is under a week old and gains popularity fast, it will be automatically placed on the \btfront page\bw. Only published saves will be able to get here. Moderators can also choose to promote any save onto the front page, but this happens rarely. They can also demote any save from the front page that breaks a rule or they feel doesn't belong.\n"
 		"Once you make a save, you can resave it as many times as you want. A short previous \btsave history\bw is saved, just right click any save in the save browser and select 'View History' to view it. This is useful for when you accidentally save something you didn't mean to and want to go back to the old version.\n";
 
-	new InformationMessage(ByteString("发布须知").FromUtf8(), info, true);
+	new InformationMessage(ByteString("釋出須知").FromUtf8(), info, true);
 }
 
 void ServerSaveActivity::ShowRules()
@@ -337,7 +337,7 @@ void ServerSaveActivity::ShowRules()
 		"\n"
 		"If you have any questions about what is and isn't against the rules, feel free to contact a moderator.";
 
-	new InformationMessage(ByteString("沙盘上传须知").FromUtf8(), rules, true);
+	new InformationMessage(ByteString("沙盤上傳須知").FromUtf8(), rules, true);
 }
 
 void ServerSaveActivity::CheckName(String newname)
@@ -345,7 +345,7 @@ void ServerSaveActivity::CheckName(String newname)
 	if (newname.length() && newname == save->GetName() && save->GetUserName() == Client::Ref().GetAuthUser().Username)
 		titleLabel->SetText("Modify simulation properties:");
 	else
-		titleLabel->SetText(ByteString("保存到云端").FromUtf8());
+		titleLabel->SetText(ByteString("儲存到雲端").FromUtf8());
 }
 
 void ServerSaveActivity::OnTick(float dt)

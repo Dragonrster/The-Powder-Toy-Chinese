@@ -33,7 +33,7 @@ void Element::Element_PHOT()
 
 	DefaultProperties.temp = R_TEMP + 900.0f + 273.15f;
 	HeatConduct = 251;
-	Description = ByteString("光子,沿直线传播,不受重力影响,受牛顿万有引力影响,可用于点燃物质或传递热量").FromUtf8();
+	Description = ByteString("光子,沿直線傳播,不受重力影響,受牛頓萬有引力影響,可用於點燃物質或傳遞熱量").FromUtf8();
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

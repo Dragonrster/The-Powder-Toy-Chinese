@@ -30,7 +30,7 @@ void Element::Element_FRZZ()
 
 	DefaultProperties.temp = 253.15f;
 	HeatConduct = 46;
-	Description = ByteString("寒尘,冷粉末,能立即冻住水,能将水转变成寒水").FromUtf8();
+	Description = ByteString("寒塵,冷粉末,能立即凍住水,能將水轉變成寒水").FromUtf8();
 
 	Properties = TYPE_PART;
 

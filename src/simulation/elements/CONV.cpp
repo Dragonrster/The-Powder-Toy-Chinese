@@ -29,7 +29,7 @@ void Element::Element_CONV()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("转换器,转换它接触到的物质的Type值为它自身的Ctype值").FromUtf8();
+	Description = ByteString("轉換器,轉換它接觸到的物質的Type值為它自身的Ctype值").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = (1U << FIELD_CTYPE) | (1U << FIELD_TMP);

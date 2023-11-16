@@ -28,7 +28,7 @@ void Element::Element_DRIC()
 
 	DefaultProperties.temp = 172.65f;
 	HeatConduct = 2;
-	Description = ByteString("干冰,二氧化碳冷却时形成").FromUtf8();
+	Description = ByteString("乾冰,二氧化碳冷卻時形成").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

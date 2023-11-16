@@ -30,7 +30,7 @@ void Element::Element_SPNG()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("海绵可以从多种元素中(WATR,SLTW,DSTW,FRZW,BUBW,PSTE)吸水").FromUtf8();
+	Description = ByteString("海綿可以從多種元素中(WATR,SLTW,DSTW,FRZW,BUBW,PSTE)吸水").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

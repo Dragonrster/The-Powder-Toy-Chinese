@@ -27,7 +27,7 @@ void Element::Element_DESL()
 	Weight = 15;
 
 	HeatConduct = 42;
-	Description = ByteString("柴油,温度达到燃点或压力超过极限时自燃").FromUtf8();
+	Description = ByteString("柴油,溫度達到燃點或壓力超過極限時自燃").FromUtf8();
 
 	Properties = TYPE_LIQUID;
 

@@ -27,7 +27,7 @@ void Element::Element_THRM()
 	Weight = 90;
 
 	HeatConduct = 211;
-	Description = ByteString("铝热剂,只能与FIRE,PLSM,LAVA,LIFE反应,产生巨大的热量").FromUtf8();
+	Description = ByteString("鋁熱劑,只能與FIRE,PLSM,LAVA,LIFE反應,產生巨大的熱量").FromUtf8();
 
 	Properties = TYPE_PART;
 

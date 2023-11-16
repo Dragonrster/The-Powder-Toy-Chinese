@@ -30,7 +30,7 @@ void Element::Element_FWRK()
 	Weight = 97;
 
 	HeatConduct = 100;
-	Description = ByteString("传统烟花,用中子或热量(200C)爆炸,比烟花(FIRW)升的更高,但火焰苍白").FromUtf8();
+	Description = ByteString("傳統煙花,用中子或熱量(200C)爆炸,比煙花(FIRW)升的更高,但火焰蒼白").FromUtf8();
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

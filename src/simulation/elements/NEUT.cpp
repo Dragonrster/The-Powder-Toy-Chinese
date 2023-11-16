@@ -34,7 +34,7 @@ void Element::Element_NEUT()
 
 	DefaultProperties.temp = R_TEMP + 4.0f + 273.15f;
 	HeatConduct = 60;
-	Description = ByteString("中子,不受重力影响的粒子,可以随意移动").FromUtf8();
+	Description = ByteString("中子,不受重力影響的粒子,可以隨意移動").FromUtf8();
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

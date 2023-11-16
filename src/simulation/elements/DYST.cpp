@@ -27,7 +27,7 @@ void Element::Element_DYST()
 	Weight = 80;
 
 	HeatConduct = 70;
-	Description = ByteString("菌丝").FromUtf8();
+	Description = ByteString("菌絲").FromUtf8();
 
 	Properties = TYPE_PART;
 

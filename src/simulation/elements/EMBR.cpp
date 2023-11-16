@@ -31,7 +31,7 @@ void Element::Element_EMBR()
 
 	DefaultProperties.temp = 500.0f + 273.15f;
 	HeatConduct = 29;
-	Description = ByteString("火花,炸药爆炸产生").FromUtf8();
+	Description = ByteString("火花,炸藥爆炸產生").FromUtf8();
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL|PROP_SPARKSETTLE;
 

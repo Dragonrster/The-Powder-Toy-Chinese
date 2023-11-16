@@ -29,7 +29,7 @@ void Element::Element_IGNT()
 	Weight = 100;
 
 	HeatConduct = 88;
-	Description = ByteString("导火索,电脉冲或者明火或者达到燃烧点都能点燃它").FromUtf8();
+	Description = ByteString("導火索,電脈衝或者明火或者達到燃燒點都能點燃它").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE | PROP_SPARKSETTLE | PROP_LIFE_KILL;
 

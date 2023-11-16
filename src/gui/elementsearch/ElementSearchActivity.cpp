@@ -30,7 +30,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	isToolTipFadingIn(false),
 	exit(false)
 {
-	ui::Label * title = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), ByteString("搜索元素").FromUtf8());
+	ui::Label * title = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), ByteString("搜尋元素").FromUtf8());
 	title->SetTextColour(style::Colour::InformationTitle);
 	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(title);

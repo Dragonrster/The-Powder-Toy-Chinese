@@ -257,67 +257,67 @@ Renderer::Renderer(Simulation * sim):
 
 	//Render mode presets. Possibly load from config in future?
 	renderModePresets.push_back({
-		ByteString("速压混合显示模式").FromUtf8(),
+		ByteString("速壓混合顯示模式").FromUtf8(),
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_AIRC },
 		0
 	});
 	renderModePresets.push_back({
-		 ByteString("气流显示模式").FromUtf8(),
+		 ByteString("氣流顯示模式").FromUtf8(),
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_AIRV },
 		0
 	});
 	renderModePresets.push_back({
-		ByteString("气压显示模式").FromUtf8(),
+		ByteString("氣壓顯示模式").FromUtf8(),
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_AIRP },
 		0
 	});
 	renderModePresets.push_back({
-		ByteString("轨迹显示模式").FromUtf8(),
+		ByteString("軌跡顯示模式").FromUtf8(),
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_PERS },
 		0
 	});
 	renderModePresets.push_back({
-		ByteString("火焰(标准)显示模式").FromUtf8(),
+		ByteString("火焰(標準)顯示模式").FromUtf8(),
 		{ RENDER_FIRE, RENDER_SPRK, RENDER_EFFE, RENDER_BASC },
 		{ },
 		0
 	});
 	renderModePresets.push_back({
-		ByteString("模糊显示模式").FromUtf8(),
+		ByteString("模糊顯示模式").FromUtf8(),
 		{ RENDER_FIRE, RENDER_SPRK, RENDER_EFFE, RENDER_BLOB },
 		{ },
 		0
 	});
 	renderModePresets.push_back({
-		ByteString("温度显示模式").FromUtf8(),
+		ByteString("溫度顯示模式").FromUtf8(),
 		{ RENDER_BASC },
 		{ DISPLAY_AIRH },
 		COLOUR_HEAT
 	});
 	renderModePresets.push_back({
-		ByteString("特效显示模式").FromUtf8(),
+		ByteString("特效顯示模式").FromUtf8(),
 		{ RENDER_FIRE, RENDER_SPRK, RENDER_GLOW, RENDER_BLUR, RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_WARP },
 		0
 	});
 	renderModePresets.push_back({
-		ByteString("无特效显示模式").FromUtf8(),
+		ByteString("無特效顯示模式").FromUtf8(),
 		{ RENDER_BASC },
 		{ },
 		0
 	});
 	renderModePresets.push_back({
-		ByteString("热传导显示模式").FromUtf8(),
+		ByteString("熱傳導顯示模式").FromUtf8(),
 		{ RENDER_BASC },
 		{ },
 		COLOUR_GRAD
 	});
 	renderModePresets.push_back({
-		ByteString("Life梯度显示模式").FromUtf8(),
+		ByteString("Life梯度顯示模式").FromUtf8(),
 		{ RENDER_BASC },
 		{ },
 		COLOUR_LIFE

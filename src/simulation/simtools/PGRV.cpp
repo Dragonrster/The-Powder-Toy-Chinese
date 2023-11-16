@@ -7,7 +7,7 @@ void SimTool::Tool_PGRV()
 	Identifier = "DEFAULT_TOOL_PGRV";
 	Name = "PGRV";
 	Colour = 0xCCCCFF_rgb;
-	Description = ByteString("正引力工具,制造一个正引力源,一段时间后消失").FromUtf8();
+	Description = ByteString("正引力工具,製造一個正引力源,一段時間後消失").FromUtf8();
 	Perform = &perform;
 }
 

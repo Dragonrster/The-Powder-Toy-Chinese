@@ -29,7 +29,7 @@ void Element::Element_FUSE()
 	Weight = 100;
 
 	HeatConduct = 200;
-	Description = ByteString("导火索,高温或通电下缓慢燃烧").FromUtf8();
+	Description = ByteString("導火索,高溫或通電下緩慢燃燒").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

@@ -28,7 +28,7 @@ void Element::Element_PSCN()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("P型硅,可以电脉冲传导给任何导体,可以熔化").FromUtf8();
+	Description = ByteString("P型矽,可以電脈衝傳導給任何導體,可以熔化").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

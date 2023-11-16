@@ -29,7 +29,7 @@ void Element::Element_H2()
 	Weight = 1;
 
 	HeatConduct = 251;
-	Description = ByteString("氢气,与氧气燃烧产生水,在高温高压下发生聚变").FromUtf8();
+	Description = ByteString("氫氣,與氧氣燃燒產生水,在高溫高壓下發生聚變").FromUtf8();
 
 	Properties = TYPE_GAS;
 

@@ -270,7 +270,7 @@ void SaveButton::OnMouseUnclick(int x, int y, unsigned int button)
 	}
 	if (file && !file->LazyGetGameSave())
 	{
-		new ErrorMessage(ByteString("无法加载此沙盘").FromUtf8(), file->GetError());
+		new ErrorMessage(ByteString("無法載入此沙盤").FromUtf8(), file->GetError());
 		return;
 	}
 
@@ -298,18 +298,18 @@ void SaveButton::AddContextMenu(int menuType)
 	if (menuType == 0) //Save browser
 	{
 		menu = new ContextMenu(this);
-		menu->AddItem(ContextMenuItem(ByteString("打开").FromUtf8(), 0, true));
+		menu->AddItem(ContextMenuItem(ByteString("開啟").FromUtf8(), 0, true));
 		if (Client::Ref().GetAuthUser().UserID)
-			menu->AddItem(ContextMenuItem(ByteString("选择").FromUtf8(), 1, true));
-		menu->AddItem(ContextMenuItem(ByteString("历史").FromUtf8(), 2, true));
-		menu->AddItem(ContextMenuItem(ByteString("更多此作者的存档").FromUtf8(), 3, true));
+			menu->AddItem(ContextMenuItem(ByteString("選擇").FromUtf8(), 1, true));
+		menu->AddItem(ContextMenuItem(ByteString("歷史").FromUtf8(), 2, true));
+		menu->AddItem(ContextMenuItem(ByteString("更多此作者的存檔").FromUtf8(), 3, true));
 	}
 	else if (menuType == 1) //Local save browser
 	{
 		menu = new ContextMenu(this);
-		menu->AddItem(ContextMenuItem(ByteString("打开").FromUtf8(), 0, true));
-		menu->AddItem(ContextMenuItem(ByteString("重命名").FromUtf8(), 2, true));
-		menu->AddItem(ContextMenuItem(ByteString("删除").FromUtf8(), 3, true));
+		menu->AddItem(ContextMenuItem(ByteString("開啟").FromUtf8(), 0, true));
+		menu->AddItem(ContextMenuItem(ByteString("重新命名").FromUtf8(), 2, true));
+		menu->AddItem(ContextMenuItem(ByteString("刪除").FromUtf8(), 3, true));
 	}
 }
 
@@ -400,9 +400,9 @@ void SaveButton::DoSelection()
 	if(menu)
 	{
 		if(selected)
-			menu->SetItem(1, ByteString("取消选择").FromUtf8());
+			menu->SetItem(1, ByteString("取消選擇").FromUtf8());
 		else
-			menu->SetItem(1, ByteString("选择").FromUtf8());
+			menu->SetItem(1, ByteString("選擇").FromUtf8());
 	}
 	if (selectable && actionCallback.selected)
 		actionCallback.selected();

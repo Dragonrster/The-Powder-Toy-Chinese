@@ -31,7 +31,7 @@ void Element::Element_BIZRG()
 
 	DefaultProperties.temp = R_TEMP - 200.0f + 273.15f;
 	HeatConduct = 42;
-	Description = ByteString("奇异气体").FromUtf8();
+	Description = ByteString("奇異氣體").FromUtf8();
 
 	Properties = TYPE_GAS;
 

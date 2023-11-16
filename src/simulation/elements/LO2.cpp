@@ -28,7 +28,7 @@ void Element::Element_LO2()
 
 	DefaultProperties.temp = 80.0f;
 	HeatConduct = 70;
-	Description = ByteString("液氧,点燃时产生等离子体,升温时转变成氧气").FromUtf8();
+	Description = ByteString("液氧,點燃時產生等離子體,升溫時轉變成氧氣").FromUtf8();
 
 	Properties = TYPE_LIQUID;
 

@@ -27,7 +27,7 @@ void Element::Element_INST()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("瞬时导体,导电速度和导电墙相同,只能通过P型硅输入电脉冲,N型硅和GOLD输出电脉冲").FromUtf8();
+	Description = ByteString("瞬時導體,導電速度和導電牆相同,只能透過P型矽輸入電脈衝,N型矽和GOLD輸出電脈衝").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

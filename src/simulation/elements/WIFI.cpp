@@ -30,7 +30,7 @@ void Element::Element_WIFI()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = ByteString("WI-FI,无线转移电脉冲可使用大多数导电物质输入电脉冲(除了N型硅)只能由N型硅P型硅INWR输出电脉冲").FromUtf8();
+	Description = ByteString("WI-FI,無線轉移電脈衝可使用大多數導電物質輸入電脈衝(除了N型矽)只能由N型矽P型矽INWR輸出電脈衝").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

@@ -82,10 +82,10 @@ void LargeScreenDialog()
 {
 	StringBuilder message;
 	auto scale = ui::Engine::Ref().windowFrameOps.scale;
-	message <<  ByteString("切换到 ").FromUtf8() << scale <<  ByteString("x 模式，满足倍数缩放要求:").FromUtf8();
-	message << desktopWidth << "x" << desktopHeight <<  ByteString("<-检测到 ,").FromUtf8() << WINDOWW * scale << "x" << WINDOWH * scale <<  ByteString("<-要求").FromUtf8();
-	message <<  ByteString("\n要取消此操作，请点击\"取消\"。可以随时在设置中更改。").FromUtf8();
-	new ConfirmPrompt(ByteString("检测到高分辨率屏幕").FromUtf8(), message.Build(), { nullptr, []() {
+	message <<  ByteString("切換到 ").FromUtf8() << scale <<  ByteString("x 模式，滿足倍數縮放要求:").FromUtf8();
+	message << desktopWidth << "x" << desktopHeight <<  ByteString("<-檢測到 ,").FromUtf8() << WINDOWW * scale << "x" << WINDOWH * scale <<  ByteString("<-要求").FromUtf8();
+	message <<  ByteString("\n要取消此操作，請點選\"取消\"。可以隨時在設定中更改。").FromUtf8();
+	new ConfirmPrompt(ByteString("檢測到高解析度螢幕").FromUtf8(), message.Build(), { nullptr, []() {
 		GlobalPrefs::Ref().Set("Scale", 1);
 		ui::Engine::Ref().windowFrameOps.scale = 1;
 	} });
@@ -462,7 +462,7 @@ int Main(int argc, char *argv[])
 		{
 			engine.g->Clear();
 			engine.g->DrawRect(RectSized(engine.g->Size() / 2 - Vec2(100, 25), Vec2(200, 50)), 0xB4B4B4_rgb);
-			String loadingText = ByteString("加载沙盘中...").FromUtf8();
+			String loadingText = ByteString("載入沙盤中...").FromUtf8();
 			engine.g->BlendText(engine.g->Size() / 2 - Vec2((Graphics::TextSize(loadingText).X - 1) / 2, 5), loadingText, style::Colour::InformationTitle);
 
 			blit(engine.g->Data());

@@ -21,13 +21,13 @@ LocalSaveActivity::LocalSaveActivity(std::unique_ptr<SaveFile> newSave, OnSaved 
 	thumbnailRenderer(nullptr),
 	onSaved(onSaved_)
 {
-	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), ByteString("保存到本地:").FromUtf8());
+	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), ByteString("儲存到本地:").FromUtf8());
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 
-	filenameField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), save->GetDisplayName(), ByteString("[文件名]").FromUtf8());
+	filenameField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), save->GetDisplayName(), ByteString("[檔名]").FromUtf8());
 	filenameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	filenameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(filenameField);
@@ -43,7 +43,7 @@ LocalSaveActivity::LocalSaveActivity(std::unique_ptr<SaveFile> newSave, OnSaved 
 	AddComponent(cancelButton);
 	SetCancelButton(cancelButton);
 
-	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), ByteString("保存").FromUtf8());
+	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), ByteString("儲存").FromUtf8());
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.TextInactive = style::Colour::InformationTitle;
@@ -77,7 +77,7 @@ void LocalSaveActivity::Save()
 {
 	if (filenameField->GetText().Contains('/') || filenameField->GetText().BeginsWith("."))
 	{
-		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无效的文件名").FromUtf8());
+		new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("無效的檔名").FromUtf8());
 	}
 	else if (filenameField->GetText().length())
 	{
@@ -86,7 +86,7 @@ void LocalSaveActivity::Save()
 		save->SetFileName(finalFilename);
 		if (Platform::FileExists(finalFilename))
 		{
-			new ConfirmPrompt(ByteString("覆盖文件").FromUtf8(), ByteString("确定要覆盖吗?\n").FromUtf8()+finalFilename.FromUtf8(), { [this, finalFilename] {
+			new ConfirmPrompt(ByteString("覆蓋檔案").FromUtf8(), ByteString("確定要覆蓋嗎?\n").FromUtf8()+finalFilename.FromUtf8(), { [this, finalFilename] {
 				saveWrite(finalFilename);
 			} });
 		}
@@ -97,7 +97,7 @@ void LocalSaveActivity::Save()
 	}
 	else
 	{
-		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("文件名不能为空").FromUtf8());
+		new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("檔名不能為空").FromUtf8());
 	}
 }
 

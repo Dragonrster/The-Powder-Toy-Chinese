@@ -59,7 +59,7 @@ TextPrompt::TextPrompt(String title, String message, String text, String placeho
 	AddComponent(cancelButton);
 	SetCancelButton(cancelButton);
 
-	ui::Button * okayButton = new ui::Button(ui::Point(Size.X/2, Size.Y-16), ui::Point(Size.X/2, 16),  ByteString("确定").FromUtf8());
+	ui::Button * okayButton = new ui::Button(ui::Point(Size.X/2, Size.Y-16), ui::Point(Size.X/2, 16),  ByteString("確定").FromUtf8());
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.TextInactive = style::Colour::WarningTitle;

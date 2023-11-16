@@ -32,7 +32,7 @@ void Element::Element_PROT()
 	Weight = -1;
 
 	HeatConduct = 61;
-	Description = ByteString("质子,不能穿透绝缘体,虚空,钻石,振金以及墙会清除碰到电脉冲").FromUtf8();
+	Description = ByteString("質子,不能穿透絕緣體,虛空,鑽石,振金以及牆會清除碰到電脈衝").FromUtf8();
 
 	Properties = TYPE_ENERGY;
 

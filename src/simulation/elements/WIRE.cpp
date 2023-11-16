@@ -30,7 +30,7 @@ void Element::Element_WIRE()
 	Weight = 100;
 
 	HeatConduct = 250;
-	Description = ByteString("WireWorld线,一种基于另一个名为WireWorld游戏的固体导电元素").FromUtf8();
+	Description = ByteString("WireWorld線,一種基於另一個名為WireWorld遊戲的固體導電元素").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

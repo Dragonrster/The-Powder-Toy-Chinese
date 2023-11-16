@@ -31,7 +31,7 @@ void Element::Element_GRAV()
 	Weight = 85;
 
 	HeatConduct = 70;
-	Description = ByteString("引力尘,十分轻的粉末,几乎无视重力,随着速度改变颜色").FromUtf8();
+	Description = ByteString("引力塵,十分輕的粉末,幾乎無視重力,隨著速度改變顏色").FromUtf8();
 
 	Properties = TYPE_PART | PROP_LIFE_DEC;
 

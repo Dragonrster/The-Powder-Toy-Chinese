@@ -29,7 +29,7 @@ void Element::Element_FRME()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = ByteString("支架,用于增加活塞一次性推动物质的数量").FromUtf8();
+	Description = ByteString("支架,用於增加活塞一次性推動物質的數量").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

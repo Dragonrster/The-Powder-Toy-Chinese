@@ -31,7 +31,7 @@ void Element::Element_BIZRS()
 
 	DefaultProperties.temp = R_TEMP + 300.0f + 273.15f;
 	HeatConduct = 251;
-	Description = ByteString("奇异固体").FromUtf8();
+	Description = ByteString("奇異固體").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

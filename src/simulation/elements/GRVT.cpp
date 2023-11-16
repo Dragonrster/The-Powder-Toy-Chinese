@@ -31,7 +31,7 @@ void Element::Element_GRVT()
 	Weight = -1;
 
 	HeatConduct = 61;
-	Description = ByteString("引力子,会在周围产生额外的引力场").FromUtf8();
+	Description = ByteString("引力子,會在周圍產生額外的引力場").FromUtf8();
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

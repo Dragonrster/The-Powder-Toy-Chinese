@@ -49,7 +49,7 @@ GOLWindow::GOLWindow(GameModel &gameModel_, Simulation *sim_, int toolSelection,
 {
 	highColour.Alpha = 255;
 	lowColour.Alpha = 255;
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), ByteString("编辑自定义GOL类型").FromUtf8());
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), ByteString("編輯自定義GOL型別").FromUtf8());
 	messageLabel->SetTextColour(style::Colour::InformationTitle);
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
@@ -139,19 +139,19 @@ void GOLWindow::validate()
 	auto ruleString = ruleField->GetText();
 	if (!ValidateGOLName(nameString))
 	{
-		new ErrorMessage(ByteString("无法添加GOL类型").FromUtf8(), ByteString("提供的名称无效").FromUtf8());
+		new ErrorMessage(ByteString("無法新增GOL型別").FromUtf8(), ByteString("提供的名稱無效").FromUtf8());
 		return;
 	}
 	nameString = nameString.ToUpper();
 	int rule = ParseGOLString(ruleString);
 	if (rule == -1)
 	{
-		new ErrorMessage(ByteString("无法添加GOL类型").FromUtf8(), ByteString("提供的规则无效").FromUtf8());
+		new ErrorMessage(ByteString("無法新增GOL型別").FromUtf8(), ByteString("提供的規則無效").FromUtf8());
 		return;
 	}
 	if (sim->GetCustomGOLByRule(rule))
 	{
-		new ErrorMessage(ByteString("无法添加GOL类型").FromUtf8(), ByteString("此规则已经存在").FromUtf8());
+		new ErrorMessage(ByteString("無法新增GOL型別").FromUtf8(), ByteString("此規則已經存在").FromUtf8());
 		return;
 	}
 	ruleString = SerialiseGOLRule(rule); // * Make it canonical.
@@ -167,7 +167,7 @@ void GOLWindow::validate()
 	auto color2 = (((lowColour.Red << 8) | lowColour.Green) << 8) | lowColour.Blue;
 	if (!AddCustomGol(ruleString, nameString, color1, color2))
 	{
-		new ErrorMessage(ByteString("无法添加GOL类型").FromUtf8(), ByteString("名称已经存在").FromUtf8());
+		new ErrorMessage(ByteString("無法新增GOL型別").FromUtf8(), ByteString("名稱已經存在").FromUtf8());
 		return;
 	}
 

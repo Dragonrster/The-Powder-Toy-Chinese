@@ -30,7 +30,7 @@ void Element::Element_VSNS()
 
 	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
-	Description = ByteString("速度探测器,当速度高于传感器温度的粒子在附近时,会生成电脉冲").FromUtf8();
+	Description = ByteString("速度探測器,當速度高於感測器溫度的粒子在附近時,會生成電脈衝").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

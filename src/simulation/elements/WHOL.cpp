@@ -28,7 +28,7 @@ void Element::Element_WHOL()
 
 	DefaultProperties.temp = R_TEMP - 16.0f + 273.15f;
 	HeatConduct = 255;
-	Description = ByteString("白洞,产生斥力排斥物质").FromUtf8();
+	Description = ByteString("白洞,產生斥力排斥物質").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

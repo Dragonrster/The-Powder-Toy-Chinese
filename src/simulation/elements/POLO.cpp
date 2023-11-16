@@ -32,7 +32,7 @@ void Element::Element_POLO()
 
 	DefaultProperties.temp = 388.15f;
 	HeatConduct = 251;
-	Description = ByteString("钋,高放射性,衰变成NEUT并升温").FromUtf8();
+	Description = ByteString("釙,高放射性,衰變成NEUT並升溫").FromUtf8();
 
 	Properties = TYPE_PART|PROP_NEUTPASS|PROP_RADIOACTIVE|PROP_LIFE_DEC|PROP_DEADLY;
 

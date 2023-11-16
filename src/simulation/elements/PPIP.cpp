@@ -31,7 +31,7 @@ void Element::Element_PPIP()
 
 	DefaultProperties.temp = 273.15f;
 	HeatConduct = 0;
-	Description = ByteString("可控动力管,P型硅激活时运输,用N型硅则会停止运输,用超导线会反方向运输").FromUtf8();
+	Description = ByteString("可控動力管,P型矽啟用時運輸,用N型矽則會停止運輸,用超導線會反方向運輸").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

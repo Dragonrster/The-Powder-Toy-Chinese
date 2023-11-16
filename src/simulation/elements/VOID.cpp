@@ -27,7 +27,7 @@ void Element::Element_VOID()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("虚空,可以吸收物质(除固体即使被活塞推入)并产生少量压力").FromUtf8();
+	Description = ByteString("虛空,可以吸收物質(除固體即使被活塞推入)併產生少量壓力").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

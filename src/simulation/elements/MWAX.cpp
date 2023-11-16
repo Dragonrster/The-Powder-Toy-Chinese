@@ -28,7 +28,7 @@ void Element::Element_MWAX()
 
 	DefaultProperties.temp = R_TEMP + 28.0f + 273.15f;
 	HeatConduct = 44;
-	Description = ByteString("蜡油,融化的蜡,可以燃烧,45℃时凝固成蜡").FromUtf8();
+	Description = ByteString("蠟油,融化的蠟,可以燃燒,45℃時凝固成蠟").FromUtf8();
 
 	Properties = TYPE_LIQUID;
 

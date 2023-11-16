@@ -29,7 +29,7 @@ void Element::Element_BANG()
 	Weight = 100;
 
 	HeatConduct = 88;
-	Description = ByteString("TNT,瞬间爆炸").FromUtf8();
+	Description = ByteString("TNT,瞬間爆炸").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 

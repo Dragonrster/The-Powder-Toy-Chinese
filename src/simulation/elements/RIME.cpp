@@ -30,7 +30,7 @@ void Element::Element_RIME()
 
 	DefaultProperties.temp = -30.0f + 273.15f;
 	HeatConduct = 100;
-	Description = ByteString("霜,可以通电升华成雾").FromUtf8();
+	Description = ByteString("霜,可以通電昇華成霧").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

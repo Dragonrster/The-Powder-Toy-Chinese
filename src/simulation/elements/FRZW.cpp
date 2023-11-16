@@ -30,7 +30,7 @@ void Element::Element_FRZW()
 
 	DefaultProperties.temp = 120.0f;
 	HeatConduct = 29;
-	Description = ByteString("寒水,寒尘(FRZZ)溶于水形成,能自身不断降温直到绝对零度,同时将更多的水变成寒水").FromUtf8();
+	Description = ByteString("寒水,寒塵(FRZZ)溶於水形成,能自身不斷降溫直到絕對零度,同時將更多的水變成寒水").FromUtf8();
 
 	Properties = TYPE_LIQUID | PROP_LIFE_DEC;
 

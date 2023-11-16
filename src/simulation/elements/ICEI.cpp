@@ -30,7 +30,7 @@ void Element::Element_ICEI()
 
 	DefaultProperties.temp = R_TEMP - 50.0f + 273.15f;
 	HeatConduct = 46;
-	Description = ByteString("冰,在压力下会破碎变成雪").FromUtf8();
+	Description = ByteString("冰,在壓力下會破碎變成雪").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_NEUTPASS;
 

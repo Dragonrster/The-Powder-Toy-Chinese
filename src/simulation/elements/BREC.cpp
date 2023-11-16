@@ -29,7 +29,7 @@ void Element::Element_BREC()
 	Weight = 90;
 
 	HeatConduct = 211;
-	Description = ByteString("破碎的电子元件,在压力下变成EXOT").FromUtf8();
+	Description = ByteString("破碎的電子元件,在壓力下變成EXOT").FromUtf8();
 
 	Properties = TYPE_PART|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 

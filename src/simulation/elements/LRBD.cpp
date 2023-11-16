@@ -28,7 +28,7 @@ void Element::Element_LRBD()
 
 	DefaultProperties.temp = R_TEMP + 45.0f + 273.15f;
 	HeatConduct = 170;
-	Description = ByteString("液态铷,压力越大,爆炸点越低").FromUtf8();
+	Description = ByteString("液態銣,壓力越大,爆炸點越低").FromUtf8();
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

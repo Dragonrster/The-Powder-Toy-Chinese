@@ -10,7 +10,7 @@ void SimTool::Tool_CYCL()
 	Identifier = "DEFAULT_TOOL_CYCL";
 	Name = "CYCL";
 	Colour = 0x132f5b_rgb;
-	Description = ByteString("气旋,产生漩涡气").FromUtf8();
+	Description = ByteString("氣旋,產生漩渦氣").FromUtf8();
 	Perform = &perform;
 }
 

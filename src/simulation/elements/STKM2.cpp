@@ -37,7 +37,7 @@ void Element::Element_STKM2()
 
 	DefaultProperties.temp = R_TEMP + 14.6f + 273.15f;
 	HeatConduct = 0;
-	Description = ByteString("火柴人,受重力和压力影响,使用WSAD来控制其运动,其余和STKM相同").FromUtf8();
+	Description = ByteString("火柴人,受重力和壓力影響,使用WSAD來控制其運動,其餘和STKM相同").FromUtf8();
 
 	Properties = PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

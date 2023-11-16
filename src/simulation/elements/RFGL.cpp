@@ -29,7 +29,7 @@ void Element::Element_RFGL()
 	Weight = 10;
 
 	HeatConduct = 3;
-	Description = ByteString("液态制冷剂").FromUtf8();
+	Description = ByteString("液態製冷劑").FromUtf8();
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 

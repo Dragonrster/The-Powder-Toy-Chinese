@@ -30,7 +30,7 @@ void Element::Element_SWCH()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("开关,从PSCN导入电时可导电,从NSCN导入电时不可导电").FromUtf8();
+	Description = ByteString("開關,從PSCN匯入電時可導電,從NSCN匯入電時不可導電").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

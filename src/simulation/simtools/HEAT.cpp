@@ -7,7 +7,7 @@ void SimTool::Tool_HEAT()
 	Identifier = "DEFAULT_TOOL_HEAT";
 	Name = "HEAT";
 	Colour = 0xFFDD00_rgb;
-	Description = ByteString("加热工具,增加目标的温度").FromUtf8();
+	Description = ByteString("加熱工具,增加目標的溫度").FromUtf8();
 	Perform = &perform;
 }
 

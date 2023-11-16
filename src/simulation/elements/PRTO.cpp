@@ -30,7 +30,7 @@ void Element::Element_PRTO()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = ByteString("传送门出口,和传送门入口(PRTI)配套,物质从这里出来,形成正压力").FromUtf8();
+	Description = ByteString("傳送門出口,和傳送門入口(PRTI)配套,物質從這裡出來,形成正壓力").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

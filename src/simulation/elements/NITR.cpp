@@ -28,7 +28,7 @@ void Element::Element_NITR()
 	Weight = 23;
 
 	HeatConduct = 50;
-	Description = ByteString("硝化甘油,压力下,电脉冲,明火都可以引起爆炸").FromUtf8();
+	Description = ByteString("硝化甘油,壓力下,電脈衝,明火都可以引起爆炸").FromUtf8();
 
 	Properties = TYPE_LIQUID;
 

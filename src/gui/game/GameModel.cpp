@@ -382,19 +382,19 @@ void GameModel::BuildMenus()
 
 	//Add decoration tools to menu
 	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_ADD, "ADD", ByteString("混合模式:加").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_ADD"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_SUBTRACT, "SUB", ByteString("混合模式:减").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_SUB"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_SUBTRACT, "SUB", ByteString("混合模式:減").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_SUB"));
 	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_MULTIPLY, "MUL", ByteString("混合模式:乘").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_MUL"));
 	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_DIVIDE, "DIV", ByteString("混合模式:除").FromUtf8() , 0x000000_rgb, "DEFAULT_DECOR_DIV"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_SMUDGE, "SMDG", ByteString("涂抹工具,混合周围的装饰").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_SMDG"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_CLEAR, "CLR", ByteString("装饰橡皮擦").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_CLR"));
-	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_DRAW, "SET", ByteString("装饰工具(无混合)").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_SET"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_SMUDGE, "SMDG", ByteString("塗抹工具,混合周圍的裝飾").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_SMDG"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_CLEAR, "CLR", ByteString("裝飾橡皮擦").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_CLR"));
+	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_DRAW, "SET", ByteString("裝飾工具(無混合)").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_SET"));
 	// 	menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_ADD, "ADD", ByteString("混合模式:加").FromUtf8(), 0, 0, 0, "DEFAULT_DECOR_ADD"));
-	// menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_SUBTRACT, "SUB", ByteString("混合模式:减").FromUtf8(), 0, 0, 0, "DEFAULT_DECOR_SUB"));
+	// menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_SUBTRACT, "SUB", ByteString("混合模式:減").FromUtf8(), 0, 0, 0, "DEFAULT_DECOR_SUB"));
 	// menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_MULTIPLY, "MUL", ByteString("混合模式:乘").FromUtf8(), 0, 0, 0, "DEFAULT_DECOR_MUL"));
 	// menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_DIVIDE, "DIV", ByteString("混合模式:除").FromUtf8() , 0, 0, 0, "DEFAULT_DECOR_DIV"));
-	// menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_SMUDGE, "SMDG", ByteString("涂抹工具,混合周围的装饰").FromUtf8(), 0, 0, 0, "DEFAULT_DECOR_SMDG"));
-	// menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_CLEAR, "CLR", ByteString("装饰橡皮擦").FromUtf8(), 0, 0, 0, "DEFAULT_DECOR_CLR"));
-	// menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_DRAW, "SET", ByteString("装饰工具(无混合)").FromUtf8(), 0, 0, 0, "DEFAULT_DECOR_SET"));
+	// menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_SMUDGE, "SMDG", ByteString("塗抹工具,混合周圍的裝飾").FromUtf8(), 0, 0, 0, "DEFAULT_DECOR_SMDG"));
+	// menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_CLEAR, "CLR", ByteString("裝飾橡皮擦").FromUtf8(), 0, 0, 0, "DEFAULT_DECOR_CLR"));
+	// menuList[SC_DECO]->AddTool(new DecorationTool(ren, DECO_DRAW, "SET", ByteString("裝飾工具(無混合)").FromUtf8(), 0, 0, 0, "DEFAULT_DECOR_SET"));
 	SetColourSelectorColour(colour); // update tool colors
 	decoToolset[0] = GetToolFromIdentifier("DEFAULT_DECOR_SET");
 	decoToolset[1] = GetToolFromIdentifier("DEFAULT_DECOR_CLR");
@@ -1266,9 +1266,9 @@ void GameModel::SetDecoration(bool decorationState)
 		notifyDecorationChanged();
 		UpdateQuickOptions();
 		if (decorationState)
-			SetInfoTip(ByteString("装饰图层:开启").FromUtf8());
+			SetInfoTip(ByteString("裝飾圖層:開啟").FromUtf8());
 		else
-			SetInfoTip(ByteString("装饰图层:关闭").FromUtf8());
+			SetInfoTip(ByteString("裝飾圖層:關閉").FromUtf8());
 	}
 }
 
@@ -1282,9 +1282,9 @@ void GameModel::SetAHeatEnable(bool aHeat)
 	sim->aheat_enable = aHeat;
 	UpdateQuickOptions();
 	if (aHeat)
-		SetInfoTip(ByteString("环境热模拟:开启").FromUtf8());
+		SetInfoTip(ByteString("環境熱模擬:開啟").FromUtf8());
 	else
-		SetInfoTip(ByteString("环境热模拟:关闭").FromUtf8());
+		SetInfoTip(ByteString("環境熱模擬:關閉").FromUtf8());
 }
 
 bool GameModel::GetAHeatEnable()
@@ -1302,12 +1302,12 @@ void GameModel::SetNewtonianGravity(bool newtonainGravity)
     if (newtonainGravity)
     {
         sim->grav->start_grav_async();
-        SetInfoTip(ByteString("牛顿引力:开启").FromUtf8());
+        SetInfoTip(ByteString("牛頓引力:開啟").FromUtf8());
     }
     else
     {
         sim->grav->stop_grav_async();
-        SetInfoTip(ByteString("牛顿引力:关闭").FromUtf8());
+        SetInfoTip(ByteString("牛頓引力:關閉").FromUtf8());
     }
     UpdateQuickOptions();
 }
@@ -1321,9 +1321,9 @@ void GameModel::ShowGravityGrid(bool showGrid)
 {
 	ren->gravityFieldEnabled = showGrid;
 	if (showGrid)
-		SetInfoTip(ByteString("引力网格:开启").FromUtf8());
+		SetInfoTip(ByteString("引力網格:開啟").FromUtf8());
 	else
-		SetInfoTip(ByteString("引力网格:关闭").FromUtf8());
+		SetInfoTip(ByteString("引力網格:關閉").FromUtf8());
 }
 
 bool GameModel::GetGravityGrid()
@@ -2115,12 +2115,12 @@ void GameModel::AfterSim()
 
 // 	//Add decoration tools to menu
 // 	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_ADD, "ADD", ByteString("混合模式:加").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_ADD"));
-// 	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_SUBTRACT, "SUB", ByteString("混合模式:减").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_SUB"));
+// 	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_SUBTRACT, "SUB", ByteString("混合模式:減").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_SUB"));
 // 	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_MULTIPLY, "MUL", ByteString("混合模式:乘").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_MUL"));
 // 	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_DIVIDE, "DIV", ByteString("混合模式:除").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_DIV"));
-// 	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_SMUDGE, "SMDG", ByteString("涂抹工具,混合周围的装饰").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_SMDG"));
-// 	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_CLEAR, "CLR", ByteString("装饰橡皮擦").FromUtf8(), "DEFAULT_DECOR_CLR"));
-// 	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_DRAW, "SET", ByteString("装饰工具(无混合)").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_SET"));
+// 	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_SMUDGE, "SMDG", ByteString("塗抹工具,混合周圍的裝飾").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_SMDG"));
+// 	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_CLEAR, "CLR", ByteString("裝飾橡皮擦").FromUtf8(), "DEFAULT_DECOR_CLR"));
+// 	menuList[SC_DECO]->AddTool(new DecorationTool(*ren, DECO_DRAW, "SET", ByteString("裝飾工具(無混合)").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_SET"));
 // 	SetColourSelectorColour(colour); // update tool colors
 // 	decoToolset[0] = GetToolFromIdentifier("DEFAULT_DECOR_SET");
 // 	decoToolset[1] = GetToolFromIdentifier("DEFAULT_DECOR_CLR");

@@ -31,7 +31,7 @@ void Element::Element_BVBR()
 
 	DefaultProperties.temp = 273.15f;
 	HeatConduct = 164;
-	Description = ByteString("振金粉,粉末状的振金").FromUtf8();
+	Description = ByteString("振金粉,粉末狀的振金").FromUtf8();
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

@@ -28,7 +28,7 @@ void Element::Element_DUST()
 	Weight = 85;
 
 	HeatConduct = 70;
-	Description = ByteString("轻粉末,难燃且火焰微弱").FromUtf8();
+	Description = ByteString("輕粉末,難燃且火焰微弱").FromUtf8();
 
 	Properties = TYPE_PART;
 

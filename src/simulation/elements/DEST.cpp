@@ -30,7 +30,7 @@ void Element::Element_DEST()
 	Weight = 101;
 
 	HeatConduct = 150;
-	Description = ByteString("高爆炸药,几乎可以破坏任何物质").FromUtf8();
+	Description = ByteString("高爆炸藥,幾乎可以破壞任何物質").FromUtf8();
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

@@ -31,7 +31,7 @@ void Element::Element_GEL()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
-	Description = ByteString("胶体,吸收水分之后颜色会变深,变得不那么粘稠而且导热系数会增加").FromUtf8();
+	Description = ByteString("膠體,吸收水分之後顏色會變深,變得不那麼粘稠而且導熱係數會增加").FromUtf8();
 
 	Properties = TYPE_LIQUID|PROP_LIFE_DEC|PROP_NEUTPENETRATE;
 

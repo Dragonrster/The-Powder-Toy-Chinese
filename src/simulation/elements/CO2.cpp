@@ -29,7 +29,7 @@ void Element::Element_CO2()
 	Weight = 1;
 
 	HeatConduct = 88;
-	Description = ByteString("二氧化碳,高密度气体,真空中下沉,与水反应生成苏打水(BUBW),冷却后变成干冰").FromUtf8();
+	Description = ByteString("二氧化碳,高密度氣體,真空中下沉,與水反應生成蘇打水(BUBW),冷卻後變成乾冰").FromUtf8();
 
 	Properties = TYPE_GAS;
 

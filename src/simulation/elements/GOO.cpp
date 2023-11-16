@@ -30,7 +30,7 @@ void Element::Element_GOO()
 	Weight = 100;
 
 	HeatConduct = 75;
-	Description = ByteString("粘土,在压力下会变形消失").FromUtf8();
+	Description = ByteString("粘土,在壓力下會變形消失").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

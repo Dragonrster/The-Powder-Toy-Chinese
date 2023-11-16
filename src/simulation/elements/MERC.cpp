@@ -29,7 +29,7 @@ void Element::Element_MERC()
 	Weight = 91;
 
 	HeatConduct = 251;
-	Description = ByteString("水银,体积随温度变化,可以导电").FromUtf8();
+	Description = ByteString("水銀,體積隨溫度變化,可以導電").FromUtf8();
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_NEUTABSORB|PROP_LIFE_DEC;
 

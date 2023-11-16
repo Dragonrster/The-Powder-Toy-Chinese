@@ -21,7 +21,7 @@ Label::Label(Point position, Point size, String labelText):
 	SetText(labelText);
 
 	menu = new ContextMenu(this);
-	menu->AddItem(ContextMenuItem(ByteString("复制").FromUtf8(), 0, true));
+	menu->AddItem(ContextMenuItem(ByteString("複製").FromUtf8(), 0, true));
 }
 
 Label::~Label()

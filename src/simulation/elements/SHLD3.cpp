@@ -29,7 +29,7 @@ void Element::Element_SHLD3()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = ByteString("自修复膜 lvl 3.").FromUtf8();
+	Description = ByteString("自修復膜 lvl 3.").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 
