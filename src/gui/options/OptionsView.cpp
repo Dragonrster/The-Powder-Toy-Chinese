@@ -268,7 +268,11 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 			c->SetForceIntegerScaling(forceIntegerScaling->GetChecked());
 		});
 	}
+<<<<<<< Updated upstream
 	blurryScaling = addCheckbox(0, "Blurry scaling \bg- more blurry, better on very big screens", "", [this] {
+=======
+	blurryScaling = addCheckbox(0, ByteString("模糊縮放 \bg - 啟用此項加強在超大螢幕上效果").FromUtf8(), "", [this] {
+>>>>>>> Stashed changes
 		c->SetBlurryScaling(blurryScaling->GetChecked());
 	});
 	addSeparator();

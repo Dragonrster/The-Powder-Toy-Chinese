@@ -39,7 +39,12 @@ SearchView::SearchView():
 	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), "");
 	pageTextbox->SetActionCallback({ [this] { textChanged(); } });
 	pageTextbox->SetInputType(ui::Textbox::Number);
+<<<<<<< Updated upstream
 	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), "Page"); //page [TEXTBOX] of y
+=======
+	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), ByteString("第").FromUtf8()); //page [TEXTBOX] of y
+	// pageLabel1 = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(70, 16), ByteString("頁").FromUtf8()); 
+>>>>>>> Stashed changes
 	pageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	pageCountLabel = new ui::Label(ui::Point(WINDOWW/2+6, WINDOWH-18), ui::Point(50, 16), "");
 	pageCountLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;

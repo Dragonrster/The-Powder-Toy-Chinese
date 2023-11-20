@@ -70,7 +70,11 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	previewLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(previewLabel);
 
+<<<<<<< Updated upstream
 	nameField = new ui::Textbox(ui::Point(8, 25), ui::Point((Size.X / 2) - 16, 16), save->GetName(), ByteString("[沙盤名]").FromUtf8());
+=======
+	nameField = new ui::Textbox(ui::Point(8, 25), ui::Point((Size.X / 2) - 16, 16), save->GetName(), ByteString("[沙盤名稱]").FromUtf8());
+>>>>>>> Stashed changes
 	nameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	nameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	nameField->SetActionCallback({[this]
@@ -175,7 +179,11 @@ void ServerSaveActivity::NotifyDone(Task *task)
 	if (!task->GetSuccess())
 	{
 		Exit();
+<<<<<<< Updated upstream
 		new ErrorMessage("Error", task->GetError());
+=======
+		new ErrorMessage(ByteString("錯誤").FromUtf8(), task->GetError());
+>>>>>>> Stashed changes
 	}
 	else
 	{
@@ -191,15 +199,26 @@ void ServerSaveActivity::Save()
 {
 	if (!nameField->GetText().length())
 	{
+<<<<<<< Updated upstream
 		new ErrorMessage("Error", "You must specify a save name.");
+=======
+		new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("必須為沙盤指定一個名稱").FromUtf8());
+>>>>>>> Stashed changes
 		return;
 	}
 	if (Client::Ref().GetAuthUser().Username != save->GetUserName() && publishedCheckbox->GetChecked())
 	{
+<<<<<<< Updated upstream
 		new ConfirmPrompt("Publish", "This save was created by " + save->GetUserName().FromUtf8() + ", you're about to publish this under your own name; If you haven't been given permission by the author to do so, please uncheck the publish box, otherwise continue", {[this]
 																																																																			{
 																																																																				saveUpload();
 																																																																			}});
+=======
+		new ConfirmPrompt(ByteString("釋出").FromUtf8(), ByteString("此沙盤由").FromUtf8() + save->GetUserName().FromUtf8() + ByteString("釋出,即將以自己的名義釋出此沙盤:如沒有獲得授予,請取消選中釋出框,否則繼續").FromUtf8(), {[this]
+																																																								  {
+																																																									  saveUpload();
+																																																								  }});
+>>>>>>> Stashed changes
 	}
 	else
 	{
@@ -261,7 +280,11 @@ void ServerSaveActivity::ShowPublishingInfo()
 		"If a save is under a week old and gains popularity fast, it will be automatically placed on the \btfront page\bw. Only published saves will be able to get here. Moderators can also choose to promote any save onto the front page, but this happens rarely. They can also demote any save from the front page that breaks a rule or they feel doesn't belong.\n"
 		"Once you make a save, you can resave it as many times as you want. A short previous \btsave history\bw is saved, just right click any save in the save browser and select 'View History' to view it. This is useful for when you accidentally save something you didn't mean to and want to go back to the old version.\n";
 
+<<<<<<< Updated upstream
 	new InformationMessage(ByteString("釋出須知").FromUtf8(), info, true);
+=======
+	new InformationMessage(ByteString("釋出須知").FromUtf8(), ByteString("在TPT中，可以使用兩種方式上傳沙盤:\n公開和私人，透過選擇(預設關閉)是否公開來設定，私人沙盤只能由本人或沙盤ID訪問。\n\n\n\bt公開沙盤\bw會立即被使用按日期排布沙盤的人看到，公開沙盤後沙盤的評分將影響個人平均評分(顯示在個人檔案上)。公開的沙盤能被所有人評論和評分。\n\n\bt私人沙盤\bw不會出現在雲沙盤更新中，這些沙盤也不會影響平均評分，儘管設定為私人，但別人仍然可以透過沙盤ID來訪問他們。\n\n\n開啟沙盤井點選沙盤名左側的按鈕\bt“重新上傳當前沙盤”\bw，可以快速更改已經上傳的沙盤，如果需更改沙盤描述或沙盤屬性，可以點選右側按鈕\bt“修改沙盤屬性”\bw，注意不能更改沙盤名稱，這會重新建立一個全新的沙盤,如需釋出一個設定為私人的沙盤，或將以前釋出過的沙盤設定為私人，開啟沙盤，選擇“修改沙盤屬性”按鈕，在彈出的對話方塊中修改屬性，在“個人沙盤”頁面中選擇所需要的沙盤來\bt刪除沙盤或轉為私人\bw。\n\n如果沙盤已經發布，並且短時間內擁有較高人氣，它會自動出現在\bt首頁(FP)\bw上。只有設定為公開的沙盤才有機會登上首頁(FP)，版主同樣有許可權使某個沙盤在首頁上顯示，但這種情況非常少見，如果某沙盤被認為觸犯了條例或不適合放在首頁，版主同樣有許可權撤下它。\n\n沙盤釋出後，可以不限次數的修改，伺服器會儲存\bt沙盤歷史\bw，在沙盤瀏覽器中右鍵沙盤井選擇“檢視歷史”就能找到它，這一功能可以幫助你找回以前的版本並修復錯誤。").FromUtf8(), true);
+>>>>>>> Stashed changes
 }
 
 void ServerSaveActivity::ShowRules()
@@ -343,7 +366,11 @@ void ServerSaveActivity::ShowRules()
 void ServerSaveActivity::CheckName(String newname)
 {
 	if (newname.length() && newname == save->GetName() && save->GetUserName() == Client::Ref().GetAuthUser().Username)
+<<<<<<< Updated upstream
 		titleLabel->SetText("Modify simulation properties:");
+=======
+		titleLabel->SetText(ByteString("修改沙盤屬性:").FromUtf8());
+>>>>>>> Stashed changes
 	else
 		titleLabel->SetText(ByteString("儲存到雲端").FromUtf8());
 }
@@ -375,7 +402,11 @@ void ServerSaveActivity::OnTick(float dt)
 		}
 		catch (const http::RequestError &ex)
 		{
+<<<<<<< Updated upstream
 			new ErrorMessage("Error", "Upload failed with error:\n" + ByteString(ex.what()).FromUtf8());
+=======
+			new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("上傳失敗:\n").FromUtf8() + ByteString(ex.what()).FromUtf8());
+>>>>>>> Stashed changes
 		}
 		uploadSaveRequest.reset();
 	}

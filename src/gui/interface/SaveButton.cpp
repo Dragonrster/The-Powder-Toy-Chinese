@@ -302,7 +302,11 @@ void SaveButton::AddContextMenu(int menuType)
 		if (Client::Ref().GetAuthUser().UserID)
 			menu->AddItem(ContextMenuItem(ByteString("選擇").FromUtf8(), 1, true));
 		menu->AddItem(ContextMenuItem(ByteString("歷史").FromUtf8(), 2, true));
+<<<<<<< Updated upstream
 		menu->AddItem(ContextMenuItem(ByteString("更多此作者的存檔").FromUtf8(), 3, true));
+=======
+		menu->AddItem(ContextMenuItem(ByteString("更多作品").FromUtf8(), 3, true));
+>>>>>>> Stashed changes
 	}
 	else if (menuType == 1) //Local save browser
 	{
