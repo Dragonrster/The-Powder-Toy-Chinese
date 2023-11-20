@@ -30,11 +30,11 @@ config.log
 # User data
 /stamps/
 /Saves/
-/scripts/
+# /scripts/
 /recordings/
 *.def
 *.pref
-*.lua
+# *.lua
 screenshot_*
 
 # Visual studio
