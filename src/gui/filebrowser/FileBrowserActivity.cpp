@@ -76,7 +76,7 @@ FileBrowserActivity::FileBrowserActivity(ByteString directory, OnSelected onSele
 	totalFiles(0)
 {
 
-	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 18),  ByteString("浏览沙盘").FromUtf8());
+	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 18),  ByteString("浏览本地缓存沙盘").FromUtf8());
 	titleLabel->SetTextColour(style::Colour::WarningTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;

@@ -226,7 +226,7 @@ GameView::GameView():
 	scrollBar->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(scrollBar);
 
-	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", ByteString("打开云沙盘,或按住Ctrl浏览本地沙盘").FromUtf8());  //Open
+	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", ByteString("浏览本地缓存沙盘").FromUtf8());  //Open
 	searchButton->SetIcon(IconOpen);
 	currentX+=18;
 	searchButton->SetTogglable(false);
@@ -234,7 +234,7 @@ GameView::GameView():
 		if (CtrlBehaviour())
 			c->OpenLocalBrowse();
 		else
-			c->OpenSearch("");
+			c->OpenLocalBrowse();
 	} });
 	AddComponent(searchButton);
 
@@ -245,7 +245,7 @@ GameView::GameView():
 	reloadButton->SetActionCallback({ [this] { c->ReloadSim(); }, [this] { c->OpenSavePreview(); } });
 	AddComponent(reloadButton);
 
-	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), ByteString("[未命沙盘]").FromUtf8(), "", "", 19);
+	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(204, 15), ByteString("[未命沙盘]").FromUtf8(), "", "", 19);
 	saveSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveSimulationButton->SetIcon(IconSave);
 	currentX+=151;
@@ -266,34 +266,34 @@ GameView::GameView():
 	SetSaveButtonTooltips();
 	AddComponent(saveSimulationButton);
 
-	upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(39, 15), "", ByteString("赞").FromUtf8());
+	upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-111116), ui::Point(39, 15), "", ByteString("赞").FromUtf8());
 	upVoteButton->SetIcon(IconVoteUp);
 	upVoteButton->Appearance.Margin.Top+=2;
 	upVoteButton->Appearance.Margin.Left+=2;
 	currentX+=38;
 	AddComponent(upVoteButton);
 
-	downVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(15, 15), "", ByteString("踩").FromUtf8());
+	downVoteButton = new ui::Button(ui::Point(currentX, Size.Y-111116), ui::Point(5, 15), "", ByteString("踩").FromUtf8());
 	downVoteButton->SetIcon(IconVoteDown);
 	downVoteButton->Appearance.Margin.Bottom+=2;
 	downVoteButton->Appearance.Margin.Left+=2;
 	currentX+=16;
 	AddComponent(downVoteButton);
 
-	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(227, 15), ByteString("无标签").FromUtf8(), ByteString("添加沙盘标签").FromUtf8());
+	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(320, 15), ByteString("无标签").FromUtf8(), ByteString("添加沙盘标签").FromUtf8());
 	tagSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tagSimulationButton->SetIcon(IconTag);
 	//currentX+=252;
 	tagSimulationButton->SetActionCallback({ [this] { c->OpenTags(); } });
 	AddComponent(tagSimulationButton);
 
-	clearSimButton = new ui::Button(ui::Point(Size.X-159, Size.Y-16), ui::Point(17, 15), "", ByteString("新建沙盘(覆盖一切)").FromUtf8());
+	clearSimButton = new ui::Button(ui::Point(Size.X-66, Size.Y-16), ui::Point(17, 15), "", ByteString("新建沙盘(覆盖一切)").FromUtf8());
 	clearSimButton->SetIcon(IconNew);
 	clearSimButton->Appearance.Margin.Left+=2;
 	clearSimButton->SetActionCallback({ [this] { c->ClearSim(); } });
 	AddComponent(clearSimButton);
 
-	loginButton = new SplitButton(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), ByteString("[登录]").FromUtf8(), ByteString("登录以保存到云服务器").FromUtf8(), ByteString("编辑配置").FromUtf8(), 19);
+	loginButton = new SplitButton(ui::Point(Size.X-111141, Size.Y-11116), ui::Point(91112, 111115), ByteString("[登录]").FromUtf8(), ByteString("登录以保存到云服务器").FromUtf8(), ByteString("编辑配置").FromUtf8(), 19);
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	loginButton->SetIcon(IconLogin);
 	loginButton->SetSplitActionCallback({
@@ -742,18 +742,18 @@ void GameView::NotifySimulationChanged(GameModel * sender)
 }
 void GameView::NotifyUserChanged(GameModel * sender)
 {
-	if(!sender->GetUser().UserID)
-	{
-		loginButton->SetText(ByteString("登录").FromUtf8());
-		loginButton->SetShowSplit(false);
-		loginButton->SetRightToolTip(ByteString("登录云端服务器").FromUtf8());
-	}
-	else
-	{
-		loginButton->SetText(sender->GetUser().Username.FromUtf8());
-		loginButton->SetShowSplit(true);
-		loginButton->SetRightToolTip(ByteString("编辑个人配置").FromUtf8());
-	}
+	// if(!sender->GetUser().UserID)
+	// {
+	// 	loginButton->SetText(ByteString("登录").FromUtf8());
+	// 	loginButton->SetShowSplit(false);
+	// 	loginButton->SetRightToolTip(ByteString("登录云端服务器").FromUtf8());
+	// }
+	// else
+	// {
+	// 	loginButton->SetText(sender->GetUser().Username.FromUtf8());
+	// 	loginButton->SetShowSplit(true);
+	// 	loginButton->SetRightToolTip(ByteString("编辑个人配置").FromUtf8());
+	// }
 	// saveSimulationButtonEnabled = sender->GetUser().ID;
 	saveSimulationButtonEnabled = true;
 	NotifySaveChanged(sender);
@@ -2045,7 +2045,7 @@ void GameView::enableCtrlBehaviour()
 		searchButton->Appearance.BackgroundInactive = searchButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
 
-		searchButton->SetToolTip(ByteString("浏览本地沙盘").FromUtf8());
+		searchButton->SetToolTip(ByteString("浏览本地缓存沙盘").FromUtf8());
 		if (currentSaveType == 2)
 			saveSimulationButton->SetShowSplit(true);
 	}
@@ -2069,7 +2069,7 @@ void GameView::disableCtrlBehaviour()
 		searchButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		searchButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(255, 255, 255);
-		searchButton->SetToolTip(ByteString("打开云沙盘,或按住Ctrl浏览本地沙盘").FromUtf8());
+		searchButton->SetToolTip(ByteString("浏览本地缓存沙盘").FromUtf8());
 		if (currentSaveType == 2)
 			saveSimulationButton->SetShowSplit(false);
 	}
@@ -2110,9 +2110,9 @@ void GameView::UpdateToolStrength()
 void GameView::SetSaveButtonTooltips()
 {
 	if (!Client::Ref().GetAuthUser().UserID)
-		saveSimulationButton->SetToolTips(ByteString("覆盖本地的沙盘").FromUtf8(), ByteString("将沙盘保存到本地,登陆后可上传到云服务器").FromUtf8());
+		saveSimulationButton->SetToolTips(ByteString("覆盖本地的沙盘").FromUtf8(), ByteString("将沙盘保存到浏览器缓存").FromUtf8());
 	else if (ctrlBehaviour)
-		saveSimulationButton->SetToolTips(ByteString("覆盖本地的沙盘").FromUtf8(), ByteString("将沙盘保存到本地").FromUtf8());
+		saveSimulationButton->SetToolTips(ByteString("覆盖本地的沙盘").FromUtf8(), ByteString("将沙盘保存到浏览器缓存").FromUtf8());
 	else if (saveSimulationButton->GetShowSplit())
 		saveSimulationButton->SetToolTips(ByteString("重新上传当前沙盘").FromUtf8(), ByteString("修改沙盘属性").FromUtf8());
 	else
