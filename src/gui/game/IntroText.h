@@ -46,8 +46,7 @@ inline ByteString VersionInfo()
 inline ByteString IntroText()
 {
 	ByteStringBuilder sb;
-	sb << "\bl\bU" << APPNAME << "\bU - Version " << DISPLAY_VERSION[0] << "." << DISPLAY_VERSION[1] << " - https://powdertoy.co.uk, irc.libera.chat #powder, https://tpt.io/discord\n"
-	      "\n"
+	sb << "\bl\bU" << "The Powder Toy For Web" << "\bU - Version " << DISPLAY_VERSION[0] << "." << DISPLAY_VERSION[1] << " - https://powdertoy.co.uk, irc.libera.chat #powder, https://tpt.io/discord\n"
 	      "\n"
 		"\bgCtrl+C/V/X 复制,粘贴,剪切\n"
 		"鼠标移至右侧元素栏中某一个类别可以显示该类下的所有元素\n"
@@ -79,7 +78,7 @@ inline ByteString IntroText()
 	}
 	else
 	{
-		sb << "\bg如需使用保存等在线功能,需要在以下位置注册: \brhttps://powdertoy.co.uk/Register.html\n";
+		sb << "\brWeb版无法使用所有在线功能以及下载浏览器缓存存档!!!\n\bg如需体验完整功能请前往官网或者上方Github链接下载完整版\n";
 	}
 	sb << "\n\bt" << VersionInfo();
 	return sb.Build();
