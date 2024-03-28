@@ -395,6 +395,10 @@ static int update(UPDATE_FUNC_ARGS)
 			}
 		}
 	}
+	if ((ct == PT_PSCN || ct == PT_NSCN || ct == PT_METL || ct == PT_TUNG)&& parts[i].tmp == 10)
+	{
+		parts[i].life = 4;
+	}
 	return 0;
 }
 

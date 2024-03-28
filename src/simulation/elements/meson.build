@@ -193,8 +193,7 @@ simulation_elem_names = [
 	'LITH',
 	'RSST',
 	'RSSS',
-	'SBTY',
-	'SIBO'
+	'SBTY'
 ]
 
 simulation_elem_src = []
