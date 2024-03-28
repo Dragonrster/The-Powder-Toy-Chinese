@@ -965,7 +965,7 @@ local function step()
 	mainwindow:draw()
 	tpt.drawtext(280,135,"控制台输出:                                 DragonRSTER")
 	if requiresrestart then
-		tpt.drawtext(280,88,"Disabling a script requires a restart for effect!",255,50,50)
+		tpt.drawtext(280,88,"禁用脚本需要重新启动后生效!",255,50,50)
 	end
 	tpt.drawtext(55,53,"点击选择脚本,点击完成后以激活脚本")
 	tpt.drawtext(474,55,"脚本管理器 v"..MANAGER.version)--479 for simple versions

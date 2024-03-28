@@ -285,17 +285,17 @@ String SimulationData::BasicParticleInfo(Particle const &sample_part) const
 	int storedCtype = sample_part.tmp4;
 	if (type == PT_LAVA && IsElement(ctype))
 	{
-		sampleInfo << "Molten " << ElementResolve(ctype, -1);
+		sampleInfo << ByteString("熔融的 ").FromUtf8() << ElementResolve(ctype, -1);
 	}
 	else if ((type == PT_PIPE || type == PT_PPIP) && IsElement(ctype))
 	{
 		if (ctype == PT_LAVA && IsElement(storedCtype))
 		{
-			sampleInfo << ElementResolve(type, -1) << " with molten " << ElementResolve(storedCtype, -1);
+			sampleInfo << ElementResolve(type, -1) << ByteString(" 含熔融的 ").FromUtf8() << ElementResolve(storedCtype, -1);
 		}
 		else
 		{
-			sampleInfo << ElementResolve(type, -1) << " with " << ElementResolve(ctype, storedCtype);
+			sampleInfo << ElementResolve(type, -1) << ByteString(" 含 ").FromUtf8() << ElementResolve(ctype, storedCtype);
 		}
 	}
 	else

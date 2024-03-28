@@ -2309,17 +2309,17 @@ void GameView::OnDraw()
 			{
 				if (type == PT_LAVA && c->IsValidElement(ctype))
 				{
-					sampleInfo << "Molten " << c->ElementResolve(ctype, 0);
+					sampleInfo <<  ByteString("熔融的 ").FromUtf8() << c->ElementResolve(ctype, 0);
 				}
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
 				{
 					if (ctype == PT_LAVA && c->IsValidElement(sample.particle.tmp4))
 					{
-						sampleInfo << c->ElementResolve(type, 0) << " with molten " << c->ElementResolve(sample.particle.tmp4, -1);
+						sampleInfo << c->ElementResolve(type, 0) << ByteString(" 含熔融的 ").FromUtf8() << c->ElementResolve(sample.particle.tmp4, -1);
 					}
 					else
 					{
-						sampleInfo << c->ElementResolve(type, 0) << " with " << c->ElementResolve(ctype, sample.particle.tmp4);
+						sampleInfo << c->ElementResolve(type, 0) << ByteString(" 含 ").FromUtf8() << c->ElementResolve(ctype, sample.particle.tmp4);
 					}
 				}
 				else if (type == PT_LIFE)
@@ -2456,7 +2456,7 @@ void GameView::OnDraw()
 
 			if (c->GetAHeatEnable())
 			{
-				sampleInfo << ", AHeat: ";
+				sampleInfo << ByteString(", 气温: ").FromUtf8();
 				format::RenderTemperature(sampleInfo, sample.AirTemperature, c->GetTemperatureScale());
 			}
 

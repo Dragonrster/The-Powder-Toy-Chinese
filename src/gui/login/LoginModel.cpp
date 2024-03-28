@@ -9,7 +9,7 @@ void LoginModel::Login(ByteString username, ByteString password)
 {
 	if (username.Contains("@"))
 	{
-		statusText =  ByteString("使用您的Powder Toy帐户登录，而不是电子邮件。如果你没有Powder Toy帐户，你可以在此注册https://powdertoy.co.uk/register.html").FromUtf8();
+		statusText =  ByteString("请使用您的TPT帐户登录，而不是邮箱。\n如果您没有TPT帐户，可以在此注册https://powdertoy.co.uk/register.html").FromUtf8();
 		loginStatus = loginIdle;
 		notifyStatusChanged();
 		return;
