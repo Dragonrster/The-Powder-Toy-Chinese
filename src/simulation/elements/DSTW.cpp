@@ -31,7 +31,7 @@ void Element::Element_DSTW()
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 23;
 	LatentHeat = 7500;
-	Description = "Distilled water, does not conduct electricity.";
+	Description = ByteString("蒸馏水,不导电的理论纯水").FromUtf8();
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 

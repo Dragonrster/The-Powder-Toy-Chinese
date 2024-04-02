@@ -29,7 +29,7 @@ void Element::Element_PTCT()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Semi-conductor. Only conducts electricity when cold. (Less than 100C)";
+	Description = ByteString("正温度系数热敏电阻,只有低于100℃时才导电").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

@@ -32,7 +32,7 @@ void Element::Element_PLSM()
 
 	DefaultProperties.temp = MAX_TEMP;
 	HeatConduct = 5;
-	Description = "Plasma, extremely hot.";
+	Description = ByteString("等离子体,炽热的气体").FromUtf8();
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

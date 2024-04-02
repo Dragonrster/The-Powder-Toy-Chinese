@@ -36,7 +36,7 @@ void Element::Element_PSTN()
 
 	DefaultProperties.temp = 10.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "Piston, extends and pushes particles.";
+	Description = ByteString("活塞,用PSCN激活时变长").FromUtf8();
 
 	Properties = TYPE_SOLID;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

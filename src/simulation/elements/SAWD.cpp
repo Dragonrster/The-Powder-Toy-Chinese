@@ -27,7 +27,7 @@ void Element::Element_SAWD()
 	Weight = 18;
 
 	HeatConduct = 70;
-	Description = "Sawdust. Floats on water.";
+	Description = ByteString("锯末,轻粉末,可以漂浮在水面上").FromUtf8();
 
 	Properties = TYPE_PART | PROP_NEUTPASS;
 

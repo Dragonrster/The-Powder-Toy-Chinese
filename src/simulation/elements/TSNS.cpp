@@ -29,7 +29,7 @@ void Element::Element_TSNS()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Temperature sensor, creates a spark when there's a nearby particle with a greater temperature.";
+	Description = ByteString("温度传感器,可以用HEAT/COOL来改变自身温度,当周围有温度比它高的物质时会发出电脉冲").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

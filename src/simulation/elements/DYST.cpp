@@ -27,7 +27,7 @@ void Element::Element_DYST()
 	Weight = 80;
 
 	HeatConduct = 70;
-	Description = "Dead Yeast.";
+	Description = ByteString("菌丝").FromUtf8();
 
 	Properties = TYPE_PART;
 

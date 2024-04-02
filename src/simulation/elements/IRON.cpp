@@ -29,7 +29,7 @@ void Element::Element_IRON()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Rusts with salt, can be used for electrolysis of WATR.";
+	Description = ByteString("铁,会被,盐水,氧气,水,液氧,腐蚀后变成脆金属,可用于电解水").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 

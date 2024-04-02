@@ -27,7 +27,7 @@ void Element::Element_STNE()
 	Weight = 90;
 
 	HeatConduct = 150;
-	Description = "Heavy particles. Meltable.";
+	Description = ByteString("石粉,重粉末,熔化时变为LAVA").FromUtf8();
 
 	Properties = TYPE_PART;
 

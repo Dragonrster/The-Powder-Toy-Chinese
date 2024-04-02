@@ -34,7 +34,7 @@ void Element::Element_LIGH()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Lightning. Change the brush size to set the size of the lightning.";
+	Description = ByteString("闪电,改变笔刷大小可以调整闪电大小和威力").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

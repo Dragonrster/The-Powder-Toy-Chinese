@@ -30,7 +30,7 @@ void Element::Element_HEAC()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Rapid heat conductor.";
+	Description = ByteString("导热体,导热速度比任何其他材料都快").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

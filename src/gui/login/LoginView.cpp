@@ -16,12 +16,12 @@ constexpr auto defaultSize = ui::Point(200, 87);
 
 LoginView::LoginView():
 	ui::Window(ui::Point(-1, -1), defaultSize),
-	loginButton(new ui::Button(ui::Point(200-100, 87-17), ui::Point(100, 17), "Sign in")),
-	cancelButton(new ui::Button(ui::Point(0, 87-17), ui::Point(101, 17), "Sign Out")),
-	titleLabel(new ui::Label(ui::Point(4, 5), ui::Point(200-16, 16), "Server login")),
+	loginButton(new ui::Button(ui::Point(200-100, 87-17), ui::Point(100, 17), ByteString("登录").FromUtf8())),
+	cancelButton(new ui::Button(ui::Point(0, 87-17), ui::Point(101, 17), ByteString("注销").FromUtf8())),
+	titleLabel(new ui::Label(ui::Point(4, 5), ui::Point(200-16, 16), ByteString("登录到服务器").FromUtf8())),
 	infoLabel(new ui::RichLabel(ui::Point(6, 67), ui::Point(200-12, 16), "")),
-	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), Client::Ref().GetAuthUser().Username.FromUtf8(), "[username]")),
-	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "", "[password]")),
+	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), Client::Ref().GetAuthUser().Username.FromUtf8(), ByteString("[用户名]").FromUtf8())),
+	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "", ByteString("[密码]").FromUtf8())),
 	targetSize(defaultSize)
 {
 	FocusComponent(usernameField);
@@ -88,7 +88,7 @@ void LoginView::NotifyStatusChanged(LoginModel * sender)
 	auto userID = Client::Ref().GetAuthUser().UserID;
 	if (!statusText.size() && !userID && notWorking)
 	{
-		statusText = String::Build("Don't have an account? {a:https://", SERVER, "/Register.html", "|\btRegister here\x0E}.");
+		statusText = String::Build("\u6ca1\u6709\u8d26\u6237? {a:https://powdertoy.co.uk/Register.html", "|\bt\u5728\u6b64\u5904\u6ce8\u518c\x0E}.");
 	}
 	infoLabel->Visible = statusText.size();
 	infoLabel->SetText(statusText);

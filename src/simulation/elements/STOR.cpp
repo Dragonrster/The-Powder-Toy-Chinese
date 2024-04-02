@@ -32,7 +32,7 @@ void Element::Element_STOR()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Storage. Captures and stores a single particle. Releases when charged with PSCN, also passes to PIPE.";
+	Description = ByteString("堆栈,吸收一个像素的与之接触的物质,修改它的Ctype值可以使它吸收特定的物质").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = (1U << FIELD_CTYPE) | (1U << FIELD_TMP);

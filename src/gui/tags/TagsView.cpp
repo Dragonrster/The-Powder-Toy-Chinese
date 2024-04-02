@@ -19,20 +19,19 @@
 TagsView::TagsView():
 	ui::Window(ui::Point(-1, -1), ui::Point(195, 250))
 {
-	closeButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(195, 16), "Close");
+	closeButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(195, 16), ByteString("取消").FromUtf8());
 	closeButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	closeButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	closeButton->SetActionCallback({ [this] { c->Exit(); } });
 	AddComponent(closeButton);
 	SetCancelButton(closeButton);
 
-	tagInput = new ui::Textbox(ui::Point(8, Size.Y-40), ui::Point(Size.X-60, 16), "", "[new tag]");
+	tagInput = new ui::Textbox(ui::Point(8, Size.Y-40), ui::Point(Size.X-60, 16), "",  ByteString("[新标签]").FromUtf8());
 	tagInput->Appearance.icon = IconTag;
 	tagInput->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tagInput->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	tagInput->SetLimit(16);
 	AddComponent(tagInput);
-	FocusComponent(tagInput);
 
 	addButton = new ui::Button(ui::Point(tagInput->Position.X+tagInput->Size.X+4, tagInput->Position.Y), ui::Point(40, 16), "Add");
 	addButton->Appearance.icon = IconAdd;
@@ -44,7 +43,7 @@ TagsView::TagsView():
 	if (!Client::Ref().GetAuthUser().UserID)
 		addButton->Enabled = false;
 
-	title = new ui::Label(ui::Point(5, 5), ui::Point(185, 28), "Manage tags:    \bgTags are only to \nbe used to improve search results");
+	title = new ui::Label(ui::Point(5, 5), ui::Point(185, 28),  ByteString("管理标签:\n\bg标签仅用于提升搜索效率").FromUtf8());
 	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	title->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	title->SetMultiline(true);
@@ -122,7 +121,7 @@ void TagsView::addTag()
 {
 	if (tagInput->GetText().length() < 4)
 	{
-		new ErrorMessage("Tag not long enough", "Must be at least 4 letters");
+		new ErrorMessage( ByteString("标签长度过短").FromUtf8(), ByteString("标签长度至少为4字节").FromUtf8());
 		return;
 	}
 	c->AddTag(tagInput->GetText().ToUtf8());

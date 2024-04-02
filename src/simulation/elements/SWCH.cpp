@@ -30,7 +30,7 @@ void Element::Element_SWCH()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Only conducts when switched on. (PSCN switches on, NSCN switches off)";
+	Description = ByteString("开关,从PSCN导入电时可导电,从NSCN导入电时不可导电").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

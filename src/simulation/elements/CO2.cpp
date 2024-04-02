@@ -29,7 +29,7 @@ void Element::Element_CO2()
 	Weight = 1;
 
 	HeatConduct = 88;
-	Description = "Carbon Dioxide. Heavy gas, drifts downwards. Carbonates water and turns to dry ice when cold.";
+	Description = ByteString("二氧化碳,高密度气体,真空中下沉,与水反应生成苏打水(BUBW),冷却后变成干冰").FromUtf8();
 
 	Properties = TYPE_GAS;
 

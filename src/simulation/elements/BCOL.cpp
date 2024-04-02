@@ -29,7 +29,7 @@ void Element::Element_BCOL()
 	Weight = 90;
 
 	HeatConduct = 150;
-	Description = "Broken Coal. Heavy particles, burns slowly.";
+	Description = ByteString("煤粉,重粉末,点然后缓慢燃烧").FromUtf8();
 
 	Properties = TYPE_PART;
 

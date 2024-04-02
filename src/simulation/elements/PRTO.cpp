@@ -31,7 +31,7 @@ void Element::Element_PRTO()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Portal OUT. Particles come out here. Also has temperature dependent channels. (same as WIFI)";
+	Description = ByteString("传送门出口,和传送门入口(PRTI)配套,物质从这里出来,形成正压力").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

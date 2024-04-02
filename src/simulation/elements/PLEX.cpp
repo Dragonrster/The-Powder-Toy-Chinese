@@ -28,7 +28,7 @@ void Element::Element_PLEX()
 	Weight = 100;
 
 	HeatConduct = 88;
-	Description = "Solid pressure sensitive explosive.";
+	Description = ByteString("C-4塑胶炸弹,压力敏感型炸药,暴露在高压下,电脉冲或者达到爆炸点都可以引发爆炸").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 

@@ -27,7 +27,7 @@ void Element::Element_SALT()
 	Weight = 75;
 
 	HeatConduct = 110;
-	Description = "Salt, dissolves in water.";
+	Description = ByteString("盐,能溶于WATR形成SLTW").FromUtf8();
 
 	Properties = TYPE_PART;
 

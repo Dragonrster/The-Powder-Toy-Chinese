@@ -251,7 +251,7 @@ namespace http
 		}
 		if (status != 200)
 		{
-			throw RequestError(ByteString::Build("HTTP Error ", status, ": ", http::StatusText(status)));
+			throw RequestError(ByteString::Build("HTTP \u9519\u8BEF ", status, ": ", http::StatusText(status)));
 		}
 
 		switch (responseType)
@@ -289,7 +289,7 @@ namespace http
 						status = ByteString(result.begin() + 7, result.end()).ToNumber<int>();
 						throw RequestError(ByteString::Build("HTTP Error ", status, ": ", http::StatusText(status)));
 					}
-					throw RequestError("Could not read response: " + ByteString(ex.what()));
+					throw RequestError("\u65e0\u6cd5\u8bfb\u53d6\u54cd\u5e94\u003a\u0020" + ByteString(ex.what()));
 				}
 			}
 			break;

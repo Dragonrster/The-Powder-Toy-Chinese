@@ -31,7 +31,7 @@ void Element::Element_NBLE()
 
 	DefaultProperties.temp = R_TEMP + 2.0f + 273.15f;
 	HeatConduct = 106;
-	Description = "Noble Gas. Diffuses and conductive. Ionizes into plasma when introduced to electricity.";
+	Description = ByteString("惰性气体,通电后能电离成等离子体,但只有1600℃左右").FromUtf8();
 
 	Properties = TYPE_GAS|PROP_CONDUCTS|PROP_LIFE_DEC;
 

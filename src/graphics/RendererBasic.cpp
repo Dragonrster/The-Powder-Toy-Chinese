@@ -323,67 +323,67 @@ Renderer::Renderer(Simulation *newSim):
 
 	//Render mode presets. Possibly load from config in future?
 	renderModePresets.push_back({
-		"Alternative Velocity Display",
+		ByteString("速压混合显示模式").FromUtf8(),
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_AIRC },
 		0
 	});
 	renderModePresets.push_back({
-		"Velocity Display",
+		 ByteString("气流显示模式").FromUtf8(),
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_AIRV },
 		0
 	});
 	renderModePresets.push_back({
-		"Pressure Display",
+		ByteString("气压显示模式").FromUtf8(),
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_AIRP },
 		0
 	});
 	renderModePresets.push_back({
-		"Persistent Display",
+		ByteString("轨迹显示模式").FromUtf8(),
 		{ RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_PERS },
 		0
 	});
 	renderModePresets.push_back({
-		"Fire Display",
+		ByteString("火焰(标准)显示模式").FromUtf8(),
 		{ RENDER_FIRE, RENDER_SPRK, RENDER_EFFE, RENDER_BASC },
 		{ },
 		0
 	});
 	renderModePresets.push_back({
-		"Blob Display",
+		ByteString("模糊显示模式").FromUtf8(),
 		{ RENDER_FIRE, RENDER_SPRK, RENDER_EFFE, RENDER_BLOB },
 		{ },
 		0
 	});
 	renderModePresets.push_back({
-		"Heat Display",
+		ByteString("温度显示模式").FromUtf8(),
 		{ RENDER_BASC },
 		{ DISPLAY_AIRH },
 		COLOUR_HEAT
 	});
 	renderModePresets.push_back({
-		"Fancy Display",
+		ByteString("特效显示模式").FromUtf8(),
 		{ RENDER_FIRE, RENDER_SPRK, RENDER_GLOW, RENDER_BLUR, RENDER_EFFE, RENDER_BASC },
 		{ DISPLAY_WARP },
 		0
 	});
 	renderModePresets.push_back({
-		"Nothing Display",
+		ByteString("无特效显示模式").FromUtf8(),
 		{ RENDER_BASC },
 		{ },
 		0
 	});
 	renderModePresets.push_back({
-		"Heat Gradient Display",
+		ByteString("热传导显示模式").FromUtf8(),
 		{ RENDER_BASC },
 		{ },
 		COLOUR_GRAD
 	});
 	renderModePresets.push_back({
-		"Life Gradient Display",
+		ByteString("Life梯度显示模式").FromUtf8(),
 		{ RENDER_BASC },
 		{ },
 		COLOUR_LIFE

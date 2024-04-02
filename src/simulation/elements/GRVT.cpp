@@ -31,7 +31,7 @@ void Element::Element_GRVT()
 	Weight = -1;
 
 	HeatConduct = 61;
-	Description = "Gravitons. Create Newtonian Gravity.";
+	Description = ByteString("引力子,会在周围产生额外的引力场").FromUtf8();
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

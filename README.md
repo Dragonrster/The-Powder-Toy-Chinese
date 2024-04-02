@@ -1,26 +1,27 @@
 The Powder Toy - April 1st 2024
 ==========================
 
-Get the latest version [from the Powder Toy website](https://powdertoy.co.uk/Download.html).
+从[Powder Toy 网站](https://powdertoy.co.uk/Download.html) 获取最新版本
 
-To use online features such as saving, you need to [register an account](https://powdertoy.co.uk/Register.html).
-You can also visit [the official TPT forum](https://powdertoy.co.uk/Discussions/Categories/Index.html).
+从[汉化 Github](https://github.com/Dragonrster/The-Powder-Toy-Chinese) 获取最新汉化版本
 
-Have you ever wanted to blow something up? Or maybe you always dreamt of operating an atomic power plant? Do you have a will to develop your own CPU? The Powder Toy lets you to do all of these, and even more!
+要使用保存等在线功能，您需要 [注册一个帐户](https://powdertoy.co.uk/Register.html)，也可以访问 [官方 TPT 论坛](https://powdertoy.co.uk/Discussions/Categories/Index.html)
 
-The Powder Toy is a free physics sandbox game, which simulates air pressure and velocity, heat, gravity and a countless number of interactions between different substances! The game provides you with various building materials, liquids, gases and electronic components which can be used to construct complex machines, guns, bombs, realistic terrains and almost anything else. You can then mine them and watch cool explosions, add intricate wirings, play with little stickmen or operate your machine. You can browse and play thousands of different saves made by the community or upload your own – we welcome your creations!
+你有没有想过炸毁什么东西？或者，也许您一直梦想着经营一座原子能发电厂？您是否有开发自己的 CPU 的意愿？Powder Toy 让您可以做到所有这些，甚至更多！
 
-There is a Lua API – you can automate your work or even make plugins for the game. The Powder Toy is free and the source code is distributed under the GNU General Public License, so you can modify the game yourself or help with development.
+Powder Toy 是一款免费的物理沙盒游戏，它模拟气压和速度、热量、重力以及不同物质之间无数种相互作用！该游戏为您提供各种建筑材料、液体、气体和电子元件，可用于构建复杂的机器、枪支、炸弹、逼真的地形和几乎任何其他东西。然后，您可以开采它们并观看酷炫的爆炸、添加复杂的布线、与小火柴人玩耍或操作您的机器。您可以浏览和播放社区制作的数千种不同的保存或上传您自己的 - 我们欢迎您的创作！
 
-Build instructions
+有一个 Lua API——你可以自动化你的工作，甚至为游戏制作插件。Powder Toy 是免费的，源代码是根据 GNU 通用公共许可证分发的，因此您可以自己修改游戏或帮助开发
+
+构建说明
 ===========================================================================
 
-See the _Powder Toy Development Help_ section [on the main page of the wiki](https://powdertoy.co.uk/Wiki/W/Main_Page.html).
+请参阅 [WIKI 主页上的](https://powdertoy.co.uk/Wiki/W/Main_Page.html) Powder Toy Development Help部分
 
-Thanks
+感谢
 ===========================================================================
 
-* Stanislaw K Skowronek - Designed the original
+* Stanislaw K Skowronek - 设计原作
 * Simon Robertshaw
 * Skresanov Savely
 * cracker64
@@ -37,7 +38,7 @@ Thanks
 * mniip
 * LBPHacker
 
-Libraries and other assets used
+使用的库和其他资源
 ===========================================================================
 
 * [BSON](https://github.com/interactive-matter/bson-c)
@@ -52,77 +53,86 @@ Libraries and other assets used
 * [mbedtls](https://www.trustedfirmware.org/projects/mbed-tls/)
 * [SDL](https://libsdl.org/)
 * [zlib](https://www.zlib.net/)
+* [zpix](https://github.com/SolidZORO/zpix-pixel-font)
 
-Instructions
+指导
 ===========================================================================
 
-Click on the elements with the mouse and draw in the field, like in MS Paint. The rest of the game is learning what happens next.
+用鼠标点击元素并在区域中绘制，就像在MS Paint中一样。剩下的游戏就是学习接下来会发生什么
 
-Controls
+按键
 ===========================================================================
 
-| Key                     | Action                                                          |
+| 按键                     | 操作                                                          |
 | ----------------------- | --------------------------------------------------------------- |
-| TAB                     | Switch between circle/square/triangle brush                     |
-| Space                   | Pause                                                           |
-| Q / Esc                 | Quit                                                            |
-| Z                       | Zoom                                                            |
-| S                       | Save stamp (use with Ctrl when STK2 is out)                     |
-| L                       | Load last saved stamp                                           |
-| K                       | Stamp library                                                   |
-| 0-9                     | Set view mode                                                   |
-| P / F2                  | Save screenshot as .png                                         |
-| E                       | Bring up element search                                         |
-| F                       | Pause and step to next frame                                    |
-| G                       | Increase grid size                                              |
-| Shift + G               | Decrease grid size                                              |
-| H                       | Show/Hide HUD                                                   |
-| Ctrl + H / F1           | Show intro text                                                 |
-| D / F3                  | Debug mode (use with Ctrl when STK2 is out)                     |
-| I                       | Invert Pressure and Velocity map                                |
-| W                       | Cycle gravity modes (use with Ctrl when STK2 is out)            |
-| Y                       | Cycle air modes                                                 |
-| Ctrl + E                | Cycle edge modes                                                |
-| B                       | Enter decoration editor menu                                    |
-| Ctrl + B                | Toggle decorations on/off                                       |
-| N                       | Toggle Newtonian Gravity on/off                                 |
-| U                       | Toggle ambient heat on/off                                      |
-| Ctrl + I                | Install powder toy, for loading saves/stamps by double clicking |
-| Backtick                | Toggle console                                                  |
-| =                       | Reset pressure and velocity map                                 |
-| Ctrl + =                | Reset Electricity                                               |
-| \[                      | Decrease brush size                                             |
-| \]                      | Increase brush size                                             |
-| Alt + \[                | Decrease brush size by 1                                        |
-| Alt + \]                | Increase brush size by 1                                        |
-| Ctrl + C/V/X            | Copy/Paste/Cut                                                  |
-| Ctrl + Z                | Undo                                                            |
-| Ctrl + Y                | Redo                                                            |
-| Ctrl + Cursor drag      | Rectangle                                                       |
-| Shift + Cursor drag     | Line                                                            |
-| Middle click            | Sample element                                                  |
-| Alt + Left click        | Sample element                                                  |
-| Mouse scroll            | Change brush size                                               |
-| Ctrl + Mouse scroll     | Change vertical brush size                                      |
-| Shift + Mouse scroll    | Change horizontal brush size                                    |
-| Shift + R               | Horizontal mirror for selected area when pasting stamps         |
-| Ctrl + Shift + R        | Vertical mirror for selected area when pasting stamps           |
-| R                       | Rotate selected area counterclockwise when pasting stamps       |
-| F11                     | Toggle fullscreen                                               |
+| TAB                     | 在圆形/方形/三角形画笔之间切换                                    |
+| Space                   | 暂停                                                            |
+| Q / Esc                 | 退出                                                            |
+| Z                       | 放大                                                            |
+| S                       | 保存 Stamp                                                      |
+| L                       | 加载保存的 Stamp                                                |
+| K                       | 浏览保存的 Stamp                                                |
+| 0-9                     | 设置渲染模式                                                    |
+| P / F2                  | 将屏幕截图另存为 .png                                           |
+| E                       | 调出元素搜索                                                    |
+| F                       | 帧进                                                           |
+| G                       | 增大网格大小                                                      |
+| Shift + G               | 减小网格大小                                                  |
+| H                       | 显示/隐藏 HUD                                                     |
+| Ctrl + H / F1           | 显示介绍文字                                                 |
+| D / F3                  | 调试模式                      |
+| I                       | 反转压力和速度贴图                                |
+| W                       | 循环引力模式            |
+| Y                       | 循环空气模式                                                 |
+| Ctrl + E                | 循环边界模式 modes                                                |
+| B                       | 进入装饰编辑器菜单                                    |
+| Ctrl + B                | 打开/关闭装饰                                       |
+| N                       | 打开/关闭牛顿引力                                 |
+| U                       | 打开/关闭牛顿引力                                      |
+| Ctrl + I                | 安装The Powder Toy，通过双击加载沙盘/Stamp |
+| Backtick                | 切换控制台                                                 |
+| =                       | 重置压力和速度图                                 |
+| Ctrl + =                | 清除电脉冲                                               |
+| \[                      | 减小画笔大小                                             |
+| \]                      | 增加画笔大小                                             |
+| Alt + \[                | 将画笔大小减小 1                                        |
+| Alt + \]                | 将画笔大小增加 1                                        |
+| Ctrl + C/V/X            | 复制/粘贴/剪切                                                  |
+| Ctrl + Z                | 撤消                                                            |
+| Ctrl + Y                | 重做                                                            |
+| Ctrl + Cursor drag      | 长方形                                                       |
+| Shift + Cursor drag     | 线                                                            |
+| Middle click            | 样本元素                                                  |
+| Alt + Left click        | 样本元素                                                  |
+| Mouse scroll            | 更改画笔大小                                               |
+| Ctrl + Mouse scroll     | 更改垂直画笔大小                                      |
+| Shift + Mouse scroll    | 更改水平画笔大小                                    |
+| Shift + R               | 粘贴 Stamps 图章时所选区域的水平镜像          |
+| Ctrl + Shift + R        | 粘贴 Stamps 时选定区域的垂直镜像          |
+| R                       | 粘贴 Stamps 时逆时针旋转所选区域          |
+| F11                     | 切换全屏                                               |
 
-Command Line
+命令行
 ---------------------------------------------------------------------------
 
-| Command               | Description                                      | Example                                     |
-| --------------------- | ------------------------------------------------ | --------------------------------------------|
-| `scale:SIZE`          | Change window scale factor                       | `scale:2`                                   |
-| `kiosk`               | Fullscreen mode                                  |                                             |
-| `proxy:SERVER[:PORT]` | Proxy server to use                              | `proxy:wwwcache.lancs.ac.uk:8080`           |
-| `open FILE`           | Opens the file as a stamp or game save           |                                             |
-| `ddir DIRECTORY`      | Directory used for saving stamps and preferences |                                             |
-| `ptsave:SAVEID`       | Open online save, used by ptsave: URLs           | `ptsave:2198`                               |
-| `disable-network`     | Disables internet connections                    |                                             |
-| `disable-bluescreen`  | Disable bluescreen handler                       |                                             |
-| `redirect`            | Redirects output to stdout.txt / stderr.txt      |                                             |
-| `cafile:CAFILE`       | Set certificate bundle path                      | `cafile:/etc/ssl/certs/ca-certificates.crt` |
-| `capath:CAPATH`       | Set certificate directory path                   | `capath:/etc/ssl/certs`                     |
+| 命令                  | 描述                                   | 例子                                        |
+| --------------------- | -------------------------------------- | ------------------------------------------- |
+| `scale:SIZE`          | 更改窗口比例                           | `scale:2`                                   |
+| `kiosk`               | 全屏模式                               |                                             |
+| `proxy:SERVER[:PORT]` | 使用代理服务器                         | `proxy:wwwcache.lancs.ac.uk:8080`           |
+| `open FILE`           | 将文件打开为 Stamps 或游戏沙盘         |                                             |
+| `ddir DIRECTORY`      | 用于保存 Stamps 和首选项的目录         |                                             |
+| `ptsave:SAVEID`       | 打开在线保存，由 ptsave 使用：URL      | `ptsave:2198`                               |
+| `disable-network`     | 禁用互联网连接                         |                                             |
+| `disable-bluescreen`  | 禁用蓝屏处理程序                       |                                             |
+| `redirect`            | 将输出重定向到 stdout.txt / stderr.txt |                                             |
+| `cafile:CAFILE`       | 设置证书路径                           | `cafile:/etc/ssl/certs/ca-certificates.crt` |
+| `capath:CAPATH`       | 设置证书目录路径                       | `capath:/etc/ssl/certs`                     |
+
+参考资料
+===========================================================================
+
+* [Lemon-2333/The-Powder-Toy-Chinese](https://github.com/Lemon-2333/The-Powder-Toy-Chinese)
+* [Dragonrster/The-Powder-Toy-Chinese-Instruction](https://github.com/Dragonrster/The-Powder-Toy-Chinese-Instruction)
+* [ByteString::FromUtf8方法代碼示例](https://vimsky.com/zh-tw/examples/detail/cpp-ex---ByteString-FromUtf8-method.html)
+* [How to display Unicode in TPT?](https://powdertoy.co.uk/Discussions/Thread/View.html?Thread=26330)

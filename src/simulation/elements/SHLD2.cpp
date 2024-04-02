@@ -29,7 +29,7 @@ void Element::Element_SHLD2()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Shield lvl 2.";
+	Description = ByteString("自修复膜 lvl 2.").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

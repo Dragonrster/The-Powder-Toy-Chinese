@@ -29,7 +29,7 @@ void Element::Element_BREC()
 	Weight = 90;
 
 	HeatConduct = 211;
-	Description = "Broken electronics. Formed from EMP blasts, and when constantly sparked while under pressure, turns to EXOT.";
+	Description = ByteString("破碎的电子元件,在压力下变成EXOT").FromUtf8();
 
 	Properties = TYPE_PART|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 

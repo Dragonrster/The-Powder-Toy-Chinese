@@ -28,7 +28,7 @@ void Element::Element_MWAX()
 
 	DefaultProperties.temp = R_TEMP + 28.0f + 273.15f;
 	HeatConduct = 44;
-	Description = "Liquid Wax. Hardens into WAX at 45 degrees.";
+	Description = ByteString("蜡油,融化的蜡,可以燃烧,45℃时凝固成蜡").FromUtf8();
 
 	Properties = TYPE_LIQUID;
 

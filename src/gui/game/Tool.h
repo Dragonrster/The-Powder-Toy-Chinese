@@ -62,7 +62,7 @@ class SignTool: public Tool
 
 public:
 	SignTool(GameModel &model):
-		Tool(0, "SIGN", "Sign. Displays text. Click on a sign to edit it or anywhere else to place a new one.",
+		Tool(0, "SIGN", ByteString("标记工具,显示文本.点击一个标记进行编辑,或在其他地方放置一个新的标记").FromUtf8(),
 			0x000000_rgb, "DEFAULT_UI_SIGN", SignTool::GetIcon
 		),
 		gameModel(model)
@@ -85,7 +85,7 @@ class SampleTool: public Tool
 
 public:
 	SampleTool(GameModel &model):
-		Tool(0, "SMPL", "Sample an element on the screen.",
+		Tool(0, "SMPL", ByteString("元素吸管,与默认鼠标中键功能一样").FromUtf8(),
 			0x000000_rgb, "DEFAULT_UI_SAMPLE", SampleTool::GetIcon
 		),
 		gameModel(model)
@@ -123,7 +123,7 @@ private:
 
 public:
 	PropertyTool(GameModel &model):
-		Tool(0, "PROP", "Property Drawing Tool. Use to alter the properties of elements in the field.",
+		Tool(0, "PROP", ByteString("属性笔,修改笔刷内元素的属性值").FromUtf8(),
 			0xFEA900_rgb, "DEFAULT_UI_PROPERTY", NULL
 		),
 		gameModel(model)
@@ -150,7 +150,7 @@ class GOLTool: public Tool
 	GameModel &gameModel;
 public:
 	GOLTool(GameModel &gameModel):
-		Tool(0, "CUST", "Add a new custom GOL type. (Use ctrl+shift+rightclick to remove them)",
+		Tool(0, "CUST", ByteString("添加一个新的自定义GOL类型.(使用ctrl+shift+右键删除)").FromUtf8(),
 			0xFEA900_rgb, "DEFAULT_UI_ADDLIFE", NULL
 		),
 		gameModel(gameModel)
@@ -257,7 +257,7 @@ class WindTool: public Tool
 {
 public:
 	WindTool():
-		Tool(0, "WIND", "Creates air movement.",
+		Tool(0, "WIND", ByteString("风,制造气流").FromUtf8(),
 			0x404040_rgb, "DEFAULT_UI_WIND")
 	{}
 

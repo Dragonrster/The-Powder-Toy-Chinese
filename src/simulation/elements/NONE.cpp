@@ -29,7 +29,7 @@ void Element::Element_NONE()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Erases particles.";
+	Description = ByteString("擦除粒子").FromUtf8();
 
 	Properties = 0;
 

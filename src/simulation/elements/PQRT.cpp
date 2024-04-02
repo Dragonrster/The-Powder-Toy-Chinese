@@ -30,7 +30,7 @@ void Element::Element_PQRT()
 	Weight = 90;
 
 	HeatConduct = 3;
-	Description = "Powdered quartz, broken form of QRTZ.";
+	Description = ByteString("石英砂,可以熔化,QRTZ的破碎形式").FromUtf8();
 
 	Properties = TYPE_PART| PROP_HOT_GLOW;
 

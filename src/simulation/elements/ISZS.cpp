@@ -30,7 +30,7 @@ void Element::Element_ISZS()
 
 	DefaultProperties.temp = 140.00f;
 	HeatConduct = 251;
-	Description = "Solid form of ISOZ, slowly decays into PHOT.";
+	Description = ByteString("固态同位素,会随时间流逝慢慢衰减成光子,负压会加快衰变速度").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

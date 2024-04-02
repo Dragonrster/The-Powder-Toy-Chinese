@@ -28,7 +28,7 @@ void Element::Element_BHOL()
 
 	DefaultProperties.temp = R_TEMP + 70.0f + 273.15f;
 	HeatConduct = 255;
-	Description = "Vacuum, sucks in other particles and heats up.";
+	Description = ByteString("吸气孔,产生引力吸入物质并升温").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

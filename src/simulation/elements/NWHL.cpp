@@ -29,7 +29,7 @@ void Element::Element_NWHL()
 	Weight = 100;
 
 	HeatConduct = 186;
-	Description = "White hole, pushes away other particles with gravity. (Requires Newtonian gravity)";
+	Description = ByteString("白洞,使用需开启牛顿万有引力,产生斥力排斥物质").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

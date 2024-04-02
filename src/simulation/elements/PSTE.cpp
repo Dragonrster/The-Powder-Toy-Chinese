@@ -28,7 +28,7 @@ void Element::Element_PSTE()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
-	Description = "Colloid, Hardens under pressure.";
+	Description = ByteString("浆糊,胶体,在压力下变硬,高温下变成砖块").FromUtf8();
 
 	Properties = TYPE_LIQUID;
 

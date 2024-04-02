@@ -31,7 +31,7 @@ void Element::Element_DMG()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
-	Description = "Generates damaging pressure and breaks any elements it hits.";
+	Description = ByteString("重力炸弹,对碰到它的物质表面产生一个破坏性的压力").FromUtf8();
 
 	Properties = TYPE_PART|PROP_SPARKSETTLE;
 

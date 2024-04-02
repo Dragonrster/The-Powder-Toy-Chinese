@@ -31,7 +31,7 @@ void Element::Element_PLUT()
 
 	DefaultProperties.temp = R_TEMP + 4.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Plutonium. Heavy, fissile particles. Generates neutrons under pressure.";
+	Description = ByteString("钚,易裂变,在高压下,被闪电击中或大量的中子轰击时更不稳定").FromUtf8();
 
 	Properties = TYPE_PART|PROP_NEUTPASS|PROP_RADIOACTIVE;
 

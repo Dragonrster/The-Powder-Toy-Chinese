@@ -30,7 +30,7 @@ void Element::Element_INVIS()
 	Weight = 100;
 
 	HeatConduct = 164;
-	Description = "Invisible to particles while under pressure.";
+	Description = ByteString("虚无,当施加压力时隐形").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS;
 

@@ -30,7 +30,7 @@ void Element::Element_C5()
 	Weight = 100;
 
 	HeatConduct = 88;
-	Description = "Cold explosive, set off by anything cold.";
+	Description = ByteString("C5低温炸弹,任何寒冷的物质都能引爆").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE | PROP_LIFE_DEC;
 

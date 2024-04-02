@@ -31,7 +31,7 @@ void Element::Element_ETRD()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Electrode. Creates a surface that allows Plasma arcs. (Use sparingly)";
+	Description = ByteString("电极,一旦通电会在相邻两个电极之间产生等离子体").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

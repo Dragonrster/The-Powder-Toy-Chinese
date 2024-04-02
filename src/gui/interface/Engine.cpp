@@ -66,7 +66,7 @@ void Engine::Exit()
 
 void Engine::ConfirmExit()
 {
-	new ConfirmPrompt("You are about to quit", "Are you sure you want to exit the game?", { [] {
+	new ConfirmPrompt(ByteString("退出游戏").FromUtf8(), ByteString("确定要退出游戏吗?").FromUtf8(), { [] {
 		ui::Engine::Ref().Exit();
 	} });
 }

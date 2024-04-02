@@ -32,7 +32,7 @@ void Element::Element_FIRW()
 	Weight = 55;
 
 	HeatConduct = 70;
-	Description = "Fireworks! Colorful, set off by fire.";
+	Description = ByteString("烟花,点燃后会升高并爆炸,产生高温和七彩的余烬").FromUtf8();
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

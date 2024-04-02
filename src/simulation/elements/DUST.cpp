@@ -1,4 +1,4 @@
-#include "simulation/ElementCommon.h"
+﻿#include "simulation/ElementCommon.h"
 
 void Element::Element_DUST()
 {
@@ -28,7 +28,7 @@ void Element::Element_DUST()
 	Weight = 85;
 
 	HeatConduct = 70;
-	Description = "Very light dust. Flammable.";
+	Description = ByteString("轻粉末,难燃且火焰微弱").FromUtf8();
 
 	Properties = TYPE_PART;
 

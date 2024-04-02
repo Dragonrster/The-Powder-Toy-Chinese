@@ -30,7 +30,7 @@ void Element::Element_QRTZ()
 	Weight = 100;
 
 	HeatConduct = 3;
-	Description = "Quartz, breakable mineral. Conducts but becomes brittle at lower temperatures.";
+	Description = ByteString("石英,接近绝对零度时会变得很脆并碎裂成PQRT,允许一部分PHOT通过并散射掉另一部分").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_HOT_GLOW|PROP_LIFE_DEC;
 

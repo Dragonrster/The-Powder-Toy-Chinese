@@ -30,7 +30,7 @@ void Element::Element_FRZZ()
 
 	DefaultProperties.temp = 253.15f;
 	HeatConduct = 46;
-	Description = "Freeze powder. When melted, forms ice that always cools. Spreads with regular water.";
+	Description = ByteString("寒尘,冷粉末,能立即冻住水,能将水转变成寒水").FromUtf8();
 
 	Properties = TYPE_PART;
 

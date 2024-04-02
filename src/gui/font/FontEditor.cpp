@@ -360,7 +360,7 @@ FontEditor::FontEditor(ByteString _dataFile):
 	render->SetActionCallback({ [this] { Render(); } });
 	AddComponent(render);
 	
-	savedButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(50, 17), "Save");
+	savedButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(50, 17), ByteString("保存").FromUtf8());
 	currentX += 51;
 	savedButton->SetTogglable(true);
 	savedButton->SetToggleState(true);

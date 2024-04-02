@@ -30,7 +30,7 @@ void Element::Element_RPEL()
 
 	DefaultProperties.temp = 20.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "Repels or attracts particles based on its temperature.";
+	Description = ByteString("反射极,无需通电,和FRAY一样,根据温度来吸引或推开物质").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

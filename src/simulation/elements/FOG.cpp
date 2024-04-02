@@ -30,7 +30,7 @@ void Element::Element_FOG()
 
 	DefaultProperties.temp = 243.15f;
 	HeatConduct = 100;
-	Description = "Fog, created when an electric current is passed through RIME.";
+	Description = ByteString("雾,霜(RIME)受到电脉冲刺激时形成").FromUtf8();
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC;
 

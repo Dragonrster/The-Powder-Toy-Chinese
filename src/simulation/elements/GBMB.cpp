@@ -31,7 +31,7 @@ void Element::Element_GBMB()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
-	Description = "Gravity bomb. Sticks to the first object it touches then produces a strong gravity push.";
+	Description = ByteString("引力炸弹,黏在接触的第一个物体上,产生强大的引力推力").FromUtf8();
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

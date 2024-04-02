@@ -28,7 +28,7 @@ void Element::Element_NTCT()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Semi-conductor. Only conducts electricity when hot. (More than 100C)";
+	Description = ByteString("负温度系数热敏电阻,只有超过100℃时才导电").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

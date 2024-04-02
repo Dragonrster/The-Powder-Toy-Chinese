@@ -35,7 +35,7 @@ void Element::Element_STKM()
 
 	DefaultProperties.temp = R_TEMP + 14.6f + 273.15f;
 	HeatConduct = 0;
-	Description = "Stickman. Don't kill him! Control with the arrow keys.";
+	Description = ByteString("火柴人,受重力和压力影响,使用方向键来控制其运动,吃PLNT或修改Life值可以修改生命值").FromUtf8();
 
 	Properties = PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

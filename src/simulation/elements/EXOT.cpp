@@ -31,7 +31,7 @@ void Element::Element_EXOT()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 250;
-	Description = "Exotic matter. Explodes with excess exposure to electrons. Has many other odd reactions.";
+	Description = ByteString("奇异物质,在电子的轰击下会发出彩虹色的光并产生压力").FromUtf8();
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 

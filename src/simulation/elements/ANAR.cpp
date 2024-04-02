@@ -30,7 +30,7 @@ void Element::Element_ANAR()
 	Weight = 85;
 
 	HeatConduct = 70;
-	Description = "Anti-air. Very light dust, which behaves opposite gravity.";
+	Description = ByteString("反引力尘,十分轻的粉尘,遵循相反的引力/压力/速度定律").FromUtf8();
 
 	Properties = TYPE_PART;
 

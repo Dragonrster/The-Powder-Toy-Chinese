@@ -31,7 +31,7 @@ void Element::Element_URAN()
 
 	DefaultProperties.temp = R_TEMP + 30.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Uranium. Heavy particles. Generates heat under pressure.";
+	Description = ByteString("铀,核反应的副产品在压力下会快速上升温度(指数关系)在低压或没有压力时会缓慢冷却").FromUtf8();
 
 	Properties = TYPE_PART | PROP_RADIOACTIVE;
 

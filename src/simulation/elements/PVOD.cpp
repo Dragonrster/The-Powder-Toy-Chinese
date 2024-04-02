@@ -30,7 +30,7 @@ void Element::Element_PVOD()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Powered VOID. When activated, destroys entering particles.";
+	Description = ByteString("可控虚空,一旦激活就如同虚空(VOID)一样,吸收一切物质").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

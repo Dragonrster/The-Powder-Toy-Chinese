@@ -30,7 +30,7 @@ void Element::Element_ACEL()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Accelerator, speeds up nearby elements.";
+	Description = ByteString("加速器,加速附近元素").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

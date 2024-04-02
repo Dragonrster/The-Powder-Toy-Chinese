@@ -29,7 +29,7 @@ void Element::Element_IGNT()
 	Weight = 100;
 
 	HeatConduct = 88;
-	Description = "Ignition cord. Burns slowly with fire and sparks.";
+	Description = ByteString("导火索,电脉冲或者明火或者达到燃烧点都能点燃它").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE | PROP_SPARKSETTLE | PROP_LIFE_KILL;
 

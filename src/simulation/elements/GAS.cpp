@@ -28,7 +28,7 @@ void Element::Element_GAS()
 
 	DefaultProperties.temp = R_TEMP + 2.0f + 273.15f;
 	HeatConduct = 42;
-	Description = "Diffuses quickly and is flammable. Liquefies into OIL under pressure.";
+	Description = ByteString("石油气,易燃,在压力下液化成油").FromUtf8();
 
 	Properties = TYPE_GAS | PROP_NEUTPASS;
 

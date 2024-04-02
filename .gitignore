@@ -30,11 +30,11 @@ config.log
 # User data
 /stamps/
 /Saves/
-/scripts/
+# /scripts/
 /recordings/
 *.def
 *.pref
-*.lua
+# *.lua
 screenshot_*
 
 # Visual studio
@@ -90,5 +90,9 @@ screenshot_*
 *.opensdf
 *.sdf
 /font/
+/TPT/
 compile_commands.json
 ignore/
+Downloads/zpix.bdf
+resources/cmex16m.bdf
+resources/cnxt.bdf

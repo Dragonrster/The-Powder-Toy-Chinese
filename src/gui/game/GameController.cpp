@@ -252,20 +252,20 @@ void GameController::Install()
 {
 	if constexpr (CAN_INSTALL)
 	{
-		new ConfirmPrompt("Install " + String(APPNAME), "Do you wish to install " + String(APPNAME) + " on this computer?\nThis allows you to open save files and saves directly from the website.", { [] {
+		new ConfirmPrompt( ByteString("安装 ").FromUtf8() + String(APPNAME), ByteString("确定要在此电脑上安装 ").FromUtf8() + String(APPNAME) + ByteString("? \n这允许关联沙盘文件或直接从网站打开沙盘").FromUtf8(), { [] {
 			if (Platform::Install())
 			{
-				new InformationMessage("Success", "Installation completed", false);
+				new InformationMessage(ByteString("成功").FromUtf8(), ByteString("安装完成").FromUtf8(), false);
 			}
 			else
 			{
-				new ErrorMessage("Could not install", "The installation did not complete due to an error");
+				new ErrorMessage(ByteString("无法安装").FromUtf8(), ByteString("由于某些错误而未完成安装").FromUtf8());
 			}
 		} });
 	}
 	else
 	{
-		new InformationMessage("No installation necessary", "You don't need to install " + String(APPNAME) + " on this platform", false);
+		new InformationMessage(ByteString("不需要安装").FromUtf8(), ByteString("不需要安装 ").FromUtf8() + String(APPNAME) + ByteString("在此平台上").FromUtf8(), false);
 	}
 }
 
@@ -461,12 +461,12 @@ ByteString GameController::StampRegion(ui::Point point1, ui::Point point2, bool 
 		newSave->paused = gameModel->GetPaused();
 		ByteString stampName = Client::Ref().AddStamp(std::move(newSave));
 		if (stampName.length() == 0)
-			new ErrorMessage("Could not create stamp", "Error serializing save file");
+			new ErrorMessage(ByteString("无法创建stamp").FromUtf8(), ByteString("序列化保存文件时出错").FromUtf8());
 		return stampName;
 	}
 	else
 	{
-		new ErrorMessage("Could not create stamp", "Error generating save file");
+		new ErrorMessage(ByteString("无法创建stamp").FromUtf8(), ByteString("生成保存文件时出错").FromUtf8());
 		return "";
 	}
 }
@@ -792,16 +792,16 @@ void GameController::SwitchGravity()
 	switch (gameModel->GetSimulation()->gravityMode)
 	{
 	case GRAV_VERTICAL:
-		gameModel->SetInfoTip("Gravity: Vertical");
+		gameModel->SetInfoTip(ByteString("引力模式:竖直").FromUtf8());
 		break;
 	case GRAV_OFF:
-		gameModel->SetInfoTip("Gravity: Off");
+		gameModel->SetInfoTip(ByteString("引力模式:关闭").FromUtf8());
 		break;
 	case GRAV_RADIAL:
-		gameModel->SetInfoTip("Gravity: Radial");
+		gameModel->SetInfoTip(ByteString("引力模式:中心").FromUtf8());
 		break;
 	case GRAV_CUSTOM:
-		gameModel->SetInfoTip("Gravity: Custom");
+		gameModel->SetInfoTip(ByteString("引力模式:自定义").FromUtf8());
 		break;
 	}
 }
@@ -813,19 +813,19 @@ void GameController::SwitchAir()
 	switch (gameModel->GetSimulation()->air->airMode)
 	{
 	case AIR_ON:
-		gameModel->SetInfoTip("Air: On");
+		gameModel->SetInfoTip(ByteString("空气模拟:开启").FromUtf8());
 		break;
 	case AIR_PRESSUREOFF:
-		gameModel->SetInfoTip("Air: Pressure Off");
+		gameModel->SetInfoTip(ByteString("空气模拟:关闭压力").FromUtf8());
 		break;
 	case AIR_VELOCITYOFF:
-		gameModel->SetInfoTip("Air: Velocity Off");
+		gameModel->SetInfoTip(ByteString("空气模拟:关闭速度").FromUtf8());
 		break;
 	case AIR_OFF:
-		gameModel->SetInfoTip("Air: Off");
+		gameModel->SetInfoTip(ByteString("空气模拟:关闭").FromUtf8());
 		break;
 	case AIR_NOUPDATE:
-		gameModel->SetInfoTip("Air: No Update");
+		gameModel->SetInfoTip(ByteString("空气模拟:更新停止").FromUtf8());
 		break;
 	}
 }
@@ -1043,13 +1043,13 @@ void GameController::SetEdgeMode(int edgeMode)
 	switch (edgeMode)
 	{
 		case EDGE_VOID:
-			gameModel->SetInfoTip("Edge Mode: Void");
+			gameModel->SetInfoTip(ByteString("边界模式:虚空").FromUtf8());
 			break;
 		case EDGE_SOLID:
-			gameModel->SetInfoTip("Edge Mode: Solid");
+			gameModel->SetInfoTip(ByteString("边界模式:固体").FromUtf8());
 			break;
 		case EDGE_LOOP:
-			gameModel->SetInfoTip("Edge Mode: Loop");
+			gameModel->SetInfoTip(ByteString("边界模式:循环").FromUtf8());
 			break;
 	}
 }
@@ -1188,7 +1188,7 @@ void GameController::OpenSearch(String searchText)
 				}
 				catch(GameModelException & ex)
 				{
-					new ErrorMessage("Cannot open save", ByteString(ex.what()).FromUtf8());
+					new ErrorMessage(ByteString("无法打开沙盘").FromUtf8(), ByteString(ex.what()).FromUtf8());
 				}
 			}
 		});
@@ -1203,7 +1203,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 	auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), RES.OriginRect());
 	if(!gameSave)
 	{
-		new ErrorMessage("Error", "Unable to build save.");
+		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法生成沙盘").FromUtf8());
 	}
 	else
 	{
@@ -1239,11 +1239,11 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 			tempSave->SetGameSave(std::move(gameSave));
 			gameModel->SetSaveFile(std::move(tempSave), gameView->ShiftBehaviour());
 			if (saveData.size() == 0)
-				new ErrorMessage("Error", "Unable to serialize game data.");
+				new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法序列化沙盘数据").FromUtf8());
 			else if (!Platform::WriteFile(saveData, gameModel->GetSaveFile()->GetName()))
-				new ErrorMessage("Error", "Unable to write save file.");
+				new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法写入沙盘数据").FromUtf8());
 			else
-				gameModel->SetInfoTip("Saved Successfully");
+				gameModel->SetInfoTip(ByteString("保存成功!").FromUtf8());
 		}
 	}
 }
@@ -1270,7 +1270,7 @@ void GameController::OpenSaveDone()
 		}
 		catch(GameModelException & ex)
 		{
-			new ErrorMessage("Cannot open save", ByteString(ex.what()).FromUtf8());
+			new ErrorMessage(ByteString("无法打开沙盘").FromUtf8(), ByteString(ex.what()).FromUtf8());
 		}
 	}
 }
@@ -1361,7 +1361,7 @@ void GameController::OpenTags()
 	}
 	else
 	{
-		new ErrorMessage("Error", "No save open");
+		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("未打开沙盘").FromUtf8());
 	}
 }
 
@@ -1372,7 +1372,7 @@ void GameController::OpenStamps()
 		if (file)
 		{
 			if (file->GetError().length())
-				new ErrorMessage("Error loading stamp", file->GetError());
+				new ErrorMessage(ByteString("加载stamps时出错").FromUtf8(), file->GetError());
 			else if (localBrowser->GetMoveToFront())
 				Client::Ref().MoveStampToFront(file->GetDisplayName().ToUtf8());
 			LoadStamp(file->TakeGameSave());
@@ -1419,7 +1419,7 @@ void GameController::OpenSaveWindow()
 		auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), RES.OriginRect());
 		if(!gameSave)
 		{
-			new ErrorMessage("Error", "Unable to build save.");
+			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法生成沙盘").FromUtf8());
 		}
 		else
 		{
@@ -1449,7 +1449,7 @@ void GameController::OpenSaveWindow()
 	}
 	else
 	{
-		new ErrorMessage("Error", "You need to login to upload saves.");
+		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("需要登录后才能上传沙盘").FromUtf8());
 	}
 }
 
@@ -1461,7 +1461,7 @@ void GameController::SaveAsCurrent()
 		auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), RES.OriginRect());
 		if(!gameSave)
 		{
-			new ErrorMessage("Error", "Unable to build save.");
+			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法生成沙盘").FromUtf8());
 		}
 		else
 		{
@@ -1487,7 +1487,7 @@ void GameController::SaveAsCurrent()
 	}
 	else
 	{
-		new ErrorMessage("Error", "You need to login to upload saves.");
+		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("需要登录后才能上传沙盘").FromUtf8());
 	}
 }
 
@@ -1608,18 +1608,18 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 			auto optinfo = Client::Ref().GetUpdateInfo();
 			if (!optinfo.has_value())
 			{
-				std::cerr << "odd, the update has disappeared" << std::endl;
+				std::cerr << "\u66F4\u65B0\u5DF2\u6D88\u5931" << std::endl;
 				return;
 			}
 			UpdateInfo info = optinfo.value();
 			StringBuilder updateMessage;
 			if (Platform::CanUpdate())
 			{
-				updateMessage << "Are you sure you want to run the updater? Please save any changes before updating.\n\nCurrent version:\n ";
+				updateMessage << ByteString("确定要运行更新程序吗？请在更新之前保存所有更改.\n\n当前版本:\n ").FromUtf8();
 			}
 			else
 			{
-				updateMessage << "Click \"Continue\" to download the latest version from our website.\n\nCurrent version:\n ";
+				updateMessage << ByteString("点击 \"继续\" 从官方网站下载最新版本.\n\n当前版本:\n ").FromUtf8();
 			}
 
 			if constexpr (MOD)
@@ -1677,18 +1677,18 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 		case UpdateInfo::channelSnapshot:
 			if constexpr (MOD)
 			{
-				gameModel->AddNotification(new UpdateNotification(this, "A new mod update is available - click here to update"));
+				gameModel->AddNotification(new UpdateNotification(this, ByteString("发现新的mod版本可用 - 点击此处更新").FromUtf8()));
 			}
 			else
 			{
-				gameModel->AddNotification(new UpdateNotification(this, "A new snapshot is available - click here to update"));
+				gameModel->AddNotification(new UpdateNotification(this, ByteString("发现新的快照版本可用 - 点击此处更新").FromUtf8()));
 			}
 			break;
 		case UpdateInfo::channelStable:
-			gameModel->AddNotification(new UpdateNotification(this, "A new version is available - click here to update"));
+			gameModel->AddNotification(new UpdateNotification(this, ByteString("发现新的版本可用 - 点击此处更新").FromUtf8()));
 			break;
 		case UpdateInfo::channelBeta:
-			gameModel->AddNotification(new UpdateNotification(this, "A new beta is available - click here to update"));
+			gameModel->AddNotification(new UpdateNotification(this, ByteString("发现新的测试版本可用 - 点击此处更新").FromUtf8()));
 			break;
 	}
 }

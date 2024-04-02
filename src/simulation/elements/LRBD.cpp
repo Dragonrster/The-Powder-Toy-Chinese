@@ -28,7 +28,7 @@ void Element::Element_LRBD()
 
 	DefaultProperties.temp = R_TEMP + 45.0f + 273.15f;
 	HeatConduct = 170;
-	Description = "Liquid Rubidium.";
+	Description = ByteString("液态铷,压力越大,爆炸点越低").FromUtf8();
 
 	Properties = TYPE_LIQUID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

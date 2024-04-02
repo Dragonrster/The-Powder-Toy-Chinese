@@ -31,7 +31,7 @@ void Element::Element_BOMB()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
-	Description = "Bomb. Explodes and destroys all surrounding particles when it touches something.";
+	Description = ByteString("炸药,爆炸并摧毁周围的所有粒子").FromUtf8();
 
 	Properties = TYPE_PART|PROP_SPARKSETTLE;
 

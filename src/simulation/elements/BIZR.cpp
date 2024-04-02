@@ -28,7 +28,7 @@ void Element::Element_BIZR()
 	Weight = 30;
 
 	HeatConduct = 29;
-	Description = "Bizarre... contradicts the normal state changes. Paints other elements with its deco color.";
+	Description = ByteString("奇异液体,与一般物理规律相反的液体,会把碰到的物质染成自身颜色").FromUtf8();
 
 	Properties = TYPE_LIQUID;
 

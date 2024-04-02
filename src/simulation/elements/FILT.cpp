@@ -31,7 +31,7 @@ void Element::Element_FILT()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Filter for photons, changes the color.";
+	Description = ByteString("滤镜,能改变通过光子的颜色").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_NOAMBHEAT | PROP_LIFE_DEC;
 

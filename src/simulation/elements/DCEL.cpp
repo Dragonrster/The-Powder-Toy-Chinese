@@ -30,7 +30,7 @@ void Element::Element_DCEL()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Decelerator, slows down nearby elements.";
+	Description = ByteString("减速器,使能量粒子减速").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

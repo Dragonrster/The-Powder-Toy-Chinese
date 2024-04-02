@@ -31,7 +31,7 @@ void Element::Element_ICEI()
 	DefaultProperties.temp = R_TEMP - 50.0f + 273.15f;
 	HeatConduct = 46;
 	LatentHeat = 1095;
-	Description = "Crushes under pressure. Cools down air.";
+	Description = ByteString("冰,在压力下会破碎变成雪").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_NEUTPASS;
 

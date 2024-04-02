@@ -28,7 +28,7 @@ void Element::Element_LOLZ()
 
 	DefaultProperties.temp = 373.0f;
 	HeatConduct = 40;
-	Description = "Lolz";
+	Description = ByteString("大声笑,不要怀疑,这货就是来搞笑的").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

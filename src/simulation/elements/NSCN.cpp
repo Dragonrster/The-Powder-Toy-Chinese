@@ -28,7 +28,7 @@ void Element::Element_NSCN()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "N-Type Silicon, Will not transfer current to P-Type Silicon.";
+	Description = ByteString("N型硅,不会向P型硅传递电脉冲(即电脉冲只能从PSCN单向传导到NSCN)").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

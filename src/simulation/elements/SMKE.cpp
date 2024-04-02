@@ -30,7 +30,7 @@ void Element::Element_SMKE()
 
 	DefaultProperties.temp = R_TEMP + 320.0f + 273.15f;
 	HeatConduct = 88;
-	Description = "Smoke, created by fire.";
+	Description = ByteString("烟,火焰冷却到较低温度时会产生烟,可燃烧").FromUtf8();
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

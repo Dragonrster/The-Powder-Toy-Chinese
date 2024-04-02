@@ -27,7 +27,7 @@ void Element::Element_DESL()
 	Weight = 15;
 
 	HeatConduct = 42;
-	Description = "Liquid diesel. Explodes under high pressure and temperatures.";
+	Description = ByteString("柴油,温度达到燃点或压力超过极限时自燃").FromUtf8();
 
 	Properties = TYPE_LIQUID;
 

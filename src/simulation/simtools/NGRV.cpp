@@ -7,7 +7,7 @@ void SimTool::Tool_NGRV()
 	Identifier = "DEFAULT_TOOL_NGRV";
 	Name = "NGRV";
 	Colour = 0xAACCFF_rgb;
-	Description = "Creates a short-lasting negative gravity well.";
+	Description = ByteString("负引力工具,制造一个负引力源,一段时间后消失").FromUtf8();
 	Perform = &perform;
 }
 

@@ -29,7 +29,7 @@ void Element::Element_YEST()
 	Weight = 80;
 
 	HeatConduct = 70;
-	Description = "Yeast, grows when warm (~37C).";
+	Description = ByteString("酵母,在特定温度范围(29.85℃/303k~43.85℃/317k,不包括边界值)会繁殖").FromUtf8();
 
 	Properties = TYPE_PART;
 

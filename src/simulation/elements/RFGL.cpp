@@ -28,7 +28,7 @@ void Element::Element_RFGL()
 	Weight = 10;
 
 	HeatConduct = 3;
-	Description = "Liquid refrigerant.";
+	Description = ByteString("液态制冷剂").FromUtf8();
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 

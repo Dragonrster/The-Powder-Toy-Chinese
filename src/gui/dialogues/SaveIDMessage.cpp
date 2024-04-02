@@ -10,21 +10,21 @@
 SaveIDMessage::SaveIDMessage(int id):
 	ui::Window(ui::Point((XRES-244)/2, (YRES-90)/2), ui::Point(244, 90))
 {
-	int textWidth = Graphics::TextSize("Save ID").X - 1;
-	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(textWidth+20, 16), "Save ID");
+	int textWidth = Graphics::TextSize(ByteString("沙盘ID").FromUtf8()).X - 1;
+	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(textWidth+20, 16), ByteString("沙盘ID").FromUtf8());
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 
-	textWidth = Graphics::TextSize("Saved Successfully!").X - 1;
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 24), ui::Point(textWidth+20, 16), "Saved Successfully!");
+	textWidth = Graphics::TextSize(ByteString("保存成功!").FromUtf8()).X - 1;
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 24), ui::Point(textWidth+20, 16), ByteString("保存成功!").FromUtf8());
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	AddComponent(messageLabel);
 
-	textWidth = Graphics::TextSize("Click the box below to copy the save ID").X - 1;
-	ui::Label * copyTextLabel = new ui::Label(ui::Point((Size.X-textWidth-20)/2, 35), ui::Point(textWidth+20, 16), "Click the box below to copy the save id");
+	textWidth = Graphics::TextSize(ByteString("单击此框复制沙盘ID").FromUtf8()).X - 1;
+	ui::Label * copyTextLabel = new ui::Label(ui::Point((Size.X-textWidth-20)/2, 35), ui::Point(textWidth+20, 16), ByteString("单击此框复制沙盘ID").FromUtf8());
 	copyTextLabel->SetTextColour(ui::Colour(150, 150, 150));
 	copyTextLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	AddComponent(copyTextLabel);

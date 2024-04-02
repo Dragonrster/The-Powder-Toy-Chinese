@@ -8,7 +8,7 @@ void SimTool::Tool_VAC()
 	Identifier = "DEFAULT_TOOL_VAC";
 	Name = "VAC";
 	Colour = 0x303030_rgb;
-	Description = "Vacuum, reduces air pressure.";
+	Description = ByteString("真空工具,降低目标区域内的气压").FromUtf8();
 	Perform = &perform;
 }
 

@@ -30,7 +30,7 @@ void Element::Element_VSNS()
 
 	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "Velocity sensor, creates a spark when there's a nearby particle with velocity higher than its temperature.";
+	Description = ByteString("速度探测器,当速度高于传感器温度的粒子在附近时,会生成电脉冲").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

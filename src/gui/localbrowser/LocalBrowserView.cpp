@@ -17,9 +17,9 @@ LocalBrowserView::LocalBrowserView():
 	lastChanged(0),
 	pageCount(0)
 {
-	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), String("Next ") + 0xE015);
-	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), 0xE016 + String(" Prev"));
-	undeleteButton = new ui::Button(ui::Point(WINDOWW-122, WINDOWH-18), ui::Point(60, 16), "Rescan");
+	nextButton = new ui::Button(ui::Point(WINDOWW-62, WINDOWH-18), ui::Point(60, 16), String(ByteString("下一页").FromUtf8()) + 0xE015);
+	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(60, 16), 0xE016 + String(ByteString("上一页").FromUtf8()));
+	undeleteButton = new ui::Button(ui::Point(WINDOWW-122, WINDOWH-18), ui::Point(60, 16), ByteString("刷新").FromUtf8());
 	AddComponent(nextButton);
 	AddComponent(previousButton);
 	AddComponent(undeleteButton);
@@ -45,7 +45,7 @@ LocalBrowserView::LocalBrowserView():
 
 	undeleteButton->SetActionCallback({ [this] { c->RescanStamps(); } });
 
-	removeSelected = new ui::Button(ui::Point(((WINDOWW-100)/2), WINDOWH-18), ui::Point(100, 16), "Delete");
+	removeSelected = new ui::Button(ui::Point(((WINDOWW-100)/2), WINDOWH-18), ui::Point(100, 16), ByteString("删除").FromUtf8());
 	removeSelected->Visible = false;
 	removeSelected->SetActionCallback({ [this] { c->RemoveSelected(); } });
 
@@ -209,7 +209,7 @@ void LocalBrowserView::OnKeyPress(int key, int scan, bool repeat, bool shift, bo
 {
 	if (repeat)
 		return;
-	if (key == SDLK_ESCAPE || key == SDLK_AC_BACK)
+	if (key == SDLK_ESCAPE)
 		c->Exit();
 	else if (key == SDLK_LCTRL || key == SDLK_RCTRL)
 		c->SetMoveToFront(false);

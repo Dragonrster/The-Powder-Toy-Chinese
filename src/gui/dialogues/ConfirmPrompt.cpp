@@ -38,7 +38,7 @@ ConfirmPrompt::ConfirmPrompt(String title, String message, ResultCallback callba
 	Size.Y += messagePanel->Size.Y+12;
 	Position.Y = (GetGraphics()->Size().Y - Size.Y)/2;
 
-	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), "Cancel");
+	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), ByteString("取消").FromUtf8());
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);

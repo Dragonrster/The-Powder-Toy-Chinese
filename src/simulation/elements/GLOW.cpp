@@ -31,7 +31,7 @@ void Element::Element_GLOW()
 
 	DefaultProperties.temp = R_TEMP + 20.0f + 273.15f;
 	HeatConduct = 44;
-	Description = "Glow, Glows under pressure.";
+	Description = ByteString("荧光液,在压力下发光").FromUtf8();
 
 	Properties = TYPE_LIQUID | PROP_LIFE_DEC;
 

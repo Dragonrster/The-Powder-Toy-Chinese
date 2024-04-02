@@ -78,7 +78,7 @@ namespace http
 		}
 		catch (const std::exception &ex)
 		{
-			throw RequestError("Could not read response: " + ByteString(ex.what()));
+			throw RequestError("\u65e0\u6cd5\u8bfb\u53d6\u54cd\u5e94\u003a\u0020" + ByteString(ex.what()));
 		}
 		return std::pair{ count, std::move(saves) };
 	}

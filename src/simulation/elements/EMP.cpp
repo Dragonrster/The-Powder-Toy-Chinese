@@ -30,7 +30,7 @@ void Element::Element_EMP()
 	Weight = 100;
 
 	HeatConduct = 121;
-	Description = "Electromagnetic pulse. Breaks activated electronics.";
+	Description = ByteString("电磁脉冲武器,会随机摧毁所有正在工作(通电)的电子产品").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

@@ -33,7 +33,7 @@ void Element::Element_PRTI()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Portal IN. Particles go in here. Also has temperature dependent channels. (same as WIFI)";
+	Description = ByteString("传送门入口,可以传送物质和电脉冲,和WIFI相似,通过改变自身温度可以产生不同频道").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

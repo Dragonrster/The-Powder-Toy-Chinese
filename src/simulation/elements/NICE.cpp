@@ -28,7 +28,7 @@ void Element::Element_NICE()
 
 	DefaultProperties.temp = 35.0f;
 	HeatConduct = 46;
-	Description = "Nitrogen Ice. Very cold, will melt into LN2 when heated only slightly.";
+	Description = ByteString("氮冰,氮的固体形式,熔化后变成LN2").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

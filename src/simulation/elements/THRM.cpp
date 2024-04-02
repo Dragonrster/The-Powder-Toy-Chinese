@@ -27,7 +27,7 @@ void Element::Element_THRM()
 	Weight = 90;
 
 	HeatConduct = 211;
-	Description = "Thermite. Burns at extremely high temperature.";
+	Description = ByteString("铝热剂,只能与FIRE,PLSM,LAVA,LIFE反应,产生巨大的热量").FromUtf8();
 
 	Properties = TYPE_PART;
 

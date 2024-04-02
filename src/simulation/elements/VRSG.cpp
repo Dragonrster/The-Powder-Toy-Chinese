@@ -31,7 +31,7 @@ void Element::Element_VRSG()
 
 	DefaultProperties.temp = 522.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Gas Virus. Turns everything it touches into virus.";
+	Description = ByteString("病毒气,会将其碰触到的所有物质变成VIRS").FromUtf8();
 
 	Properties = TYPE_GAS|PROP_DEADLY;
 	CarriesTypeIn = 1U << FIELD_TMP2;

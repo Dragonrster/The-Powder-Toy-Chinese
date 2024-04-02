@@ -30,7 +30,7 @@ void Element::Element_HSWC()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Heat switch. Conducts heat only when activated.";
+	Description = ByteString("热开关,当激活时才可以导热").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

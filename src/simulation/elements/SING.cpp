@@ -30,7 +30,7 @@ void Element::Element_SING()
 	Weight = 86;
 
 	HeatConduct = 70;
-	Description = "Singularity. Creates huge amounts of negative pressure and destroys everything.";
+	Description = ByteString("奇点,会产生超低压的粉末,可以破坏其它物质,本质上是粉末状的黑洞").FromUtf8();
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

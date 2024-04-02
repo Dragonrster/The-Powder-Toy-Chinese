@@ -31,7 +31,7 @@ void Element::Element_CLST()
 	Weight = 55;
 
 	HeatConduct = 70;
-	Description = "Clay dust. Produces paste when mixed with water.";
+	Description = ByteString("粘土砂,和水结合时产生浆糊(PSTE)").FromUtf8();
 
 	Properties = TYPE_PART;
 

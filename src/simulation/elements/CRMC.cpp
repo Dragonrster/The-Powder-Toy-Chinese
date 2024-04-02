@@ -31,7 +31,7 @@ void Element::Element_CRMC()
 	Weight = 100;
 
 	HeatConduct = 35;
-	Description = "Ceramic. Gets stronger under pressure.";
+	Description = ByteString("陶瓷,受压时熔点增加").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS;
 

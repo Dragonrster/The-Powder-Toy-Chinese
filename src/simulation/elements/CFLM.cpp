@@ -31,7 +31,7 @@ void Element::Element_CFLM()
 
 	DefaultProperties.temp = 0.0f;
 	HeatConduct = 88;
-	Description = "Sub-zero flame.";
+	Description = ByteString("冷焰,绝对零度的火焰").FromUtf8();
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

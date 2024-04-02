@@ -29,7 +29,7 @@ void Element::Element_O2()
 	Weight = 1;
 
 	HeatConduct = 70;
-	Description = "Oxygen gas. Ignites easily.";
+	Description = ByteString("氧气,高度易燃的气体,可以被火焰点燃").FromUtf8();
 
 	Properties = TYPE_GAS;
 

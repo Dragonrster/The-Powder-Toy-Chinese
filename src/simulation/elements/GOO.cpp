@@ -32,7 +32,7 @@ void Element::Element_GOO()
 	Weight = 100;
 
 	HeatConduct = 75;
-	Description = "Squirrels. \"Every time we cut an emoji for a squirrel we have to cut it from tpt as well\" - jacob1";
+	Description =ByteString("松鼠 \"每次我们剪一个松鼠的表情符号时，我们也要把它从tpt上剪下来\"- jacob1").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

@@ -27,7 +27,7 @@ void Element::Element_RBDM()
 	Weight = 100;
 
 	HeatConduct = 240;
-	Description = "Rubidium. Explosive, especially on contact with water. Low melting point.";
+	Description = ByteString("固态铷,低熔点,可以导电,遇水爆炸").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

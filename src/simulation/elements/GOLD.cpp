@@ -32,7 +32,7 @@ void Element::Element_GOLD()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Corrosion resistant metal, will reverse corrosion of iron.";
+	Description = ByteString("金,抗腐蚀(但通电时会受到酸的腐蚀),可以保护铁免受腐蚀").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC|PROP_NEUTPASS;
 

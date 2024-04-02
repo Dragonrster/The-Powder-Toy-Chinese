@@ -147,12 +147,12 @@ void PreviewModel::OnSaveReady()
 	{
 		auto gameSave = std::make_unique<GameSave>(*saveData);
 		if (gameSave->fromNewerVersion)
-			new ErrorMessage("This save is from a newer version", String::Build("Please update TPT in game or at https://", SERVER));
+			new ErrorMessage(ByteString("此沙盘来自较新版本").FromUtf8(), ByteString("请在游戏中或 https://powdertoy.co.uk 更新TPT").FromUtf8());
 		saveInfo->SetGameSave(std::move(gameSave));
 	}
 	catch(ParseException &e)
 	{
-		new ErrorMessage("Error", ByteString(e.what()).FromUtf8());
+		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString(e.what()).FromUtf8());
 		canOpen = false;
 	}
 	notifySaveChanged();
@@ -243,11 +243,11 @@ void PreviewModel::Update()
 		{
 			if (favouriteSaveRequest->Favourite())
 			{
-				new ErrorMessage("Error", "Could not favourite the save: " + ByteString(ex.what()).FromUtf8());
+				new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法点赞: ").FromUtf8() + ByteString(ex.what()).FromUtf8());
 			}
 			else
 			{
-				new ErrorMessage("Error", "Could not unfavourite the save: " + ByteString(ex.what()).FromUtf8());
+				new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法取消点赞:").FromUtf8() + ByteString(ex.what()).FromUtf8());
 			}
 		}
 		favouriteSaveRequest.reset();

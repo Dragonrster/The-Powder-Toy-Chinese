@@ -31,7 +31,7 @@ void Element::Element_DLAY()
 
 	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "Conducts with temperature-dependent delay. (use HEAT/COOL).";
+	Description = ByteString("延时器,当电脉冲通过延时计时会延迟X帧,X等于延时计的温度").FromUtf8();
 
 	Properties = TYPE_SOLID;
 

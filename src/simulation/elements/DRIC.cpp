@@ -28,7 +28,7 @@ void Element::Element_DRIC()
 
 	DefaultProperties.temp = 172.65f;
 	HeatConduct = 2;
-	Description = "Dry Ice, formed when CO2 is cooled.";
+	Description = ByteString("干冰,二氧化碳冷却时形成").FromUtf8();
 
 	Properties = TYPE_SOLID;
 
