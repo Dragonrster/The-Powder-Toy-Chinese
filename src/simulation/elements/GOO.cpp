@@ -32,7 +32,7 @@ void Element::Element_GOO()
 	Weight = 100;
 
 	HeatConduct = 75;
-	Description =ByteString("松鼠 \"每次我们剪一个松鼠的表情符号时，我们也要把它从tpt上剪下来\"- jacob1").FromUtf8();
+	Description =ByteString("松鼠 \"每次我们为松鼠剪贴表情符号，我们也必须从tpt剪贴\"- jacob1").FromUtf8();
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 
