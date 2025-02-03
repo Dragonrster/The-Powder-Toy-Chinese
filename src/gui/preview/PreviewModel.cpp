@@ -147,12 +147,12 @@ void PreviewModel::OnSaveReady()
 	{
 		auto gameSave = std::make_unique<GameSave>(*saveData);
 		if (gameSave->fromNewerVersion)
-			new ErrorMessage(ByteString("此沙盘来自较新版本").FromUtf8(), ByteString("请在游戏中或 powdertoy.co.uk 更新TPT").FromUtf8());
+			new ErrorMessage(ByteString("此沙盤來自較新版本").FromUtf8(), ByteString("請在遊戲中或 powdertoy.co.uk 更新TPT").FromUtf8());
 		saveInfo->SetGameSave(std::move(gameSave));
 	}
 	catch(ParseException &e)
 	{
-		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString(e.what()).FromUtf8());
+		new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString(e.what()).FromUtf8());
 		canOpen = false;
 	}
 	notifySaveChanged();
@@ -243,11 +243,11 @@ void PreviewModel::Update()
 		{
 			if (favouriteSaveRequest->Favourite())
 			{
-				new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法点赞: ").FromUtf8() + ByteString(ex.what()).FromUtf8());
+				new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("無法點贊: ").FromUtf8() + ByteString(ex.what()).FromUtf8());
 			}
 			else
 			{
-				new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法取消点赞:").FromUtf8() + ByteString(ex.what()).FromUtf8());
+				new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("無法取消點贊:").FromUtf8() + ByteString(ex.what()).FromUtf8());
 			}
 		}
 		favouriteSaveRequest.reset();

@@ -29,12 +29,12 @@ ProfileActivity::ProfileActivity(ByteString username) :
 	{
 		closeButton->Size.X = (Size.X/2)+1;
 
-		ui::Button * saveButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), ByteString("保存").FromUtf8());
+		ui::Button * saveButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), ByteString("儲存").FromUtf8());
 		saveButton->SetActionCallback({ [this, saveButton] {
 			if (!loading && !saving && editable)
 			{
 				saveButton->Enabled = false;
-				saveButton->SetText(ByteString("保存中...").FromUtf8());
+				saveButton->SetText(ByteString("儲存中...").FromUtf8());
 				saving = true;
 				info.location = location->GetText();
 				info.biography = bio->GetText();
@@ -81,7 +81,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	// edit avatar button
 	if (editable)
 	{
-		ui::Button * editAvatar = new ui::Button(ui::Point(Size.X - (40 + 16 + 75), currentY), ui::Point(75, 15), ByteString("编辑").FromUtf8());
+		ui::Button * editAvatar = new ui::Button(ui::Point(Size.X - (40 + 16 + 75), currentY), ui::Point(75, 15), ByteString("編輯").FromUtf8());
 		editAvatar->SetActionCallback({ [] {
 			Platform::OpenURI(ByteString::Build(SERVER, "/Profile/Avatar.html"));
 		} });
@@ -90,13 +90,13 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	currentY += 23;
 
 	// age
-	ui::Label * ageTitle = new ui::Label(ui::Point(4, currentY), ui::Point(33, 15), ByteString("年龄:").FromUtf8());
+	ui::Label * ageTitle = new ui::Label(ui::Point(4, currentY), ui::Point(33, 15), ByteString("年齡:").FromUtf8());
 	ageTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	ageTitle->SetTextColour(ui::Colour(180, 180, 180));
 	scrollPanel->AddChild(ageTitle);
 
 	// can't figure out how to tell a null from a 0 in the json library we use
-	ui::Label *age = new ui::Label(ui::Point(5+ageTitle->Size.X, currentY), ui::Point(Size.X-ageTitle->Size.X-56, 15), info.age ? String::Build(info.age) : ByteString("\bg无法提供").FromUtf8());
+	ui::Label *age = new ui::Label(ui::Point(5+ageTitle->Size.X, currentY), ui::Point(Size.X-ageTitle->Size.X-56, 15), info.age ? String::Build(info.age) : ByteString("\bg無法提供").FromUtf8());
 	age->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	scrollPanel->AddChild(age);
 	currentY += 2+age->Size.Y;
@@ -121,7 +121,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	currentY += 2+location->Size.Y;
 
 	// website
-	ui::Label * websiteTitle = new ui::Label(ui::Point(4, currentY), ui::Point(35, 15), ByteString("网站:").FromUtf8());
+	ui::Label * websiteTitle = new ui::Label(ui::Point(4, currentY), ui::Point(35, 15), ByteString("網站:").FromUtf8());
 	websiteTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	websiteTitle->SetTextColour(ui::Colour(180, 180, 180));
 	scrollPanel->AddChild(websiteTitle);
@@ -132,14 +132,14 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	currentY += 2+website->Size.Y;
 
 	// saves
-	ui::Label * savesTitle = new ui::Label(ui::Point(4, currentY), ui::Point(35, 15), ByteString("沙盘").FromUtf8());
+	ui::Label * savesTitle = new ui::Label(ui::Point(4, currentY), ui::Point(35, 15), ByteString("沙盤").FromUtf8());
 	savesTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	savesTitle->SetTextColour(ui::Colour(180, 180, 180));
 	scrollPanel->AddChild(savesTitle);
 	currentY += savesTitle->Size.Y;
 
 		// saves count
-		ui::Label * saveCountTitle = new ui::Label(ui::Point(12, currentY), ui::Point(34, 15), ByteString("数量:").FromUtf8());
+		ui::Label * saveCountTitle = new ui::Label(ui::Point(12, currentY), ui::Point(34, 15), ByteString("數量:").FromUtf8());
 		saveCountTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		saveCountTitle->SetTextColour(ui::Colour(180, 180, 180));
 		scrollPanel->AddChild(saveCountTitle);
@@ -150,7 +150,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 		currentY += savesCount->Size.Y;
 
 		// average score
-		ui::Label * averageScoreTitle = new ui::Label(ui::Point(12, currentY), ui::Point(60, 15), ByteString("平均评分:").FromUtf8());
+		ui::Label * averageScoreTitle = new ui::Label(ui::Point(12, currentY), ui::Point(60, 15), ByteString("平均評分:").FromUtf8());
 		averageScoreTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		averageScoreTitle->SetTextColour(ui::Colour(180, 180, 180));
 		scrollPanel->AddChild(averageScoreTitle);
@@ -161,7 +161,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 		currentY += averageScore->Size.Y;
 
 		// highest score
-		ui::Label * highestScoreTitle = new ui::Label(ui::Point(12, currentY), ui::Point(60, 15), ByteString("最高评分:").FromUtf8());
+		ui::Label * highestScoreTitle = new ui::Label(ui::Point(12, currentY), ui::Point(60, 15), ByteString("最高評分:").FromUtf8());
 		highestScoreTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		highestScoreTitle->SetTextColour(ui::Colour(180, 180, 180));
 		scrollPanel->AddChild(highestScoreTitle);
@@ -172,7 +172,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 		currentY += 2+highestScore->Size.Y;
 
 	// biograhy
-	ui::Label * bioTitle = new ui::Label(ui::Point(4, currentY), ui::Point(60, 15), ByteString("个人档案:").FromUtf8());
+	ui::Label * bioTitle = new ui::Label(ui::Point(4, currentY), ui::Point(60, 15), ByteString("個人檔案:").FromUtf8());
 	bioTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	bioTitle->SetTextColour(ui::Colour(180, 180, 180));
 	scrollPanel->AddChild(bioTitle);
@@ -201,7 +201,7 @@ void ProfileActivity::OnTick()
 {
 	if (doError)
 	{
-		new ErrorMessage(ByteString("错误").FromUtf8(), doErrorMessage, { [this]() {
+		new ErrorMessage(ByteString("錯誤").FromUtf8(), doErrorMessage, { [this]() {
 			Exit();
 		} });
 	}
@@ -216,7 +216,7 @@ void ProfileActivity::OnTick()
 		catch (const http::RequestError &ex)
 		{
 			doError = true;
-			doErrorMessage = ByteString("无法保存用户信息: ").FromUtf8() + ByteString(ex.what()).FromUtf8();
+			doErrorMessage = ByteString("無法儲存使用者資訊: ").FromUtf8() + ByteString(ex.what()).FromUtf8();
 		}
 		saveUserInfoRequest.reset();
 	}
@@ -231,7 +231,7 @@ void ProfileActivity::OnTick()
 		catch (const http::RequestError &ex)
 		{
 			doError = true;
-			doErrorMessage = ByteString("无法保存用户信息: ").FromUtf8()  + ByteString(ex.what()).FromUtf8();
+			doErrorMessage = ByteString("無法儲存使用者資訊: ").FromUtf8()  + ByteString(ex.what()).FromUtf8();
 		}
 		getUserInfoRequest.reset();
 	}

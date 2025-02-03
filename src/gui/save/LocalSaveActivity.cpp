@@ -119,9 +119,9 @@ void LocalSaveActivity::saveWrite(ByteString finalFilename)
 	std::vector<char> saveData;
 	std::tie(std::ignore, saveData) = save->GetGameSave()->Serialise();
 	if (saveData.size() == 0)
-		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法序列化游戏数据").FromUtf8());
+		new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("無法序列化遊戲資料").FromUtf8());
 	else if (!Platform::WriteFile(saveData, finalFilename))
-		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法读取沙盘数据").FromUtf8());
+		new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("無法讀取沙盤資料").FromUtf8());
 	else
 	{
 		if (onSaved)

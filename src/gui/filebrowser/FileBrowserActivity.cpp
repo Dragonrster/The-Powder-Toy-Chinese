@@ -141,8 +141,8 @@ void FileBrowserActivity::SelectSave(int index)
 
 void FileBrowserActivity::DeleteSave(int index)
 {
-	String deleteMessage = ByteString("是否删除").FromUtf8() + files[index]->GetDisplayName() + ".cps?";
-	new ConfirmPrompt(ByteString("删除沙盘").FromUtf8(), deleteMessage, { [this, index]() {
+	String deleteMessage = ByteString("是否刪除").FromUtf8() + files[index]->GetDisplayName() + ".cps?";
+	new ConfirmPrompt(ByteString("刪除沙盤").FromUtf8(), deleteMessage, { [this, index]() {
 		auto &file = files[index];
 		Platform::RemoveFile(file->GetName());
 		loadDirectory(directory, "");
@@ -151,7 +151,7 @@ void FileBrowserActivity::DeleteSave(int index)
 
 void FileBrowserActivity::RenameSave(int index)
 {
-	new TextPrompt(ByteString("重命名").FromUtf8(), ByteString("更改沙盘名称").FromUtf8(), files[index]->GetDisplayName(), "", 0, { [this, index](const String &input) {
+	new TextPrompt(ByteString("重新命名").FromUtf8(), ByteString("更改沙盤名稱").FromUtf8(), files[index]->GetDisplayName(), "", 0, { [this, index](const String &input) {
 		auto &file = files[index];
 		auto newName = input.ToUtf8();
 		if (newName.length())
@@ -159,7 +159,7 @@ void FileBrowserActivity::RenameSave(int index)
 			newName = ByteString::Build(directory, PATH_SEP_CHAR, newName, ".cps");
 			if (!Platform::RenameFile(file->GetName(), newName, false))
 			{
-				new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法重命名沙盘").FromUtf8());
+				new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("無法重新命名沙盤").FromUtf8());
 			}
 			else
 			{
@@ -168,7 +168,7 @@ void FileBrowserActivity::RenameSave(int index)
 		}
 		else
 		{
-			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("沙盘名不能为空").FromUtf8());
+			new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("沙盤名不能為空").FromUtf8());
 		}
 	} });
 }
@@ -198,7 +198,7 @@ void FileBrowserActivity::loadDirectory(ByteString directory, ByteString search)
 	itemList->Visible = false;
 	progressBar->Visible = true;
 	progressBar->SetProgress(-1);
-	progressBar->SetStatus(ByteString("加载沙盘中").FromUtf8());
+	progressBar->SetStatus(ByteString("載入沙盤中").FromUtf8());
 	loadFiles = new LoadFilesTask(directory, search);
 	loadFiles->AddTaskListener(this);
 	loadFiles->Start();
@@ -290,7 +290,7 @@ void FileBrowserActivity::OnTick()
 				[this, i] { DeleteSave(i); }
 			});
 
-			progressBar->SetStatus(ByteString("正在渲染缩略图").FromUtf8());
+			progressBar->SetStatus(ByteString("正在渲染縮圖").FromUtf8());
 			progressBar->SetProgress(totalFiles ? (totalFiles - files.size()) * 100 / totalFiles : 0);
 			componentsQueue.push_back(saveButton);
 			fileX++;

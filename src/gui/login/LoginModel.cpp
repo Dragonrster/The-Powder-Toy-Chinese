@@ -9,12 +9,12 @@ void LoginModel::Login(ByteString username, ByteString password)
 {
 	if (username.Contains("@"))
 	{
-		statusText =  ByteString("请使用您的TPT帐户登录，而不是邮箱。\n如果您没有TPT帐户，可以在此注册powdertoy.co.uk/register.html").FromUtf8();
+		statusText =  ByteString("請使用您的TPT帳戶登入，而不是郵箱。\n如果您沒有TPT帳戶，可以在此註冊powdertoy.co.uk/register.html").FromUtf8();
 		loginStatus = loginIdle;
 		notifyStatusChanged();
 		return;
 	}
-	statusText =  ByteString("登陆中...").FromUtf8();
+	statusText =  ByteString("登陸中...").FromUtf8();
 	loginStatus = loginWorking;
 	notifyStatusChanged();
 	loginRequest = std::make_unique<http::LoginRequest>(username, password);
@@ -23,7 +23,7 @@ void LoginModel::Login(ByteString username, ByteString password)
 
 void LoginModel::Logout()
 {
-	statusText = ByteString("注销中...").FromUtf8();
+	statusText = ByteString("登出中...").FromUtf8();
 	loginStatus = loginWorking;
 	notifyStatusChanged();
 	logoutRequest = std::make_unique<http::LogoutRequest>();
@@ -54,7 +54,7 @@ void LoginModel::Tick()
 			{
 				client.AddServerNotification(item);
 			}
-			statusText = ByteString("已登陆").FromUtf8();
+			statusText = ByteString("已登陸").FromUtf8();
 			loginStatus = loginSucceeded;
 		}
 		catch (const http::RequestError &ex)
@@ -72,7 +72,7 @@ void LoginModel::Tick()
 			logoutRequest->Finish();
 			auto &client = Client::Ref();
 			client.SetAuthUser(User(0, ""));
-			statusText = ByteString("已注销").FromUtf8();
+			statusText = ByteString("已登出").FromUtf8();
 		}
 		catch (const http::RequestError &ex)
 		{

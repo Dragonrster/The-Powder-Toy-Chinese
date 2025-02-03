@@ -59,7 +59,7 @@ void Engine::ConfirmExit()
 	if (!confirmingExit)
 	{
 		confirmingExit = true;
-		new ConfirmPrompt(ByteString("退出游戏").FromUtf8(), ByteString("确定要退出游戏吗?").FromUtf8(), { [] {
+		new ConfirmPrompt(ByteString("退出遊戲").FromUtf8(), ByteString("確定要退出遊戲嗎?").FromUtf8(), { [] {
 			ui::Engine::Ref().Exit();
 		}, [this] {
 			confirmingExit = false;

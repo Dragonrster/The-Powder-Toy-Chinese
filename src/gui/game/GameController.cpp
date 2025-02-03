@@ -253,20 +253,20 @@ void GameController::Install()
 {
 	if constexpr (CAN_INSTALL)
 	{
-		new ConfirmPrompt( ByteString("安装 ").FromUtf8() + String(APPNAME), ByteString("确定要在此电脑上安装 ").FromUtf8() + String(APPNAME) + ByteString("? \n这允许关联沙盘文件或直接从网站打开沙盘").FromUtf8(), { [] {
+		new ConfirmPrompt( ByteString("安裝 ").FromUtf8() + String(APPNAME), ByteString("確定要在此電腦上安裝 ").FromUtf8() + String(APPNAME) + ByteString("? \n這允許關聯沙盤檔案或直接從網站開啟沙盤").FromUtf8(), { [] {
 			if (Platform::Install())
 			{
-				new InformationMessage(ByteString("成功").FromUtf8(), ByteString("安装完成").FromUtf8(), false);
+				new InformationMessage(ByteString("成功").FromUtf8(), ByteString("安裝完成").FromUtf8(), false);
 			}
 			else
 			{
-				new ErrorMessage(ByteString("无法安装").FromUtf8(), ByteString("由于某些错误而未完成安装").FromUtf8());
+				new ErrorMessage(ByteString("無法安裝").FromUtf8(), ByteString("由於某些錯誤而未完成安裝").FromUtf8());
 			}
 		} });
 	}
 	else
 	{
-		new InformationMessage(ByteString("不需要安装").FromUtf8(), ByteString("不需要安装 ").FromUtf8() + String(APPNAME) + ByteString("在此平台上").FromUtf8(), false);
+		new InformationMessage(ByteString("不需要安裝").FromUtf8(), ByteString("不需要安裝 ").FromUtf8() + String(APPNAME) + ByteString("在此平臺上").FromUtf8(), false);
 	}
 }
 
@@ -467,12 +467,12 @@ ByteString GameController::StampRegion(ui::Point point1, ui::Point point2, bool 
 		newSave->paused = gameModel->GetPaused();
 		ByteString stampName = Client::Ref().AddStamp(std::move(newSave));
 		if (stampName.length() == 0)
-			new ErrorMessage(ByteString("无法创建stamp").FromUtf8(), ByteString("序列化保存文件时出错").FromUtf8());
+			new ErrorMessage(ByteString("無法建立stamp").FromUtf8(), ByteString("序列化儲存檔案時出錯").FromUtf8());
 		return stampName;
 	}
 	else
 	{
-		new ErrorMessage(ByteString("无法创建stamp").FromUtf8(), ByteString("生成保存文件时出错").FromUtf8());
+		new ErrorMessage(ByteString("無法建立stamp").FromUtf8(), ByteString("生成儲存檔案時出錯").FromUtf8());
 		return "";
 	}
 }
@@ -802,16 +802,16 @@ void GameController::SwitchGravity()
 	switch (gameModel->GetSimulation()->gravityMode)
 	{
 	case GRAV_VERTICAL:
-		gameModel->SetInfoTip(ByteString("引力模式:竖直").FromUtf8());
+		gameModel->SetInfoTip(ByteString("引力模式:豎直").FromUtf8());
 		break;
 	case GRAV_OFF:
-		gameModel->SetInfoTip(ByteString("引力模式:关闭").FromUtf8());
+		gameModel->SetInfoTip(ByteString("引力模式:關閉").FromUtf8());
 		break;
 	case GRAV_RADIAL:
 		gameModel->SetInfoTip(ByteString("引力模式:中心").FromUtf8());
 		break;
 	case GRAV_CUSTOM:
-		gameModel->SetInfoTip(ByteString("引力模式:自定义").FromUtf8());
+		gameModel->SetInfoTip(ByteString("引力模式:自定義").FromUtf8());
 		break;
 	}
 }
@@ -823,19 +823,19 @@ void GameController::SwitchAir()
 	switch (gameModel->GetSimulation()->air->airMode)
 	{
 	case AIR_ON:
-		gameModel->SetInfoTip(ByteString("空气模拟:开启").FromUtf8());
+		gameModel->SetInfoTip(ByteString("空氣模擬:開啟").FromUtf8());
 		break;
 	case AIR_PRESSUREOFF:
-		gameModel->SetInfoTip(ByteString("空气模拟:关闭压力").FromUtf8());
+		gameModel->SetInfoTip(ByteString("空氣模擬:關閉壓力").FromUtf8());
 		break;
 	case AIR_VELOCITYOFF:
-		gameModel->SetInfoTip(ByteString("空气模拟:关闭速度").FromUtf8());
+		gameModel->SetInfoTip(ByteString("空氣模擬:關閉速度").FromUtf8());
 		break;
 	case AIR_OFF:
-		gameModel->SetInfoTip(ByteString("空气模拟:关闭").FromUtf8());
+		gameModel->SetInfoTip(ByteString("空氣模擬:關閉").FromUtf8());
 		break;
 	case AIR_NOUPDATE:
-		gameModel->SetInfoTip(ByteString("空气模拟:更新停止").FromUtf8());
+		gameModel->SetInfoTip(ByteString("空氣模擬:更新停止").FromUtf8());
 		break;
 	}
 }
@@ -1056,13 +1056,13 @@ void GameController::SetEdgeMode(int edgeMode)
 	switch (edgeMode)
 	{
 		case EDGE_VOID:
-			gameModel->SetInfoTip(ByteString("边界模式:虚空").FromUtf8());
+			gameModel->SetInfoTip(ByteString("邊界模式:虛空").FromUtf8());
 			break;
 		case EDGE_SOLID:
-			gameModel->SetInfoTip(ByteString("边界模式:固体").FromUtf8());
+			gameModel->SetInfoTip(ByteString("邊界模式:固體").FromUtf8());
 			break;
 		case EDGE_LOOP:
-			gameModel->SetInfoTip(ByteString("边界模式:循环").FromUtf8());
+			gameModel->SetInfoTip(ByteString("邊界模式:迴圈").FromUtf8());
 			break;
 	}
 }
@@ -1194,7 +1194,7 @@ void GameController::OpenSearch(String searchText)
 				}
 				catch(GameModelException & ex)
 				{
-					new ErrorMessage(ByteString("无法打开沙盘").FromUtf8(), ByteString(ex.what()).FromUtf8());
+					new ErrorMessage(ByteString("無法開啟沙盤").FromUtf8(), ByteString(ex.what()).FromUtf8());
 				}
 			}
 		});
@@ -1209,7 +1209,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 	auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), RES.OriginRect());
 	if(!gameSave)
 	{
-		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法生成沙盘").FromUtf8());
+		new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("無法生成沙盤").FromUtf8());
 	}
 	else
 	{
@@ -1245,11 +1245,11 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 			tempSave->SetGameSave(std::move(gameSave));
 			gameModel->SetSaveFile(std::move(tempSave), gameView->ShiftBehaviour());
 			if (saveData.size() == 0)
-				new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法序列化沙盘数据").FromUtf8());
+				new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("無法序列化沙盤資料").FromUtf8());
 			else if (!Platform::WriteFile(saveData, gameModel->GetSaveFile()->GetName()))
-				new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法写入沙盘数据").FromUtf8());
+				new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("無法寫入沙盤資料").FromUtf8());
 			else
-				gameModel->SetInfoTip(ByteString("保存成功!").FromUtf8());
+				gameModel->SetInfoTip(ByteString("儲存成功!").FromUtf8());
 		}
 	}
 }
@@ -1276,7 +1276,7 @@ void GameController::OpenSaveDone()
 		}
 		catch(GameModelException & ex)
 		{
-			new ErrorMessage(ByteString("无法打开沙盘").FromUtf8(), ByteString(ex.what()).FromUtf8());
+			new ErrorMessage(ByteString("無法開啟沙盤").FromUtf8(), ByteString(ex.what()).FromUtf8());
 		}
 	}
 }
@@ -1358,7 +1358,7 @@ void GameController::OpenTags()
 	}
 	else
 	{
-		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("未打开沙盘").FromUtf8());
+		new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("未開啟沙盤").FromUtf8());
 	}
 }
 
@@ -1369,7 +1369,7 @@ void GameController::OpenStamps()
 		if (file)
 		{
 			if (file->GetError().length())
-				new ErrorMessage(ByteString("加载stamps时出错").FromUtf8(), file->GetError());
+				new ErrorMessage(ByteString("載入stamps時出錯").FromUtf8(), file->GetError());
 			else if (localBrowser->GetMoveToFront())
 				Client::Ref().MoveStampToFront(file->GetDisplayName().ToUtf8());
 			LoadStamp(file->TakeGameSave());
@@ -1416,7 +1416,7 @@ void GameController::OpenSaveWindow()
 		auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), RES.OriginRect());
 		if(!gameSave)
 		{
-			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法生成沙盘").FromUtf8());
+			new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("無法生成沙盤").FromUtf8());
 		}
 		else
 		{
@@ -1446,7 +1446,7 @@ void GameController::OpenSaveWindow()
 	}
 	else
 	{
-		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("需要登录后才能上传沙盘").FromUtf8());
+		new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("需要登入後才能上傳沙盤").FromUtf8());
 	}
 }
 
@@ -1458,7 +1458,7 @@ void GameController::SaveAsCurrent()
 		auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), RES.OriginRect());
 		if(!gameSave)
 		{
-			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法生成沙盘").FromUtf8());
+			new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("無法生成沙盤").FromUtf8());
 		}
 		else
 		{
@@ -1484,7 +1484,7 @@ void GameController::SaveAsCurrent()
 	}
 	else
 	{
-		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("需要登录后才能上传沙盘").FromUtf8());
+		new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("需要登入後才能上傳沙盤").FromUtf8());
 	}
 }
 
@@ -1612,11 +1612,11 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 			StringBuilder updateMessage;
 			if (Platform::CanUpdate())
 			{
-				updateMessage << ByteString("确定要运行更新程序吗？请在更新之前保存所有更改.\n\n当前版本:\n ").FromUtf8();
+				updateMessage << ByteString("確定要執行更新程式嗎？請在更新之前儲存所有更改.\n\n當前版本:\n ").FromUtf8();
 			}
 			else
 			{
-				updateMessage << ByteString("点击 \"继续\" 从官方网站下载最新版本.\n\n当前版本:\n ").FromUtf8();
+				updateMessage << ByteString("點選 \"繼續\" 從官方網站下載最新版本.\n\n當前版本:\n ").FromUtf8();
 			}
 
 			if constexpr (MOD)
@@ -1674,18 +1674,18 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 		case UpdateInfo::channelSnapshot:
 			if constexpr (MOD)
 			{
-				gameModel->AddNotification(new UpdateNotification(this, ByteString("发现新的mod版本可用 - 点击此处更新").FromUtf8()));
+				gameModel->AddNotification(new UpdateNotification(this, ByteString("發現新的mod版本可用 - 點選此處更新").FromUtf8()));
 			}
 			else
 			{
-				gameModel->AddNotification(new UpdateNotification(this, ByteString("发现新的快照版本可用 - 点击此处更新").FromUtf8()));
+				gameModel->AddNotification(new UpdateNotification(this, ByteString("發現新的快照版本可用 - 點選此處更新").FromUtf8()));
 			}
 			break;
 		case UpdateInfo::channelStable:
-			gameModel->AddNotification(new UpdateNotification(this, ByteString("发现新的版本可用 - 点击此处更新").FromUtf8()));
+			gameModel->AddNotification(new UpdateNotification(this, ByteString("發現新的版本可用 - 點選此處更新").FromUtf8()));
 			break;
 		case UpdateInfo::channelBeta:
-			gameModel->AddNotification(new UpdateNotification(this, ByteString("发现新的测试版本可用 - 点击此处更新").FromUtf8()));
+			gameModel->AddNotification(new UpdateNotification(this, ByteString("發現新的測試版本可用 - 點選此處更新").FromUtf8()));
 			break;
 	}
 }

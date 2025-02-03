@@ -16,12 +16,12 @@ constexpr auto defaultSize = ui::Point(200, 87);
 
 LoginView::LoginView():
 	ui::Window(ui::Point(-1, -1), defaultSize),
-	loginButton(new ui::Button(ui::Point(200-100, 87-17), ui::Point(100, 17), ByteString("登录").FromUtf8())),
-	cancelButton(new ui::Button(ui::Point(0, 87-17), ui::Point(101, 17), ByteString("注销").FromUtf8())),
-	titleLabel(new ui::Label(ui::Point(4, 5), ui::Point(200-16, 16), ByteString("登录到服务器").FromUtf8())),
+	loginButton(new ui::Button(ui::Point(200-100, 87-17), ui::Point(100, 17), ByteString("登入").FromUtf8())),
+	cancelButton(new ui::Button(ui::Point(0, 87-17), ui::Point(101, 17), ByteString("登出").FromUtf8())),
+	titleLabel(new ui::Label(ui::Point(4, 5), ui::Point(200-16, 16), ByteString("登入到伺服器").FromUtf8())),
 	infoLabel(new ui::RichLabel(ui::Point(6, 67), ui::Point(200-12, 16), "")),
-	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), Client::Ref().GetAuthUser().Username.FromUtf8(), ByteString("[用户名]").FromUtf8())),
-	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "", ByteString("[密码]").FromUtf8()))
+	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), Client::Ref().GetAuthUser().Username.FromUtf8(), ByteString("[使用者名稱]").FromUtf8())),
+	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "", ByteString("[密碼]").FromUtf8()))
 {
 	targetSize.SetTarget(Size.Y);
 	targetSize.SetValue(Size.Y);

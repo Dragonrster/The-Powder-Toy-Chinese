@@ -208,7 +208,7 @@ void CommandInterface::Init()
 		if(luaL_loadfile(L, "autorun.lua") || tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
 			Log(CommandInterface::LogError, LuaGetError());
 		else
-			Log(CommandInterface::LogWarning, ByteString("已加载 autorun.lua").FromUtf8());
+			Log(CommandInterface::LogWarning, ByteString("已載入 autorun.lua").FromUtf8());
 	}
 }
 

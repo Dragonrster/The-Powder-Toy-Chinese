@@ -37,7 +37,7 @@ ui::Window(ui::Point(-1, -1), ui::Point(200, 87)),
 tool(tool_),
 sim(sim_)
 {
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), ByteString("属性笔工具").FromUtf8());
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), ByteString("屬性筆工具").FromUtf8());
 	messageLabel->SetTextColour(style::Colour::InformationTitle);
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;

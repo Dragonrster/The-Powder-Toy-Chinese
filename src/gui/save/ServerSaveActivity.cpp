@@ -66,13 +66,13 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	AddComponent(titleLabel);
 	CheckName(save->GetName()); // set titleLabel text
 
-	ui::Label *previewLabel = new ui::Label(ui::Point((Size.X / 2) + 4, 5), ui::Point((Size.X / 2) - 8, 16), ByteString("预览").FromUtf8());
+	ui::Label *previewLabel = new ui::Label(ui::Point((Size.X / 2) + 4, 5), ui::Point((Size.X / 2) - 8, 16), ByteString("預覽").FromUtf8());
 	previewLabel->SetTextColour(style::Colour::InformationTitle);
 	previewLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	previewLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(previewLabel);
 
-	nameField = new ui::Textbox(ui::Point(8, 25), ui::Point((Size.X / 2) - 16, 16), save->GetName(), ByteString("[沙盘名称]").FromUtf8());
+	nameField = new ui::Textbox(ui::Point(8, 25), ui::Point((Size.X / 2) - 16, 16), save->GetName(), ByteString("[沙盤名稱]").FromUtf8());
 	nameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	nameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	nameField->SetActionCallback({ [this] { CheckName(nameField->GetText()); } });
@@ -80,14 +80,14 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	AddComponent(nameField);
 	FocusComponent(nameField);
 
-	descriptionField = new ui::Textbox(ui::Point(8, 65), ui::Point((Size.X / 2) - 16, Size.Y - (65 + 16 + 4)), save->GetDescription(), ByteString("[沙盘描述]").FromUtf8());
+	descriptionField = new ui::Textbox(ui::Point(8, 65), ui::Point((Size.X / 2) - 16, Size.Y - (65 + 16 + 4)), save->GetDescription(), ByteString("[沙盤描述]").FromUtf8());
 	descriptionField->SetMultiline(true);
 	descriptionField->SetLimit(254);
 	descriptionField->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	descriptionField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(descriptionField);
 
-	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X / 2) - 80, 16), ByteString("公开").FromUtf8(), "");
+	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X / 2) - 80, 16), ByteString("公開").FromUtf8(), "");
 	if (Client::Ref().GetAuthUser().Username != save->GetUserName())
 	{
 		// Save is not owned by the user, disable by default
@@ -100,7 +100,7 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	}
 	AddComponent(publishedCheckbox);
 
-	pausedCheckbox = new ui::Checkbox(ui::Point(130, 45), ui::Point(55, 16), ByteString("启动时暂停").FromUtf8(), "");
+	pausedCheckbox = new ui::Checkbox(ui::Point(130, 45), ui::Point(55, 16), ByteString("啟動時暫停").FromUtf8(), "");
 	pausedCheckbox->SetChecked(save->GetGameSave()->paused);
 	AddComponent(pausedCheckbox);
 
@@ -115,7 +115,7 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	AddComponent(cancelButton);
 	SetCancelButton(cancelButton);
 
-	ui::Button *okayButton = new ui::Button(ui::Point((Size.X / 2) - 76, Size.Y - 16), ui::Point(76, 16), ByteString("保存").FromUtf8());
+	ui::Button *okayButton = new ui::Button(ui::Point((Size.X / 2) - 76, Size.Y - 16), ui::Point(76, 16), ByteString("儲存").FromUtf8());
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.TextInactive = style::Colour::InformationTitle;
@@ -126,7 +126,7 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 
-	ui::Button *PublishingInfoButton = new ui::Button(ui::Point((Size.X * 3 / 4) - 75, Size.Y - 42), ui::Point(150, 16), ByteString("发布须知").FromUtf8());
+	ui::Button *PublishingInfoButton = new ui::Button(ui::Point((Size.X * 3 / 4) - 75, Size.Y - 42), ui::Point(150, 16), ByteString("釋出須知").FromUtf8());
 	PublishingInfoButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	PublishingInfoButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	PublishingInfoButton->Appearance.TextInactive = style::Colour::InformationTitle;
@@ -136,7 +136,7 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 											 }});
 	AddComponent(PublishingInfoButton);
 
-	ui::Button *RulesButton = new ui::Button(ui::Point((Size.X * 3 / 4) - 75, Size.Y - 22), ui::Point(150, 16), ByteString("沙盘上传须知").FromUtf8());
+	ui::Button *RulesButton = new ui::Button(ui::Point((Size.X * 3 / 4) - 75, Size.Y - 22), ui::Point(150, 16), ByteString("沙盤上傳須知").FromUtf8());
 	RulesButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	RulesButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	RulesButton->Appearance.TextInactive = style::Colour::InformationTitle;
@@ -160,7 +160,7 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, bool s
 	onUploaded(onUploaded_),
 	saveUploadTask(nullptr)
 {
-	ui::Label *titleLabel = new ui::Label(ui::Point(0, 0), Size, ByteString("正在保存到云端...").FromUtf8());
+	ui::Label *titleLabel = new ui::Label(ui::Point(0, 0), Size, ByteString("正在儲存到雲端...").FromUtf8());
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -178,7 +178,7 @@ void ServerSaveActivity::NotifyDone(Task *task)
 	if (!task->GetSuccess())
 	{
 		Exit();
-		new ErrorMessage(ByteString("错误").FromUtf8(), task->GetError());
+		new ErrorMessage(ByteString("錯誤").FromUtf8(), task->GetError());
 	}
 	else
 	{
@@ -194,12 +194,12 @@ void ServerSaveActivity::Save()
 {
 	if (!nameField->GetText().length())
 	{
-		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("必须为沙盘指定一个名称").FromUtf8());
+		new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("必須為沙盤指定一個名稱").FromUtf8());
 		return;
 	}
 	if (Client::Ref().GetAuthUser().Username != save->GetUserName() && publishedCheckbox->GetChecked())
 	{
-		new ConfirmPrompt(ByteString("发布").FromUtf8(), ByteString("此沙盘由").FromUtf8() + save->GetUserName().FromUtf8() + ByteString("发布,即将以自己的名义发布此沙盘:如没有获得授予,请取消选中发布框,否则继续").FromUtf8(), {[this]
+		new ConfirmPrompt(ByteString("釋出").FromUtf8(), ByteString("此沙盤由").FromUtf8() + save->GetUserName().FromUtf8() + ByteString("釋出,即將以自己的名義釋出此沙盤:如沒有獲得授予,請取消選中釋出框,否則繼續").FromUtf8(), {[this]
 																																																								  {
 																																																									  saveUpload();
 																																																								  }});
@@ -264,7 +264,7 @@ void ServerSaveActivity::ShowPublishingInfo()
 	// 	"If a save is under a week old and gains popularity fast, it will be automatically placed on the \btfront page\bw. Only published saves will be able to get here. Moderators can also choose to promote any save onto the front page, but this happens rarely. They can also demote any save from the front page that breaks a rule or they feel doesn't belong.\n"
 	// 	"Once you make a save, you can resave it as many times as you want. A short previous \btsave history\bw is saved, just right click any save in the save browser and select 'View History' to view it. This is useful for when you accidentally save something you didn't mean to and want to go back to the old version.\n";
 
-	new InformationMessage(ByteString("发布须知").FromUtf8(), ByteString("在TPT中，可以使用两种方式上传沙盘:\n公开和私人，通过选择(默认关闭)是否公开来设置，私人沙盘只能由本人或沙盘ID访问。\n\n\n\bt公开沙盘\bw会立即被使用按日期排布沙盘的人看到，公开沙盘后沙盘的评分将影响个人平均评分(显示在个人档案上)。公开的沙盘能被所有人评论和评分。\n\n\bt私人沙盘\bw不会出现在云沙盘更新中，这些沙盘也不会影响平均评分，尽管设置为私人，但别人仍然可以通过沙盘ID来访问他们。\n\n\n打开沙盘井点击沙盘名左侧的按钮\bt“重新上传当前沙盘”\bw，可以快速更改已经上传的沙盘，如果需更改沙盘描述或沙盘属性，可以点击右侧按钮\bt“修改沙盘属性”\bw，注意不能更改沙盘名称，这会重新创建一个全新的沙盘,如需发布一个设置为私人的沙盘，或将以前发布过的沙盘设置为私人，打开沙盘，选择“修改沙盘属性”按钮，在弹出的对话框中修改属性，在“个人沙盘”页面中选择所需要的沙盘来\bt删除沙盘或转为私人\bw。\n\n如果沙盘已经发布，并且短时间内拥有较高人气，它会自动出现在\bt首页(FP)\bw上。只有设置为公开的沙盘才有机会登上首页(FP)，版主同样有权限使某个沙盘在首页上显示，但这种情况非常少见，如果某沙盘被认为触犯了条例或不适合放在首页，版主同样有权限撤下它。\n\n沙盘发布后，可以不限次数的修改，服务器会保存\bt沙盘历史\bw，在沙盘浏览器中右键沙盘井选择“查看历史”就能找到它，这一功能可以帮助你找回以前的版本并修复错误。").FromUtf8(), true);
+	new InformationMessage(ByteString("釋出須知").FromUtf8(), ByteString("在TPT中，可以使用兩種方式上傳沙盤:\n公開和私人，透過選擇(預設關閉)是否公開來設定，私人沙盤只能由本人或沙盤ID訪問。\n\n\n\bt公開沙盤\bw會立即被使用按日期排布沙盤的人看到，公開沙盤後沙盤的評分將影響個人平均評分(顯示在個人檔案上)。公開的沙盤能被所有人評論和評分。\n\n\bt私人沙盤\bw不會出現在雲沙盤更新中，這些沙盤也不會影響平均評分，儘管設定為私人，但別人仍然可以透過沙盤ID來訪問他們。\n\n\n開啟沙盤井點選沙盤名左側的按鈕\bt“重新上傳當前沙盤”\bw，可以快速更改已經上傳的沙盤，如果需更改沙盤描述或沙盤屬性，可以點選右側按鈕\bt“修改沙盤屬性”\bw，注意不能更改沙盤名稱，這會重新建立一個全新的沙盤,如需釋出一個設定為私人的沙盤，或將以前釋出過的沙盤設定為私人，開啟沙盤，選擇“修改沙盤屬性”按鈕，在彈出的對話方塊中修改屬性，在“個人沙盤”頁面中選擇所需要的沙盤來\bt刪除沙盤或轉為私人\bw。\n\n如果沙盤已經發布，並且短時間內擁有較高人氣，它會自動出現在\bt首頁(FP)\bw上。只有設定為公開的沙盤才有機會登上首頁(FP)，版主同樣有許可權使某個沙盤在首頁上顯示，但這種情況非常少見，如果某沙盤被認為觸犯了條例或不適合放在首頁，版主同樣有許可權撤下它。\n\n沙盤釋出後，可以不限次數的修改，伺服器會儲存\bt沙盤歷史\bw，在沙盤瀏覽器中右鍵沙盤井選擇“檢視歷史”就能找到它，這一功能可以幫助你找回以前的版本並修復錯誤。").FromUtf8(), true);
 }
 
 void ServerSaveActivity::ShowRules()
@@ -340,15 +340,15 @@ void ServerSaveActivity::ShowRules()
 		"\n"
 		"If you have any questions about what is and isn't against the rules, feel free to contact a moderator.";
 
-	new InformationMessage(ByteString("沙盘上传须知").FromUtf8(), rules, true);
+	new InformationMessage(ByteString("沙盤上傳須知").FromUtf8(), rules, true);
 }
 
 void ServerSaveActivity::CheckName(String newname)
 {
 	if (newname.length() && newname == save->GetName() && save->GetUserName() == Client::Ref().GetAuthUser().Username)
-		titleLabel->SetText(ByteString("修改沙盘属性:").FromUtf8());
+		titleLabel->SetText(ByteString("修改沙盤屬性:").FromUtf8());
 	else
-		titleLabel->SetText(ByteString("保存到云端").FromUtf8());
+		titleLabel->SetText(ByteString("儲存到雲端").FromUtf8());
 }
 
 void ServerSaveActivity::OnTick()
@@ -378,7 +378,7 @@ void ServerSaveActivity::OnTick()
 		}
 		catch (const http::RequestError &ex)
 		{
-			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("上传失败:\n").FromUtf8() + ByteString(ex.what()).FromUtf8());
+			new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("上傳失敗:\n").FromUtf8() + ByteString(ex.what()).FromUtf8());
 		}
 		uploadSaveRequest.reset();
 	}

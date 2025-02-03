@@ -26,14 +26,14 @@ namespace Clipboard
 			"xclip -selection clipboard -target %s",
 			"xclip -out -selection clipboard -target TARGETS",
 			"xclip -out -selection clipboard -target %s",
-			ByteString("需要安装xclip实用程序").FromUtf8(),
+			ByteString("需要安裝xclip實用程式").FromUtf8(),
 			SDL_SYSWM_X11,
 		} },
 		{ "wl-clipboard", {
 			"wl-copy --type %s",
 			"wl-paste --list-types",
 			"wl-paste --type %s",
-			ByteString("需要安装wl剪贴板实用程序").FromUtf8(),
+			ByteString("需要安裝wl剪貼簿實用程式").FromUtf8(),
 			SDL_SYSWM_WAYLAND,
 		} },
 	};
