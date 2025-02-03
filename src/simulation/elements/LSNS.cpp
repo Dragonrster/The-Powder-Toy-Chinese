@@ -50,6 +50,8 @@ void Element::Element_LSNS()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int rd = parts[i].tmp2;
 	if (rd > 25) parts[i].tmp2 = rd = 25;
 	if (parts[i].life)
@@ -67,9 +69,10 @@ static int update(UPDATE_FUNC_ARGS)
 					if (!r)
 						continue;
 					int rt = TYP(r);
-					if (sim->parts_avg(i, ID(r), PT_INSL) != PT_INSL)
+					auto pavg = sim->parts_avg(i, ID(r), PT_INSL);
+					if (pavg != PT_INSL && pavg != PT_RSSS)
 					{
-						if ((sim->elements[rt].Properties&PROP_CONDUCTS) && !(rt == PT_WATR || rt == PT_SLTW || rt == PT_NTCT || rt == PT_PTCT || rt == PT_INWR) && parts[ID(r)].life == 0)
+						if ((elements[rt].Properties&PROP_CONDUCTS) && !(rt == PT_WATR || rt == PT_SLTW || rt == PT_NTCT || rt == PT_PTCT || rt == PT_INWR) && parts[ID(r)].life == 0)
 						{
 							parts[ID(r)].life = 4;
 							parts[ID(r)].ctype = rt;

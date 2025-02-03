@@ -15,6 +15,7 @@
 #include "client/http/SearchTagsRequest.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "tasks/Task.h"
 #include "tasks/TaskWindow.h"
 
@@ -25,7 +26,7 @@
 #include <algorithm>
 
 SearchController::SearchController(std::function<void ()> onDone_):
-	activePreview(NULL),
+	activePreview(nullptr),
 	nextQueryTime(0.0f),
 	nextQueryDone(true),
 	instantOpen(false),
@@ -71,7 +72,7 @@ void SearchController::Update()
 	if(activePreview && activePreview->HasExited)
 	{
 		delete activePreview;
-		activePreview = NULL;
+		activePreview = nullptr;
 		if(searchModel->GetLoadedSave())
 		{
 			Exit();
@@ -92,10 +93,8 @@ SearchController::~SearchController()
 {
 	delete activePreview;
 	delete searchModel;
-	if (searchView->CloseActiveWindow())
-	{
-		delete searchView;
-	}
+	searchView->CloseActiveWindow();
+	delete searchView;
 }
 
 void SearchController::DoSearch(String query, bool now)
@@ -134,6 +133,32 @@ void SearchController::SetPageRelative(int offset)
 	int page = std::min(std::max(searchModel->GetPageNum() + offset, 1), searchModel->GetPageCount());
 	if (page != searchModel->GetPageNum())
 		searchModel->UpdateSaveList(page, searchModel->GetLastQuery());
+}
+
+void SearchController::ChangePeriod(int period)
+{
+	switch(period)
+	{
+		case 0:
+			searchModel->SetPeriod(http::allSaves);
+			break;
+		case 1:
+			searchModel->SetPeriod(http::todaySaves);
+			break;
+		case 2:
+			searchModel->SetPeriod(http::weekSaves);
+			break;
+		case 3:
+			searchModel->SetPeriod(http::monthSaves);
+			break;
+		case 4:
+			searchModel->SetPeriod(http::yearSaves);
+			break;
+		default:
+			searchModel->SetPeriod(http::allSaves);
+	}
+
+	searchModel->UpdateSaveList(1, searchModel->GetLastQuery());
 }
 
 void SearchController::ChangeSort()

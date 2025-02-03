@@ -1,16 +1,15 @@
 #include "SimulationData.h"
-
 #include "ElementGraphics.h"
 #include "ElementDefs.h"
 #include "ElementClasses.h"
-
+#include "GOLString.h"
 #include "BuiltinGOL.h"
 #include "WallType.h"
 #include "MenuSection.h"
-
+#include "Misc.h"
 #include "graphics/Renderer.h"
 
-const BuiltinGOL builtinGol[NGOL] = {
+const std::array<BuiltinGOL, NGOL> SimulationData::builtinGol = {{
 	// * Ruleset:
 	//   * bits x = 8..0: stay if x neighbours present
 	//   * bits x = 16..9: begin if x-8 neighbours present
@@ -45,224 +44,293 @@ const BuiltinGOL builtinGol[NGOL] = {
 	{ "STAR", GT_STAR, 0x98478, 0x000040_rgb, 0x0000E6_rgb, NGT_STAR, String("Like Star Wars rule: B278/S3456/6") },
 	{ "FROG", GT_FROG, 0x21806, 0x006400_rgb, 0x00FF00_rgb, NGT_FROG, String("Frogs: B34/S12/3") },
 	{ "BRAN", GT_BRAN, 0x25440, 0xFFFF00_rgb, 0x969600_rgb, NGT_BRAN, String("Brian 6: B246/S6/3" )}
-};
+}};
 
-std::vector<wall_type> LoadWalls()
+static std::vector<wall_type> LoadWalls()
 {
 	return
 	std::vector<wall_type>{
-		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("ERASE"),           "DEFAULT_WL_ERASE",  String(ByteString("清除所有牆類").FromUtf8())},
-		{0xC0C0C0_rgb, 0x101010_rgb, 0, Renderer::WallIcon, String("CONDUCTIVE WALL"), "DEFAULT_WL_CNDTW",  String(ByteString("阻擋一切,可以當作導體").FromUtf8()) },
-		{0x808080_rgb, 0x808080_rgb, 0, Renderer::WallIcon, String("EWALL"),           "DEFAULT_WL_EWALL",  String(ByteString("電控牆,通電時允許透過").FromUtf8()) },
-		{0xFF8080_rgb, 0xFF2008_rgb, 1, Renderer::WallIcon, String("DETECTOR"),        "DEFAULT_WL_DTECT",  String(ByteString("檢測器,內部存在物質時,發出電脈衝").FromUtf8()) },
-		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("STREAMLINE"),      "DEFAULT_WL_STRM",   String(ByteString("風向計,設定一個風向計的起始點").FromUtf8()) },
-		{0x8080FF_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("FAN"),             "DEFAULT_WL_FAN",    String(ByteString("風扇,風扇產生氣壓使用直線工具設定方向和強度").FromUtf8()) },
-		{0xC0C0C0_rgb, 0x101010_rgb, 2, Renderer::WallIcon, String("LIQUID WALL"),     "DEFAULT_WL_LIQD",   String(ByteString("液體牆,阻擋大多數物體,除了液體,可以導電").FromUtf8()) },
-		{0x808080_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("ABSORB WALL"),     "DEFAULT_WL_ABSRB",  String(ByteString("吸收牆,吸收物質,允許氣壓透過").FromUtf8()) },
-		{0x808080_rgb, 0x000000_rgb, 3, Renderer::WallIcon, String("WALL"),            "DEFAULT_WL_WALL",   String(ByteString("基礎牆,阻擋一切").FromUtf8()) },
-		{0x3C3C3C_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("AIRONLY WALL"),    "DEFAULT_WL_AIR",    String(ByteString("壓力牆,允許壓力透過,阻擋一切物質").FromUtf8()) },
-		{0x575757_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("POWDER WALL"),     "DEFAULT_WL_POWDR",  String(ByteString("粉末牆,允許粉末透過,阻擋其他所有物質").FromUtf8()) },
-		{0xFFFF22_rgb, 0x101010_rgb, 2, Renderer::WallIcon, String("CONDUCTOR"),       "DEFAULT_WL_CNDTR",  String(ByteString("導體牆,允許所有物質透過.可以導電").FromUtf8()) },
-		{0x242424_rgb, 0x101010_rgb, 0, Renderer::WallIcon, String("EHOLE"),           "DEFAULT_WL_EHOLE",  String(ByteString("電鎖體,吸收物質,通電時釋放").FromUtf8()) },
-		{0x579777_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("GAS WALL"),        "DEFAULT_WL_GAS",    String(ByteString("氣體牆,允許氣體透過").FromUtf8()) },
-		{0xFFEE00_rgb, 0xAA9900_rgb, 4, Renderer::WallIcon, String("GRAVITY WALL"),    "DEFAULT_WL_GRVTY",  String(ByteString("引力牆,範圍內的萬有引力(注:預設的普通引力除外,可以按W切換)將失效").FromUtf8()) },
-		{0xFFAA00_rgb, 0xAA5500_rgb, 4, Renderer::WallIcon, String("ENERGY WALL"),     "DEFAULT_WL_ENRGY",  String(ByteString("能量牆,允許能量粒子透過,阻擋其他物質").FromUtf8()) },
-		{0xDCDCDC_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("AIRBLOCK WALL"),   "DEFAULT_WL_NOAIR",  String(ByteString("阻壓牆,允許所有物質透過,隔絕壓力").FromUtf8()) },
-		{0xDCDCDC_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("ERASEALL"),        "DEFAULT_WL_ERASEA", String(ByteString("清除牆,物質,標記").FromUtf8()) },
-		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("STASIS WALL"),     "DEFAULT_WL_STASIS", String(ByteString("靜止牆,靜止其內所有物質,除非通電").FromUtf8()) },
+		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("ERASE"),           "DEFAULT_WL_ERASE",  String(ByteString("清除所有墙类").FromUtf8())},
+		{0xC0C0C0_rgb, 0x101010_rgb, 0, Renderer::WallIcon, String("CONDUCTIVE WALL"), "DEFAULT_WL_CNDTW",  String(ByteString("阻挡一切,可以当作导体").FromUtf8()) },
+		{0x808080_rgb, 0x808080_rgb, 0, Renderer::WallIcon, String("EWALL"),           "DEFAULT_WL_EWALL",  String(ByteString("电控墙,通电时允许通过").FromUtf8()) },
+		{0xFF8080_rgb, 0xFF2008_rgb, 1, Renderer::WallIcon, String("DETECTOR"),        "DEFAULT_WL_DTECT",  String(ByteString("检测器,内部存在物质时,发出电脉冲").FromUtf8()) },
+		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("STREAMLINE"),      "DEFAULT_WL_STRM",   String(ByteString("风向计,设置一个风向计的起始点").FromUtf8()) },
+		{0x8080FF_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("FAN"),             "DEFAULT_WL_FAN",    String(ByteString("风扇,风扇产生气压使用直线工具设置方向和强度").FromUtf8()) },
+		{0xC0C0C0_rgb, 0x101010_rgb, 2, Renderer::WallIcon, String("LIQUID WALL"),     "DEFAULT_WL_LIQD",   String(ByteString("液体墙,阻挡大多数物体,除了液体,可以导电").FromUtf8()) },
+		{0x808080_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("ABSORB WALL"),     "DEFAULT_WL_ABSRB",  String(ByteString("吸收墙,吸收物质,允许气压通过").FromUtf8()) },
+		{0x808080_rgb, 0x000000_rgb, 3, Renderer::WallIcon, String("WALL"),            "DEFAULT_WL_WALL",   String(ByteString("基础墙,阻挡一切").FromUtf8()) },
+		{0x3C3C3C_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("AIRONLY WALL"),    "DEFAULT_WL_AIR",    String(ByteString("压力墙,允许压力通过,阻挡一切物质").FromUtf8()) },
+		{0x575757_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("POWDER WALL"),     "DEFAULT_WL_POWDR",  String(ByteString("粉末墙,允许粉末通过,阻挡其他所有物质").FromUtf8()) },
+		{0xFFFF22_rgb, 0x101010_rgb, 2, Renderer::WallIcon, String("CONDUCTOR"),       "DEFAULT_WL_CNDTR",  String(ByteString("导体墙,允许所有物质通过.可以导电").FromUtf8()) },
+		{0x242424_rgb, 0x101010_rgb, 0, Renderer::WallIcon, String("EHOLE"),           "DEFAULT_WL_EHOLE",  String(ByteString("电锁体,吸收物质,通电时释放").FromUtf8()) },
+		{0x579777_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("GAS WALL"),        "DEFAULT_WL_GAS",    String(ByteString("气体墙,允许气体通过").FromUtf8()) },
+		{0xFFEE00_rgb, 0xAA9900_rgb, 4, Renderer::WallIcon, String("GRAVITY WALL"),    "DEFAULT_WL_GRVTY",  String(ByteString("引力墙,范围内的万有引力(注:默认的普通引力除外,可以按W切换)将失效").FromUtf8()) },
+		{0xFFAA00_rgb, 0xAA5500_rgb, 4, Renderer::WallIcon, String("ENERGY WALL"),     "DEFAULT_WL_ENRGY",  String(ByteString("能量墙,允许能量粒子通过,阻挡其他物质").FromUtf8()) },
+		{0xDCDCDC_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("AIRBLOCK WALL"),   "DEFAULT_WL_NOAIR",  String(ByteString("阻压墙,允许所有物质通过,隔绝压力").FromUtf8()) },
+		{0xDCDCDC_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("ERASEALL"),        "DEFAULT_WL_ERASEA", String(ByteString("清除墙,物质,标记").FromUtf8()) },
+		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("STASIS WALL"),     "DEFAULT_WL_STASIS", String(ByteString("静止墙,静止其内所有物质,除非通电").FromUtf8()) },
 
 	};
 }
 
-std::vector<menu_section> LoadMenus()
+static std::vector<menu_section> LoadMenus()
 {
 	return
 	std::vector<menu_section>{
-		{0xE041, ByteString("牆").FromUtf8() , 0, 1},
-		{0xE042, ByteString("電子元件").FromUtf8(), 0, 1},
+{0xE041, ByteString("墙").FromUtf8() , 0, 1},
+		{0xE042, ByteString("电子元件").FromUtf8(), 0, 1},
 		{0xE056, ByteString("可控材料").FromUtf8(), 0, 1},
-		{0xE019, ByteString("感測器").FromUtf8(), 0, 1},
-		{0xE062, ByteString("動力材料").FromUtf8(), 0, 1},
+		{0xE019, ByteString("传感器").FromUtf8(), 0, 1},
+		{0xE062, ByteString("动力材料").FromUtf8(), 0, 1},
 		{0xE043, ByteString("爆炸物").FromUtf8(), 0, 1},
-		{0xE045, ByteString("氣體").FromUtf8(), 0, 1},
-		{0xE044, ByteString("液體").FromUtf8(), 0, 1},
+		{0xE045, ByteString("气体").FromUtf8(), 0, 1},
+		{0xE044, ByteString("液体").FromUtf8(), 0, 1},
 		{0xE050, ByteString("粉末").FromUtf8(), 0, 1},
-		{0xE051, ByteString("固體").FromUtf8(), 0, 1},
-		{0xE046, ByteString("放射性物質").FromUtf8(), 0, 1},
+		{0xE051, ByteString("固体").FromUtf8(), 0, 1},
+		{0xE046, ByteString("放射性物质").FromUtf8(), 0, 1},
 		{0xE04C, ByteString("特殊元素").FromUtf8(), 0, 1},
-		{0xE052, ByteString("生命遊戲").FromUtf8(), 0, 1},
+		{0xE052, ByteString("生命游戏").FromUtf8(), 0, 1},
 		{0xE057, ByteString("工具").FromUtf8(), 0, 1},
-		{0xE067, ByteString("收藏夾(使用Ctrl+Shift+Click切換元素的收藏狀態)").FromUtf8(), 0, 1},
-		{0xE064, ByteString("裝飾工具").FromUtf8(), 0, 1},
-		{0xE048, String("Cracker"), 0, 0},
-		{0xE048, String("Cracker!"), 0, 0},
+		{0xE067, ByteString("收藏夹(使用Ctrl+Shift+Click切换元素的收藏状态)").FromUtf8(), 0, 1},
+		{0xE064, ByteString("装饰工具").FromUtf8(), 0, 1},
 	};
 }
 
-std::vector<unsigned int> LoadLatent()
+void SimulationData::init_can_move()
 {
-	return
-	std::vector<unsigned int>{
-		/* NONE */ 0,
-		/* DUST */ 0,
-		/* WATR */ 7500,
-		/* OIL  */ 0,
-		/* FIRE */ 0,
-		/* STNE */ 0,
-		/* LAVA */ 0,
-		/* GUN  */ 0,
-		/* NITR */ 0,
-		/* CLNE */ 0,
-		/* GAS  */ 0,
-		/* C-4  */ 0,
-		/* GOO  */ 0,
-		/* ICE  */ 1095,
-		/* METL */ 919,
-		/* SPRK */ 0,
-		/* SNOW */ 1095,
-		/* WOOD */ 0,
-		/* NEUT */ 0,
-		/* PLUT */ 0,
-		/* PLNT */ 0,
-		/* ACID */ 0,
-		/* VOID */ 0,
-		/* WTRV */ 0,
-		/* CNCT */ 0,
-		/* DSTW */ 7500,
-		/* SALT */ 0,
-		/* SLTW */ 7500,
-		/* DMND */ 0,
-		/* BMTL */ 0,
-		/* BRMT */ 0,
-		/* PHOT */ 0,
-		/* URAN */ 0,
-		/* WAX  */ 0,
-		/* MWAX */ 0,
-		/* PSCN */ 0,
-		/* NSCN */ 0,
-		/* LN2  */ 0,
-		/* INSL */ 0,
-		/* VACU */ 0,
-		/* VENT */ 0,
-		/* RBDM */ 0,
-		/* LRBD */ 0,
-		/* NTCT */ 0,
-		/* SAND */ 0,
-		/* GLAS */ 0,
-		/* PTCT */ 0,
-		/* BGLA */ 0,
-		/* THDR */ 0,
-		/* PLSM */ 0,
-		/* ETRD */ 0,
-		/* NICE */ 0,
-		/* NBLE */ 0,
-		/* BTRY */ 0,
-		/* LCRY */ 0,
-		/* STKM */ 0,
-		/* SWCH */ 0,
-		/* SMKE */ 0,
-		/* DESL */ 0,
-		/* COAL */ 0,
-		/* LO2  */ 0,
-		/* O2   */ 0,
-		/* INWR */ 0,
-		/* YEST */ 0,
-		/* DYST */ 0,
-		/* THRM */ 0,
-		/* GLOW */ 0,
-		/* BRCK */ 0,
-		/* CFLM */ 0,
-		/* FIRW */ 0,
-		/* FUSE */ 0,
-		/* FSEP */ 0,
-		/* AMTR */ 0,
-		/* BCOL */ 0,
-		/* PCLN */ 0,
-		/* HSWC */ 0,
-		/* IRON */ 0,
-		/* MORT */ 0,
-		/* LIFE */ 0,
-		/* DLAY */ 0,
-		/* CO2  */ 0,
-		/* DRIC */ 0,
-		/* CBNW */ 7500,
-		/* STOR */ 0,
-		/* STOR */ 0,
-		/* FREE */ 0,
-		/* FREE */ 0,
-		/* FREE */ 0,
-		/* FREE */ 0,
-		/* FREE */ 0,
-		/* SPNG */ 0,
-		/* RIME */ 0,
-		/* FOG  */ 0,
-		/* BCLN */ 0,
-		/* LOVE */ 0,
-		/* DEUT */ 0,
-		/* WARP */ 0,
-		/* PUMP */ 0,
-		/* FWRK */ 0,
-		/* PIPE */ 0,
-		/* FRZZ */ 0,
-		/* FRZW */ 0,
-		/* GRAV */ 0,
-		/* BIZR */ 0,
-		/* BIZRG*/ 0,
-		/* BIZRS*/ 0,
-		/* INST */ 0,
-		/* ISOZ */ 0,
-		/* ISZS */ 0,
-		/* PRTI */ 0,
-		/* PRTO */ 0,
-		/* PSTE */ 0,
-		/* PSTS */ 0,
-		/* ANAR */ 0,
-		/* VINE */ 0,
-		/* INVS */ 0,
-		/* EQVE */ 0,
-		/* SPWN2*/ 0,
-		/* SPAWN*/ 0,
-		/* SHLD1*/ 0,
-		/* SHLD2*/ 0,
-		/* SHLD3*/ 0,
-		/* SHLD4*/ 0,
-		/* LOlZ */ 0,
-		/* WIFI */ 0,
-		/* FILT */ 0,
-		/* ARAY */ 0,
-		/* BRAY */ 0,
-		/* STKM2*/ 0,
-		/* BOMB */ 0,
-		/* C-5  */ 0,
-		/* SING */ 0,
-		/* QRTZ */ 0,
-		/* PQRT */ 0,
-		/* EMP  */ 0,
-		/* BREL */ 0,
-		/* ELEC */ 0,
-		/* ACEL */ 0,
-		/* DCEL */ 0,
-		/* TNT  */ 0,
-		/* IGNP */ 0,
-		/* BOYL */ 0,
-		/* GEL  */ 0,
-		/* FREE */ 0,
-		/* FREE */ 0,
-		/* FREE */ 0,
-		/* FREE */ 0,
-		/* WIND */ 0,
-		/* H2   */ 0,
-		/* SOAP */ 0,
-		/* NBHL */ 0,
-		/* NWHL */ 0,
-		/* MERC */ 0,
-		/* PBCN */ 0,
-		/* GPMP */ 0,
-		/* CLST */ 0,
-		/* WIRE */ 0,
-		/* GBMB */ 0,
-		/* FIGH */ 0,
-		/* FRAY */ 0,
-		/* REPL */ 0,
-	};
+	int movingType, destinationType;
+	// can_move[moving type][type at destination]
+	//  0 = No move/Bounce
+	//  1 = Swap
+	//  2 = Both particles occupy the same space.
+	//  3 = Varies, go run some extra checks
+
+	//particles that don't exist shouldn't move...
+	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
+		can_move[0][destinationType] = 0;
+
+	//initialize everything else to swapping by default
+	for (movingType = 1; movingType < PT_NUM; movingType++)
+		for (destinationType = 0; destinationType < PT_NUM; destinationType++)
+			can_move[movingType][destinationType] = 1;
+
+	//photons go through everything by default
+	for (destinationType = 1; destinationType < PT_NUM; destinationType++)
+		can_move[PT_PHOT][destinationType] = 2;
+
+	for (movingType = 1; movingType < PT_NUM; movingType++)
+	{
+		for (destinationType = 1; destinationType < PT_NUM; destinationType++)
+		{
+			//weight check, also prevents particles of same type displacing each other
+			if (elements[movingType].Weight <= elements[destinationType].Weight || destinationType == PT_GEL)
+				can_move[movingType][destinationType] = 0;
+
+			//other checks for NEUT and energy particles
+			if (movingType == PT_NEUT && (elements[destinationType].Properties&PROP_NEUTPASS))
+				can_move[movingType][destinationType] = 2;
+			if (movingType == PT_NEUT && (elements[destinationType].Properties&PROP_NEUTABSORB))
+				can_move[movingType][destinationType] = 1;
+			if (movingType == PT_NEUT && (elements[destinationType].Properties&PROP_NEUTPENETRATE))
+				can_move[movingType][destinationType] = 1;
+			if (destinationType == PT_NEUT && (elements[movingType].Properties&PROP_NEUTPENETRATE))
+				can_move[movingType][destinationType] = 0;
+			if ((elements[movingType].Properties&TYPE_ENERGY) && (elements[destinationType].Properties&TYPE_ENERGY))
+				can_move[movingType][destinationType] = 2;
+		}
+	}
+	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
+	{
+		//set what stickmen can move through
+		int stkm_move = 0;
+		if (elements[destinationType].Properties & (TYPE_LIQUID | TYPE_GAS))
+			stkm_move = 2;
+		if (!destinationType || destinationType == PT_PRTO || destinationType == PT_SPAWN || destinationType == PT_SPAWN2)
+			stkm_move = 2;
+		can_move[PT_STKM][destinationType] = stkm_move;
+		can_move[PT_STKM2][destinationType] = stkm_move;
+		can_move[PT_FIGH][destinationType] = stkm_move;
+
+		//spark shouldn't move
+		can_move[PT_SPRK][destinationType] = 0;
+	}
+	for (movingType = 1; movingType < PT_NUM; movingType++)
+	{
+		//everything "swaps" with VACU and BHOL to make them eat things
+		can_move[movingType][PT_BHOL] = 1;
+		can_move[movingType][PT_NBHL] = 1;
+		//nothing goes through stickmen
+		can_move[movingType][PT_STKM] = 0;
+		can_move[movingType][PT_STKM2] = 0;
+		can_move[movingType][PT_FIGH] = 0;
+		//INVS behaviour varies with pressure
+		can_move[movingType][PT_INVIS] = 3;
+		//stop CNCT from being displaced by other particles
+		can_move[movingType][PT_CNCT] = 0;
+		//VOID and PVOD behaviour varies with powered state and ctype
+		can_move[movingType][PT_PVOD] = 3;
+		can_move[movingType][PT_VOID] = 3;
+		//nothing moves through EMBR (not sure why, but it's killed when it touches anything)
+		can_move[movingType][PT_EMBR] = 0;
+		can_move[PT_EMBR][movingType] = 0;
+		//Energy particles move through VIBR and BVBR, so it can absorb them
+		if (elements[movingType].Properties & TYPE_ENERGY)
+		{
+			can_move[movingType][PT_VIBR] = 1;
+			can_move[movingType][PT_BVBR] = 1;
+		}
+
+		//SAWD cannot be displaced by other powders
+		if (elements[movingType].Properties & TYPE_PART)
+			can_move[movingType][PT_SAWD] = 0;
+	}
+
+	for (destinationType = 0; destinationType < PT_NUM; destinationType++)
+	{
+		//a list of lots of things PHOT can move through
+		if (elements[destinationType].Properties & PROP_PHOTPASS)
+			can_move[PT_PHOT][destinationType] = 2;
+
+		//Things PROT and GRVT cannot move through
+		if (destinationType != PT_DMND && destinationType != PT_INSL && destinationType != PT_VOID && destinationType != PT_PVOD && destinationType != PT_VIBR && destinationType != PT_BVBR && destinationType != PT_PRTI && destinationType != PT_PRTO)
+		{
+			can_move[PT_PROT][destinationType] = 2;
+			can_move[PT_GRVT][destinationType] = 2;
+		}
+	}
+
+	//other special cases that weren't covered above
+	can_move[PT_DEST][PT_DMND] = 0;
+	can_move[PT_DEST][PT_CLNE] = 0;
+	can_move[PT_DEST][PT_PCLN] = 0;
+	can_move[PT_DEST][PT_BCLN] = 0;
+	can_move[PT_DEST][PT_PBCN] = 0;
+	can_move[PT_DEST][PT_ROCK] = 0;
+
+	can_move[PT_NEUT][PT_INVIS] = 2;
+	can_move[PT_ELEC][PT_LCRY] = 2;
+	can_move[PT_ELEC][PT_EXOT] = 2;
+	can_move[PT_ELEC][PT_GLOW] = 2;
+	can_move[PT_PHOT][PT_LCRY] = 3; //varies according to LCRY life
+	can_move[PT_PHOT][PT_GPMP] = 3;
+
+	can_move[PT_PHOT][PT_BIZR] = 2;
+	can_move[PT_ELEC][PT_BIZR] = 2;
+	can_move[PT_PHOT][PT_BIZRG] = 2;
+	can_move[PT_ELEC][PT_BIZRG] = 2;
+	can_move[PT_PHOT][PT_BIZRS] = 2;
+	can_move[PT_ELEC][PT_BIZRS] = 2;
+	can_move[PT_BIZR][PT_FILT] = 2;
+	can_move[PT_BIZRG][PT_FILT] = 2;
+
+	can_move[PT_ANAR][PT_WHOL] = 1; //WHOL eats ANAR
+	can_move[PT_ANAR][PT_NWHL] = 1;
+	can_move[PT_ELEC][PT_DEUT] = 1;
+	can_move[PT_THDR][PT_THDR] = 2;
+	can_move[PT_EMBR][PT_EMBR] = 2;
+	can_move[PT_TRON][PT_SWCH] = 3;
+	can_move[PT_ELEC][PT_RSST] = 2;
+	can_move[PT_ELEC][PT_RSSS] = 2;
+}
+
+const CustomGOLData *SimulationData::GetCustomGOLByRule(int rule) const
+{
+	// * Binary search. customGol is already sorted, see SetCustomGOL.
+	auto it = std::lower_bound(customGol.begin(), customGol.end(), rule, [](const CustomGOLData &item, int rule) {
+		return item.rule < rule;
+	});
+	if (it != customGol.end() && !(rule < it->rule))
+	{
+		return &*it;
+	}
+	return nullptr;
+}
+
+void SimulationData::SetCustomGOL(std::vector<CustomGOLData> newCustomGol)
+{
+	std::sort(newCustomGol.begin(), newCustomGol.end());
+	customGol = newCustomGol;
+}
+
+String SimulationData::ElementResolve(int type, int ctype) const
+{
+	if (type == PT_LIFE)
+	{
+		if (ctype >= 0 && ctype < NGOL)
+		{
+			return builtinGol[ctype].name; 
+		}
+		auto *cgol = GetCustomGOLByRule(ctype);
+		if (cgol)
+		{
+			return cgol->nameString;
+		}
+		return SerialiseGOLRule(ctype);
+	}
+	else if (type >= 0 && type < PT_NUM)
+		return elements[type].Name;
+	return "Empty";
+}
+
+String SimulationData::BasicParticleInfo(Particle const &sample_part) const
+{
+	StringBuilder sampleInfo;
+	int type = sample_part.type;
+	int ctype = sample_part.ctype;
+	int storedCtype = sample_part.tmp4;
+	if (type == PT_LAVA && IsElement(ctype))
+	{
+		sampleInfo << ByteString("熔融的 ").FromUtf8() << ElementResolve(ctype, -1);
+	}
+	else if ((type == PT_PIPE || type == PT_PPIP) && IsElement(ctype))
+	{
+		if (ctype == PT_LAVA && IsElement(storedCtype))
+		{
+			sampleInfo << ElementResolve(type, -1) << ByteString(" 含熔融的 ").FromUtf8() << ElementResolve(storedCtype, -1);
+		}
+		else
+		{
+			sampleInfo << ElementResolve(type, -1) << ByteString(" 含 ").FromUtf8() << ElementResolve(ctype, storedCtype);
+		}
+	}
+	else
+	{
+		sampleInfo << ElementResolve(type, ctype);
+	}
+	return sampleInfo.Build();
+}
+
+int SimulationData::GetParticleType(ByteString type) const
+{
+	type = type.ToUpper();
+
+	// alternative names for some elements
+	if (byteStringEqualsLiteral(type, "C4"))
+	{
+		return PT_PLEX;
+	}
+	else if (byteStringEqualsLiteral(type, "C5"))
+	{
+		return PT_C5;
+	}
+	else if (byteStringEqualsLiteral(type, "NONE"))
+	{
+		return PT_NONE;
+	}
+	for (int i = 1; i < PT_NUM; i++)
+	{
+		if (elements[i].Name.size() && elements[i].Enabled && type == elements[i].Name.ToUtf8().ToUpper())
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+SimulationData::SimulationData()
+{
+	msections = LoadMenus();
+	wtypes = LoadWalls();
+	elements = GetElements();
+	init_can_move();
 }

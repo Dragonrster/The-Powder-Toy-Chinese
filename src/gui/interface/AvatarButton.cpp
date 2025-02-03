@@ -2,6 +2,7 @@
 #include "AvatarButton.h"
 #include "Format.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "ContextMenu.h"
 #include "Config.h"
 #include <iostream>
@@ -9,20 +10,28 @@
 
 namespace ui {
 
-AvatarButton::AvatarButton(Point position, Point size, ByteString username):
+AvatarButton::AvatarButton(Point position, Point size, ByteString username, int avatarSize):
 	Component(position, size),
 	name(username),
+	avatarSize(avatarSize),
 	tried(false)
 {
 
 }
 
-void AvatarButton::Tick(float dt)
+void AvatarButton::Tick()
 {
 	if (!avatar && !tried && name.size() > 0)
 	{
 		tried = true;
-		imageRequest = std::make_unique<http::ImageRequest>(ByteString::Build(SCHEME, STATICSERVER, "/avatars/", name, ".png"), Size);
+		ByteStringBuilder urlBuilder;
+		urlBuilder << STATICSERVER << "/avatars/" << name;
+		if (avatarSize)
+		{
+			urlBuilder << "." << avatarSize;
+		}
+		urlBuilder << ".png";
+		imageRequest = std::make_unique<http::ImageRequest>(urlBuilder.Build(), Size);
 		imageRequest->Start();
 	}
 
@@ -44,14 +53,14 @@ void AvatarButton::Draw(const Point& screenPos)
 {
 	Graphics * g = GetGraphics();
 
-	if(avatar)
+	if (avatar)
 	{
 		auto *tex = avatar.get();
 		g->BlendImage(tex->Data(), 255, RectSized(screenPos, tex->Size()));
 	}
 }
 
-void AvatarButton::OnMouseUnclick(int x, int y, unsigned int button)
+void AvatarButton::OnMouseClick(int x, int y, unsigned int button)
 {
 	if(button != 1)
 	{
@@ -70,16 +79,19 @@ void AvatarButton::OnContextMenuAction(int item)
 	//Do nothing
 }
 
-void AvatarButton::OnMouseClick(int x, int y, unsigned int button)
+void AvatarButton::OnMouseDown(int x, int y, unsigned int button)
 {
-	if(button == SDL_BUTTON_RIGHT)
+	if (MouseDownInside)
 	{
-		if(menu)
-			menu->Show(GetScreenPos() + ui::Point(x, y));
-	}
-	else
-	{
-		isButtonDown = true;
+		if(button == SDL_BUTTON_RIGHT)
+		{
+			if(menu)
+				menu->Show(GetContainerPos() + ui::Point(x, y));
+		}
+		else
+		{
+			isButtonDown = true;
+		}
 	}
 }
 

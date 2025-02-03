@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
+#include "SOAP.h"
 
-void Element_SOAP_detach(Simulation * sim, int i);
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS);
@@ -53,7 +53,9 @@ void Element::Element_STOR()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	if (!sim->IsElementOrNone(parts[i].tmp))
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	if (!sd.IsElementOrNone(parts[i].tmp))
 		parts[i].tmp = 0;
 	if(parts[i].life && !parts[i].tmp)
 		parts[i].life--;
@@ -64,9 +66,11 @@ static int update(UPDATE_FUNC_ARGS)
 			if (rx || ry)
 			{
 				auto r = pmap[y+ry][x+rx];
-				if ((ID(r))>=NPART || !r)
+				if (!r)
+					r= sim->photons[y+ry][x+rx];
+				if (!r)
 					continue;
-				if (!parts[i].tmp && !parts[i].life && TYP(r)!=PT_STOR && !(sim->elements[TYP(r)].Properties&TYPE_SOLID) && (!parts[i].ctype || TYP(r)==parts[i].ctype))
+				if (!parts[i].tmp && !parts[i].life && TYP(r)!=PT_STOR && !(elements[TYP(r)].Properties&TYPE_SOLID) && (!parts[i].ctype || TYP(r)==parts[i].ctype))
 				{
 					if (TYP(r) == PT_SOAP)
 						Element_SOAP_detach(sim, ID(r));
@@ -120,7 +124,9 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 
 static bool ctypeDraw(CTYPEDRAW_FUNC_ARGS)
 {
-	if (sim->elements[t].Properties & TYPE_SOLID)
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	if (elements[t].Properties & TYPE_SOLID)
 	{
 		return false;
 	}

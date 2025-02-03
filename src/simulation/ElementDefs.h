@@ -17,7 +17,7 @@ constexpr auto TYPE_GAS           = UINT32_C(0x00000008);  //8 Gases (Includes p
 constexpr auto TYPE_ENERGY        = UINT32_C(0x00000010);  //16 Energy (Thunder, Light, Neutrons etc.)
 constexpr auto STATE_FLAGS        = UINT32_C(0x0000001F);
 constexpr auto PROP_CONDUCTS      = UINT32_C(0x00000020);  //32 Conducts electricity
-constexpr auto PROP_BLACK         = UINT32_C(0x00000040);  //64 Absorbs Photons (not currently implemented or used, a photwl attribute might be better)
+constexpr auto PROP_PHOTPASS      = UINT32_C(0x00000040);  //64 Photons pass through (may refract as in glass)
 constexpr auto PROP_NEUTPENETRATE = UINT32_C(0x00000080);  //128 Penetrated by neutrons
 constexpr auto PROP_NEUTABSORB    = UINT32_C(0x00000100);  //256 Absorbs neutrons, reflect is default
 constexpr auto PROP_NEUTPASS      = UINT32_C(0x00000200);  //512 Neutrons pass through, such as with glass
@@ -39,11 +39,11 @@ constexpr auto FLAG_MOVABLE       = UINT32_C(0x00000008); // compatibility with 
 constexpr auto FLAG_PHOTDECO      = UINT32_C(0x00000008); // compatibility with old saves (decorated photons), only applies to PHOT. Having the same value as FLAG_MOVABLE is fine because they apply to different elements, and this saves space for future flags,
 
 
-#define UPDATE_FUNC_ARGS Simulation* sim, int i, int x, int y, int surround_space, int nt, Particle *parts, int pmap[YRES][XRES]
+#define UPDATE_FUNC_ARGS Simulation* sim, int i, int x, int y, int surround_space, int nt, Parts &parts, int pmap[YRES][XRES]
 #define UPDATE_FUNC_SUBCALL_ARGS sim, i, x, y, surround_space, nt, parts, pmap
 
-#define GRAPHICS_FUNC_ARGS Renderer * ren, Particle *cpart, int nx, int ny, int *pixel_mode, int* cola, int *colr, int *colg, int *colb, int *firea, int *firer, int *fireg, int *fireb
-#define GRAPHICS_FUNC_SUBCALL_ARGS ren, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb
+#define GRAPHICS_FUNC_ARGS GraphicsFuncContext &gfctx, const Particle *cpart, int nx, int ny, int *pixel_mode, int* cola, int *colr, int *colg, int *colb, int *firea, int *firer, int *fireg, int *fireb
+#define GRAPHICS_FUNC_SUBCALL_ARGS gfctx, cpart, nx, ny, pixel_mode, cola, colr, colg, colb, firea, firer, fireg, fireb
 
 #define ELEMENT_CREATE_FUNC_ARGS Simulation *sim, int i, int x, int y, int t, int v
 
@@ -83,3 +83,4 @@ constexpr bool InBounds(int x, int y)
 }
 
 struct playerst;
+struct Parts;

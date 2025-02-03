@@ -30,6 +30,7 @@ TagsView::TagsView():
 	tagInput->Appearance.icon = IconTag;
 	tagInput->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tagInput->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	tagInput->SetLimit(16);
 	AddComponent(tagInput);
 
 	addButton = new ui::Button(ui::Point(tagInput->Position.X+tagInput->Size.X+4, tagInput->Position.Y), ui::Point(40, 16), "Add");
@@ -49,7 +50,7 @@ TagsView::TagsView():
 	AddComponent(title);
 }
 
-void TagsView::OnTick(float dt)
+void TagsView::OnTick()
 {
 	c->Tick();
 }

@@ -9,13 +9,13 @@
 using namespace ui;
 
 Component::Component(Point position, Point size):
-	parentstate_(0),
-	_parent(NULL),
+	parentstate_(nullptr),
+	_parent(nullptr),
 	drawn(false),
 	textPosition(0, 0),
 	textSize(0, 0),
 	iconPosition(0, 0),
-	menu(NULL),
+	menu(nullptr),
 	Position(position),
 	Size(size),
 	Enabled(true),
@@ -93,9 +93,9 @@ void Component::SetParentWindow(Window* window)
 
 void Component::SetParent(Panel* new_parent)
 {
-	if(new_parent == NULL)
+	if(new_parent == nullptr)
 	{
-		if(_parent != NULL)
+		if(_parent != nullptr)
 		{
 			// remove from current parent and send component to parent state
 			for(int i = 0; i < _parent->GetChildCount(); ++i)
@@ -124,15 +124,19 @@ void Component::SetParent(Panel* new_parent)
 	this->_parent = new_parent;
 }
 
-Point Component::GetScreenPos()
+Point Component::GetContainerPos()
 {
 	Point newPos(0,0);
 	if(GetParentWindow())
 		newPos += GetParentWindow()->Position;
 	if(GetParent())
 		newPos += GetParent()->Position + GetParent()->ViewportPosition;
-	newPos += Position;
 	return newPos;
+}
+
+Point Component::GetScreenPos()
+{
+	return GetContainerPos() + Position;
 }
 
 Graphics * Component::GetGraphics()
@@ -153,7 +157,7 @@ void Component::Draw(const Point& screenPos)
 	drawn = true;
 }
 
-void Component::Tick(float dt)
+void Component::Tick()
 {
 }
 
@@ -185,11 +189,7 @@ void Component::OnMouseHover(int localx, int localy)
 {
 }
 
-void Component::OnMouseMoved(int localx, int localy, int dx, int dy)
-{
-}
-
-void Component::OnMouseMovedInside(int localx, int localy, int dx, int dy)
+void Component::OnMouseMoved(int localx, int localy)
 {
 }
 
@@ -198,10 +198,6 @@ void Component::OnMouseEnter(int localx, int localy)
 }
 
 void Component::OnMouseLeave(int localx, int localy)
-{
-}
-
-void Component::OnMouseUnclick(int localx, int localy, unsigned button)
 {
 }
 

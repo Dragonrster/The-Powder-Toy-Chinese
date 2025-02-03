@@ -1,13 +1,18 @@
 #pragma once
 #include "common/String.h"
 #include "gui/interface/Window.h"
+#include "gui/interface/Fade.h"
 #include "simulation/Sample.h"
 #include "graphics/FindingElement.h"
+#include "graphics/RendererFrame.h"
 #include <ctime>
 #include <deque>
 #include <memory>
 #include <vector>
 #include <optional>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
 enum DrawMode
 {
@@ -27,9 +32,12 @@ namespace ui
 }
 
 class SplitButton;
+class Simulation;
+struct RenderableSimulation;
 
 class MenuButton;
 class Renderer;
+struct RendererSettings;
 class VideoBuffer;
 class ToolButton;
 class GameController;
@@ -54,21 +62,20 @@ private:
 	bool wallBrush;
 	bool toolBrush;
 	bool decoBrush;
-	bool windTool;
 	int toolIndex;
 	int currentSaveType;
 	int lastMenu;
 
-	int toolTipPresence;
+	ui::Fade toolTipPresence{ ui::Fade::LinearProfile{ 120.f, 60.f }, 0, 0 };
 	String toolTip;
 	bool isToolTipFadingIn;
 	ui::Point toolTipPosition;
-	int infoTipPresence;
+	ui::Fade infoTipPresence{ ui::Fade::LinearProfile{ 60.f, 60.f }, 0, 0 };
 	String infoTip;
-	int buttonTipShow;
+	ui::Fade buttonTipShow{ ui::Fade::LinearProfile{ 120.f, 60.f }, 0, 0 };
 	String buttonTip;
 	bool isButtonTipFadingIn;
-	int introText;
+	ui::Fade introText{ ui::Fade::LinearProfile{ 60.f, 60.f }, 0, 2048 };
 	String introTextMessage;
 
 	bool doScreenshot;
@@ -80,7 +87,10 @@ private:
 
 	ui::Point currentPoint, lastPoint;
 	GameController * c;
-	Renderer * ren;
+	Renderer *ren = nullptr;
+	RendererSettings *rendererSettings = nullptr;
+	bool wantFrame = false;
+	Simulation *sim = nullptr;
 	Brush const *activeBrush;
 	//UI Elements
 	std::vector<ui::Button*> quickOptionButtons;
@@ -98,6 +108,7 @@ private:
 	bool saveReuploadAllowed;
 	ui::Button * downVoteButton;
 	ui::Button * upVoteButton;
+	void ResetVoteButtons();
 	ui::Button * tagSimulationButton;
 	ui::Button * clearSimButton;
 	SplitButton * loginButton;
@@ -144,10 +155,34 @@ private:
 	Vec2<int> PlaceSavePos() const;
 
 	std::optional<FindingElement> FindingElementCandidate() const;
+	enum RendererThreadState
+	{
+		rendererThreadAbsent,
+		rendererThreadRunning,
+		rendererThreadPaused,
+		rendererThreadStopping,
+	};
+	RendererThreadState rendererThreadState = rendererThreadAbsent;
+	std::thread rendererThread;
+	std::mutex rendererThreadMx;
+	std::condition_variable rendererThreadCv;
+	bool rendererThreadOwnsRenderer = false;
+	void StartRendererThread();
+	void StopRendererThread();
+	void RendererThread();
+	void WaitForRendererThread();
+	void DispatchRendererThread();
+	std::unique_ptr<RenderableSimulation> rendererThreadSim;
+	std::unique_ptr<RendererFrame> rendererThreadResult;
+	int foundParticles = 0;
+	const RendererFrame *rendererFrame = nullptr;
+
+	SimFpsLimit simFpsLimit = FpsLimitExplicit{ 60.f };
+	void ApplySimFpsLimit();
 
 public:
 	GameView();
-	virtual ~GameView();
+	~GameView();
 
 	//Breaks MVC, but any other way is going to be more of a mess.
 	ui::Point GetMousePosition();
@@ -171,7 +206,7 @@ public:
 
 	//all of these are only here for one debug lines
 	bool GetMouseDown() { return isMouseDown; }
-	bool GetDrawingLine() { return drawMode == DrawLine && isMouseDown; }
+	bool GetDrawingLine() { return drawMode == DrawLine && isMouseDown && selectMode == SelectNone; }
 	bool GetDrawSnap() { return drawSnap; }
 	ui::Point GetLineStartCoords() { return drawPoint1; }
 	ui::Point GetLineFinishCoords() { return currentMouse; }
@@ -186,7 +221,7 @@ public:
 	void NotifySaveChanged(GameModel * sender);
 	void NotifyBrushChanged(GameModel * sender);
 	void NotifyMenuListChanged(GameModel * sender);
-	void NotifyToolListChanged(GameModel * sender);
+	void NotifyActiveMenuToolListChanged(GameModel * sender);
 	void NotifyActiveToolsChanged(GameModel * sender);
 	void NotifyUserChanged(GameModel * sender);
 	void NotifyZoomChanged(GameModel * sender);
@@ -212,7 +247,8 @@ public:
 	void OnMouseWheel(int x, int y, int d) override;
 	void OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
 	void OnKeyRelease(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt) override;
-	void OnTick(float dt) override;
+	void OnTick() override;
+	void OnSimTick() override;
 	void OnDraw() override;
 	void OnBlur() override;
 	void OnFileDrop(ByteString filename) override;
@@ -232,4 +268,25 @@ public:
 	class OptionListener;
 
 	void SkipIntroText();
+	pixel GetPixelUnderMouse() const;
+
+	const RendererFrame &GetRendererFrame() const
+	{
+		return *rendererFrame;
+	}
+	// Call this before accessing Renderer "out of turn", e.g. from RenderView or GameModel. This *does not*
+	// include OptionsModel or Lua setting functions because they only access the RendererSettings
+	// in GameModel, or Lua drawing functions because they only access Renderer in eventTraitSimGraphics
+	// and *SimDraw events, and the renderer thread gets paused anyway if there are handlers
+	// installed for such events.
+	void PauseRendererThread();
+
+	void RenderSimulation(const RenderableSimulation &sim, bool handleEvents);
+	void AfterSimDraw(const RenderableSimulation &sim);
+
+	void SetSimFpsLimit(SimFpsLimit newSimFpsLimit);
+	SimFpsLimit GetSimFpsLimit() const
+	{
+		return simFpsLimit;
+	}
 };

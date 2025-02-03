@@ -1,7 +1,5 @@
 #include "simulation/ElementCommon.h"
-
-int Element_VIBR_update(UPDATE_FUNC_ARGS);
-int Element_VIBR_graphics(GRAPHICS_FUNC_ARGS);
+#include "VIBR.h"
 
 void Element::Element_VIBR()
 {
@@ -48,8 +46,13 @@ void Element::Element_VIBR()
 	Graphics = &Element_VIBR_graphics;
 }
 
+constexpr int orbit_rx[8] = { -1,  0,  1,  1,  1,  0, -1, -1 };
+constexpr int orbit_ry[8] = { -1, -1, -1,  0,  1,  1,  1,  0 };
+
 int Element_VIBR_update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int rndstore = 0;
 	if (!parts[i].life) //if not exploding
 	{
@@ -85,11 +88,11 @@ int Element_VIBR_update(UPDATE_FUNC_ARGS)
 		rndstore = sim->rng.gen();
 		if (parts[i].life < 300)
 		{
-			auto rx = rndstore%3-1;
-			auto ry = (rndstore>>2)%3-1;
-			rndstore = rndstore >> 4;
+			auto rx = orbit_rx[rndstore & 7];
+			auto ry = orbit_ry[rndstore & 7];
+			rndstore = rndstore >> 3;
 			auto r = pmap[y+ry][x+rx];
-			if (TYP(r) && TYP(r) != PT_BREC && (sim->elements[TYP(r)].Properties&PROP_CONDUCTS) && !parts[ID(r)].life)
+			if (TYP(r) && TYP(r) != PT_BREC && (elements[TYP(r)].Properties&PROP_CONDUCTS) && !parts[ID(r)].life)
 			{
 				parts[ID(r)].life = 4;
 				parts[ID(r)].ctype = TYP(r);
@@ -102,7 +105,7 @@ int Element_VIBR_update(UPDATE_FUNC_ARGS)
 			auto rx = rndstore%7-3;
 			auto ry = (rndstore>>3)%7-3;
 			auto r = pmap[y+ry][x+rx];
-			if (TYP(r) && TYP(r)!=PT_VIBR  && TYP(r)!=PT_BVBR && sim->elements[TYP(r)].HeatConduct && (TYP(r)!=PT_HSWC||parts[ID(r)].life==10))
+			if (TYP(r) && TYP(r)!=PT_VIBR  && TYP(r)!=PT_BVBR && elements[TYP(r)].HeatConduct && (TYP(r)!=PT_HSWC||parts[ID(r)].life==10))
 			{
 				parts[ID(r)].temp += parts[i].tmp*3;
 				parts[i].tmp = 0;
@@ -114,19 +117,17 @@ int Element_VIBR_update(UPDATE_FUNC_ARGS)
 			if (!parts[i].tmp2)
 			{
 				rndstore = sim->rng.gen();
-				int index = sim->create_part(-3,x+((rndstore>>4)&3)-1,y+((rndstore>>6)&3)-1,PT_ELEC);
+				int index = sim->create_part(-3, x + (orbit_rx[rndstore & 7]), y + (orbit_ry[rndstore & 7]), PT_ELEC);
 				if (index != -1)
 					parts[index].temp = 7000;
-				index = sim->create_part(-3,x+((rndstore>>8)&3)-1,y+((rndstore>>10)&3)-1,PT_PHOT);
+				index = sim->create_part(-3, x + (orbit_rx[(rndstore >> 3) & 7]), y + (orbit_ry[(rndstore >> 3) & 7]), PT_PHOT);
 				if (index != -1)
 					parts[index].temp = 7000;
-				int rx = ((rndstore>>12)&3)-1;
-				rndstore = sim->rng.gen();
-				index = sim->create_part(-1,x+rx-1,y+rndstore%3-1,PT_BREC);
+				index = sim->create_part(-1, x + (orbit_rx[(rndstore >> 6) & 7]), y + (orbit_ry[(rndstore >> 6) & 7]), PT_BREC);
 				if (index != -1)
 					parts[index].temp = 7000;
 				sim->create_part(i, x, y, PT_EXOT);
-				parts[i].tmp2 = (rndstore>>2)%1000;
+				parts[i].tmp2 = (rndstore >> 9) % 1000;
 				parts[i].temp=9000;
 				sim->pv[y/CELL][x/CELL] += 50;
 

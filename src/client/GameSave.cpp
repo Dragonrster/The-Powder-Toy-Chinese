@@ -3,6 +3,7 @@
 #include "Format.h"
 #include "simulation/Simulation.h"
 #include "simulation/ElementClasses.h"
+#include "simulation/elements/PIPE.h"
 #include "common/tpt-compat.h"
 #include "bson/BSON.h"
 #include "graphics/Renderer.h"
@@ -15,8 +16,11 @@
 #include <cmath>
 #include <algorithm>
 
-constexpr auto currentVersionMajor = 97;
-constexpr auto nextVersionMajor = currentVersionMajor + 1;
+constexpr auto currentVersion = UPSTREAM_VERSION.displayVersion;
+constexpr auto nextVersion = Version(99, 2);
+static_assert(!ALLOW_FAKE_NEWER_VERSION || nextVersion >= currentVersion);
+
+constexpr auto effectiveVersion = ALLOW_FAKE_NEWER_VERSION ? nextVersion : currentVersion;
 
 static void ConvertJsonToBson(bson *b, Json::Value j, int depth = 0);
 static void ConvertBsonToJson(bson_iterator *b, Json::Value *j, int depth = 0);
@@ -46,6 +50,154 @@ GameSave::GameSave(const std::vector<char> &data, bool newWantAuthors)
 	}
 }
 
+void GameSave::MapPalette()
+{
+	// - the palette is always right
+	//   - there are palettes with missing entries but there are no palettes with incorrect entries
+	//   - for every (identifier, number) pair in the palette
+	//     - if the identifier is recognized, map the number to the appropriate element
+	//     - if not, map it to 0
+	//       - complain about the identifier if the corresponding number is actually used
+	// - to handle every number not covered by the palette
+	//   - in the case of any 98.0+ save, the palette is comprehensive
+	//     - except for the few cases already handled below
+	//       - e.g RSSS et al not having CarriesTypeIn set properly until 98.2
+	//       - can handle mistakes like this with similar extra code later
+	//     - map any number seen used to 0 and complain about the number
+	//   - in the case of any pre-98.0 save, the palette may not be comprehensive
+	//     - in the case of saves from 78.1 and newer
+	//       - identity-map only ranges of numbers that are known to have existed
+	//         at the point in time in vanilla when the save was made, based on this->version
+	//       - this is still not perfect because it lets numbers slip that a mod freed up a
+	//         vanilla element from and reused for one of its own elements, but that's fine
+	//     - in the case of saves older than that
+	//       - pretend that they are 78.1 in terms of validity of element numbers, this is good enough
+
+	std::vector<int> partMap(PT_NUM, 0);
+	std::vector<bool> ignoreMissingErrors(PT_NUM, false);
+	if (version <= Version(98, 2))
+	{
+		ignoreMissingErrors[PT_ICEI] = true;
+		ignoreMissingErrors[PT_SNOW] = true;
+		ignoreMissingErrors[PT_RSST] = true;
+		ignoreMissingErrors[PT_RSSS] = true;
+	}
+
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	std::map<ByteString, int> missingElementIdentifiers;
+	if (version < Version(98, 0))
+	{
+		struct CoarsePaletteInfo
+		{
+			Version<2> firstVersion; // the first version to which this entry applies
+			int maxValid;            // almost all element numbers in the range [1, maxValid] are valid, but see golHoleFirst
+			int golHoleFirst;        // the element numbers in the range [golHoleFirst, golHoleLast] are not valid
+			int golHoleLast;
+		};
+		static const std::vector<CoarsePaletteInfo> cpi = {
+			// must be sorted by firstVersion
+			{ Version(78, 1), 160, 144, 146 }, // 147 isn't allocated in this version but other elements
+			                                   // in certain states are loaded as 147, so leave it alone
+			{ Version(79, 0), 160, 145, 146 }, // similarly
+			{ Version(80, 0), 160, 146, 146 }, // similarly
+			{ Version(80, 5), 160, 146, 146 },
+			{ Version(81, 7), 161, 146, 146 },
+			{ Version(83, 0), 162, 146, 146 },
+			{ Version(83, 4), 163, 146, 146 },
+			{ Version(84, 0), 166, 146, 146 },
+			{ Version(86, 0), 169, 146, 146 },
+			{ Version(87, 1), 172, 146, 146 },
+			{ Version(89, 0), 176, 146, 146 },
+			{ Version(90, 0), 178, 146, 146 },
+			{ Version(91, 0), 179, 146, 146 },
+			{ Version(92, 0), 185, 146, 146 },
+			{ Version(94, 0), 186, 146, 146 },
+			{ Version(96, 0), 191, 146, 146 },
+		};
+		auto found = cpi[0]; // pretend everything is at least from the first version in the list
+		for (auto &info : std::span(cpi.begin() + 1, cpi.end()))
+		{
+			if (info.firstVersion <= version)
+			{
+				found = info;
+			}
+		}
+		for (int i = 1; i < found.maxValid; i++)
+		{
+			if (i >= found.golHoleFirst && i <= found.golHoleLast)
+			{
+				continue;
+			}
+			partMap[i] = i;
+		}
+	}
+	for (auto &pi : palette)
+	{
+		if (pi.second > 0 && pi.second < PT_NUM)
+		{
+			int myId = 0;
+			for (int i = 0; i < PT_NUM; i++)
+			{
+				if (elements[i].Enabled && elements[i].Identifier == pi.first)
+				{
+					myId = i;
+				}
+			}
+			partMap[pi.second] = myId;
+			if (!myId)
+			{
+				missingElementIdentifiers.insert(pi);
+			}
+		}
+	}
+	auto paletteLookup = [this, &partMap](int type, bool ignoreMissingErrors) {
+		if (type > 0 && type < PT_NUM)
+		{
+			auto carriedType = partMap[type];
+			if (!carriedType) // type is not 0 so this shouldn't be 0 either
+			{
+				if (ignoreMissingErrors)
+					return type;
+				missingElements.ids.insert(type);
+			}
+			type = carriedType;
+		}
+		return type;
+	};
+
+	unsigned int pmapmask = (1<<pmapbits)-1;
+	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
+	auto &properties = Particle::GetProperties();
+	for (int n = 0; n < NPART && n < particlesCount; n++)
+	{
+		Particle &tempPart = particles[n];
+		if (tempPart.type <= 0 || tempPart.type >= PT_NUM)
+		{
+			continue;
+		}
+		tempPart.type = paletteLookup(tempPart.type, false);
+		for (auto index : possiblyCarriesType)
+		{
+			if (elements[tempPart.type].CarriesTypeIn & (1U << index))
+			{
+				auto *prop = reinterpret_cast<int *>(reinterpret_cast<char *>(&tempPart) + properties[index].Offset);
+				auto carriedType = *prop & int(pmapmask);
+				auto extra = *prop >> pmapbits;
+				carriedType = paletteLookup(carriedType, ignoreMissingErrors[tempPart.type]);
+				*prop = PMAP(extra, carriedType);
+			}
+		}
+	}
+	for (const auto &pi : missingElementIdentifiers)
+	{
+		if (missingElements.ids.find(pi.second) != missingElements.ids.end())
+		{
+			missingElements.identifiers.insert(pi);
+		}
+	}
+}
+
 void GameSave::Expand(const std::vector<char> &data)
 {
 	try
@@ -67,6 +219,7 @@ void GameSave::Expand(const std::vector<char> &data)
 			std::cerr << "Got Magic number '" << data[0] << data[1] << data[2] << "'" << std::endl;
 			throw ParseException(ParseException::Corrupt, "Invalid save format");
 		}
+		MapPalette();
 	}
 	else
 	{
@@ -95,6 +248,10 @@ void GameSave::setSize(Vec2<int> newBlockSize)
 	ambientHeat = PlaneAdapter<std::vector<float>>(blockSize, 0.0f);
 	blockAir = PlaneAdapter<std::vector<unsigned char>>(blockSize, 0);
 	blockAirh = PlaneAdapter<std::vector<unsigned char>>(blockSize, 0);
+	gravMass = PlaneAdapter<std::vector<float>>(blockSize, 0.f);
+	gravMask = PlaneAdapter<std::vector<uint32_t>>(blockSize, UINT32_C(0xFFFFFFFF));
+	gravForceX = PlaneAdapter<std::vector<float>>(blockSize, 0.f);
+	gravForceY = PlaneAdapter<std::vector<float>>(blockSize, 0.f);
 }
 
 std::pair<bool, std::vector<char>> GameSave::Serialise() const
@@ -113,9 +270,6 @@ std::pair<bool, std::vector<char>> GameSave::Serialise() const
 	}
 	return { false, {} };
 }
-
-extern const std::array<Vec2<int>, 8> Element_PIPE_offsets;
-void Element_PIPE_transformPatchOffsets(Particle &part, const std::array<int, 8> &offsetMap);
 
 void GameSave::Transform(Mat2<int> transform, Vec2<int> nudge)
 {
@@ -214,6 +368,10 @@ void GameSave::Transform(Mat2<int> transform, Vec2<int> nudge)
 	PlaneAdapter<std::vector<float>> newAmbientHeat(newBlockS, 0.0f);
 	PlaneAdapter<std::vector<unsigned char>> newBlockAir(newBlockS, 0);
 	PlaneAdapter<std::vector<unsigned char>> newBlockAirh(newBlockS, 0);
+	PlaneAdapter<std::vector<float>> newGravMass(newBlockS, 0.f);
+	PlaneAdapter<std::vector<uint32_t>> newGravMask(newBlockS, UINT32_C(0xFFFFFFFF));
+	PlaneAdapter<std::vector<float>> newGravForceX(newBlockS, 0.f);
+	PlaneAdapter<std::vector<float>> newGravForceY(newBlockS, 0.f);
 	for (auto bpos : blockSize.OriginRect())
 	{
 		auto newBpos = transform * bpos + btranslate;
@@ -237,6 +395,10 @@ void GameSave::Transform(Mat2<int> transform, Vec2<int> nudge)
 		newAmbientHeat[newBpos] = ambientHeat[bpos];
 		newBlockAir[newBpos] = blockAir[bpos];
 		newBlockAirh[newBpos] = blockAirh[bpos];
+		newGravMass[newBpos] = gravMass[bpos];
+		newGravMask[newBpos] = gravMask[bpos];
+		newGravForceX[newBpos] = gravForceX[bpos];
+		newGravForceY[newBpos] = gravForceY[bpos];
 	}
 	blockMap = std::move(newBlockMap);
 	fanVelX = std::move(newFanVelX);
@@ -247,6 +409,10 @@ void GameSave::Transform(Mat2<int> transform, Vec2<int> nudge)
 	ambientHeat = std::move(newAmbientHeat);
 	blockAir = std::move(newBlockAir);
 	blockAirh = std::move(newBlockAirh);
+	gravMass = std::move(newGravMass);
+	gravMask = std::move(newGravMask);
+	gravForceX = std::move(newGravForceX);
+	gravForceY = std::move(newGravForceY);
 
 	blockSize = newBlockS;
 }
@@ -328,23 +494,26 @@ static void CheckBsonFieldFloat(bson_iterator iter, const char *field, float *se
 
 void GameSave::readOPS(const std::vector<char> &data)
 {
-	constexpr auto currentVersion = Version(currentVersionMajor, 0);
-	constexpr auto nextVersion = Version(nextVersionMajor, 0);
+	auto &builtinGol = SimulationData::builtinGol;
 
 	Renderer::PopulateTables();
 
-	unsigned char *inputData = (unsigned char*)&data[0], *partsData = NULL, *partsPosData = NULL, *fanData = NULL, *wallData = NULL, *soapLinkData = NULL;
-	unsigned char *pressData = NULL, *vxData = NULL, *vyData = NULL, *ambientData = NULL, *blockAirData = nullptr;
+	auto *inputData = reinterpret_cast<const unsigned char *>(data.data());
+	unsigned char *partsData = nullptr;
+	unsigned char *partsPosData = nullptr;
+	unsigned char *fanData = nullptr;
+	unsigned char *wallData = nullptr;
+	unsigned char *soapLinkData = nullptr;
+	unsigned char *pressData = nullptr, *vxData = nullptr, *vyData = nullptr, *ambientData = nullptr, *blockAirData = nullptr, *gravityData = nullptr;
 	unsigned int inputDataLen = data.size(), bsonDataLen = 0, partsDataLen, partsPosDataLen, fanDataLen, wallDataLen, soapLinkDataLen;
-	unsigned int pressDataLen, vxDataLen, vyDataLen, ambientDataLen, blockAirDataLen;
+	unsigned int pressDataLen, vxDataLen, vyDataLen, ambientDataLen, blockAirDataLen, gravityDataLen;
 	unsigned partsCount = 0;
 	unsigned int savedVersion = inputData[4];
 	version = { savedVersion, 0 };
 	bool fakeNewerVersion = false; // used for development builds only
 
 	bson b;
-	b.data = NULL;
-	bson_iterator iter;
+	b.data = nullptr;
 	auto bson_deleter = [](bson * b) { bson_destroy(b); };
 	// Use unique_ptr with a custom deleter to ensure that bson_destroy is called even when an exception is thrown
 	std::unique_ptr<bson, decltype(bson_deleter)> b_ptr(&b, bson_deleter);
@@ -356,13 +525,6 @@ void GameSave::readOPS(const std::vector<char> &data)
 	//Full size, normalised
 	auto partP = blockP * CELL;
 	auto partS = blockS * CELL;
-
-	//From newer version
-	if (savedVersion > currentVersion[0])
-	{
-		fromNewerVersion = true;
-		//throw ParseException(ParseException::WrongVersion, "Save from newer version");
-	}
 
 	//Incompatible cell size
 	if (inputData[5] != CELL)
@@ -389,7 +551,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 
 	{
 		std::vector<char> bsonData;
-		switch (auto status = BZ2WDecompress(bsonData, (char *)(inputData + 12), inputDataLen - 12, toAlloc))
+		switch (auto status = BZ2WDecompress(bsonData, std::span(reinterpret_cast<const char *>(inputData + 12), inputDataLen - 12), toAlloc))
 		{
 		case BZ2WDecompressOk: break;
 		case BZ2WDecompressNomem: throw ParseException(ParseException::Corrupt, "Cannot allocate memory");
@@ -409,10 +571,42 @@ void GameSave::readOPS(const std::vector<char> &data)
 
 	set_bson_err_handler([](const char* err) { throw ParseException(ParseException::Corrupt, "BSON error when parsing save: " + ByteString(err).FromUtf8()); });
 
-	bson_iterator_init(&iter, &b);
-
 	std::vector<sign> tempSigns;
 
+	{
+		// find origin first so version is accurate by the time checks against it are made
+		bson_iterator iter;
+		bson_iterator_init(&iter, &b);
+		while (bson_iterator_next(&iter))
+		{
+			if (!strcmp(bson_iterator_key(&iter), "origin"))
+			{
+				if (bson_iterator_type(&iter) == BSON_OBJECT)
+				{
+					bson_iterator subiter;
+					bson_iterator_subiterator(&iter, &subiter);
+					while (bson_iterator_next(&subiter))
+					{
+						if (bson_iterator_type(&subiter) == BSON_INT)
+						{
+							if (!strcmp(bson_iterator_key(&subiter), "minorVersion"))
+							{
+								version[1] = bson_iterator_int(&subiter);
+							}
+						}
+					}
+				}
+				else
+				{
+					fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
+				}
+			}
+		}
+	}
+	fromNewerVersion = version > currentVersion;
+
+	bson_iterator iter;
+	bson_iterator_init(&iter, &b);
 	while (bson_iterator_next(&iter))
 	{
 		CheckBsonFieldUser(iter, "parts", &partsData, &partsDataLen);
@@ -423,6 +617,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 		CheckBsonFieldUser(iter, "vyMap", &vyData, &vyDataLen);
 		CheckBsonFieldUser(iter, "ambientMap", &ambientData, &ambientDataLen);
 		CheckBsonFieldUser(iter, "blockAir", &blockAirData, &blockAirDataLen);
+		CheckBsonFieldUser(iter, "gravity", &gravityData, &gravityDataLen);
 		CheckBsonFieldUser(iter, "fanMap", &fanData, &fanDataLen);
 		CheckBsonFieldUser(iter, "soapLinks", &soapLinkData, &soapLinkDataLen);
 		CheckBsonFieldBool(iter, "legacyEnable", &legacyEnable);
@@ -574,33 +769,11 @@ void GameSave::readOPS(const std::vector<char> &data)
 				}
 			}
 		}
-		else if (!strcmp(bson_iterator_key(&iter), "origin"))
-		{
-			if (bson_iterator_type(&iter) == BSON_OBJECT)
-			{
-				bson_iterator subiter;
-				bson_iterator_subiterator(&iter, &subiter);
-				while (bson_iterator_next(&subiter))
-				{
-					if (bson_iterator_type(&subiter) == BSON_INT)
-					{
-						if (!strcmp(bson_iterator_key(&subiter), "minorVersion"))
-						{
-							version[1] = bson_iterator_int(&subiter);
-						}
-					}
-				}
-			}
-			else
-			{
-				fprintf(stderr, "Wrong type for %s\n", bson_iterator_key(&iter));
-			}
-		}
 		else if (!strcmp(bson_iterator_key(&iter), "minimumVersion"))
 		{
 			if (bson_iterator_type(&iter) == BSON_OBJECT)
 			{
-				Version<2> version;
+				Version<2> minimumVersion;
 				{
 					int major = INT_MAX, minor = INT_MAX;
 					bson_iterator subiter;
@@ -615,15 +788,14 @@ void GameSave::readOPS(const std::vector<char> &data)
 								minor = bson_iterator_int(&subiter);
 						}
 					}
-					version = Version(major, minor);
+					minimumVersion = Version(major, minor);
 				}
-				auto versionToCheck = ALLOW_FAKE_NEWER_VERSION ? nextVersion : currentVersion;
-				if (versionToCheck < version)
+				if (effectiveVersion < minimumVersion)
 				{
-					String errorMessage = String::Build("Save from a newer version: Requires version ", version[0], ".", version[1]);
+					String errorMessage = String::Build("Save from a newer version: Requires version ", minimumVersion[0], ".", minimumVersion[1]);
 					throw ParseException(ParseException::WrongVersion, errorMessage);
 				}
-				else if (ALLOW_FAKE_NEWER_VERSION && currentVersion < version)
+				else if (ALLOW_FAKE_NEWER_VERSION && currentVersion < minimumVersion)
 				{
 					fakeNewerVersion = true;
 				}
@@ -671,8 +843,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	//Read wall and fan data
 	if(wallData)
 	{
-		// TODO: use PlaneAdapter<std::span<unsigned char>> once we're C++20
-		auto wallDataPlane = PlaneAdapter<const std::basic_string_view<unsigned char>>(blockS, std::in_place, wallData, blockS.X * blockS.Y);
+		auto wallDataPlane = PlaneAdapter<PlaneBase<const unsigned char>>(blockS, std::in_place, wallData);
 		unsigned int j = 0;
 		if (blockS.X * blockS.Y > int(wallDataLen))
 			throw ParseException(ParseException::Corrupt, "Not enough wall data");
@@ -784,15 +955,34 @@ void GameSave::readOPS(const std::vector<char> &data)
 	{
 		if (blockS.X * blockS.Y * 2 > int(blockAirDataLen))
 			throw ParseException(ParseException::Corrupt, "Not enough block air data");
-		// TODO: use PlaneAdapter<std::span<unsigned char>> once we're C++20
-		auto blockAirDataPlane = PlaneAdapter<const std::basic_string_view<unsigned char>>(blockS, std::in_place, blockAirData, blockS.X * blockS.Y);
-		auto blockAirhDataPlane = PlaneAdapter<const std::basic_string_view<unsigned char>>(blockS, std::in_place, blockAirData + blockS.X * blockS.Y, blockS.X * blockS.Y);
+		auto blockAirDataPlane = PlaneAdapter<PlaneBase<const unsigned char>>(blockS, std::in_place, blockAirData);
+		auto blockAirhDataPlane = PlaneAdapter<PlaneBase<const unsigned char>>(blockS, std::in_place, blockAirData + blockS.X * blockS.Y);
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
-			blockAir[blockP + bpos] = blockAirDataPlane[bpos];
+			blockAir [blockP + bpos] = blockAirDataPlane [bpos];
 			blockAirh[blockP + bpos] = blockAirhDataPlane[bpos];
 		}
 		hasBlockAirMaps = true;
+	}
+
+	if (gravityData)
+	{
+		if (blockS.X * blockS.Y * 4 > int(gravityDataLen))
+		{
+			throw ParseException(ParseException::Corrupt, "Not enough gravity data");
+		}
+		auto massDataPlane   = PlaneAdapter<PlaneBase<const float   >>(blockS, std::in_place, reinterpret_cast<const float    *>(gravityData                                          ));
+		auto maskDataPlane   = PlaneAdapter<PlaneBase<const uint32_t>>(blockS, std::in_place, reinterpret_cast<const uint32_t *>(gravityData +     blockS.X * blockS.Y * sizeof(float)));
+		auto forceXDataPlane = PlaneAdapter<PlaneBase<const float   >>(blockS, std::in_place, reinterpret_cast<const float    *>(gravityData + 2 * blockS.X * blockS.Y * sizeof(float)));
+		auto forceYDataPlane = PlaneAdapter<PlaneBase<const float   >>(blockS, std::in_place, reinterpret_cast<const float    *>(gravityData + 3 * blockS.X * blockS.Y * sizeof(float)));
+		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
+		{
+			gravMass  [blockP + bpos] = massDataPlane  [bpos];
+			gravMask  [blockP + bpos] = maskDataPlane  [bpos];
+			gravForceX[blockP + bpos] = forceXDataPlane[bpos];
+			gravForceY[blockP + bpos] = forceYDataPlane[bpos];
+		}
+		hasGravityMaps = true;
 	}
 
 	//Read particle data
@@ -1185,9 +1375,10 @@ void GameSave::readOPS(const std::vector<char> &data)
 #define MTOS(str) MTOS_EXPAND(str)
 void GameSave::readPSv(const std::vector<char> &dataVec)
 {
+	auto &builtinGol = SimulationData::builtinGol;
 	Renderer::PopulateTables();
 
-	unsigned char * saveData = (unsigned char *)&dataVec[0];
+	auto *saveData = reinterpret_cast<const unsigned char *>(dataVec.data());
 	auto dataLength = int(dataVec.size());
 	int q,p=0, pty, ty, legacy_beta=0;
 	Vec2<int> blockP = { 0, 0 };
@@ -1197,7 +1388,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	char tempSignText[255];
 	sign tempSign("", 0, 0, sign::Left);
 
-	auto &elements = GetElements();
+	auto &builtinElements = GetElements();
 
 	//New file header uses PSv, replacing fuC. This is to detect if the client uses a new save format for temperatures
 	//This creates a problem for old clients, that display and "corrupt" error instead of a "newer version" error
@@ -1253,7 +1444,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		throw ParseException(ParseException::InvalidDimensions, "Save data too large");
 
 	std::vector<char> bsonData;
-	switch (auto status = BZ2WDecompress(bsonData, (char *)(saveData + 12), dataLength - 12, size))
+	switch (auto status = BZ2WDecompress(bsonData, std::span(reinterpret_cast<const char *>(saveData + 12), dataLength - 12), size))
 	{
 	case BZ2WDecompressOk: break;
 	case BZ2WDecompressNomem: throw ParseException(ParseException::Corrupt, "Cannot allocate memory");
@@ -1261,7 +1452,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	}
 
 	setSize(blockS);
-	const auto *data = reinterpret_cast<unsigned char *>(&bsonData[0]);
+	const auto *data = reinterpret_cast<const unsigned char *>(bsonData.data());
 	dataLength = bsonData.size();
 
 	if constexpr (DEBUG)
@@ -1349,8 +1540,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	}
 	for (auto bpos : RectSized(blockP, blockS).Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
-		// TODO: use PlaneAdapter<std::span<unsigned char>> once we're C++20
-		auto dataPlane = PlaneAdapter<const std::basic_string_view<unsigned char>>(blockS, std::in_place, data, blockS.X * blockS.Y);
+		auto dataPlane = PlaneAdapter<PlaneBase<const unsigned char>>(blockS, std::in_place, data);
 		if (dataPlane[bpos - blockP]==4||(ver>=44 && dataPlane[bpos - blockP]==O_WL_FAN))
 		{
 			if (p >= dataLength)
@@ -1360,8 +1550,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	}
 	for (auto bpos : RectSized(blockP, blockS).Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
-		// TODO: use PlaneAdapter<std::span<unsigned char>> once we're C++20
-		auto dataPlane = PlaneAdapter<const std::basic_string_view<unsigned char>>(blockS, std::in_place, data, blockS.X * blockS.Y);
+		auto dataPlane = PlaneAdapter<PlaneBase<const unsigned char>>(blockS, std::in_place, data);
 		if (dataPlane[bpos - blockP]==4||(ver>=44 && dataPlane[bpos - blockP]==O_WL_FAN))
 		{
 			if (p >= dataLength)
@@ -1384,7 +1573,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 			}
 			if (j)
 			{
-				memset(&particles[0]+k, 0, sizeof(Particle));
+				memset(&particles[k], 0, sizeof(Particle));
 				particles[k].type = j;
 				if (j == PT_COAL)
 					particles[k].tmp = 50;
@@ -1477,8 +1666,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 			}
 		}
 	}
-	// TODO: use PlaneAdapter<std::span<unsigned char>> once we're C++20
-	auto dataPlanePty = PlaneAdapter<const std::basic_string_view<unsigned char>>(partS, std::in_place, data + pty, partS.X * partS.Y);
+	auto dataPlanePty = PlaneAdapter<PlaneBase<const unsigned char>>(partS, std::in_place, data + pty);
 	if (ver>=53) {
 		for (auto pos : partS.OriginRect().Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 		{
@@ -1607,7 +1795,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 			}
 			else
 			{
-				particles[i-1].temp = elements[particles[i-1].type].DefaultProperties.temp;
+				particles[i-1].temp = builtinElements[particles[i-1].type].DefaultProperties.temp;
 			}
 		}
 	}
@@ -1772,31 +1960,31 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		return;
 
 	auto signCount = data[p++];
-	for (auto i=0; i<signCount; i++)
+	for (auto i = 0; i < signCount; i++)
 	{
 		if (p+6 > dataLength)
 			throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 		{
-			auto x = data[p++];
+			int x = data[p++];
 			x |= ((unsigned)data[p++])<<8;
 			tempSign.x = x+partP.X;
 		}
 		{
-			auto y = data[p++];
+			int y = data[p++];
 			y |= ((unsigned)data[p++])<<8;
 			tempSign.y = y+partP.Y;
 		}
 		{
-			auto ju = data[p++];
+			int ju = data[p++];
 			tempSign.ju = (sign::Justification)ju;
 		}
 		{
-			auto l = data[p++];
+			int l = data[p++];
 			if (p+l > dataLength)
 				throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 			if(l>254)
 				l = 254;
-			memcpy(tempSignText, &data[0]+p, l);
+			memcpy(tempSignText, &data[p], l);
 			tempSignText[l] = 0;
 			p += l;
 		}
@@ -1824,8 +2012,6 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 
 std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 {
-	constexpr auto currentVersion = Version(currentVersionMajor, 0);
-
 	// minimum version this save is compatible with
 	// when building, this number may be increased depending on what elements are used
 	// or what properties are detected
@@ -1857,8 +2043,17 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	std::vector<unsigned char> vxData(blockSize.X*blockSize.Y*2);
 	std::vector<unsigned char> vyData(blockSize.X*blockSize.Y*2);
 	std::vector<unsigned char> ambientData(blockSize.X*blockSize.Y*2, 0);
-	// TODO: have a separate vector with two PlaneAdapter<std::span<unsigned char>>s over it once we're C++20
-	PlaneAdapter<std::vector<unsigned char>> blockAirData({ blockSize.X, blockSize.Y * 2 });
+
+	std::vector<unsigned char> blockAirData(blockSize.X * blockSize.Y * 2);
+	PlaneAdapter<PlaneBase<unsigned char>> blockAirDataPlane (blockSize, std::in_place, blockAirData.data()                            );
+	PlaneAdapter<PlaneBase<unsigned char>> blockAirhDataPlane(blockSize, std::in_place, blockAirData.data() + blockSize.X * blockSize.Y);
+
+	std::vector<unsigned char> gravityData(blockSize.X * blockSize.Y * 4 * sizeof(float));
+	PlaneAdapter<PlaneBase<float   >> massDataPlane  (blockSize, std::in_place, reinterpret_cast<float    *>(gravityData.data()                                                ));
+	PlaneAdapter<PlaneBase<uint32_t>> maskDataPlane  (blockSize, std::in_place, reinterpret_cast<uint32_t *>(gravityData.data() +     blockSize.X * blockSize.Y * sizeof(float)));
+	PlaneAdapter<PlaneBase<float   >> forceXDataPlane(blockSize, std::in_place, reinterpret_cast<float    *>(gravityData.data() + 2 * blockSize.X * blockSize.Y * sizeof(float)));
+	PlaneAdapter<PlaneBase<float   >> forceYDataPlane(blockSize, std::in_place, reinterpret_cast<float    *>(gravityData.data() + 3 * blockSize.X * blockSize.Y * sizeof(float)));
+
 	unsigned int wallDataLen = blockSize.X*blockSize.Y, fanDataLen = 0, pressDataLen = 0, vxDataLen = 0, vyDataLen = 0, ambientDataLen = 0;
 
 	for (auto bpos : RectSized(blockP, blockS).Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
@@ -1882,8 +2077,13 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			vyData[vyDataLen++] = (unsigned char)((int)(velY*128)&0xFF);
 			vyData[vyDataLen++] = (unsigned char)((int)(velY*128)>>8);
 
-			blockAirData[bpos - blockP] = blockAir[bpos];
-			blockAirData[(bpos - blockP) + Vec2{ 0, blockS.Y }] = blockAirh[bpos];
+			blockAirDataPlane [bpos - blockP] = blockAir [bpos];
+			blockAirhDataPlane[bpos - blockP] = blockAirh[bpos];
+
+			massDataPlane  [bpos - blockP] = gravMass  [bpos];
+			maskDataPlane  [bpos - blockP] = gravMask  [bpos];
+			forceXDataPlane[bpos - blockP] = gravForceX[bpos];
+			forceYDataPlane[bpos - blockP] = gravForceY[bpos];
 		}
 
 		if (hasAmbientHeat)
@@ -1970,7 +2170,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	 That way, if we ever need a 25th bit, we won't have to change the save format
 	 */
 
-	auto &elements = GetElements();
+	auto &builtinElements = GetElements();
 	auto &possiblyCarriesType = Particle::PossiblyCarriesType();
 	auto &properties = Particle::GetProperties();
 	// Allocate enough space to store all Particles and 3 bytes on top of that per Particle, for the field descriptors.
@@ -1979,7 +2179,10 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	unsigned int partsDataLen = 0;
 	std::vector<unsigned> partsSaveIndex(NPART);
 	unsigned int partsCount = 0;
-	std::fill(&partsSaveIndex[0], &partsSaveIndex[0] + NPART, 0);
+	std::fill(partsSaveIndex.data(), partsSaveIndex.data() + NPART, 0);
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	std::set<int> paletteSet;
 	for (auto pos : partS.OriginRect().Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
 		//Find the first particle in this position
@@ -1997,23 +2200,41 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			//Store saved particle index+1 for this partsptr index (0 means not saved)
 			partsSaveIndex[i] = (partsCount++) + 1;
 
+			auto part = particles[i];
+			paletteSet.insert(part.type);
+			for (auto index : possiblyCarriesType)
+			{
+				if (elements[part.type].CarriesTypeIn & (1U << index))
+				{
+					auto *prop = reinterpret_cast<int *>(reinterpret_cast<char *>(&part) + properties[index].Offset);
+					if (sd.IsElement(TYP(*prop)))
+					{
+						paletteSet.insert(TYP(*prop));
+					}
+					else
+					{
+						*prop = PMAP(ID(*prop), 0);
+					}
+				}
+			}
+
 			//Type (required)
-			partsData[partsDataLen++] = particles[i].type;
+			partsData[partsDataLen++] = part.type;
 
 			//Location of the field descriptor
 			int fieldDesc3Loc = 0;
 			int fieldDescLoc = partsDataLen++;
 			partsDataLen++;
 
-			auto tmp3 = (unsigned int)(particles[i].tmp3);
-			auto tmp4 = (unsigned int)(particles[i].tmp4);
-			if ((tmp3 || tmp4) && (!PressureInTmp3(particles[i].type) || hasPressure))
+			auto tmp3 = (unsigned int)(part.tmp3);
+			auto tmp4 = (unsigned int)(part.tmp4);
+			if ((tmp3 || tmp4) && (!PressureInTmp3(part.type) || hasPressure))
 			{
 				fieldDesc |= 1 << 13;
 				// The tmp3 of PressureInTmp3 elements is okay to truncate because the loading code
 				// sign extends it anyway, expecting the value to not be higher in magnitude than
 				// 256 (max pressure value) * 64 (tmp3 multiplicative bias).
-				if (((tmp3 >> 16) || (tmp4 >> 16)) && !PressureInTmp3(particles[i].type))
+				if (((tmp3 >> 16) || (tmp4 >> 16)) && !PressureInTmp3(part.type))
 				{
 					fieldDesc |= 1 << 15;
 					fieldDesc |= 1 << 16;
@@ -2022,24 +2243,24 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			}
 
 			// Extra type byte if necessary
-			if (particles[i].type & 0xFF00)
+			if (part.type & 0xFF00)
 			{
-				partsData[partsDataLen++] = particles[i].type >> 8;
+				partsData[partsDataLen++] = part.type >> 8;
 				fieldDesc |= 1 << 14;
 				RESTRICTVERSION(93, 0);
 			}
 
 			//Extra Temperature (2nd byte optional, 1st required), 1 to 2 bytes
 			//Store temperature as an offset of 21C(294.15K) or go into a 16byte int and store the whole thing
-			if(fabs(particles[i].temp-294.15f)<127)
+			if(fabs(part.temp-294.15f)<127)
 			{
-				tempTemp = int(floor(particles[i].temp-294.15f+0.5f));
+				tempTemp = int(floor(part.temp-294.15f+0.5f));
 				partsData[partsDataLen++] = tempTemp;
 			}
 			else
 			{
 				fieldDesc |= 1;
-				tempTemp = (int)(particles[i].temp+0.5f);
+				tempTemp = (int)(part.temp+0.5f);
 				partsData[partsDataLen++] = tempTemp;
 				partsData[partsDataLen++] = tempTemp >> 8;
 			}
@@ -2050,9 +2271,9 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			}
 
 			//Life (optional), 1 to 2 bytes
-			if(particles[i].life)
+			if(part.life)
 			{
-				int life = particles[i].life;
+				int life = part.life;
 				if (life > 0xFFFF)
 					life = 0xFFFF;
 				else if (life < 0)
@@ -2067,76 +2288,76 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			}
 
 			//Tmp (optional), 1, 2, or 4 bytes
-			if(particles[i].tmp)
+			if(part.tmp)
 			{
 				fieldDesc |= 1 << 3;
-				partsData[partsDataLen++] = particles[i].tmp;
-				if(particles[i].tmp & 0xFFFFFF00)
+				partsData[partsDataLen++] = part.tmp;
+				if(part.tmp & 0xFFFFFF00)
 				{
 					fieldDesc |= 1 << 4;
-					partsData[partsDataLen++] = particles[i].tmp >> 8;
-					if(particles[i].tmp & 0xFFFF0000)
+					partsData[partsDataLen++] = part.tmp >> 8;
+					if(part.tmp & 0xFFFF0000)
 					{
 						fieldDesc |= 1 << 12;
-						partsData[partsDataLen++] = (particles[i].tmp&0xFF000000)>>24;
-						partsData[partsDataLen++] = (particles[i].tmp&0x00FF0000)>>16;
+						partsData[partsDataLen++] = (part.tmp&0xFF000000)>>24;
+						partsData[partsDataLen++] = (part.tmp&0x00FF0000)>>16;
 					}
 				}
 			}
 
 			//Ctype (optional), 1 or 4 bytes
-			if(particles[i].ctype)
+			if(part.ctype)
 			{
 				fieldDesc |= 1 << 5;
-				partsData[partsDataLen++] = particles[i].ctype;
-				if(particles[i].ctype & 0xFFFFFF00)
+				partsData[partsDataLen++] = part.ctype;
+				if(part.ctype & 0xFFFFFF00)
 				{
 					fieldDesc |= 1 << 9;
-					partsData[partsDataLen++] = (particles[i].ctype&0xFF000000)>>24;
-					partsData[partsDataLen++] = (particles[i].ctype&0x00FF0000)>>16;
-					partsData[partsDataLen++] = (particles[i].ctype&0x0000FF00)>>8;
+					partsData[partsDataLen++] = (part.ctype&0xFF000000)>>24;
+					partsData[partsDataLen++] = (part.ctype&0x00FF0000)>>16;
+					partsData[partsDataLen++] = (part.ctype&0x0000FF00)>>8;
 				}
 			}
 
 			//Dcolour (optional), 4 bytes
-			if(particles[i].dcolour && (particles[i].dcolour & 0xFF000000 || particles[i].type == PT_LIFE))
+			if(part.dcolour && (part.dcolour & 0xFF000000 || part.type == PT_LIFE))
 			{
 				fieldDesc |= 1 << 6;
-				partsData[partsDataLen++] = (particles[i].dcolour&0xFF000000)>>24;
-				partsData[partsDataLen++] = (particles[i].dcolour&0x00FF0000)>>16;
-				partsData[partsDataLen++] = (particles[i].dcolour&0x0000FF00)>>8;
-				partsData[partsDataLen++] = (particles[i].dcolour&0x000000FF);
+				partsData[partsDataLen++] = (part.dcolour&0xFF000000)>>24;
+				partsData[partsDataLen++] = (part.dcolour&0x00FF0000)>>16;
+				partsData[partsDataLen++] = (part.dcolour&0x0000FF00)>>8;
+				partsData[partsDataLen++] = (part.dcolour&0x000000FF);
 			}
 
 			//VX (optional), 1 byte
-			if(fabs(particles[i].vx) > 0.001f)
+			if(fabs(part.vx) > 0.001f)
 			{
 				fieldDesc |= 1 << 7;
-				vTemp = (int)(particles[i].vx*16.0f+127.5f);
+				vTemp = (int)(part.vx*16.0f+127.5f);
 				if (vTemp<0) vTemp=0;
 				if (vTemp>255) vTemp=255;
 				partsData[partsDataLen++] = vTemp;
 			}
 
 			//VY (optional), 1 byte
-			if(fabs(particles[i].vy) > 0.001f)
+			if(fabs(part.vy) > 0.001f)
 			{
 				fieldDesc |= 1 << 8;
-				vTemp = (int)(particles[i].vy*16.0f+127.5f);
+				vTemp = (int)(part.vy*16.0f+127.5f);
 				if (vTemp<0) vTemp=0;
 				if (vTemp>255) vTemp=255;
 				partsData[partsDataLen++] = vTemp;
 			}
 
 			//Tmp2 (optional), 1 or 2 bytes
-			if(particles[i].tmp2)
+			if(part.tmp2)
 			{
 				fieldDesc |= 1 << 10;
-				partsData[partsDataLen++] = particles[i].tmp2;
-				if(particles[i].tmp2 & 0xFF00)
+				partsData[partsDataLen++] = part.tmp2;
+				if(part.tmp2 & 0xFF00)
 				{
 					fieldDesc |= 1 << 11;
-					partsData[partsDataLen++] = particles[i].tmp2 >> 8;
+					partsData[partsDataLen++] = part.tmp2 >> 8;
 				}
 			}
 
@@ -2164,34 +2385,34 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 				partsData[fieldDesc3Loc] = fieldDesc>>16;
 			}
 
-			if (particles[i].type == PT_SOAP)
+			if (part.type == PT_SOAP)
 				soapCount++;
 
-			if (particles[i].type == PT_RPEL && particles[i].ctype)
+			if (part.type == PT_RPEL && part.ctype)
 			{
 				RESTRICTVERSION(91, 4);
 			}
-			else if (particles[i].type == PT_NWHL && particles[i].tmp)
+			else if (part.type == PT_NWHL && part.tmp)
 			{
 				RESTRICTVERSION(91, 5);
 			}
-			if (particles[i].type == PT_HEAC || particles[i].type == PT_SAWD || particles[i].type == PT_POLO
-					|| particles[i].type == PT_RFRG || particles[i].type == PT_RFGL || particles[i].type == PT_LSNS)
+			if (part.type == PT_HEAC || part.type == PT_SAWD || part.type == PT_POLO
+					|| part.type == PT_RFRG || part.type == PT_RFGL || part.type == PT_LSNS)
 			{
 				RESTRICTVERSION(92, 0);
 			}
-			else if ((particles[i].type == PT_FRAY || particles[i].type == PT_INVIS) && particles[i].tmp)
+			else if ((part.type == PT_FRAY || part.type == PT_INVIS) && part.tmp)
 			{
 				RESTRICTVERSION(92, 0);
 			}
-			else if (particles[i].type == PT_PIPE || particles[i].type == PT_PPIP)
+			else if (part.type == PT_PIPE || part.type == PT_PPIP)
 			{
 				RESTRICTVERSION(93, 0);
 			}
-			if (particles[i].type == PT_TSNS || particles[i].type == PT_PSNS
-			        || particles[i].type == PT_HSWC || particles[i].type == PT_PUMP)
+			if (part.type == PT_TSNS || part.type == PT_PSNS
+			        || part.type == PT_HSWC || part.type == PT_PUMP)
 			{
-				if (particles[i].tmp == 1)
+				if (part.tmp == 1)
 				{
 					RESTRICTVERSION(93, 0);
 				}
@@ -2200,9 +2421,9 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			{
 				for (auto index : possiblyCarriesType)
 				{
-					if (elements[particles[i].type].CarriesTypeIn & (1U << index))
+					if (builtinElements[part.type].CarriesTypeIn & (1U << index))
 					{
-						auto *prop = reinterpret_cast<const int *>(reinterpret_cast<const char *>(&particles[i]) + properties[index].Offset);
+						auto *prop = reinterpret_cast<const int *>(reinterpret_cast<const char *>(&part) + properties[index].Offset);
 						if (TYP(*prop) > 0xFF)
 						{
 							RESTRICTVERSION(93, 0);
@@ -2210,44 +2431,58 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 					}
 				}
 			}
-			if (particles[i].type == PT_LDTC)
+			if (part.type == PT_LDTC)
 			{
 				RESTRICTVERSION(94, 0);
 			}
-			if (particles[i].type == PT_TSNS || particles[i].type == PT_PSNS)
+			if (part.type == PT_TSNS || part.type == PT_PSNS)
 			{
-				if (particles[i].tmp == 2)
+				if (part.tmp == 2)
 				{
 					RESTRICTVERSION(94, 0);
 				}
 			}
-			if (particles[i].type == PT_LSNS)
+			if (part.type == PT_LSNS)
 			{
-				if (particles[i].tmp >= 1 || particles[i].tmp <= 3)
+				if (part.tmp >= 1 && part.tmp <= 3)
 				{
 					RESTRICTVERSION(95, 0);
 				}
 			}
-			if (particles[i].type == PT_LIFE)
+			if (part.type == PT_LIFE)
 			{
 				RESTRICTVERSION(96, 0);
 			}
-			if (particles[i].type == PT_GLAS && particles[i].life > 0)
+			if (part.type == PT_GLAS && part.life > 0)
 			{
 				RESTRICTVERSION(97, 0);
 			}
-			if (PressureInTmp3(particles[i].type))
+			if (PressureInTmp3(part.type))
 			{
 				RESTRICTVERSION(97, 0);
 			}
-			if (particles[i].type == PT_CONV && particles[i].tmp2 != 0)
+			if (part.type == PT_CONV && part.tmp2 != 0)
 			{
 				RESTRICTVERSION(97, 0);
+			}
+			if (part.type == PT_RSST || part.type == PT_RSSS)
+			{
+				RESTRICTVERSION(98, 0);
+			}
+			if (part.type == PT_ETRD && (part.tmp || part.tmp2))
+			{
+				RESTRICTVERSION(98, 0);
 			}
 
 			//Get the pmap entry for the next particle in the same position
 			i = partsPosLink[i];
 		}
+	}
+
+	std::vector<PaletteItem> paletteData;
+	for (int ID : paletteSet)
+	{
+		paletteData.push_back(GameSave::PaletteItem(elements[ID].Identifier, ID));
 	}
 
 	unsigned int soapLinkDataLen = 0;
@@ -2302,11 +2537,8 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 		}
 	}
 
-	// Mark save as incompatible with latest release
-	bool fakeFromNewerVersion = ALLOW_FAKE_NEWER_VERSION && currentVersion < minimumVersion;
-
 	bson b;
-	b.data = NULL;
+	b.data = nullptr;
 	auto bson_deleter = [](bson * b) { bson_destroy(b); };
 	// Use unique_ptr with a custom deleter to ensure that bson_destroy is called even when an exception is thrown
 	std::unique_ptr<bson, decltype(bson_deleter)> b_ptr(&b, bson_deleter);
@@ -2314,8 +2546,8 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	set_bson_err_handler([](const char* err) { throw BuildException("BSON error when parsing save: " + ByteString(err).FromUtf8()); });
 	bson_init(&b);
 	bson_append_start_object(&b, "origin");
-	bson_append_int(&b, "majorVersion", int(currentVersion[0]));
-	bson_append_int(&b, "minorVersion", int(currentVersion[1]));
+	bson_append_int(&b, "majorVersion", int(effectiveVersion[0]));
+	bson_append_int(&b, "minorVersion", int(effectiveVersion[1]));
 	bson_append_int(&b, "buildNum", APP_VERSION.build);
 	bson_append_int(&b, "modId", MOD_ID);
 	bson_append_string(&b, "releaseType", ByteString(1, IDENT_RELTYPE).c_str());
@@ -2379,12 +2611,12 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	bson_append_int(&b, "pmapbits", pmapbits);
 	if (partsDataLen)
 	{
-		bson_append_binary(&b, "parts", (char)BSON_BIN_USER, (const char *)&partsData[0], partsDataLen);
+		bson_append_binary(&b, "parts", (char)BSON_BIN_USER, reinterpret_cast<const char *>(partsData.data()), partsDataLen);
 
-		if (palette.size())
+		if (paletteData.size())
 		{
 			bson_append_start_array(&b, "palette");
-			for(auto iter = palette.begin(), end = palette.end(); iter != end; ++iter)
+			for(auto iter = paletteData.begin(), end = paletteData.end(); iter != end; ++iter)
 			{
 				bson_append_int(&b, (*iter).first.c_str(), (*iter).second);
 			}
@@ -2392,29 +2624,33 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 		}
 
 		if (partsPosDataLen)
-			bson_append_binary(&b, "partsPos", (char)BSON_BIN_USER, (const char *)&partsPosData[0], partsPosDataLen);
+			bson_append_binary(&b, "partsPos", (char)BSON_BIN_USER, reinterpret_cast<const char *>(partsPosData.data()), partsPosDataLen);
 	}
 	if (hasWallData)
 		bson_append_binary(&b, "wallMap", (char)BSON_BIN_USER, (const char *)wallData.data(), wallDataLen);
 	if (fanDataLen)
-		bson_append_binary(&b, "fanMap", (char)BSON_BIN_USER, (const char *)&fanData[0], fanDataLen);
+		bson_append_binary(&b, "fanMap", (char)BSON_BIN_USER, reinterpret_cast<const char *>(fanData.data()), fanDataLen);
 	if (hasPressure && pressDataLen)
-		bson_append_binary(&b, "pressMap", (char)BSON_BIN_USER, (const char*)&pressData[0], pressDataLen);
+		bson_append_binary(&b, "pressMap", (char)BSON_BIN_USER, reinterpret_cast<const char *>(pressData.data()), pressDataLen);
 	if (hasPressure && vxDataLen)
-		bson_append_binary(&b, "vxMap", (char)BSON_BIN_USER, (const char*)&vxData[0], vxDataLen);
+		bson_append_binary(&b, "vxMap", (char)BSON_BIN_USER, reinterpret_cast<const char *>(vxData.data()), vxDataLen);
 	if (hasPressure && vyDataLen)
-		bson_append_binary(&b, "vyMap", (char)BSON_BIN_USER, (const char*)&vyData[0], vyDataLen);
+		bson_append_binary(&b, "vyMap", (char)BSON_BIN_USER, reinterpret_cast<const char *>(vyData.data()), vyDataLen);
 	if (hasAmbientHeat && this->aheatEnable && ambientDataLen)
-		bson_append_binary(&b, "ambientMap", (char)BSON_BIN_USER, (const char*)&ambientData[0], ambientDataLen);
+		bson_append_binary(&b, "ambientMap", (char)BSON_BIN_USER, reinterpret_cast<const char *>(ambientData.data()), ambientDataLen);
 	if (soapLinkDataLen)
-		bson_append_binary(&b, "soapLinks", (char)BSON_BIN_USER, (const char *)&soapLinkData[0], soapLinkDataLen);
+		bson_append_binary(&b, "soapLinks", (char)BSON_BIN_USER, reinterpret_cast<const char *>(soapLinkData.data()), soapLinkDataLen);
+	bson_append_binary(&b, "blockAir", (char)BSON_BIN_USER, reinterpret_cast<const char *>(blockAirData.data()), blockAirData.size());
 	if (ensureDeterminism)
 	{
 		bson_append_bool(&b, "ensureDeterminism", ensureDeterminism);
-		bson_append_binary(&b, "blockAir", (char)BSON_BIN_USER, (const char *)blockAirData.data(), blockAirData.Size().X * blockAirData.Size().Y);
 		bson_append_long(&b, "frameCount", int64_t(frameCount));
-		bson_append_binary(&b, "rngState", (char)BSON_BIN_USER, (const char *)&rngState, sizeof(rngState));
+		bson_append_binary(&b, "rngState", (char)BSON_BIN_USER, reinterpret_cast<const char *>(&rngState), sizeof(rngState));
 		RESTRICTVERSION(98, 0);
+	}
+	if (gravityEnable)
+	{
+		bson_append_binary(&b, "gravity", (char)BSON_BIN_USER, reinterpret_cast<const char *>(gravityData.data()), gravityData.size());
 	}
 	unsigned int signsCount = 0;
 	for (size_t i = 0; i < signs.size(); i++)
@@ -2455,7 +2691,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 
 
 	std::vector<char> outputData;
-	switch (auto status = BZ2WCompress(outputData, (char *)finalData, finalDataLen))
+	switch (auto status = BZ2WCompress(outputData, std::span(reinterpret_cast<const char *>(finalData), finalDataLen)))
 	{
 	case BZ2WCompressOk: break;
 	case BZ2WCompressNomem: throw BuildException(String::Build("Save error, out of memory"));
@@ -2474,7 +2710,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	header[1] = 'P';
 	header[2] = 'S';
 	header[3] = '1';
-	header[4] = currentVersion[0];
+	header[4] = effectiveVersion[0];
 	header[5] = CELL;
 	header[6] = blockS.X;
 	header[7] = blockS.Y;
@@ -2486,6 +2722,8 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	// move header to front
 	std::rotate(outputData.begin(), outputData.begin() + compressedSize, outputData.end());
 
+	// Mark save as incompatible with latest release
+	bool fakeFromNewerVersion = ALLOW_FAKE_NEWER_VERSION && currentVersion < minimumVersion;
 	return { fakeFromNewerVersion, outputData };
 }
 

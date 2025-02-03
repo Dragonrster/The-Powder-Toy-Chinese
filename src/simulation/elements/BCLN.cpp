@@ -31,7 +31,7 @@ void Element::Element_BCLN()
 	HeatConduct = 251;
 	Description = ByteString("可破壞複製體").FromUtf8();
 
-	Properties = TYPE_SOLID | PROP_LIFE_DEC | PROP_LIFE_KILL_DEC | PROP_NOCTYPEDRAW;
+	Properties = TYPE_SOLID | PROP_PHOTPASS | PROP_LIFE_DEC | PROP_LIFE_KILL_DEC | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
@@ -51,6 +51,8 @@ constexpr float ADVECTION = 0.1f;
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if (!parts[i].life && sim->pv[y/CELL][x/CELL]>4.0f)
 		parts[i].life = sim->rng.between(80, 119);
 	if (parts[i].life)
@@ -58,7 +60,7 @@ static int update(UPDATE_FUNC_ARGS)
 		parts[i].vx += ADVECTION*sim->vx[y/CELL][x/CELL];
 		parts[i].vy += ADVECTION*sim->vy[y/CELL][x/CELL];
 	}
-	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled)
+	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !elements[parts[i].ctype].Enabled)
 	{
 		for (auto rx = -1; rx <= 1; rx++)
 		{
@@ -90,7 +92,7 @@ static int update(UPDATE_FUNC_ARGS)
 			int np = sim->create_part(-1, x + sim->rng.between(-1, 1), y + sim->rng.between(-1, 1), TYP(parts[i].ctype));
 			if (np>=0)
 			{
-				if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && sim->elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)
+				if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)
 					parts[np].ctype = parts[i].tmp;
 			}
 		}

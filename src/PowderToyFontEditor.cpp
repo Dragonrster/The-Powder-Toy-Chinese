@@ -68,6 +68,7 @@ int main(int argc, char * argv[])
 
 	engine.Begin();
 	engine.SetFastQuit(true);
+	engine.SetGlobalQuit(true);
 
 	if (argc >= 2)
 	{
@@ -75,13 +76,17 @@ int main(int argc, char * argv[])
 	}
 	else
 	{
-		std::cerr << "path to font.cpp not supplied" << std::endl;
+		std::cerr << "path to font.bz2 not supplied" << std::endl;
 		Platform::Exit(1);
 	}
 
 	while (engine.Running())
 	{
-		EngineProcess();
+		auto delay = EngineProcess();
+		if (delay.has_value())
+		{
+			SDL_Delay(std::max(*delay, UINT64_C(1)));
+		}
 	}
 	Platform::Exit(0);
 	return 0;

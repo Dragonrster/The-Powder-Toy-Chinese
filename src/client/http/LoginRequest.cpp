@@ -5,7 +5,7 @@
 
 namespace http
 {
-	LoginRequest::LoginRequest(ByteString username, ByteString password) : Request(ByteString::Build("https://", SERVER, "/Login.json"))
+	LoginRequest::LoginRequest(ByteString username, ByteString password) : Request(ByteString::Build(SERVER, "/Login.json"))
 	{
 		AddPostData(FormData{
 			{ "name", username },
@@ -38,7 +38,7 @@ namespace http
 		}
 		catch (const std::exception &ex)
 		{
-			throw RequestError("Could not read response: " + ByteString(ex.what()));
+			throw RequestError("\u65e0\u6cd5\u8bfb\u53d6\u54cd\u5e94\u003a\u0020" + ByteString(ex.what()));
 		}
 		return loginInfo;
 	}

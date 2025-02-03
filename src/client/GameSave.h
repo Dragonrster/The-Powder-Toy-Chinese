@@ -5,6 +5,8 @@
 #include "common/Version.h"
 #include "simulation/Sign.h"
 #include "simulation/Particle.h"
+#include "simulation/MissingElements.h"
+#include "simulation/gravity/GravityData.h"
 #include "Misc.h"
 #include "SimulationConfig.h"
 #include <vector>
@@ -62,13 +64,16 @@ class GameSave
 	void readPSv(const std::vector<char> &data);
 	std::pair<bool, std::vector<char>> serialiseOPS() const;
 
+	void MapPalette();
+
 public:
 	Vec2<int> blockSize = { 0, 0 };
 	bool fromNewerVersion = false;
 	Version<2> version{};
 	bool hasPressure = false;
 	bool hasAmbientHeat = false;
-	bool hasBlockAirMaps = false; // only written by readOPS, never read
+	bool hasBlockAirMaps = false;
+	bool hasGravityMaps = false;
 	bool ensureDeterminism = false; // only taken seriously by serializeOPS; readOPS may set this even if the save does not have everything required for determinism
 	bool hasRngState = false; // only written by readOPS, never read
 	RNG::State rngState;
@@ -86,6 +91,10 @@ public:
 	PlaneAdapter<std::vector<float>> ambientHeat;
 	PlaneAdapter<std::vector<unsigned char>> blockAir;
 	PlaneAdapter<std::vector<unsigned char>> blockAirh;
+	PlaneAdapter<std::vector<float>> gravMass;
+	PlaneAdapter<std::vector<uint32_t>> gravMask;
+	PlaneAdapter<std::vector<float>> gravForceX;
+	PlaneAdapter<std::vector<float>> gravForceY;
 
 	//Simulation Options
 	bool waterEEnabled = false;
@@ -100,6 +109,8 @@ public:
 	float ambientAirTemp = R_TEMP + 273.15f;
 	int edgeMode = 0;
 	bool wantAuthors = true;
+
+	MissingElements missingElements;
 
 	//Signs
 	std::vector<sign> signs;

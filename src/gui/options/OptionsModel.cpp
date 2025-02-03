@@ -1,15 +1,13 @@
 #include "OptionsModel.h"
-
 #include "OptionsView.h"
-
 #include "simulation/Simulation.h"
 #include "simulation/Air.h"
 #include "simulation/gravity/Gravity.h"
-
 #include "prefs/GlobalPrefs.h"
-
+#include "common/clipboard/Clipboard.h"
 #include "gui/interface/Engine.h"
 #include "gui/game/GameModel.h"
+#include "client/Client.h"
 
 OptionsModel::OptionsModel(GameModel * gModel_) {
 	gModel = gModel_;
@@ -46,15 +44,12 @@ void OptionsModel::SetAmbientHeatSimulation(bool state)
 
 bool OptionsModel::GetNewtonianGravity()
 {
-	return sim->grav->IsEnabled();
+	return bool(sim->grav);
 }
 
 void OptionsModel::SetNewtonianGravity(bool state)
 {
-	if(state)
-		sim->grav->start_grav_async();
-	else
-		sim->grav->stop_grav_async();
+	sim->EnableNewtonianGravity(state);
 	notifySettingsChanged();
 }
 
@@ -98,6 +93,18 @@ void OptionsModel::SetTemperatureScale(int temperatureScale)
 {
 	GlobalPrefs::Ref().Set("Renderer.TemperatureScale", temperatureScale);
 	gModel->SetTemperatureScale(temperatureScale);
+	notifySettingsChanged();
+}
+
+int OptionsModel::GetThreadedRendering()
+{
+	return gModel->GetThreadedRendering();
+}
+
+void OptionsModel::SetThreadedRendering(bool newThreadedRendering)
+{
+	GlobalPrefs::Ref().Set("Renderer.SeparateThread", newThreadedRendering);
+	gModel->SetThreadedRendering(newThreadedRendering);
 	notifySettingsChanged();
 }
 
@@ -165,6 +172,18 @@ void OptionsModel::SetGraveExitsConsole(bool graveExitsConsole)
 {
 	ui::Engine::Ref().GraveExitsConsole = graveExitsConsole;
 	GlobalPrefs::Ref().Set("GraveExitsConsole", graveExitsConsole);
+	notifySettingsChanged();
+}
+
+bool OptionsModel::GetNativeClipoard()
+{
+	return Clipboard::GetEnabled();
+}
+
+void OptionsModel::SetNativeClipoard(bool nativeClipoard)
+{
+	Clipboard::SetEnabled(nativeClipoard);
+	GlobalPrefs::Ref().Set("NativeClipboard.Enabled", nativeClipoard);
 	notifySettingsChanged();
 }
 
@@ -238,6 +257,17 @@ void OptionsModel::SetFastQuit(bool fastquit)
 	notifySettingsChanged();
 }
 
+bool OptionsModel::GetGlobalQuit()
+{
+	return ui::Engine::Ref().GetGlobalQuit();
+}
+void OptionsModel::SetGlobalQuit(bool newGlobalQuit)
+{
+	ui::Engine::Ref().SetGlobalQuit(newGlobalQuit);
+	GlobalPrefs::Ref().Set("GlobalQuit", newGlobalQuit);
+	notifySettingsChanged();
+}
+
 int OptionsModel::GetDecoSpace()
 {
 	return gModel->GetDecoSpace();
@@ -306,6 +336,29 @@ void OptionsModel::SetMomentumScroll(bool state)
 {
 	GlobalPrefs::Ref().Set("MomentumScroll", state);
 	ui::Engine::Ref().MomentumScroll = state;
+	notifySettingsChanged();
+}
+
+bool OptionsModel::GetRedirectStd()
+{
+	return Client::Ref().GetRedirectStd();
+}
+
+void OptionsModel::SetRedirectStd(bool newRedirectStd)
+{
+	GlobalPrefs::Ref().Set("RedirectStd", newRedirectStd);
+	Client::Ref().SetRedirectStd(newRedirectStd);
+	notifySettingsChanged();
+}
+bool OptionsModel::GetAutoStartupRequest()
+{
+	return Client::Ref().GetAutoStartupRequest();
+}
+
+void OptionsModel::SetAutoStartupRequest(bool newAutoStartupRequest)
+{
+	GlobalPrefs::Ref().Set("AutoStartupRequest", newAutoStartupRequest);
+	Client::Ref().SetAutoStartupRequest(newAutoStartupRequest);
 	notifySettingsChanged();
 }
 

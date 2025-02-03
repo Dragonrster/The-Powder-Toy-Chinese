@@ -8,6 +8,7 @@
 
 class Simulation;
 class Renderer;
+struct GraphicsFuncContext;
 class VideoBuffer;
 struct Particle;
 class Element
@@ -15,7 +16,7 @@ class Element
 public:
 	ByteString Identifier;
 	String Name;
-	RGB<uint8_t> Colour;
+	RGB Colour;
 	int MenuVisible;
 	int MenuSection;
 	int Enabled;
@@ -38,6 +39,7 @@ public:
 	unsigned int PhotonReflectWavelengths;
 	int Weight;
 	unsigned char HeatConduct;
+	unsigned int LatentHeat;
 	String Description;
 	unsigned int Properties;
 	unsigned int CarriesTypeIn;

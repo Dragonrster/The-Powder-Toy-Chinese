@@ -13,11 +13,13 @@ constexpr bool LUACONSOLE               = @LUACONSOLE@;
 constexpr bool ALLOW_FAKE_NEWER_VERSION = @ALLOW_FAKE_NEWER_VERSION@;
 constexpr bool USE_UPDATESERVER         = @USE_UPDATESERVER@;
 constexpr bool CAN_INSTALL              = @CAN_INSTALL@;
+constexpr bool SHARED_DATA_FOLDER       = @SHARED_DATA_FOLDER@;
 constexpr bool USE_BLUESCREEN           = @USE_BLUESCREEN@;
 constexpr bool INSTALL_CHECK            = @INSTALL_CHECK@;
 constexpr bool IGNORE_UPDATES           = @IGNORE_UPDATES@;
 constexpr bool ENFORCE_HTTPS            = @ENFORCE_HTTPS@;
 constexpr bool SECURE_CIPHERS_ONLY      = @SECURE_CIPHERS_ONLY@;
+constexpr bool PLATFORM_CLIPBOARD       = @PLATFORM_CLIPBOARD@;
 constexpr bool USE_SYSTEM_CERT_PROVIDER = @USE_SYSTEM_CERT_PROVIDER@;
 constexpr bool FFTW_PLAN_MEASURE        = @FFTW_PLAN_MEASURE@;
 constexpr bool ALLOW_QUIT               = @ALLOW_QUIT@;
@@ -44,6 +46,7 @@ constexpr char APPEXE[]         = "@APPEXE@";
 constexpr char APPID[]          = "@APPID@";
 constexpr char APPDATA[]        = "@APPDATA@";
 constexpr char APPVENDOR[]      = "@APPVENDOR@";
+constexpr char PACKAGE_MODE[]   = "@PACKAGE_MODE@";
 
 constexpr int MOD_ID               = @MOD_ID@;
 
@@ -59,8 +62,6 @@ constexpr auto DISPLAY_VERSION = APP_VERSION.displayVersion;
 
 constexpr char IDENT_RELTYPE    = SNAPSHOT ? 'S' : (BETA ? 'B' : 'R');
 
-constexpr char SCHEME[]         = "https://";
-constexpr char STATICSCHEME[]   = "https://";
 constexpr char LOCAL_SAVE_DIR[] = "Saves";
 constexpr char STAMPS_DIR[]     = "stamps";
 constexpr char BRUSH_DIR[]      = "Brushes";

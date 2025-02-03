@@ -6,8 +6,9 @@
 #include <SDL.h>
 
 #include "gui/interface/Textbox.h"
+#include "gui/interface/ScrollPanel.h"
 #include "gui/interface/Label.h"
-#include "gui/game/Tool.h"
+#include "gui/game/tool/Tool.h"
 #include "gui/game/Menu.h"
 #include "gui/Style.h"
 #include "gui/game/Favorite.h"
@@ -19,11 +20,10 @@
 
 ElementSearchActivity::ElementSearchActivity(GameController * gameController, std::vector<Tool*> tools) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(236, 302)),
-	firstResult(NULL),
+	firstResult(nullptr),
 	gameController(gameController),
 	tools(tools),
 	toolTip(""),
-	toolTipPresence(0),
 	shiftPressed(false),
 	ctrlPressed(false),
 	altPressed(false),
@@ -52,19 +52,22 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	AddComponent(okButton);
 	AddComponent(closeButton);
 
+	scrollPanel = new ui::ScrollPanel(searchField->Position + Vec2{ 1, searchField->Size.Y+9 }, { searchField->Size.X - 2, Size.Y-(searchField->Position.Y+searchField->Size.Y+6)-23 });
+	AddComponent(scrollPanel);
+
 	searchTools("");
 }
 
 void ElementSearchActivity::searchTools(String query)
 {
-	firstResult = NULL;
+	firstResult = nullptr;
 	for (auto &toolButton : toolButtons) {
-		RemoveComponent(toolButton);
+		scrollPanel->RemoveChild(toolButton);
 		delete toolButton;
 	}
 	toolButtons.clear();
 
-	ui::Point viewPosition = searchField->Position + ui::Point(2+0, searchField->Size.Y+2+8);
+	ui::Point viewPosition = { 1, 1 };
 	ui::Point current = ui::Point(0, 0);
 
 	String queryLower = query.ToLower();
@@ -178,7 +181,7 @@ void ElementSearchActivity::searchTools(String query)
 		}
 
 		toolButtons.push_back(tempButton);
-		AddComponent(tempButton);
+		scrollPanel->AddChild(tempButton);
 
 		current.X += 31;
 
@@ -186,10 +189,13 @@ void ElementSearchActivity::searchTools(String query)
 			current.X = 0;
 			current.Y += 19;
 		}
-
-		if(current.Y + viewPosition.Y + 18 > Size.Y-23)
-			break;
 	}
+
+	if (current.X == 0)
+	{
+		current.Y -= 19;
+	}
+	scrollPanel->InnerSize = ui::Point(scrollPanel->Size.X, current.Y + 20);
 }
 
 void ElementSearchActivity::SetActiveTool(int selectionState, Tool * tool)
@@ -216,8 +222,7 @@ void ElementSearchActivity::OnDraw()
 	g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 
 	g->BlendRect(
-		RectSized(Position + searchField->Position + Vec2{ 0, searchField->Size.Y+8 },
-		{ searchField->Size.X, Size.Y-(searchField->Position.Y+searchField->Size.Y+8)-23 }),
+		RectSized(Position + scrollPanel->Position - Vec2{ 1, 1 }, scrollPanel->Size + Vec2{ 2, 2 }),
 		0xFFFFFF_rgb .WithAlpha(180));
 	if (toolTipPresence && toolTip.length())
 	{
@@ -225,21 +230,19 @@ void ElementSearchActivity::OnDraw()
 	}
 }
 
-void ElementSearchActivity::OnTick(float dt)
+void ElementSearchActivity::OnTick()
 {
 	if (exit)
 		Exit();
+
 	if (isToolTipFadingIn)
 	{
 		isToolTipFadingIn = false;
-		if (toolTipPresence < 120)
-			toolTipPresence += int(dt*2)>1?int(dt*2):2;
+		toolTipPresence.SetTarget(120);
 	}
-	else if (toolTipPresence>0)
+	else
 	{
-		toolTipPresence -= int(dt)>0?int(dt):1;
-		if (toolTipPresence<0)
-			toolTipPresence = 0;
+		toolTipPresence.SetTarget(0);
 	}
 }
 

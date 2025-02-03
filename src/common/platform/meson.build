@@ -2,7 +2,11 @@ common_files += files(
 	'Common.cpp',
 )
 
-use_bluescreen = not is_debug
+if get_option('use_bluescreen') == 'auto'
+	use_bluescreen = not is_debug
+else
+	use_bluescreen = get_option('use_bluescreen') == 'yes'
+endif
 can_install_enforce_no = false
 set_window_icon = false
 path_sep_char = '/'
@@ -38,7 +42,6 @@ elif host_platform == 'android'
 	)
 	powder_files += files(
 		'MainCommon.cpp',
-		'DdirCommon.cpp',
 	)
 elif host_platform == 'emscripten'
 	use_bluescreen = false
@@ -73,6 +76,19 @@ else
 		'DdirCommon.cpp',
 	)
 endif
+
+bluescreen_export_symbols = false
+
+subdir('stacktrace')
+
+if use_bluescreen
+	common_files += stacktrace_files
+	if bluescreen_export_symbols and is_debug
+		project_export_dynamic = true
+	endif
+else
+	common_files += files('stacktrace/Null.cpp')
+endif
 conf_data.set('SET_WINDOW_ICON', set_window_icon.to_string())
 conf_data.set('PATH_SEP_CHAR', path_sep_char)
 conf_data.set('USE_BLUESCREEN', use_bluescreen.to_string())
@@ -91,4 +107,5 @@ if can_install != 'no' and can_install_enforce_no
 	error('cannot provide install support, configure with -Dcan_install=no to fix this error')
 endif
 conf_data.set('CAN_INSTALL', (can_install != 'no').to_string())
+conf_data.set('SHARED_DATA_FOLDER', get_option('shared_data_folder').to_string())
 conf_data.set('INSTALL_CHECK', (can_install == 'yes_check').to_string())

@@ -10,7 +10,8 @@
 #include "Notification.h"
 #include "QuickOptions.h"
 #include "RenderPreset.h"
-#include "Tool.h"
+#include "tool/PropertyTool.h"
+#include "tool/GOLTool.h"
 
 #include "GameControllerEvents.h"
 #include "lua/CommandInterface.h"
@@ -25,12 +26,14 @@
 #include "debug/ElementPopulation.h"
 #include "debug/ParticleDebug.h"
 #include "debug/SurfaceNormals.h"
+#include "debug/AirVelocity.h"
 #include "graphics/Renderer.h"
 #include "simulation/Air.h"
 #include "simulation/ElementClasses.h"
 #include "simulation/Simulation.h"
 #include "simulation/SimulationData.h"
 #include "simulation/Snapshot.h"
+#include "simulation/elements/STKM.h"
 
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
@@ -69,19 +72,19 @@
 GameController::GameController():
 	firstTick(true),
 	foundSignID(-1),
-	activePreview(NULL),
-	search(NULL),
-	renderOptions(NULL),
-	loginWindow(NULL),
-	console(NULL),
-	tagsWindow(NULL),
-	localBrowser(NULL),
-	options(NULL),
+	activePreview(nullptr),
+	search(nullptr),
+	renderOptions(nullptr),
+	loginWindow(nullptr),
+	console(nullptr),
+	tagsWindow(nullptr),
+	localBrowser(nullptr),
+	options(nullptr),
 	debugFlags(0),
 	HasDone(false)
 {
 	gameView = new GameView();
-	gameModel = new GameModel();
+	gameModel = new GameModel(gameView); // mvc is a joke
 	gameModel->BuildQuickOptionMenu(this);
 
 	gameView->AttachController(this);
@@ -89,7 +92,7 @@ GameController::GameController():
 
 	gameView->SetDebugHUD(GlobalPrefs::Ref().Get("Renderer.DebugMode", false));
 
-	CommandInterface::Create(this, gameModel);
+	commandInterface = CommandInterface::Create(this, gameModel);
 
 	Client::Ref().AddListener(this);
 
@@ -98,6 +101,7 @@ GameController::GameController():
 	debugInfo.push_back(std::make_unique<DebugLines            >(DEBUG_LINES     , gameView, this));
 	debugInfo.push_back(std::make_unique<ParticleDebug         >(DEBUG_PARTICLE  , gameModel->GetSimulation(), gameModel));
 	debugInfo.push_back(std::make_unique<SurfaceNormals        >(DEBUG_SURFNORM  , gameModel->GetSimulation(), gameView, this));
+	debugInfo.push_back(std::make_unique<AirVelocity           >(DEBUG_AIRVEL    , gameModel->GetSimulation(), gameView, this));
 }
 
 GameController::~GameController()
@@ -145,12 +149,12 @@ GameController::~GameController()
 	{
 		delete *iter;
 	}
-	delete commandInterface;
+	gameView->PauseRendererThread();
+	commandInterface->RemoveComponents();
+	gameView->CloseActiveWindow();
+	delete gameView;
+	commandInterface.reset();
 	delete gameModel;
-	if (gameView->CloseActiveWindow())
-	{
-		delete gameView;
-	}
 }
 
 bool GameController::HistoryRestore()
@@ -249,29 +253,29 @@ void GameController::Install()
 {
 	if constexpr (CAN_INSTALL)
 	{
-		new ConfirmPrompt( ByteString("安裝 ").FromUtf8() + String(APPNAME), ByteString("確定要在此電腦上安裝 ").FromUtf8() + String(APPNAME) + ByteString("? \n這允許關聯沙盤檔案或直接從網站開啟沙盤").FromUtf8(), { [] {
+		new ConfirmPrompt( ByteString("安装 ").FromUtf8() + String(APPNAME), ByteString("确定要在此电脑上安装 ").FromUtf8() + String(APPNAME) + ByteString("? \n这允许关联沙盘文件或直接从网站打开沙盘").FromUtf8(), { [] {
 			if (Platform::Install())
 			{
-				new InformationMessage(ByteString("成功").FromUtf8(), ByteString("安裝完成").FromUtf8(), false);
+				new InformationMessage(ByteString("成功").FromUtf8(), ByteString("安装完成").FromUtf8(), false);
 			}
 			else
 			{
-				new ErrorMessage(ByteString("無法安裝").FromUtf8(), ByteString("由於某些錯誤而未完成安裝").FromUtf8());
+				new ErrorMessage(ByteString("无法安装").FromUtf8(), ByteString("由于某些错误而未完成安装").FromUtf8());
 			}
 		} });
 	}
 	else
 	{
-		new InformationMessage(ByteString("不需要安裝").FromUtf8(), ByteString("不需要安裝 ").FromUtf8() + String(APPNAME) + ByteString("在此平臺上").FromUtf8(), false);
+		new InformationMessage(ByteString("不需要安装").FromUtf8(), ByteString("不需要安装 ").FromUtf8() + String(APPNAME) + ByteString("在此平台上").FromUtf8(), false);
 	}
 }
 
 void GameController::AdjustGridSize(int direction)
 {
 	if(direction > 0)
-		gameModel->GetRenderer()->SetGridSize((gameModel->GetRenderer()->GetGridSize()+1)%10);
+		gameModel->GetRendererSettings().gridSize = (gameModel->GetRendererSettings().gridSize+1)%10;
 	else
-		gameModel->GetRenderer()->SetGridSize((gameModel->GetRenderer()->GetGridSize()+9)%10);
+		gameModel->GetRendererSettings().gridSize = (gameModel->GetRendererSettings().gridSize+9)%10;
 }
 
 void GameController::InvertAirSim()
@@ -337,11 +341,6 @@ ui::Point GameController::PointTranslate(ui::Point point)
 	return gameModel->AdjustZoomCoords(point);
 }
 
-ui::Point GameController::PointTranslateNoClamp(ui::Point point)
-{
-	return gameModel->AdjustZoomCoords(point);
-}
-
 ui::Point GameController::NormaliseBlockCoord(ui::Point point)
 {
 	return (point/CELL)*CELL;
@@ -368,7 +367,7 @@ void GameController::DrawLine(int toolSelection, ui::Point point1, ui::Point poi
 	if (!activeTool)
 		return;
 	activeTool->Strength = 1.0f;
-	activeTool->DrawLine(sim, cBrush, point1, point2);
+	activeTool->DrawLine(sim, cBrush, point1, point2, false);
 }
 
 void GameController::DrawFill(int toolSelection, ui::Point point)
@@ -395,6 +394,10 @@ void GameController::DrawPoints(int toolSelection, ui::Point oldPos, ui::Point n
 	}
 
 	activeTool->Strength = gameModel->GetToolStrength();
+	// This is a joke, the game mvc has to go >_>
+	activeTool->shiftBehaviour = gameView->ShiftBehaviour();
+	activeTool->ctrlBehaviour = gameView->CtrlBehaviour();
+	activeTool->altBehaviour = gameView->AltBehaviour();
 	if (!held)
 		activeTool->Draw(sim, cBrush, newPos);
 	else
@@ -430,6 +433,16 @@ void GameController::ToolClick(int toolSelection, ui::Point point)
 	activeTool->Click(sim, cBrush, point);
 }
 
+void GameController::ToolDrag(int toolSelection, ui::Point point1, ui::Point point2)
+{
+	Simulation * sim = gameModel->GetSimulation();
+	Tool * activeTool = gameModel->GetActiveTool(toolSelection);
+	Brush &cBrush = gameModel->GetBrush();
+	if (!activeTool)
+		return;
+	activeTool->Drag(sim, cBrush, point1, point2);
+}
+
 static Rect<int> SaneSaveRect(Vec2<int> point1, Vec2<int> point2)
 {
 	point1 = point1.Clamp(RES.OriginRect());
@@ -443,18 +456,23 @@ static Rect<int> SaneSaveRect(Vec2<int> point1, Vec2<int> point2)
 
 ByteString GameController::StampRegion(ui::Point point1, ui::Point point2)
 {
-	auto newSave = gameModel->GetSimulation()->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), SaneSaveRect(point1, point2));
+	return StampRegion(point1, point2, gameModel->GetIncludePressure() != gameView->ShiftBehaviour());
+}
+
+ByteString GameController::StampRegion(ui::Point point1, ui::Point point2, bool includePressure)
+{
+	auto newSave = gameModel->GetSimulation()->Save(includePressure, SaneSaveRect(point1, point2));
 	if(newSave)
 	{
 		newSave->paused = gameModel->GetPaused();
 		ByteString stampName = Client::Ref().AddStamp(std::move(newSave));
 		if (stampName.length() == 0)
-			new ErrorMessage("Could not create stamp", "Error serializing save file");
+			new ErrorMessage(ByteString("无法创建stamp").FromUtf8(), ByteString("序列化保存文件时出错").FromUtf8());
 		return stampName;
 	}
 	else
 	{
-		new ErrorMessage("Could not create stamp", "Error generating save file");
+		new ErrorMessage(ByteString("无法创建stamp").FromUtf8(), ByteString("生成保存文件时出错").FromUtf8());
 		return "";
 	}
 }
@@ -467,7 +485,7 @@ void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 		Json::Value clipboardInfo;
 		clipboardInfo["type"] = "clipboard";
 		clipboardInfo["username"] = Client::Ref().GetAuthUser().Username;
-		clipboardInfo["date"] = (Json::Value::UInt64)time(NULL);
+		clipboardInfo["date"] = (Json::Value::UInt64)time(nullptr);
 		Client::Ref().SaveAuthorInfo(&clipboardInfo);
 		newSave->authors = clipboardInfo;
 
@@ -542,7 +560,7 @@ bool GameController::MouseUp(int x, int y, unsigned button, MouseupReason reason
 						}
 						break;
 					case sign::Type::Thread:
-						Platform::OpenURI(ByteString::Build(SCHEME, "powdertoy.co.uk/Discussions/Thread/View.html?Thread=", str.Substr(3, si.first - 3).ToUtf8()));
+						Platform::OpenURI(ByteString::Build(SERVER, "/Discussions/Thread/View.html?Thread=", str.Substr(3, si.first - 3).ToUtf8()));
 						break;
 					case sign::Type::Search:
 						OpenSearch(str.Substr(3, si.first - 3));
@@ -697,12 +715,16 @@ bool GameController::KeyRelease(int key, int scan, bool repeat, bool shift, bool
 	return ret;
 }
 
+void GameController::InitCommandInterface()
+{
+	commandInterface->Init();
+}
+
 void GameController::Tick()
 {
 	gameModel->Tick();
 	if(firstTick)
 	{
-		commandInterface->Init();
 		if constexpr (INSTALL_CHECK)
 		{
 			if (Client::Ref().IsFirstRun())
@@ -757,11 +779,12 @@ void GameController::ResetAir()
 
 void GameController::ResetSpark()
 {
+	auto &sd = SimulationData::CRef();
 	Simulation * sim = gameModel->GetSimulation();
 	for (int i = 0; i < NPART; i++)
 		if (sim->parts[i].type == PT_SPRK)
 		{
-			if (sim->parts[i].ctype >= 0 && sim->parts[i].ctype < PT_NUM && sim->elements[sim->parts[i].ctype].Enabled)
+			if (sim->parts[i].ctype >= 0 && sim->parts[i].ctype < PT_NUM && sd.elements[sim->parts[i].ctype].Enabled)
 			{
 				sim->parts[i].type = sim->parts[i].ctype;
 				sim->parts[i].ctype = sim->parts[i].life = 0;
@@ -774,45 +797,45 @@ void GameController::ResetSpark()
 
 void GameController::SwitchGravity()
 {
-	gameModel->GetSimulation()->gravityMode = (gameModel->GetSimulation()->gravityMode + 1) % NUM_GRAV_MODES;
+	gameModel->GetSimulation()->gravityMode = (gameModel->GetSimulation()->gravityMode + 1) % NUM_GRAVMODES;
 
 	switch (gameModel->GetSimulation()->gravityMode)
 	{
 	case GRAV_VERTICAL:
-		gameModel->SetInfoTip(ByteString("引力模式:豎直").FromUtf8());
+		gameModel->SetInfoTip(ByteString("引力模式:竖直").FromUtf8());
 		break;
 	case GRAV_OFF:
-		gameModel->SetInfoTip(ByteString("引力模式:關閉").FromUtf8());
+		gameModel->SetInfoTip(ByteString("引力模式:关闭").FromUtf8());
 		break;
 	case GRAV_RADIAL:
 		gameModel->SetInfoTip(ByteString("引力模式:中心").FromUtf8());
 		break;
 	case GRAV_CUSTOM:
-		gameModel->SetInfoTip(ByteString("引力模式:自定義").FromUtf8());
+		gameModel->SetInfoTip(ByteString("引力模式:自定义").FromUtf8());
 		break;
 	}
 }
 
 void GameController::SwitchAir()
 {
-	gameModel->GetSimulation()->air->airMode = (gameModel->GetSimulation()->air->airMode + 1) % NUM_AIR_MODES;
+	gameModel->GetSimulation()->air->airMode = (gameModel->GetSimulation()->air->airMode + 1) % NUM_AIRMODES;
 
 	switch (gameModel->GetSimulation()->air->airMode)
 	{
 	case AIR_ON:
-		gameModel->SetInfoTip(ByteString("空氣模擬:開啟").FromUtf8());
+		gameModel->SetInfoTip(ByteString("空气模拟:开启").FromUtf8());
 		break;
-	case AIR_PRESSURE_OFF:
-		gameModel->SetInfoTip(ByteString("空氣模擬:關閉壓力").FromUtf8());
+	case AIR_PRESSUREOFF:
+		gameModel->SetInfoTip(ByteString("空气模拟:关闭压力").FromUtf8());
 		break;
-	case AIR_VELOCITY_OFF:
-		gameModel->SetInfoTip(ByteString("空氣模擬:關閉速度").FromUtf8());
+	case AIR_VELOCITYOFF:
+		gameModel->SetInfoTip(ByteString("空气模拟:关闭速度").FromUtf8());
 		break;
 	case AIR_OFF:
-		gameModel->SetInfoTip(ByteString("空氣模擬:關閉").FromUtf8());
+		gameModel->SetInfoTip(ByteString("空气模拟:关闭").FromUtf8());
 		break;
-	case AIR_NO_UPDATE:
-		gameModel->SetInfoTip(ByteString("空氣模擬:更新停止").FromUtf8());
+	case AIR_NOUPDATE:
+		gameModel->SetInfoTip(ByteString("空气模拟:更新停止").FromUtf8());
 		break;
 	}
 }
@@ -839,18 +862,19 @@ void GameController::ToggleNewtonianGravity()
 
 void GameController::LoadRenderPreset(int presetNum)
 {
-	Renderer * renderer = gameModel->GetRenderer();
-	RenderPreset preset = renderer->renderModePresets[presetNum];
+	auto &settings = gameModel->GetRendererSettings();
+	RenderPreset preset = Renderer::renderModePresets[presetNum];
 	gameModel->SetInfoTip(preset.Name);
-	renderer->SetRenderMode(preset.RenderModes);
-	renderer->SetDisplayMode(preset.DisplayModes);
-	renderer->SetColourMode(preset.ColourMode);
+	settings.renderMode = preset.renderMode;
+	settings.displayMode = preset.displayMode;
+	settings.colorMode = preset.colorMode;
 }
 
 void GameController::Update()
 {
+	auto &sd = SimulationData::CRef();
 	ui::Point pos = gameView->GetMousePosition();
-	gameModel->GetRenderer()->mousePos = PointTranslate(pos);
+	gameModel->GetRendererSettings().mousePos = PointTranslate(pos);
 	if (pos.X < XRES && pos.Y < YRES)
 		gameView->SetSample(gameModel->GetSimulation()->GetSample(PointTranslate(pos).X, PointTranslate(pos).Y));
 	else
@@ -875,11 +899,10 @@ void GameController::Update()
 		if (activeTool->Identifier.BeginsWith("DEFAULT_PT_"))
 		{
 			int sr = activeTool->ToolID;
-			if (sr && sim->IsElementOrNone(sr))
+			if (sr && sd.IsElementOrNone(sr))
 				rightSelected = sr;
 		}
 
-		void Element_STKM_set_element(Simulation *sim, playerst *playerp, int element);
 		if (!sim->player.spwn)
 			Element_STKM_set_element(sim, &sim->player, rightSelected);
 		if (!sim->player2.spwn)
@@ -888,31 +911,31 @@ void GameController::Update()
 	if(renderOptions && renderOptions->HasExited)
 	{
 		delete renderOptions;
-		renderOptions = NULL;
+		renderOptions = nullptr;
 	}
 
 	if(search && search->HasExited)
 	{
 		delete search;
-		search = NULL;
+		search = nullptr;
 	}
 
 	if(activePreview && activePreview->HasExited)
 	{
 		delete activePreview;
-		activePreview = NULL;
+		activePreview = nullptr;
 	}
 
 	if(loginWindow && loginWindow->HasExited)
 	{
 		delete loginWindow;
-		loginWindow = NULL;
+		loginWindow = nullptr;
 	}
 
 	if(localBrowser && localBrowser->HasDone)
 	{
 		delete localBrowser;
-		localBrowser = NULL;
+		localBrowser = nullptr;
 	}
 }
 
@@ -945,6 +968,11 @@ void GameController::SetZoomPosition(ui::Point position)
 
 	gameModel->SetZoomPosition(zoomPosition);
 	gameModel->SetZoomWindowPosition(zoomWindowPosition);
+}
+
+bool GameController::GetPaused() const
+{
+	return gameModel->GetPaused();
 }
 
 void GameController::SetPaused(bool pauseState)
@@ -1020,7 +1048,7 @@ int GameController::GetEdgeMode()
 
 void GameController::SetEdgeMode(int edgeMode)
 {
-	if (edgeMode < 0 || edgeMode >= NUM_EDGE_MODES)
+	if (edgeMode < 0 || edgeMode >= NUM_EDGEMODES)
 		edgeMode = 0;
 
 	gameModel->SetEdgeMode(edgeMode);
@@ -1028,13 +1056,13 @@ void GameController::SetEdgeMode(int edgeMode)
 	switch (edgeMode)
 	{
 		case EDGE_VOID:
-			gameModel->SetInfoTip("Edge Mode: Void");
+			gameModel->SetInfoTip(ByteString("边界模式:虚空").FromUtf8());
 			break;
 		case EDGE_SOLID:
-			gameModel->SetInfoTip("Edge Mode: Solid");
+			gameModel->SetInfoTip(ByteString("边界模式:固体").FromUtf8());
 			break;
 		case EDGE_LOOP:
-			gameModel->SetInfoTip("Edge Mode: Loop");
+			gameModel->SetInfoTip(ByteString("边界模式:循环").FromUtf8());
 			break;
 	}
 }
@@ -1081,7 +1109,7 @@ int GameController::GetNumMenus(bool onlyEnabled)
 
 void GameController::RebuildFavoritesMenu()
 {
-	gameModel->BuildFavoritesMenu();
+	gameModel->BuildMenus();
 }
 
 Tool * GameController::GetActiveTool(int selection)
@@ -1094,21 +1122,19 @@ void GameController::SetActiveTool(int toolSelection, Tool * tool)
 	if (gameModel->GetActiveMenu() == SC_DECO && toolSelection == 2)
 		toolSelection = 0;
 	gameModel->SetActiveTool(toolSelection, tool);
-	gameModel->GetRenderer()->gravityZonesEnabled = false;
+	gameModel->GetRendererSettings().gravityZonesEnabled = false;
 	if (toolSelection == 3)
 		gameModel->GetSimulation()->replaceModeSelected = tool->ToolID;
 	gameModel->SetLastTool(tool);
 	for(int i = 0; i < 3; i++)
 	{
-		if(gameModel->GetActiveTool(i) == gameModel->GetMenuList().at(SC_WALL)->GetToolList().at(WL_GRAV))
-			gameModel->GetRenderer()->gravityZonesEnabled = true;
+		auto *activeTool = gameModel->GetActiveTool(i);
+		if (activeTool && activeTool->Identifier == "DEFAULT_WL_GRVTY")
+		{
+			gameModel->GetRendererSettings().gravityZonesEnabled = true;
+		}
 	}
-	if(tool->Identifier == "DEFAULT_UI_PROPERTY")
-		((PropertyTool *)tool)->OpenWindow(gameModel->GetSimulation());
-	if(tool->Identifier == "DEFAULT_UI_ADDLIFE")
-	{
-		((GOLTool *)tool)->OpenWindow(gameModel->GetSimulation(), toolSelection);
-	}
+	tool->Select(toolSelection);
 }
 
 void GameController::SetActiveTool(int toolSelection, ByteString identifier)
@@ -1122,6 +1148,11 @@ void GameController::SetActiveTool(int toolSelection, ByteString identifier)
 void GameController::SetLastTool(Tool * tool)
 {
 	gameModel->SetLastTool(tool);
+}
+
+Tool *GameController::GetLastTool()
+{
+	return gameModel->GetLastTool();
 }
 
 int GameController::GetReplaceModeFlags()
@@ -1163,7 +1194,7 @@ void GameController::OpenSearch(String searchText)
 				}
 				catch(GameModelException & ex)
 				{
-					new ErrorMessage("Cannot open save", ByteString(ex.what()).FromUtf8());
+					new ErrorMessage(ByteString("无法打开沙盘").FromUtf8(), ByteString(ex.what()).FromUtf8());
 				}
 			}
 		});
@@ -1178,7 +1209,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 	auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), RES.OriginRect());
 	if(!gameSave)
 	{
-		new ErrorMessage("Error", "Unable to build save.");
+		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法生成沙盘").FromUtf8());
 	}
 	else
 	{
@@ -1204,7 +1235,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 			localSaveInfo["type"] = "localsave";
 			localSaveInfo["username"] = Client::Ref().GetAuthUser().Username;
 			localSaveInfo["title"] = gameModel->GetSaveFile()->GetName();
-			localSaveInfo["date"] = (Json::Value::UInt64)time(NULL);
+			localSaveInfo["date"] = (Json::Value::UInt64)time(nullptr);
 			Client::Ref().SaveAuthorInfo(&localSaveInfo);
 			gameSave->authors = localSaveInfo;
 
@@ -1214,11 +1245,11 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 			tempSave->SetGameSave(std::move(gameSave));
 			gameModel->SetSaveFile(std::move(tempSave), gameView->ShiftBehaviour());
 			if (saveData.size() == 0)
-				new ErrorMessage("Error", "Unable to serialize game data.");
+				new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法序列化沙盘数据").FromUtf8());
 			else if (!Platform::WriteFile(saveData, gameModel->GetSaveFile()->GetName()))
-				new ErrorMessage("Error", "Unable to write save file.");
+				new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法写入沙盘数据").FromUtf8());
 			else
-				gameModel->SetInfoTip(ByteString("儲存成功!").FromUtf8());
+				gameModel->SetInfoTip(ByteString("保存成功!").FromUtf8());
 		}
 	}
 }
@@ -1245,7 +1276,7 @@ void GameController::OpenSaveDone()
 		}
 		catch(GameModelException & ex)
 		{
-			new ErrorMessage("Cannot open save", ByteString(ex.what()).FromUtf8());
+			new ErrorMessage(ByteString("无法打开沙盘").FromUtf8(), ByteString(ex.what()).FromUtf8());
 		}
 	}
 }
@@ -1298,24 +1329,15 @@ void GameController::OpenProfile()
 
 void GameController::OpenElementSearch()
 {
-	std::vector<Tool*> toolList;
-	std::vector<Menu*> menuList = gameModel->GetMenuList();
-	for (auto i = 0U; i < menuList.size(); ++i)
+	std::vector<Tool *> toolList;
+	for (auto &ptr : gameModel->GetTools())
 	{
-		if (i == SC_FAVORITES)
+		if (!ptr)
 		{
 			continue;
 		}
-		auto *mm = menuList[i];
-		if(!mm)
-			continue;
-		std::vector<Tool*> menuToolList = mm->GetToolList();
-		if(!menuToolList.size())
-			continue;
-		toolList.insert(toolList.end(), menuToolList.begin(), menuToolList.end());
+		toolList.push_back(ptr.get());
 	}
-	std::vector<Tool*> hiddenTools = gameModel->GetUnlistedTools();
-	toolList.insert(toolList.end(), hiddenTools.begin(), hiddenTools.end());
 	new ElementSearchActivity(this, toolList);
 }
 
@@ -1336,7 +1358,7 @@ void GameController::OpenTags()
 	}
 	else
 	{
-		new ErrorMessage("Error", "No save open");
+		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("未打开沙盘").FromUtf8());
 	}
 }
 
@@ -1347,7 +1369,7 @@ void GameController::OpenStamps()
 		if (file)
 		{
 			if (file->GetError().length())
-				new ErrorMessage("Error loading stamp", file->GetError());
+				new ErrorMessage(ByteString("加载stamps时出错").FromUtf8(), file->GetError());
 			else if (localBrowser->GetMoveToFront())
 				Client::Ref().MoveStampToFront(file->GetDisplayName().ToUtf8());
 			LoadStamp(file->TakeGameSave());
@@ -1368,7 +1390,7 @@ void GameController::OpenOptions()
 void GameController::ShowConsole()
 {
 	if (!console)
-		console = new ConsoleController(NULL, commandInterface);
+		console = new ConsoleController(nullptr, commandInterface.get());
 	if (console->GetView() != ui::Engine::Ref().GetWindow())
 		ui::Engine::Ref().ShowWindow(console->GetView());
 }
@@ -1382,7 +1404,7 @@ void GameController::HideConsole()
 
 void GameController::OpenRenderOptions()
 {
-	renderOptions = new RenderController(gameModel->GetRenderer(), NULL);
+	renderOptions = new RenderController(gameModel->GetSimulation(), gameModel->GetRenderer(), &gameModel->GetRendererSettings(), nullptr);
 	ui::Engine::Ref().ShowWindow(renderOptions->GetView());
 }
 
@@ -1394,7 +1416,7 @@ void GameController::OpenSaveWindow()
 		auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), RES.OriginRect());
 		if(!gameSave)
 		{
-			new ErrorMessage("Error", "Unable to build save.");
+			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法生成沙盘").FromUtf8());
 		}
 		else
 		{
@@ -1424,7 +1446,7 @@ void GameController::OpenSaveWindow()
 	}
 	else
 	{
-		new ErrorMessage("Error", "You need to login to upload saves.");
+		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("需要登录后才能上传沙盘").FromUtf8());
 	}
 }
 
@@ -1436,7 +1458,7 @@ void GameController::SaveAsCurrent()
 		auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), RES.OriginRect());
 		if(!gameSave)
 		{
-			new ErrorMessage("Error", "Unable to build save.");
+			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法生成沙盘").FromUtf8());
 		}
 		else
 		{
@@ -1462,7 +1484,7 @@ void GameController::SaveAsCurrent()
 	}
 	else
 	{
-		new ErrorMessage("Error", "You need to login to upload saves.");
+		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("需要登录后才能上传沙盘").FromUtf8());
 	}
 }
 
@@ -1488,7 +1510,7 @@ void GameController::ChangeBrush()
 void GameController::ClearSim()
 {
 	HistorySnapshot();
-	gameModel->SetSave(NULL, false);
+	gameModel->SetSave(nullptr, false);
 	gameModel->ClearSimulation();
 }
 
@@ -1497,20 +1519,14 @@ String GameController::ElementResolve(int type, int ctype)
 	// "NONE" should never be displayed in the HUD
 	if (!type)
 		return "";
-	if (gameModel && gameModel->GetSimulation())
-	{
-		return gameModel->GetSimulation()->ElementResolve(type, ctype);
-	}
-	return "";
+	auto &sd = SimulationData::CRef();
+	return sd.ElementResolve(type, ctype);
 }
 
 String GameController::BasicParticleInfo(Particle const &sample_part)
 {
-	if (gameModel && gameModel->GetSimulation())
-	{
-		return gameModel->GetSimulation()->BasicParticleInfo(sample_part);
-	}
-	return "";
+	auto &sd = SimulationData::CRef();
+	return sd.BasicParticleInfo(sample_part);
 }
 
 void GameController::ReloadSim()
@@ -1529,18 +1545,15 @@ void GameController::ReloadSim()
 
 bool GameController::IsValidElement(int type)
 {
-	if (gameModel && gameModel->GetSimulation())
-	{
-		return (type && gameModel->GetSimulation()->IsElement(type));
-	}
-	else
-		return false;
+	auto &sd = SimulationData::CRef();
+	return type && sd.IsElement(type);
 }
 
 String GameController::WallName(int type)
 {
-	if(gameModel && gameModel->GetSimulation() && type >= 0 && type < UI_WALLCOUNT)
-		return gameModel->GetSimulation()->wtypes[type].name;
+	auto &sd = SimulationData::CRef();
+	if(type >= 0 && type < UI_WALLCOUNT)
+		return sd.wtypes[type].name;
 	else
 		return String();
 }
@@ -1592,18 +1605,18 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 			auto optinfo = Client::Ref().GetUpdateInfo();
 			if (!optinfo.has_value())
 			{
-				std::cerr << "odd, the update has disappeared" << std::endl;
+				std::cerr << "\u66F4\u65B0\u5DF2\u6D88\u5931" << std::endl;
 				return;
 			}
 			UpdateInfo info = optinfo.value();
 			StringBuilder updateMessage;
 			if (Platform::CanUpdate())
 			{
-				updateMessage << "Are you sure you want to run the updater? Please save any changes before updating.\n\nCurrent version:\n ";
+				updateMessage << ByteString("确定要运行更新程序吗？请在更新之前保存所有更改.\n\n当前版本:\n ").FromUtf8();
 			}
 			else
 			{
-				updateMessage << "Click \"Continue\" to download the latest version from our website.\n\nCurrent version:\n ";
+				updateMessage << ByteString("点击 \"继续\" 从官方网站下载最新版本.\n\n当前版本:\n ").FromUtf8();
 			}
 
 			if constexpr (MOD)
@@ -1661,18 +1674,18 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 		case UpdateInfo::channelSnapshot:
 			if constexpr (MOD)
 			{
-				gameModel->AddNotification(new UpdateNotification(this, "A new mod update is available - click here to update"));
+				gameModel->AddNotification(new UpdateNotification(this, ByteString("发现新的mod版本可用 - 点击此处更新").FromUtf8()));
 			}
 			else
 			{
-				gameModel->AddNotification(new UpdateNotification(this, "A new snapshot is available - click here to update"));
+				gameModel->AddNotification(new UpdateNotification(this, ByteString("发现新的快照版本可用 - 点击此处更新").FromUtf8()));
 			}
 			break;
 		case UpdateInfo::channelStable:
-			gameModel->AddNotification(new UpdateNotification(this, "A new version is available - click here to update"));
+			gameModel->AddNotification(new UpdateNotification(this, ByteString("发现新的版本可用 - 点击此处更新").FromUtf8()));
 			break;
 		case UpdateInfo::channelBeta:
-			gameModel->AddNotification(new UpdateNotification(this, "A new beta is available - click here to update"));
+			gameModel->AddNotification(new UpdateNotification(this, ByteString("发现新的测试版本可用 - 点击此处更新").FromUtf8()));
 			break;
 	}
 }
@@ -1700,7 +1713,35 @@ bool GameController::GetMouseClickRequired()
 	return gameModel->GetMouseClickRequired();
 }
 
-void GameController::RemoveCustomGOLType(const ByteString &identifier)
+bool GameController::GetThreadedRendering()
 {
-	gameModel->RemoveCustomGOLType(identifier);
+	return gameModel->GetThreadedRendering();
+}
+
+void GameController::RemoveCustomGol(const ByteString &identifier)
+{
+	gameModel->RemoveCustomGol(identifier);
+}
+
+void GameController::BeforeSimDraw()
+{
+	commandInterface->HandleEvent(BeforeSimDrawEvent{});
+}
+
+void GameController::AfterSimDraw()
+{
+	commandInterface->HandleEvent(AfterSimDrawEvent{});
+}
+
+bool GameController::ThreadedRenderingAllowed()
+{
+	return gameModel->GetThreadedRendering() && !GetPaused() && !commandInterface->HaveSimGraphicsEventHandlers();
+}
+
+void GameController::SetToolIndex(ByteString identifier, std::optional<int> index)
+{
+	if (commandInterface)
+	{
+		commandInterface->SetToolIndex(identifier, index);
+	}
 }

@@ -10,6 +10,7 @@
 
 #include "gui/dialogues/ErrorMessage.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 
 #include "SimulationConfig.h"
 #include <SDL.h>
@@ -115,7 +116,7 @@ SaveButton::~SaveButton()
 	}
 }
 
-void SaveButton::Tick(float dt)
+void SaveButton::Tick()
 {
 	if (!thumbnail)
 	{
@@ -127,7 +128,7 @@ void SaveButton::Tick(float dt)
 			{
 				if(save->GetGameSave())
 				{
-					thumbnailRenderer = new ThumbnailRendererTask(*save->GetGameSave(), thumbBoxSize, true, true);
+					thumbnailRenderer = new ThumbnailRendererTask(*save->GetGameSave(), thumbBoxSize, RendererSettings::decorationEnabled, true);
 					thumbnailRenderer->Start();
 					triedThumbnail = true;
 				}
@@ -140,7 +141,7 @@ void SaveButton::Tick(float dt)
 			}
 			else if (file && file->GetGameSave())
 			{
-				thumbnailRenderer = new ThumbnailRendererTask(*file->GetGameSave(), thumbBoxSize, true, false);
+				thumbnailRenderer = new ThumbnailRendererTask(*file->GetGameSave(), thumbBoxSize, RendererSettings::decorationEnabled, false);
 				thumbnailRenderer->Start();
 				triedThumbnail = true;
 			}
@@ -262,7 +263,7 @@ void SaveButton::Draw(const Point& screenPos)
 	}
 }
 
-void SaveButton::OnMouseUnclick(int x, int y, unsigned int button)
+void SaveButton::OnMouseClick(int x, int y, unsigned int button)
 {
 	if(button != 1)
 	{
@@ -270,7 +271,7 @@ void SaveButton::OnMouseUnclick(int x, int y, unsigned int button)
 	}
 	if (file && !file->LazyGetGameSave())
 	{
-		new ErrorMessage(ByteString("無法載入此沙盤").FromUtf8(), file->GetError());
+		new ErrorMessage(ByteString("无法加载此沙盘").FromUtf8(), file->GetError());
 		return;
 	}
 
@@ -298,22 +299,18 @@ void SaveButton::AddContextMenu(int menuType)
 	if (menuType == 0) //Save browser
 	{
 		menu = new ContextMenu(this);
-		menu->AddItem(ContextMenuItem(ByteString("開啟").FromUtf8(), 0, true));
+		menu->AddItem(ContextMenuItem(ByteString("打开").FromUtf8(), 0, true));
 		if (Client::Ref().GetAuthUser().UserID)
-			menu->AddItem(ContextMenuItem(ByteString("選擇").FromUtf8(), 1, true));
-		menu->AddItem(ContextMenuItem(ByteString("歷史").FromUtf8(), 2, true));
-<<<<<<< Updated upstream
-		menu->AddItem(ContextMenuItem(ByteString("更多此作者的存檔").FromUtf8(), 3, true));
-=======
+			menu->AddItem(ContextMenuItem(ByteString("选择").FromUtf8(), 1, true));
+		menu->AddItem(ContextMenuItem(ByteString("历史").FromUtf8(), 2, true));
 		menu->AddItem(ContextMenuItem(ByteString("更多作品").FromUtf8(), 3, true));
->>>>>>> Stashed changes
 	}
 	else if (menuType == 1) //Local save browser
 	{
 		menu = new ContextMenu(this);
-		menu->AddItem(ContextMenuItem(ByteString("開啟").FromUtf8(), 0, true));
-		menu->AddItem(ContextMenuItem(ByteString("重新命名").FromUtf8(), 2, true));
-		menu->AddItem(ContextMenuItem(ByteString("刪除").FromUtf8(), 3, true));
+		menu->AddItem(ContextMenuItem(ByteString("打开").FromUtf8(), 0, true));
+		menu->AddItem(ContextMenuItem(ByteString("重命名").FromUtf8(), 2, true));
+		menu->AddItem(ContextMenuItem(ByteString("删除").FromUtf8(), 3, true));
 	}
 }
 
@@ -337,36 +334,40 @@ void SaveButton::OnContextMenuAction(int item)
 	}
 }
 
-void SaveButton::OnMouseClick(int x, int y, unsigned int button)
+void SaveButton::OnMouseDown(int x, int y, unsigned int button)
 {
-	if(button == SDL_BUTTON_RIGHT)
+	if (MouseDownInside)
 	{
-		if(menu)
-			menu->Show(GetScreenPos() + ui::Point(x, y));
-	}
-	else
-	{
-		isButtonDown = true;
-		if(button !=1 && selectable)
+		if(button == SDL_BUTTON_RIGHT)
 		{
-			selected = !selected;
-			DoSelection();
+			if(menu)
+				menu->Show(GetContainerPos() + ui::Point(x, y));
 		}
+		else
+		{
+			isButtonDown = true;
+			if(button !=1 && selectable)
+			{
+				selected = !selected;
+				DoSelection();
+			}
 
+		}
 	}
 }
 
-void SaveButton::OnMouseMovedInside(int x, int y, int dx, int dy)
+void SaveButton::OnMouseMoved(int x, int y)
 {
-	if(y > Size.Y-11)
-		isMouseInsideAuthor = true;
-	else
-		isMouseInsideAuthor = false;
+	isMouseInsideAuthor = false;
+	isMouseInsideHistory = false;
+	if (MouseInside)
+	{
+		if (y > Size.Y-11)
+			isMouseInsideAuthor = true;
 
-	if(showVotes && y > Size.Y-29 && y < Size.Y - 18 && x > 0 && x < 9)
-		isMouseInsideHistory = true;
-	else
-		isMouseInsideHistory = false;
+		if (y > Size.Y-29 && y < Size.Y - 18 && x > 0 && x < 9)
+			isMouseInsideHistory = true;
+	}
 }
 
 void SaveButton::OnMouseEnter(int x, int y)
@@ -404,9 +405,9 @@ void SaveButton::DoSelection()
 	if(menu)
 	{
 		if(selected)
-			menu->SetItem(1, ByteString("取消選擇").FromUtf8());
+			menu->SetItem(1, ByteString("取消选择").FromUtf8());
 		else
-			menu->SetItem(1, ByteString("選擇").FromUtf8());
+			menu->SetItem(1, ByteString("选择").FromUtf8());
 	}
 	if (selectable && actionCallback.selected)
 		actionCallback.selected();

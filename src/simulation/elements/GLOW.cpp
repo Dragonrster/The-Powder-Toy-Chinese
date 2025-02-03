@@ -33,7 +33,7 @@ void Element::Element_GLOW()
 	HeatConduct = 44;
 	Description = ByteString("熒光液,在壓力下發光").FromUtf8();
 
-	Properties = TYPE_LIQUID | PROP_LIFE_DEC;
+	Properties = TYPE_LIQUID | PROP_PHOTPASS | PROP_LIFE_DEC;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -59,11 +59,21 @@ static int update(UPDATE_FUNC_ARGS)
 				auto r = pmap[y+ry][x+rx];
 				if (!r)
 					continue;
+
 				if (TYP(r)==PT_WATR && sim->rng.chance(1, 400))
 				{
 					sim->kill_part(i);
 					sim->part_change_type(ID(r),x+rx,y+ry,PT_DEUT);
 					parts[ID(r)].life = 10;
+
+					return 1;
+				}
+				else if (TYP(r) == PT_GEL) //GLOW + GEL = RSST
+				{
+					sim->kill_part(i);
+					sim->part_change_type(ID(r),x+rx,y+ry,PT_RSST);
+					parts[ID(r)].tmp = 0;
+
 					return 1;
 				}
 			}
@@ -90,7 +100,7 @@ static int graphics(GRAPHICS_FUNC_ARGS)
 	*colg = int(restrict_flt(64.0f+cpart->ctype, 0, 255));
 	*colb = int(restrict_flt(64.0f+cpart->tmp, 0, 255));
 
-	int rng = ren->rng.between(1, 32); //
+	int rng = gfctx.rng.between(1, 32); //
 	if(((*colr) + (*colg) + (*colb)) > (256 + rng)) {
 		*colr -= 54;
 		*colg -= 54;

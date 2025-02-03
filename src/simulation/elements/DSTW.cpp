@@ -30,9 +30,10 @@ void Element::Element_DSTW()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 23;
-	Description = ByteString("蒸餾水,不導電的理論純水").FromUtf8();
+	LatentHeat = 7500;
+	Description = ByteString("蒸馏水,不导电的理论纯水").FromUtf8();
 
-	Properties = TYPE_LIQUID|PROP_NEUTPASS;
+	Properties = TYPE_LIQUID | PROP_NEUTPASS | PROP_PHOTPASS;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

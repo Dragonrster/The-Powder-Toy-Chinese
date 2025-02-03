@@ -1,10 +1,11 @@
 #include "gui/interface/Button.h"
-
 #include "gui/interface/Window.h"
-
+#include "gui/interface/Engine.h"
 #include "graphics/Graphics.h"
 #include "Misc.h"
 #include "Colour.h"
+#include <cmath>
+#include <numbers>
 
 namespace ui {
 
@@ -86,7 +87,7 @@ void Button::Draw(const Point& screenPos)
 
 	if (Enabled)
 	{
-		if (isButtonDown || (isTogglable && toggle))
+		if ((isButtonDown && MouseDownInside) || (isTogglable && toggle))
 		{
 			textColour = Appearance.TextActive;
 			borderColour = Appearance.BorderActive;
@@ -113,6 +114,10 @@ void Button::Draw(const Point& screenPos)
 	}
 
 	bgColour = Appearance.BackgroundInactive;
+	if (Appearance.BackgroundPulse)
+	{
+		backgroundColour.Alpha = uint8_t(backgroundColour.Alpha * ((std::sin(Engine::Ref().LastTick() / 1000 * std::numbers::pi * 2) + 1) / 2));
+	}
 	g->BlendFilledRect(RectSized(Position + Vec2{ 1, 1 }, Size - Vec2{ 2, 2 }), backgroundColour);
 	if(Appearance.Border == 1)
 		g->BlendRect(RectSized(Position, Size), borderColour);
@@ -140,7 +145,7 @@ void Button::Draw(const Point& screenPos)
 	}
 }
 
-void Button::OnMouseUnclick(int x, int y, unsigned int button)
+void Button::OnMouseClick(int x, int y, unsigned int button)
 {
 	if(button == 1)
 	{
@@ -171,17 +176,20 @@ void Button::OnMouseUp(int x, int y, unsigned int button)
 	isAltButtonDown = false;
 }
 
-void Button::OnMouseClick(int x, int y, unsigned int button)
+void Button::OnMouseDown(int x, int y, unsigned int button)
 {
-	if(!Enabled)
-		return;
-	if(button == 1)
+	if (MouseDownInside)
 	{
-		isButtonDown = true;
-	}
-	else if(button == 3)
-	{
-		isAltButtonDown = true;
+		if(!Enabled)
+			return;
+		if(button == 1)
+		{
+			isButtonDown = true;
+		}
+		else if(button == 3)
+		{
+			isAltButtonDown = true;
+		}
 	}
 }
 

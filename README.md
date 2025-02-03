@@ -1,33 +1,30 @@
-The Powder Toy - January 2023
+The Powder Toy - February 2025
 ==========================
 
-從[Powder Toy 網站](https://powdertoy.co.uk/Download.html) 獲取最新版本
+从[Powder Toy 网站](https://powdertoy.co.uk/Download.html) 获取最新版本
 
-從[漢化 Github](https://github.com/Dragonrster/The-Powder-Toy-Chinese) 獲取最新漢化版本
+从[汉化 Github](https://github.com/Dragonrster/The-Powder-Toy-Chinese) 获取最新汉化版本
 
+要使用保存等在线功能，您需要 [注册一个帐户](https://powdertoy.co.uk/Register.html)，也可以访问 [官方 TPT 论坛](https://powdertoy.co.uk/Discussions/Categories/Index.html)
 
-要使用儲存等線上功能，您需要 [註冊一個帳戶](https://powdertoy.co.uk/Register.html)
+你有没有想过炸毁什么东西？或者，也许您一直梦想着经营一座原子能发电厂？您是否有开发自己的 CPU 的意愿？Powder Toy 让您可以做到所有这些，甚至更多！
 
-您也可以訪問 [官方 TPT 論壇](https://powdertoy.co.uk/Discussions/Categories/Index.html)
+Powder Toy 是一款免费的物理沙盒游戏，它模拟气压和速度、热量、重力以及不同物质之间无数种相互作用！该游戏为您提供各种建筑材料、液体、气体和电子元件，可用于构建复杂的机器、枪支、炸弹、逼真的地形和几乎任何其他东西。然后，您可以开采它们并观看酷炫的爆炸、添加复杂的布线、与小火柴人玩耍或操作您的机器。您可以浏览和播放社区制作的数千种不同的保存或上传您自己的 - 我们欢迎您的创作！
 
-你有沒有想過炸燬什麼東西？或者，也許您一直夢想著經營一座原子能發電廠？您是否有開發自己的 CPU 的意願？Powder Toy 讓您可以做到所有這些，甚至更多！
+有一个 Lua API——你可以自动化你的工作，甚至为游戏制作插件。Powder Toy 是免费的，源代码是根据 GNU 通用公共许可证分发的，因此您可以自己修改游戏或帮助开发
 
-Powder Toy 是一款免費的物理沙盒遊戲，它模擬氣壓和速度、熱量、重力以及不同物質之間無數種相互作用！該遊戲為您提供各種建築材料、液體、氣體和電子元件，可用於構建複雜的機器、槍支、炸彈、逼真的地形和幾乎任何其他東西。然後，您可以開採它們並觀看酷炫的爆炸、新增複雜的佈線、與小火柴人玩耍或操作您的機器。您可以瀏覽和播放社群製作的數千種不同的儲存或上傳您自己的 - 我們歡迎您的創作！
-
-有一個 Lua API——你可以自動化你的工作，甚至為遊戲製作外掛。Powder Toy 是免費的，原始碼是根據 GNU 通用公共許可證分發的，因此您可以自己修改遊戲或幫助開發
-
-構建說明
+构建说明
 ===========================================================================
 
-請參閱 [WIKI 主頁上的](https://powdertoy.co.uk/Wiki/W/Main_Page.html) Powder Toy Development Help部分
+请参阅 [WIKI 主页上的](https://powdertoy.co.uk/Wiki/W/Main_Page.html) Powder Toy Development Help部分
 
-感謝
+Special 感谢
 ===========================================================================
 
-* Stanislaw K Skowronek - 設計原作
-* Simon Robertshaw
+* Stanislaw K Skowronek - 设计原作 Powder Toy
+* Simon Robertshaw - Wrote the website, current server owner
 * Skresanov Savely
-* cracker64
+* Pilihp64
 * Catelite
 * Victoria Hoyle
 * Nathan Cousins
@@ -41,7 +38,7 @@ Powder Toy 是一款免費的物理沙盒遊戲，它模擬氣壓和速度、熱
 * mniip
 * LBPHacker
 
-使用的庫和其他資源
+使用的库和其他资源
 ===========================================================================
 
 * [BSON](https://github.com/interactive-matter/bson-c)
@@ -58,82 +55,84 @@ Powder Toy 是一款免費的物理沙盒遊戲，它模擬氣壓和速度、熱
 * [zlib](https://www.zlib.net/)
 * [zpix](https://github.com/SolidZORO/zpix-pixel-font)
 
-指導
+指导
 ===========================================================================
 
-用滑鼠點選元素並在區域中繪製，就像在MS Paint中一樣。剩下的遊戲就是學習接下來會發生什麼
+用鼠标点击元素并在区域中绘制，就像在MS Paint中一样。剩下的游戏就是学习接下来会发生什么
 
-按鍵
+按键
 ===========================================================================
 
-| 按鍵                     | 操作                                                          |
+| 按键                     | 操作                                                          |
 | ----------------------- | --------------------------------------------------------------- |
-| TAB                     | 在圓形/方形/三角形畫筆之間切換                                    |
-| Space                   | 暫停                                                            |
+| TAB                     | 在圆形/方形/三角形画笔之间切换                                    |
+| Space                   | 暂停                                                            |
 | Q / Esc                 | 退出                                                            |
 | Z                       | 放大                                                            |
-| S                       | 儲存 Stamp                                                      |
-| L                       | 載入儲存的 Stamp                                                |
-| K                       | 瀏覽儲存的 Stamp                                                |
-| 0-9                     | 設定渲染模式                                                    |
-| P / F2                  | 將螢幕截圖另存為 .png                                           |
-| E                       | 調出元素搜尋                                                    |
-| F                       | 幀進                                                           |
-| G                       | 增大網格大小                                                      |
-| Shift + G               | 減小網格大小                                                  |
-| H                       | 顯示/隱藏 HUD                                                     |
-| Ctrl + H / F1           | 顯示介紹文字                                                 |
-| D / F3                  | 除錯模式                      |
-| I                       | 反轉壓力和速度貼圖                                |
-| W                       | 迴圈引力模式            |
-| Y                       | 迴圈空氣模式                                                 |
-| Ctrl + E                | Cycle edge modes                                                |
-| B                       | 進入裝飾編輯器選單                                    |
-| Ctrl + B                | 開啟/關閉裝飾                                       |
-| N                       | 開啟/關閉牛頓引力                                 |
-| U                       | 開啟/關閉牛頓引力                                      |
-| Ctrl + I                | 安裝The Powder Toy，透過雙擊載入沙盤/Stamp |
-| Backtick                | 切換控制檯                                                 |
-| =                       | 重置壓力和速度圖                                 |
-| Ctrl + =                | 清除電脈衝                                               |
-| \[                      | 減小畫筆大小                                             |
-| \]                      | 增加畫筆大小                                             |
-| Alt + \[                | 將畫筆大小減小 1                                        |
-| Alt + \]                | 將畫筆大小增加 1                                        |
-| Ctrl + C/V/X            | 複製/貼上/剪下                                                  |
+| S                       | 保存 Stamp                                                      |
+| L                       | 加载保存的 Stamp                                                |
+| K                       | 浏览保存的 Stamp                                                |
+| 0-9                     | 设置渲染模式                                                    |
+| P / F2                  | 将屏幕截图另存为 .png                                           |
+| E                       | 调出元素搜索                                                    |
+| F                       | 帧进                                                           |
+| G                       | 增大网格大小                                                      |
+| Shift + G               | 减小网格大小                                                  |
+| H                       | 显示/隐藏 HUD                                                     |
+| Ctrl + H / F1           | 显示介绍文字                                                 |
+| D / F3                  | 调试模式                      |
+| I                       | 反转压力和速度贴图                                |
+| W                       | 循环引力模式            |
+| Y                       | 循环空气模式                                                 |
+| Ctrl + E                | 循环边界模式 modes                                                |
+| B                       | 进入装饰编辑器菜单                                    |
+| Ctrl + B                | 打开/关闭装饰                                       |
+| N                       | 打开/关闭牛顿引力                                 |
+| U                       | 打开/关闭牛顿引力                                      |
+| Ctrl + I                | 安装The Powder Toy，通过双击加载沙盘/Stamp |
+| Backtick                | 切换控制台                                                 |
+| =                       | 重置压力和速度图                                 |
+| Ctrl + =                | 清除电脉冲                                               |
+| \[                      | 减小画笔大小                                             |
+| \]                      | 增加画笔大小                                             |
+| Alt + \[                | 将画笔大小减小 1                                        |
+| Alt + \]                | 将画笔大小增加 1                                        |
+| Ctrl + C/V/X            | 复制/粘贴/剪切                                                  |
 | Ctrl + Z                | 撤消                                                            |
 | Ctrl + Y                | 重做                                                            |
-| Ctrl + Cursor drag      | 長方形                                                       |
-| Shift + Cursor drag     | 線                                                            |
-| Middle click            | 樣本元素                                                  |
-| Alt + Left click        | 樣本元素                                                  |
-| Mouse scroll            | 更改畫筆大小                                               |
-| Ctrl + Mouse scroll     | 更改垂直畫筆大小                                      |
-| Shift + Mouse scroll    | 更改水平畫筆大小                                    |
-| Shift + R               | 貼上 Stamps 圖章時所選區域的水平映象          |
-| Ctrl + Shift + R        | 貼上 Stamps 時選定區域的垂直映象          |
-| R                       | 貼上 Stamps 時逆時針旋轉所選區域          |
+| Ctrl + Cursor drag      | 长方形                                                       |
+| Shift + Cursor drag     | 线                                                            |
+| Middle click            | 样本元素                                                  |
+| Alt + Left click        | 样本元素                                                  |
+| Mouse scroll            | 更改画笔大小                                               |
+| Ctrl + Mouse scroll     | 更改垂直画笔大小                                      |
+| Shift + Mouse scroll    | 更改水平画笔大小                                    |
+| Shift + R               | 粘贴 Stamps 图章时所选区域的水平镜像          |
+| Ctrl + Shift + R        | 粘贴 Stamps 时选定区域的垂直镜像          |
+| R                       | 粘贴 Stamps 时逆时针旋转所选区域          |
+| F11                     | 切换全屏                                               |
 
-命令列
+命令行
 ---------------------------------------------------------------------------
 
-| 命令               | 描述                                      | 例子                                     |
-| --------------------- | ------------------------------------------------ | --------------------------------------------|
-| `scale:SIZE`          | 更改視窗比例                       | `scale:2`                                   |
-| `kiosk`               | 全屏模式                                  |                                             |
-| `proxy:SERVER[:PORT]` | 使用代理伺服器                              | `proxy:wwwcache.lancs.ac.uk:8080`           |
-| `open FILE`           | 將檔案開啟為 Stamps 或遊戲沙盤           |                                             |
-| `ddir DIRECTORY`      | 用於儲存 Stamps 和首選項的目錄 |                                             |
-| `ptsave:SAVEID`       | 開啟線上儲存，由 ptsave 使用：URL           | `ptsave:2198`                               |
-| `disable-network`     | 停用網際網路連線                    |                                             |
-| `disable-bluescreen`  | 停用藍色畫面處理程式                       |                                             |
-| `redirect`            | 將輸出重定向到 stdout.txt / stderr.txt      |                                             |
-| `cafile:CAFILE`       | 設定證書路徑                      | `cafile:/etc/ssl/certs/ca-certificates.crt` |
-| `capath:CAPATH`       | 設定證書目錄路徑                   | `capath:/etc/ssl/certs`                     |
+| 命令                  | 描述                                   | 例子                                        |
+| --------------------- | -------------------------------------- | ------------------------------------------- |
+| `scale:SIZE`          | 更改窗口比例                           | `scale:2`                                   |
+| `kiosk`               | 全屏模式                               |                                             |
+| `proxy:SERVER[:PORT]` | 使用代理服务器                         | `proxy:wwwcache.lancs.ac.uk:8080`           |
+| `open FILE`           | 将文件打开为 Stamps 或游戏沙盘         |                                             |
+| `ddir DIRECTORY`      | 用于保存 Stamps 和首选项的目录         |                                             |
+| `ptsave:SAVEID`       | 打开在线保存，由 ptsave 使用：URL      | `ptsave:2198`                               |
+| `disable-network`     | 禁用互联网连接                         |                                             |
+| `disable-bluescreen`  | 禁用蓝屏处理程序                       |                                             |
+| `redirect`            | 将输出重定向到 stdout.txt / stderr.txt |                                             |
+| `cafile:CAFILE`       | 设置证书路径                           | `cafile:/etc/ssl/certs/ca-certificates.crt` |
+| `capath:CAPATH`       | 设置证书目录路径                       | `capath:/etc/ssl/certs`                     |
 
-參考資料
+参考资料
 ===========================================================================
+
 * [Lemon-2333/The-Powder-Toy-Chinese](https://github.com/Lemon-2333/The-Powder-Toy-Chinese)
 * [Dragonrster/The-Powder-Toy-Chinese-Instruction](https://github.com/Dragonrster/The-Powder-Toy-Chinese-Instruction)
-* [ByteString::FromUtf8方法程式碼示例](https://vimsky.com/zh-tw/examples/detail/cpp-ex---ByteString-FromUtf8-method.html)
+* [ByteString::FromUtf8方法代碼示例](https://vimsky.com/zh-tw/examples/detail/cpp-ex---ByteString-FromUtf8-method.html)
 * [How to display Unicode in TPT?](https://powdertoy.co.uk/Discussions/Thread/View.html?Thread=26330)

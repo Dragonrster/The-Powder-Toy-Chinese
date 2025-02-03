@@ -1,7 +1,6 @@
 #include "simulation/ElementCommon.h"
+#include "QRTZ.h"
 
-int Element_QRTZ_update(UPDATE_FUNC_ARGS);
-int Element_QRTZ_graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
 
 void Element::Element_QRTZ()
@@ -33,7 +32,7 @@ void Element::Element_QRTZ()
 	HeatConduct = 3;
 	Description = ByteString("石英,接近絕對零度時會變得很脆並碎裂成PQRT,允許一部分PHOT透過並散射掉另一部分").FromUtf8();
 
-	Properties = TYPE_SOLID|PROP_HOT_GLOW|PROP_LIFE_DEC;
+	Properties = TYPE_SOLID | PROP_PHOTPASS | PROP_HOT_GLOW | PROP_LIFE_DEC;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

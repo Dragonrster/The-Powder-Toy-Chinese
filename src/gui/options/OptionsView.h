@@ -9,6 +9,7 @@ namespace ui
 	class DropDown;
 	class Textbox;
 	class Button;
+	class Label;
 }
 
 class OptionsModel;
@@ -33,6 +34,7 @@ class OptionsView: public ui::Window
 	ui::Checkbox *forceIntegerScaling{};
 	ui::Checkbox *blurryScaling{};
 	ui::Checkbox *fastquit{};
+	ui::Checkbox *globalQuit{};
 	ui::DropDown *decoSpace{};
 	ui::Checkbox *showAvatars{};
 	ui::Checkbox *momentumScroll{};
@@ -40,15 +42,22 @@ class OptionsView: public ui::Window
 	ui::Checkbox *includePressure{};
 	ui::Checkbox *perfectCircle{};
 	ui::Checkbox *graveExitsConsole{};
+	ui::Checkbox *nativeClipoard{};
+	ui::Checkbox *threadedRendering{};
+	ui::Checkbox *redirectStd{};
+	ui::Checkbox *autoStartupRequest{};
+	ui::Label *startupRequestStatus{};
 	ui::ScrollPanel *scrollPanel{};
 	float customGravityX, customGravityY;
 	void UpdateAmbientAirTempPreview(float airTemp, bool isValid);
 	void AmbientAirTempToTextBox(float airTemp);
 	void UpdateAirTemp(String temp, bool isDefocus);
+	void UpdateStartupRequestStatus();
 public:
 	OptionsView();
 	void NotifySettingsChanged(OptionsModel * sender);
 	void AttachController(OptionsController * c_);
 	void OnDraw() override;
+	void OnTick() final override;
 	void OnTryExit(ExitMethod method) override;
 };

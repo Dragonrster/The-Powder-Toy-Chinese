@@ -52,8 +52,8 @@ if jacobsmod then
 end
 
 
-if not socket then error("不支援此TPT版本") end
-if MANAGER then error("管理器已經在執行") end
+if not socket then error("不支持此TPT版本") end
+if MANAGER then error("管理器已经在运行") end
 
 local scriptversion = 16
 MANAGER = {["version"] = "3.14", ["scriptversion"] = scriptversion, ["hidden"] = true}
@@ -149,7 +149,7 @@ local function readScriptInfo(list)
 			t[k]= tonumber(v) or v:gsub("\r",""):gsub("\\n","\n")
 		end
 		if not t.ID then
-			print("跳過指令碼列表中的無效指令碼")
+			print("跳过脚本列表中的无效脚本")
 		else
 			scriptlist[t.ID] = t
 		end
@@ -584,9 +584,9 @@ new_button = function(x,y,w,h,splitx,f,f2,text,localscript)
 		if tpt.mousey >= self.y and tpt.mousey < self.y2 then
 			if tpt.mousex >= self.x and tpt.mousex < self.x+8 then
 				if self.localscript then
-					tooltip:settooltip("刪除此指令碼")
+					tooltip:settooltip("删除此脚本")
 				else
-					tooltip:settooltip("在瀏覽中檢視指令碼")
+					tooltip:settooltip("在浏览中查看脚本")
 				end
 			elseif tpt.mousex>=self.x and tpt.mousex<self.x2 then
 				local script
@@ -601,7 +601,7 @@ new_button = function(x,y,w,h,splitx,f,f2,text,localscript)
 				self.drawbackground = true
 			elseif tpt.mousex >= self.x2 then
 				if tpt.mousex < self.x2+9 and self.running then
-					tooltip:settooltip(online and "已下載" or "執行中")
+					tooltip:settooltip(online and "已下载" or "运行中")
 				elseif tpt.mousex >= self.x2+9 and tpt.mousex < self.x2+43 and self.checkbut.canupdate and onlinescripts[self.ID] and onlinescripts[self.ID]["changelog"] then
 					tooltip:settooltip(onlinescripts[self.ID]["changelog"])
 				end
@@ -963,17 +963,17 @@ local function step()
 		tpt.fillrect(-1,-1,gfx.WIDTH,gfx.HEIGHT,0,0,0,150)
 	end
 	mainwindow:draw()
-	tpt.drawtext(280,135,"控制檯輸出:                                 DragonRSTER")
+	tpt.drawtext(280,135,"控制台输出:                                 DragonRSTER")
 	if requiresrestart then
-		tpt.drawtext(280,88,"Disabling a script requires a restart for effect!",255,50,50)
+		tpt.drawtext(280,88,"禁用脚本需要重新启动后生效!",255,50,50)
 	end
-	tpt.drawtext(55,53,"點選選擇指令碼,點選完成後以啟用指令碼")
-	tpt.drawtext(474,55,"指令碼管理器 v"..MANAGER.version)--479 for simple versions
+	tpt.drawtext(55,53,"点击选择脚本,点击完成后以激活脚本")
+	tpt.drawtext(474,55,"脚本管理器 v"..MANAGER.version)--479 for simple versions
 	tooltip:draw()
 
 	if online_req and online then
-		local textwidth = tpt.textwidth("載入中...")
-		tpt.drawtext(mainwindow.checkbox.x + (mainwindow.checkbox.w - textwidth) / 2, mainwindow.checkbox.y + (mainwindow.checkbox.h - 6) / 2, "載入中...")
+		local textwidth = tpt.textwidth("加载中...")
+		tpt.drawtext(mainwindow.checkbox.x + (mainwindow.checkbox.w - textwidth) / 2, mainwindow.checkbox.y + (mainwindow.checkbox.h - 6) / 2, "加载中...")
 	end
 end
 local function mouseclick(mousex,mousey,button,event,wheel)
@@ -1029,23 +1029,23 @@ local function smallstep()
 	check_req_status()
 end
 
-	--安裝元素說明
-function ui_button.downloadtpt(self)
-	--安裝元素說明
-local function uiinstalltptinstruction(location)
-	local file = download_file("https://pan.dragonrster.top/Game/ThePowderToy/scripts/123.txt")
-	if file then
-		f=io.open("./scripts/".. location,"wb")
-		f:write(file)
-		f:close()
-		running["123.lua"] = true
-		do_restart()
-		return true
-	end
-	return false
-end
-uiinstalltptinstruction("123.lua")
-end
+-- 	--安装元素说明
+-- function ui_button.downloadtpt(self)
+-- 	--安装元素说明
+-- local function uiinstalltptinstruction(location)
+-- 	local file = download_file("https://pan.dragonrster.top/Game/ThePowderToy/scripts/123.txt")
+-- 	if file then
+-- 		f=io.open("./scripts/".. location,"wb")
+-- 		f:write(file)
+-- 		f:close()
+-- 		running["123.lua"] = true
+-- 		do_restart()
+-- 		return true
+-- 	end
+-- 	return false
+-- end
+-- uiinstalltptinstruction("123.lua")
+-- end
 local function reload_action()
 	load_filenames()
 	load_downloaded()
@@ -1056,10 +1056,10 @@ local function reload_action()
 		count_local_scripts()
 	end
 	if num_files == 0 then
-		MANAGER.print("在'"..TPT_LUA_PATH.."'中沒有找到指令碼",255,255,0)
+		MANAGER.print("在'"..TPT_LUA_PATH.."'中没有找到脚本",255,255,0)
 		fs.makeDirectory(TPT_LUA_PATH)
 	else
-		MANAGER.print("重新載入檔案列表,找到 "..num_files.." 個指令碼")
+		MANAGER.print("重新加载文件列表,找到 "..num_files.." 个脚本")
 	end
 end
 --button functions on click
@@ -1067,7 +1067,7 @@ function ui_button.reloadpressed(self)
 	if not online then
 		reload_action()
 	else
-		beginInput("指令碼檢索", "輸入要檢索的關鍵詞", function(filter)
+		beginInput("脚本检索", "输入要检索的关键词", function(filter)
 			search_terms = {}
 			for match in filter:gmatch("%w+") do
 				table.insert(search_terms, match)
@@ -1085,12 +1085,12 @@ function ui_button.consoleclear(self)
 	mainwindow.menuconsole:clear()
 end
 function ui_button.changedir(self)
-	beginInput("更改搜尋目錄","輸入指令碼所在的資料夾(需要重新啟動)", TPT_LUA_PATH, TPT_LUA_PATH, function(new)
+	beginInput("更改搜索目录","输入脚本所在的文件夹(需要重新启动)", TPT_LUA_PATH, TPT_LUA_PATH, function(new)
 		local last = TPT_LUA_PATH
 		if new and new~=last and new~="" then
 			save_last()
 
-			MANAGER.print("目錄更改為 "..new,255,255,0)
+			MANAGER.print("目录更改为 "..new,255,255,0)
 			TPT_LUA_PATH = new
 
 			save_dir()
@@ -1108,7 +1108,7 @@ function ui_button.uploadscript(self)
 end
 local lastpaused
 function ui_button.sidepressed(self)
-	if TPTMP and TPTMP.chatHidden == false then print("在開啟管理器之前儘量關閉TPTMP") return end
+	if TPTMP and TPTMP.chatHidden == false then print("在打开管理器之前尽量关闭TPTMP") return end
 	MANAGER.hidden = not MANAGER.hidden
 	ui_button.localview()
 	if not MANAGER.hidden then
@@ -1135,7 +1135,7 @@ function ui_button.donepressed(self)
 						print(err)
 						but.selected = false
 					else
-						MANAGER.print("開始 "..filepath)
+						MANAGER.print("开始 "..filepath)
 						running[filepath] = true
 					end
 				end
@@ -1152,7 +1152,7 @@ function ui_button.downloadpressed(self)
 	local any_failed = false
 	for i,but in ipairs(mainwindow.checkbox.list) do
 		if but.selected then
-			local displayName = "下載完成"..PATH_SEP..but.ID.." "..onlinescripts[but.ID].author:gsub("[^%w _-]", "_").."-"..onlinescripts[but.ID].name:gsub("[^%w _-]", "_")..".lua"
+			local displayName = "downloaded"..PATH_SEP..but.ID.." "..onlinescripts[but.ID].author:gsub("[^%w _-]", "_").."-"..onlinescripts[but.ID].name:gsub("[^%w _-]", "_")..".lua"
 			local name = TPT_LUA_PATH..PATH_SEP..displayName
 			if not fs.exists(TPT_LUA_PATH..PATH_SEP.."downloaded") then
 				fs.makeDirectory(TPT_LUA_PATH..PATH_SEP.."downloaded")
@@ -1171,7 +1171,7 @@ function ui_button.downloadpressed(self)
 						localscripts[but.ID]["path"] = displayName
 						dofile(name)
 
-						MANAGER.print("下載並啟動 "..but.t.text)
+						MANAGER.print("下载并启动 "..but.t.text)
 						running[displayName] = true
 					end)
 					if not status then
@@ -1186,12 +1186,12 @@ function ui_button.downloadpressed(self)
 				remaining_downloads = remaining_downloads - 1
 				if remaining_downloads == 0 then
 					save_last()
-					print("已完成指令碼的下載和安裝")
+					print("已完成脚本的下载和安装")
 					if not any_failed then
 						MANAGER.hidden = true
 						ui_button.localview()
 					else
-						print("某些指令碼下載或安裝失敗,請參閱管理器日誌")
+						print("某些脚本下载或安装失败,请参阅管理器日志")
 					end
 				end
 			end)
@@ -1215,7 +1215,7 @@ function ui_button.delete(self)
 		load_filenames()
 		gen_buttons()
 	end
-	beginConfirm("刪除檔案", "刪除 "..self.t.text.."?", cb)
+	beginConfirm("删除文件", "删除 "..self.t.text.."?", cb)
 end
 function ui_button.viewonline(self)
 	open_link("https://starcatcher.us/scripts?view="..self.ID)
@@ -1260,22 +1260,22 @@ function ui_button.localview(self)
 	if online then
 		online = false
 		gen_buttons()
-		donebutton.t.text = "確定"
+		donebutton.t.text = "确定"
 		donebutton.w = 29 donebutton.x2 = donebutton.x + donebutton.w
 		donebutton.f = ui_button.donepressed
-		uploadscriptbutton.t.text = icons["folder"].." 指令碼資料夾 Folder"
-		reloadbutton.t.text = "重新整理"
+		uploadscriptbutton.t.text = icons["folder"].." 脚本文件夹 Folder"
+		reloadbutton.t.text = "刷新"
 	end
 end
 function ui_button.onlineview(self)
 	if not online then
 		online = true
 		gen_buttons()
-		donebutton.t.text = "下載"
+		donebutton.t.text = "下载"
 		donebutton.w = 55 donebutton.x2 = donebutton.x + donebutton.w
 		donebutton.f = ui_button.downloadpressed
-		uploadscriptbutton.t.text = "    上載指令碼"
-		reloadbutton.t.text = "檢索"
+		uploadscriptbutton.t.text = "    上载脚本"
+		reloadbutton.t.text = "检索"
 		search_terms = {}
 	end
 end
@@ -1288,14 +1288,14 @@ local nonebutton = ui_button.new(62,81,8,8,ui_button.selectnone,"")
 nonebutton.drawbox = true
 mainwindow:add(nonebutton)
 mainwindow:add(ui_button.new(538,337,30,10,ui_button.consoleclear,"清除"))
-reloadbutton = mainwindow:add(ui_button.new(278,67,29,13,ui_button.reloadpressed,"重新整理"), "reload")
-downloadtptbutton = mainwindow:add(ui_button.new(150,65,80,11,ui_button.downloadtpt,"安裝元素說明"), "reload")
-mainwindow:add(ui_button.new(378,67,79,13,ui_button.changedir,"更改指令碼路徑"))
-uploadscriptbutton = mainwindow:add(ui_button.new(478,67,84,13,ui_button.uploadscript, icons["folder"].." 指令碼資料夾"))
+reloadbutton = mainwindow:add(ui_button.new(278,67,29,13,ui_button.reloadpressed,"刷新"), "reload")
+downloadtptbutton = mainwindow:add(ui_button.new(150,65,80,11,ui_button.downloadtpt,"安装元素说明"), "reload")
+mainwindow:add(ui_button.new(378,67,79,13,ui_button.changedir,"更改脚本路径"))
+uploadscriptbutton = mainwindow:add(ui_button.new(478,67,84,13,ui_button.uploadscript, icons["folder"].." 脚本文件夹"))
 local tempbutton = ui_button.new(60, 65, 30, 13, ui_button.localview, "本地")
 tempbutton.drawbox = true
 mainwindow:add(tempbutton)
-tempbutton = ui_button.new(100, 65, 30, 13, ui_button.onlineview, "線上")
+tempbutton = ui_button.new(100, 65, 30, 13, ui_button.onlineview, "在线")
 tempbutton.drawbox = true
 mainwindow:add(tempbutton)
 local ypos = 134
@@ -1368,7 +1368,7 @@ local function check_online_req_status()
 		local list, status_code = online_req:finish()
 		online_req = nil
 		if status_code ~= 200 then
-			MANAGER.print("載入指令碼列表失敗,錯誤碼 " .. status_code, 255, 0, 0)
+			MANAGER.print("加载脚本列表失败,错误码 " .. status_code, 255, 0, 0)
 			return
 		end
 		
@@ -1406,7 +1406,7 @@ local function check_update_req_status()
 		local updateinfo, status_code = script_manager_update_req:finish()
 		script_manager_update_req = nil
 		if status_code ~= 200 then
-			MANAGER.print("更新檢查失敗,錯誤碼 " .. status_code, 255, 0, 0)
+			MANAGER.print("更新检查失败,错误码 " .. status_code, 255, 0, 0)
 			return
 		end
 		

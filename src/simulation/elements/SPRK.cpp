@@ -1,6 +1,9 @@
 #include "simulation/ElementCommon.h"
+#include "NTCT.h"
+#include "PIPE.h"
+#include "FIRE.h"
+#include "ETRD.h"
 
-int Element_FIRE_update(UPDATE_FUNC_ARGS);
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 
@@ -52,6 +55,8 @@ void Element::Element_SPRK()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int ct = parts[i].ctype;
 	Element_FIRE_update(UPDATE_FUNC_SUBCALL_ARGS);
 
@@ -59,7 +64,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		if (ct==PT_WATR||ct==PT_SLTW||ct==PT_PSCN||ct==PT_NSCN||ct==PT_ETRD||ct==PT_INWR)
 			parts[i].temp = R_TEMP + 273.15f;
-		if (ct<=0 || ct>=PT_NUM || !sim->elements[parts[i].ctype].Enabled)
+		if (ct<=0 || ct>=PT_NUM || !elements[parts[i].ctype].Enabled)
 			ct = PT_METL;
 		parts[i].ctype = PT_NONE;
 		parts[i].life = 4;
@@ -69,6 +74,12 @@ static int update(UPDATE_FUNC_ARGS)
 			parts[i].life = 54;
 		else if (ct == PT_SWCH)
 			parts[i].life = 14;
+		else if (ct == PT_RSST) //RSST disappears at the end of its spark cycle
+		{
+			sim->kill_part(i);
+			return 1;
+		}
+
 		if (sim->part_change_type(i,x,y,ct))
 			return 1;
 		return 0;
@@ -81,15 +92,16 @@ static int update(UPDATE_FUNC_ARGS)
 		return 1;
 	case PT_NTCT:
 	case PT_PTCT:
-		int Element_NTCT_update(UPDATE_FUNC_ARGS);
 		Element_NTCT_update(UPDATE_FUNC_SUBCALL_ARGS);
 		break;
 	case PT_ETRD:
 		if (parts[i].life==1)
 		{
-			int Element_ETRD_nearestSparkablePart(Simulation *sim, int targetId);
 			auto nearp = Element_ETRD_nearestSparkablePart(sim, i);
-			if (nearp!=-1 && sim->parts_avg(i, nearp, PT_INSL)!=PT_INSL)
+			if (nearp == -1)
+				break;
+			auto pavg = sim->parts_avg(i, nearp, PT_INSL);
+			if (pavg != PT_INSL && pavg != PT_RSSS)
 			{
 				sim->CreateLine(x, y, (int)(parts[nearp].x+0.5f), (int)(parts[nearp].y+0.5f), PT_PLSM);
 				parts[i].life = 20;
@@ -136,6 +148,7 @@ static int update(UPDATE_FUNC_ARGS)
 							parts[p].temp=parts[p].life*parts[i].tmp/2.5;
 							parts[p].tmp2=1;
 							parts[p].tmp=int(atan2(-ry, (float)rx)/TPT_PI_FLT*360);
+							parts[p].dcolour = parts[i].dcolour;
 							parts[i].temp-=parts[i].tmp*2+parts[i].temp/5; // slight self-cooling
 							if (fabs(sim->pv[y/CELL][x/CELL])!=0.0f)
 							{
@@ -197,7 +210,7 @@ static int update(UPDATE_FUNC_ARGS)
 				switch (receiver)
 				{
 				case PT_SWCH:
-					if (pavg!=PT_INSL && parts[i].life<4)
+					if (pavg!=PT_INSL && pavg!=PT_RSSS && parts[i].life<4)
 					{
 						if(sender==PT_PSCN && parts[ID(r)].life<10) {
 							parts[ID(r)].life = 10;
@@ -210,7 +223,7 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 					break;
 				case PT_SPRK:
-					if (pavg!=PT_INSL && parts[i].life<4)
+					if (pavg!=PT_INSL && pavg!=PT_RSSS && parts[i].life<4)
 					{
 						if (parts[ID(r)].ctype==PT_SWCH)
 						{
@@ -243,15 +256,14 @@ static int update(UPDATE_FUNC_ARGS)
 					}
 					continue;
 				case PT_PPIP:
-					if (parts[i].life == 3 && pavg!=PT_INSL)
+					if (parts[i].life == 3 && pavg!=PT_INSL && pavg!=PT_RSSS)
 					{
-						void Element_PPIP_flood_trigger(Simulation * sim, int x, int y, int sparkedBy);
 						if (sender == PT_NSCN || sender == PT_PSCN || sender == PT_INST)
 							Element_PPIP_flood_trigger(sim, x+rx, y+ry, sender);
 					}
 					continue;
 				case PT_NTCT: case PT_PTCT: case PT_INWR:
-					if (sender==PT_METL && pavg!=PT_INSL && parts[i].life<4)
+					if (sender==PT_METL && pavg!=PT_INSL && pavg!=PT_RSSS && parts[i].life<4)
 					{
 						parts[ID(r)].temp = 473.0f;
 						if (receiver==PT_NTCT||receiver==PT_PTCT)
@@ -270,8 +282,8 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				}
 
-				if (pavg == PT_INSL) continue; //Insulation blocks everything past here
-				if (!((sim->elements[receiver].Properties&PROP_CONDUCTS)||receiver==PT_INST||receiver==PT_QRTZ)) continue; //Stop non-conducting receivers, allow INST and QRTZ as special cases
+				if ((pavg == PT_INSL) || (pavg == PT_RSSS)) continue; //Insulation blocks everything past here
+				if (!((elements[receiver].Properties&PROP_CONDUCTS)||receiver==PT_INST||receiver==PT_QRTZ)) continue; //Stop non-conducting receivers, allow INST and QRTZ as special cases
 				if (abs(rx)+abs(ry)>=4 &&sender!=PT_SWCH&&receiver!=PT_SWCH) continue; //Only switch conducts really far
 				if (receiver==sender && receiver!=PT_INST && receiver!=PT_QRTZ) goto conduct; //Everything conducts to itself, except INST.
 
@@ -354,6 +366,14 @@ static int update(UPDATE_FUNC_ARGS)
 					if (parts[ID(r)].life==0 && parts[i].life<4)
 					{
 						sim->FloodINST(x+rx,y+ry);//spark the wire
+					}
+				}
+				else if (receiver==PT_RSST) {
+					if (parts[ID(r)].life==0 && parts[i].life<4)
+					{
+						sim->part_change_type(ID(r),x+rx,y+ry,PT_SPRK);
+						parts[ID(r)].life = 5;
+						parts[ID(r)].ctype = receiver;
 					}
 				}
 				else if (parts[ID(r)].life==0 && parts[i].life<4) {

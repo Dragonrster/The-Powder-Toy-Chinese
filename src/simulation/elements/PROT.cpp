@@ -54,6 +54,8 @@ void Element::Element_PROT()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	sim->pv[y/CELL][x/CELL] -= .003f;
 	int under = pmap[y][x];
 	int utype = TYP(under);
@@ -101,24 +103,34 @@ static int update(UPDATE_FUNC_ARGS)
 		else change = 0.0f;
 		parts[uID].temp = restrict_flt(parts[uID].temp + change, MIN_TEMP, MAX_TEMP);
 		break;
+	case PT_RSSS: //Destroy RSSS
+		{
+			sim->kill_part(uID);
+			sim->kill_part(i);
+			return 1;
+		}
+		break;
 	case PT_NONE:
 		//slowly kill if it's not inside an element
 		if (parts[i].life)
 		{
 			if (!--parts[i].life)
+			{
 				sim->kill_part(i);
+				return 1;
+			}
 		}
 		break;
 	default:
 		//set off explosives (only when hot because it wasn't as fun when it made an entire save explode)
-		if (parts[i].temp > 273.15f + 500.0f && (sim->elements[utype].Flammable || sim->elements[utype].Explosive || utype == PT_BANG))
+		if (parts[i].temp > 273.15f + 500.0f && (elements[utype].Flammable || elements[utype].Explosive || utype == PT_BANG))
 		{
 			sim->create_part(uID, x, y, PT_FIRE);
-			parts[uID].temp += restrict_flt(float(sim->elements[utype].Flammable * 5), MIN_TEMP, MAX_TEMP);
+			parts[uID].temp += restrict_flt(float(elements[utype].Flammable * 5), MIN_TEMP, MAX_TEMP);
 			sim->pv[y / CELL][x / CELL] += 1.00f;
 		}
 		//prevent inactive sparkable elements from being sparked
-		else if ((sim->elements[utype].Properties&PROP_CONDUCTS) && parts[uID].life <= 4)
+		else if ((elements[utype].Properties&PROP_CONDUCTS) && parts[uID].life <= 4)
 		{
 			parts[uID].life = 40 + parts[uID].life;
 		}
@@ -189,7 +201,7 @@ static int DeutImplosion(Simulation * sim, int n, int x, int y, float temp, int 
 		i = sim->create_part(-3, x, y, t);
 		if (i >= 0)
 			sim->parts[i].temp = temp;
-		else if (sim->pfree < 0)
+		else if (sim->MaxPartsReached())
 			break;
 	}
 	sim->pv[y/CELL][x/CELL] -= (6.0f * CFDS)*n;

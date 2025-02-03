@@ -5,7 +5,7 @@
 namespace http
 {
 	RemoveTagRequest::RemoveTagRequest(int saveID, ByteString tag) :
-		APIRequest(ByteString::Build(SCHEME, SERVER, "/Browse/EditTag.json?Op=delete&ID=", saveID, "&Tag=", tag, "&Key=", Client::Ref().GetAuthUser().SessionKey), authRequire, true)
+		APIRequest(ByteString::Build(SERVER, "/Browse/EditTag.json?Op=delete&ID=", saveID, "&Tag=", tag, "&Key=", Client::Ref().GetAuthUser().SessionKey), authRequire, true)
 	{
 	}
 
@@ -22,7 +22,7 @@ namespace http
 		}
 		catch (const std::exception &ex)
 		{
-			throw RequestError("Could not read response: " + ByteString(ex.what()));
+			throw RequestError("\u65e0\u6cd5\u8bfb\u53d6\u54cd\u5e94\u003a\u0020" + ByteString(ex.what()));
 		}
 		return tags;
 	}

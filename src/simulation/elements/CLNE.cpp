@@ -31,7 +31,7 @@ void Element::Element_CLNE()
 	HeatConduct = 251;
 	Description = ByteString("複製體,複製碰到它的任何物體").FromUtf8();
 
-	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
+	Properties = TYPE_SOLID | PROP_PHOTPASS | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
@@ -49,7 +49,9 @@ void Element::Element_CLNE()
 
 static int update(UPDATE_FUNC_ARGS)
 {
-	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !sim->elements[parts[i].ctype].Enabled)
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	if (parts[i].ctype<=0 || parts[i].ctype>=PT_NUM || !elements[parts[i].ctype].Enabled)
 	{
 		for (auto rx = -1; rx <= 1; rx++)
 		{
@@ -81,7 +83,7 @@ static int update(UPDATE_FUNC_ARGS)
 			int np = sim->create_part(-1, x + sim->rng.between(-1, 1), y + sim->rng.between(-1, 1), TYP(parts[i].ctype));
 			if (np>=0)
 			{
-				if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && sim->elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)
+				if (parts[i].ctype==PT_LAVA && parts[i].tmp>0 && parts[i].tmp<PT_NUM && elements[parts[i].tmp].HighTemperatureTransition==PT_LAVA)
 					parts[np].ctype = parts[i].tmp;
 			}
 		}

@@ -1,7 +1,8 @@
 #include "GameView.h"
 
 #include "Brush.h"
-#include "DecorationTool.h"
+#include "tool/DecorationTool.h"
+#include "tool/PropertyTool.h"
 #include "Favorite.h"
 #include "Format.h"
 #include "GameController.h"
@@ -13,6 +14,7 @@
 #include "Notification.h"
 #include "ToolButton.h"
 #include "QuickOptions.h"
+#include "PowderToySDL.h"
 
 #include "client/SaveInfo.h"
 #include "client/SaveFile.h"
@@ -21,11 +23,13 @@
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "graphics/Renderer.h"
+#include "graphics/VideoBuffer.h"
 #include "gui/Style.h"
 #include "simulation/ElementClasses.h"
 #include "simulation/ElementDefs.h"
 #include "simulation/SaveRenderer.h"
 #include "simulation/SimulationData.h"
+#include "simulation/Simulation.h"
 
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
@@ -87,7 +91,7 @@ public:
 			}
 		}
 	}
-	void OnMouseUnclick(int x, int y, unsigned int button) override
+	void OnMouseClick(int x, int y, unsigned int button) override
 	{
 		if(isButtonDown)
 		{
@@ -96,7 +100,7 @@ public:
 			else if(rightDown)
 				DoRightAction();
 		}
-		ui::Button::OnMouseUnclick(x, y, button);
+		ui::Button::OnMouseClick(x, y, button);
 
 	}
 	void OnMouseHover(int x, int y) override
@@ -120,15 +124,18 @@ public:
 		toolTip = newToolTip1;
 		toolTip2 = newToolTip2;
 	}
-	void OnMouseClick(int x, int y, unsigned int button) override
+	void OnMouseDown(int x, int y, unsigned int button) override
 	{
-		ui::Button::OnMouseClick(x, y, button);
-		rightDown = false;
-		leftDown = false;
-		if(x >= splitPosition)
-			rightDown = true;
-		else if(x < splitPosition)
-			leftDown = true;
+		ui::Button::OnMouseDown(x, y, button);
+		if (MouseDownInside)
+		{
+			rightDown = false;
+			leftDown = false;
+			if(x - Position.X >= splitPosition)
+				rightDown = true;
+			else if(x - Position.X < splitPosition)
+				leftDown = true;
+		}
 	}
 	void DoRightAction()
 	{
@@ -174,21 +181,16 @@ GameView::GameView():
 	wallBrush(false),
 	toolBrush(false),
 	decoBrush(false),
-	windTool(false),
 	toolIndex(0),
 	currentSaveType(0),
 	lastMenu(-1),
 
-	toolTipPresence(0),
 	toolTip(""),
 	isToolTipFadingIn(false),
 	toolTipPosition(-1, -1),
-	infoTipPresence(0),
 	infoTip(""),
-	buttonTipShow(0),
 	buttonTip(""),
 	isButtonTipFadingIn(false),
-	introText(2048),
 	introTextMessage(IntroText().FromUtf8()),
 
 	doScreenshot(false),
@@ -199,8 +201,7 @@ GameView::GameView():
 	recordingFolder(0),
 	currentPoint(ui::Point(0, 0)),
 	lastPoint(ui::Point(0, 0)),
-	ren(NULL),
-	activeBrush(NULL),
+	activeBrush(nullptr),
 	saveSimulationButtonEnabled(false),
 	saveReuploadAllowed(true),
 	drawMode(DrawPoints),
@@ -212,6 +213,7 @@ GameView::GameView():
 	currentMouse(0, 0),
 	mousePosition(0, 0)
 {
+	contributesToFps = true;
 
 	int currentX = 1;
 	//Set up UI
@@ -223,7 +225,7 @@ GameView::GameView():
 	scrollBar->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(scrollBar);
 
-	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", ByteString("開啟雲沙盤,或按住Ctrl瀏覽本地沙盤").FromUtf8());  //Open
+	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", ByteString("打开云沙盘,或按住Ctrl浏览本地沙盘").FromUtf8());  //Open
 	searchButton->SetIcon(IconOpen);
 	currentX+=18;
 	searchButton->SetTogglable(false);
@@ -235,14 +237,14 @@ GameView::GameView():
 	} });
 	AddComponent(searchButton);
 
-	reloadButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", ByteString("重新載入沙盤").FromUtf8());
+	reloadButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", ByteString("重新加载沙盘").FromUtf8());
 	reloadButton->SetIcon(IconReload);
 	reloadButton->Appearance.Margin.Left+=2;
 	currentX+=18;
 	reloadButton->SetActionCallback({ [this] { c->ReloadSim(); }, [this] { c->OpenSavePreview(); } });
 	AddComponent(reloadButton);
 
-	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), ByteString("[未命沙盤]").FromUtf8(), "", "", 19);
+	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), ByteString("[未命沙盘]").FromUtf8(), "", "", 19);
 	saveSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveSimulationButton->SetIcon(IconSave);
 	currentX+=151;
@@ -263,7 +265,7 @@ GameView::GameView():
 	SetSaveButtonTooltips();
 	AddComponent(saveSimulationButton);
 
-	upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(39, 15), "", ByteString("贊").FromUtf8());
+	upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(39, 15), "", ByteString("赞").FromUtf8());
 	upVoteButton->SetIcon(IconVoteUp);
 	upVoteButton->Appearance.Margin.Top+=2;
 	upVoteButton->Appearance.Margin.Left+=2;
@@ -277,20 +279,22 @@ GameView::GameView():
 	currentX+=16;
 	AddComponent(downVoteButton);
 
-	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(227, 15), ByteString("無標籤").FromUtf8(), ByteString("新增沙盤標籤").FromUtf8());
+	ResetVoteButtons();
+
+	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(WINDOWW - 402, 15), ByteString("[无标签]").FromUtf8(), ByteString("添加沙盘标签").FromUtf8());
 	tagSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tagSimulationButton->SetIcon(IconTag);
 	//currentX+=252;
 	tagSimulationButton->SetActionCallback({ [this] { c->OpenTags(); } });
 	AddComponent(tagSimulationButton);
 
-	clearSimButton = new ui::Button(ui::Point(Size.X-159, Size.Y-16), ui::Point(17, 15), "", ByteString("新建沙盤(覆蓋一切)").FromUtf8());
+	clearSimButton = new ui::Button(ui::Point(Size.X-159, Size.Y-16), ui::Point(17, 15), "", ByteString("新建沙盘(覆盖一切)").FromUtf8());
 	clearSimButton->SetIcon(IconNew);
 	clearSimButton->Appearance.Margin.Left+=2;
 	clearSimButton->SetActionCallback({ [this] { c->ClearSim(); } });
 	AddComponent(clearSimButton);
 
-	loginButton = new SplitButton(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), ByteString("[登入]").FromUtf8(), ByteString("登入以儲存到雲伺服器").FromUtf8(), ByteString("編輯配置").FromUtf8(), 19);
+	loginButton = new SplitButton(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), ByteString("[登录]").FromUtf8(), ByteString("登录以保存到云服务器").FromUtf8(), ByteString("编辑配置").FromUtf8(), 19);
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	loginButton->SetIcon(IconLogin);
 	loginButton->SetSplitActionCallback({
@@ -299,7 +303,7 @@ GameView::GameView():
 	});
 	AddComponent(loginButton);
 
-	simulationOptionButton = new ui::Button(ui::Point(Size.X-48, Size.Y-16), ui::Point(15, 15), "", ByteString("設定").FromUtf8());
+	simulationOptionButton = new ui::Button(ui::Point(Size.X-48, Size.Y-16), ui::Point(15, 15), "", ByteString("设置").FromUtf8());
 	simulationOptionButton->SetIcon(IconSimulationSettings);
 	simulationOptionButton->Appearance.Margin.Left+=2;
 	simulationOptionButton->SetActionCallback({ [this] { c->OpenOptions(); } });
@@ -311,23 +315,24 @@ GameView::GameView():
 	displayModeButton->SetActionCallback({ [this] { c->OpenRenderOptions(); } });
 	AddComponent(displayModeButton);
 
-	pauseButton = new ui::Button(ui::Point(Size.X-16, Size.Y-16), ui::Point(15, 15), "", ByteString("暫停/繼續").FromUtf8());  //Pause
+	pauseButton = new ui::Button(ui::Point(Size.X-16, Size.Y-16), ui::Point(15, 15), "", ByteString("暂停/继续").FromUtf8());  //Pause
 	pauseButton->SetIcon(IconPause);
 	pauseButton->SetTogglable(true);
 	pauseButton->SetActionCallback({ [this] { c->SetPaused(pauseButton->GetToggleState()); } });
 	AddComponent(pauseButton);
 
-	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), 0xE065, ByteString("查詢元素").FromUtf8());
+	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), 0xE065, ByteString("查找元素").FromUtf8());
 	tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 	tempButton->SetActionCallback({ [this] { c->OpenElementSearch(); } });
 	AddComponent(tempButton);
 
-	colourPicker = new ui::Button(ui::Point((XRES/2)-8, YRES+1), ui::Point(16, 16), "", ByteString("選擇顏色").FromUtf8());
+	colourPicker = new ui::Button(ui::Point((XRES/2)-8, YRES+1), ui::Point(16, 16), "", ByteString("选择颜色").FromUtf8());
 	colourPicker->SetActionCallback({ [this] { c->OpenColourPicker(); } });
 }
 
 GameView::~GameView()
 {
+	StopRendererThread();
 	if(!colourPicker->GetParentWindow())
 		delete colourPicker;
 
@@ -411,8 +416,7 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 			tempString += menuList[i]->GetIcon();
 			String description = menuList[i]->GetDescription();
 			if (i == SC_FAVORITES && !Favorite::Ref().AnyFavorites())
-				//刪除操作描述
-				description += "";
+				description += ByteString("收藏夹(使用Ctrl+Shift+Click切操元素的收藏状态)").FromUtf8();
 			auto *tempButton = new MenuButton(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), tempString, description);
 			tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 			tempButton->menuID = i;
@@ -467,8 +471,7 @@ bool GameView::GetBrushEnable()
 void GameView::SetDebugHUD(bool mode)
 {
 	showDebug = mode;
-	if (ren)
-		ren->debugLines = showDebug;
+	rendererSettings->debugLines = showDebug;
 }
 
 bool GameView::GetDebugHUD()
@@ -515,9 +518,10 @@ void GameView::NotifyActiveToolsChanged(GameModel * sender)
 
 	decoBrush = sender->GetActiveTool(0)->Identifier.BeginsWith("DEFAULT_DECOR_");
 
-	if (sender->GetRenderer()->findingElement)
+	auto &settings = sender->GetRendererSettings();
+	if (settings.findingElement)
 	{
-		ren->findingElement = FindingElementCandidate();
+		settings.findingElement = FindingElementCandidate();
 	}
 }
 
@@ -530,7 +534,7 @@ void GameView::NotifyLastToolChanged(GameModel * sender)
 	}
 }
 
-void GameView::NotifyToolListChanged(GameModel * sender)
+void GameView::NotifyActiveMenuToolListChanged(GameModel * sender)
 {
 	for (size_t i = 0; i < menuButtons.size(); i++)
 	{
@@ -549,7 +553,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 		delete toolButtons[i];
 	}
 	toolButtons.clear();
-	std::vector<Tool*> toolList = sender->GetToolList();
+	std::vector<Tool*> toolList = sender->GetActiveMenuToolList();
 	int currentX = 0;
 	for (size_t i = 0; i < toolList.size(); i++)
 	{
@@ -559,7 +563,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 
 		//get decotool texture manually, since it changes depending on it's own color
 		if (sender->GetActiveMenu() == SC_DECO)
-			tempTexture = ((DecorationTool*)tool)->GetIcon(tool->ToolID, Vec2(26, 14));
+			tempTexture = static_cast<DecorationTool *>(tool)->GetIcon(tool->ToolID, Vec2(26, 14));
 
 		if (tempTexture)
 			tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", tool->Identifier, tool->Description);
@@ -598,7 +602,7 @@ void GameView::NotifyToolListChanged(GameModel * sender)
 					else if (identifier.BeginsWith("DEFAULT_PT_LIFECUST_"))
 					{
 						new ConfirmPrompt("Remove custom GOL type", "Are you sure you want to remove " + identifier.Substr(20).FromUtf8() + "?", { [this, identifier]() {
-							c->RemoveCustomGOLType(identifier);
+							c->RemoveCustomGol(identifier);
 						} });
 					}
 				}
@@ -656,11 +660,11 @@ void GameView::NotifyColourSelectorVisibilityChanged(GameModel * sender)
 	{
 		ToolButton * button = *iter;
 		RemoveComponent(button);
-		button->SetParentWindow(NULL);
+		button->SetParentWindow(nullptr);
 	}
 
 	RemoveComponent(colourPicker);
-	colourPicker->SetParentWindow(NULL);
+	colourPicker->SetParentWindow(nullptr);
 
 	if(sender->GetColourSelectorVisibility())
 	{
@@ -688,7 +692,7 @@ void GameView::NotifyColourPresetsChanged(GameModel * sender)
 	int i = 0;
 	for(std::vector<ui::Colour>::iterator iter = colours.begin(), end = colours.end(); iter != end; ++iter)
 	{
-		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", "", ByteString("預設裝飾").FromUtf8());
+		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", "", ByteString("预设装饰").FromUtf8());
 		tempButton->Appearance.BackgroundInactive = *iter;
 		tempButton->SetActionCallback({ [this, i, tempButton] {
 			c->SetActiveColourPreset(i);
@@ -725,35 +729,33 @@ void GameView::NotifyColourSelectorColourChanged(GameModel * sender)
 {
 	colourPicker->Appearance.BackgroundInactive = sender->GetColourSelectorColour();
 	colourPicker->Appearance.BackgroundHover = sender->GetColourSelectorColour();
-	NotifyToolListChanged(sender);
+	NotifyActiveMenuToolListChanged(sender);
 }
 
 void GameView::NotifyRendererChanged(GameModel * sender)
 {
 	ren = sender->GetRenderer();
+	rendererFrame = &ren->GetVideo();
+	rendererSettings = &sender->GetRendererSettings();
 }
 
 void GameView::NotifySimulationChanged(GameModel * sender)
 {
-
+	sim = sender->GetSimulation();
 }
 void GameView::NotifyUserChanged(GameModel * sender)
 {
 	if(!sender->GetUser().UserID)
 	{
-		loginButton->SetText(ByteString("登入").FromUtf8());
+		loginButton->SetText(ByteString("登录").FromUtf8());
 		loginButton->SetShowSplit(false);
-		loginButton->SetRightToolTip(ByteString("登入雲端伺服器").FromUtf8());
+		loginButton->SetRightToolTip(ByteString("登录到云端服务器").FromUtf8());
 	}
 	else
 	{
 		loginButton->SetText(sender->GetUser().Username.FromUtf8());
 		loginButton->SetShowSplit(true);
-<<<<<<< Updated upstream
-		loginButton->SetRightToolTip(ByteString("編輯配置").FromUtf8());
-=======
-		loginButton->SetRightToolTip(ByteString("編輯個人配置").FromUtf8());
->>>>>>> Stashed changes
+		loginButton->SetRightToolTip(ByteString("编辑个人配置").FromUtf8());
 	}
 	// saveSimulationButtonEnabled = sender->GetUser().ID;
 	saveSimulationButtonEnabled = true;
@@ -764,6 +766,7 @@ void GameView::NotifyUserChanged(GameModel * sender)
 void GameView::NotifyPausedChanged(GameModel * sender)
 {
 	pauseButton->SetToggleState(sender->GetPaused());
+	ApplySimFpsLimit();
 }
 
 void GameView::NotifyToolTipChanged(GameModel * sender)
@@ -777,9 +780,18 @@ void GameView::NotifyInfoTipChanged(GameModel * sender)
 	infoTipPresence = 120;
 }
 
+void GameView::ResetVoteButtons()
+{
+	upVoteButton->SetToolTip( ByteString("赞").FromUtf8());
+	downVoteButton->SetToolTip( ByteString("踩").FromUtf8());
+	upVoteButton->Appearance.BackgroundPulse = false;
+	downVoteButton->Appearance.BackgroundPulse = false;
+}
+
 void GameView::NotifySaveChanged(GameModel * sender)
 {
 	saveReuploadAllowed = true;
+	ResetVoteButtons();
 	if (sender->GetSave())
 	{
 		if (introText > 50)
@@ -792,32 +804,41 @@ void GameView::NotifySaveChanged(GameModel * sender)
 			saveSimulationButton->SetShowSplit(false);
 		reloadButton->Enabled = true;
 		upVoteButton->Enabled = sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetUser().Username != sender->GetSave()->GetUserName();
-		if(sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote()==1)
-		{
-			upVoteButton->Appearance.BackgroundHover = (ui::Colour(20, 128, 30, 255));
-			upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 108, 10, 255));
-			upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 108, 10, 255));
-		}
-		else
-		{
-			upVoteButton->Appearance.BackgroundHover = (ui::Colour(20, 20, 20));
-			upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
-			upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
-		}
+
+		auto upVoteButtonColor = [this](bool active) {
+			if(active)
+			{
+				upVoteButton->Appearance.BackgroundHover = (ui::Colour(20, 128, 30, 255));
+				upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 108, 10, 255));
+				upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 108, 10, 255));
+			}
+			else
+			{
+				upVoteButton->Appearance.BackgroundHover = (ui::Colour(20, 20, 20));
+				upVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
+				upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
+			}
+		};
+		auto upvoted = sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote() == 1;
+		upVoteButtonColor(upvoted);
 
 		downVoteButton->Enabled = upVoteButton->Enabled;
-		if (sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote()==-1)
-		{
-			downVoteButton->Appearance.BackgroundHover = (ui::Colour(128, 20, 30, 255));
-			downVoteButton->Appearance.BackgroundInactive = (ui::Colour(108, 0, 10, 255));
-			downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(108, 0, 10, 255));
-		}
-		else
-		{
-			downVoteButton->Appearance.BackgroundHover = (ui::Colour(20, 20, 20));
-			downVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
-			downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
-		}
+		auto downVoteButtonColor = [this](bool active) {
+			if (active)
+			{
+				downVoteButton->Appearance.BackgroundHover = (ui::Colour(128, 20, 30, 255));
+				downVoteButton->Appearance.BackgroundInactive = (ui::Colour(108, 0, 10, 255));
+				downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(108, 0, 10, 255));
+			}
+			else
+			{
+				downVoteButton->Appearance.BackgroundHover = (ui::Colour(20, 20, 20));
+				downVoteButton->Appearance.BackgroundInactive = (ui::Colour(0, 0, 0));
+				downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
+			}
+		};
+		auto downvoted = sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote() == -1;
+		downVoteButtonColor(downvoted);
 
 		if (sender->GetUser().UserID)
 		{
@@ -830,15 +851,18 @@ void GameView::NotifySaveChanged(GameModel * sender)
 			downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 		}
 
-		if (sender->GetSave()->GetVote() == 1)
-			upVoteButton->SetActionCallback({ [this] { c->Vote(0); } });
-		else
-			upVoteButton->SetActionCallback({ [this] { c->Vote(1); } });
-
-		if (sender->GetSave()->GetVote() == -1)
-			downVoteButton->SetActionCallback({ [this] { c->Vote(0) ;} });
-		else
-			downVoteButton->SetActionCallback({ [this] { c->Vote(-1) ;} });
+		upVoteButton->SetActionCallback({ [this, upVoteButtonColor, upvoted] {
+			upVoteButtonColor(true);
+			upVoteButton->SetToolTip("Saving vote...");
+			upVoteButton->Appearance.BackgroundPulse = true;
+			c->Vote(upvoted ? 0 : 1);
+		} });
+		downVoteButton->SetActionCallback({ [this, downVoteButtonColor, downvoted] {
+			downVoteButtonColor(true);
+			downVoteButton->SetToolTip("Saving vote...");
+			downVoteButton->Appearance.BackgroundPulse = true;
+			c->Vote(downvoted ? 0 : -1);
+		} });
 
 		tagSimulationButton->Enabled = sender->GetSave()->GetID();
 		if (sender->GetSave()->GetID())
@@ -857,12 +881,12 @@ void GameView::NotifySaveChanged(GameModel * sender)
 			}
 			else
 			{
-				tagSimulationButton->SetText(ByteString("無標籤").FromUtf8());
+				tagSimulationButton->SetText(ByteString("无标签").FromUtf8());
 			}
 		}
 		else
 		{
-			tagSimulationButton->SetText(ByteString("無標籤").FromUtf8());
+			tagSimulationButton->SetText(ByteString("无标签").FromUtf8());
 		}
 		currentSaveType = 1;
 		int saveID = sender->GetSave()->GetID();
@@ -884,13 +908,13 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 		downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 		tagSimulationButton->Enabled = false;
-		tagSimulationButton->SetText(ByteString("無標籤").FromUtf8());
+		tagSimulationButton->SetText(ByteString("无标签").FromUtf8());
 		currentSaveType = 2;
 	}
 	else
 	{
 		saveSimulationButton->SetShowSplit(false);
-		saveSimulationButton->SetText(ByteString("[未命名沙盤]").FromUtf8());
+		saveSimulationButton->SetText(ByteString("[未命名沙盘]").FromUtf8());
 		reloadButton->Enabled = false;
 		upVoteButton->Enabled = false;
 		upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
@@ -899,7 +923,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 		downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100),
 		tagSimulationButton->Enabled = false;
-		tagSimulationButton->SetText(ByteString("無標籤").FromUtf8());
+		tagSimulationButton->SetText(ByteString("无标签").FromUtf8());
 		currentSaveType = 0;
 	}
 	saveSimulationButton->Enabled = (saveSimulationButtonEnabled && saveReuploadAllowed) || ctrlBehaviour;
@@ -916,7 +940,7 @@ ByteString GameView::TakeScreenshot(int captureUI, int fileType)
 	std::unique_ptr<VideoBuffer> screenshot;
 	if (captureUI)
 	{
-		screenshot = std::make_unique<VideoBuffer>(ren->DumpFrame());
+		screenshot = std::make_unique<VideoBuffer>(*rendererFrame);
 	}
 	else
 	{
@@ -990,7 +1014,7 @@ int GameView::Record(bool record)
 	}
 	else if (!recording)
 	{
-		time_t startTime = time(NULL);
+		time_t startTime = time(nullptr);
 		recordingFolder = startTime;
 		Platform::MakeDirectory("recordings");
 		Platform::MakeDirectory(ByteString::Build("recordings", PATH_SEP_CHAR, recordingFolder));
@@ -1057,10 +1081,17 @@ void GameView::updateToolButtonScroll()
 		{
 			for (auto *button : toolButtons)
 			{
-				if (button->Position.X < x && button->Position.X + button->Size.X > x)
+				auto inside = button->Position.X < x && button->Position.X + button->Size.X > x;
+				if (inside && !button->MouseInside)
+				{
+					button->MouseInside = true;
 					button->OnMouseEnter(x, y);
-				else
+				}
+				if (!inside && button->MouseInside)
+				{
+					button->MouseInside = false;
 					button->OnMouseLeave(x, y);
+				}
 			}
 		}
 	}
@@ -1144,7 +1175,6 @@ void GameView::OnMouseDown(int x, int y, unsigned button)
 				return;
 			Tool *lastTool = c->GetActiveTool(toolIndex);
 			c->SetLastTool(lastTool);
-			windTool = lastTool->Identifier == "DEFAULT_UI_WIND";
 			decoBrush = lastTool->Identifier.BeginsWith("DEFAULT_DECOR_");
 
 			UpdateDrawMode();
@@ -1318,7 +1348,7 @@ void GameView::BeginStampSelection()
 	selectMode = SelectStamp;
 	selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 	isMouseDown = false;
-	buttonTip = ByteString("\x0F\xEF\xEF\020單擊並拖動以指定要建立Stamp的區域(右鍵單擊=取消)").FromUtf8();
+	buttonTip = ByteString("\x0F\xEF\xEF\020单击并拖动以指定要创建Stamp的区域(右键单击=取消)").FromUtf8();
 	buttonTipShow = 120;
 }
 
@@ -1420,11 +1450,7 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		if (Client::Ref().GetAuthUser().UserElevation != User::ElevationNone && ctrl)
 		{
 			ByteString authorString = Client::Ref().GetAuthorInfo().toStyledString();
-<<<<<<< Updated upstream
-			new InformationMessage("Save authorship info", authorString.FromUtf8(), true);
-=======
-			new InformationMessage( ByteString("儲存作者資訊").FromUtf8(), authorString.FromUtf8(), true);
->>>>>>> Stashed changes
+			new InformationMessage( ByteString("保存作者信息").FromUtf8(), authorString.FromUtf8(), true);
 		}
 		break;
 	case SDL_SCANCODE_R:
@@ -1441,13 +1467,13 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		if (ctrl)
 		{
 			auto findingElementCandidate = FindingElementCandidate();
-			if (ren->findingElement == findingElementCandidate)
+			if (rendererSettings->findingElement == findingElementCandidate)
 			{
-				ren->findingElement = std::nullopt;
+				rendererSettings->findingElement = std::nullopt;
 			}
 			else
 			{
-				ren->findingElement = findingElementCandidate;
+				rendererSettings->findingElement = findingElementCandidate;
 			}
 		}
 		else
@@ -1532,7 +1558,7 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			selectMode = SelectCopy;
 			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 			isMouseDown = false;
-			buttonTip = ByteString("\x0F\xEF\xEF\020單擊並拖動以指定要複製的區域(右鍵單擊=取消)").FromUtf8();
+			buttonTip = ByteString("\x0F\xEF\xEF\020单击并拖动以指定要复制的区域(右键单击=取消)").FromUtf8();
 			buttonTipShow = 120;
 		}
 		break;
@@ -1542,7 +1568,7 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			selectMode = SelectCut;
 			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 			isMouseDown = false;
-			buttonTip = ByteString("\x0F\xEF\xEF\020單擊並拖動以指定要剪下複製的區域(右鍵單擊=取消)").FromUtf8();
+			buttonTip = ByteString("\x0F\xEF\xEF\020单击并拖动以指定要剪切复制的区域(右键单击=取消)").FromUtf8();
 			buttonTipShow = 120;
 		}
 		break;
@@ -1606,6 +1632,12 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 	{
 		switch (key)
 		{
+		case SDLK_AC_BACK:
+			if (ALLOW_QUIT)
+			{
+				ui::Engine::Ref().ConfirmExit();
+			}
+			break;
 		case SDLK_TAB: //Tab
 			c->ChangeBrush();
 			break;
@@ -1655,24 +1687,30 @@ void GameView::OnFileDrop(ByteString filename)
 {
 	if (!(filename.EndsWith(".cps") || filename.EndsWith(".stm")))
 	{
-		new ErrorMessage( ByteString("載入沙盤錯誤").FromUtf8(), ByteString("刪除的檔案不是TPT沙盤檔案(.cps或.stm格式)").FromUtf8());
+		new ErrorMessage( ByteString("加载沙盘错误").FromUtf8(), ByteString("删除的文件不是TPT沙盘文件(.cps或.stm格式)").FromUtf8());
 		return;
 	}
 
-	auto saveFile = Client::Ref().LoadSaveFile(filename);
-	if (!saveFile)
-		return;
-	if (saveFile->GetError().length())
-	{
-		new ErrorMessage(ByteString("載入沙盤錯誤").FromUtf8(), ByteString("無法載入已刪除的沙盤檔案: ").FromUtf8() + saveFile->GetError());
-		return;
-	}
 	if (filename.EndsWith(".stm"))
 	{
+		auto saveFile = Client::Ref().GetStamp(filename);
+		if (!saveFile || !saveFile->GetGameSave())
+		{
+			new ErrorMessage(ByteString("加载沙盘错误").FromUtf8(), ByteString("无法加载已删除的沙盘文件: ").FromUtf8() + saveFile->GetError());
+			return;
+		}
 		c->LoadStamp(saveFile->TakeGameSave());
 	}
 	else
 	{
+		auto saveFile = Client::Ref().LoadSaveFile(filename);
+		if (!saveFile)
+			return;
+		if (saveFile->GetError().length())
+		{
+			new ErrorMessage("Error loading save", "Dropped save file could not be loaded: " + saveFile->GetError());
+			return;
+		}
 		c->LoadSaveFile(std::move(saveFile));
 	}
 
@@ -1685,7 +1723,7 @@ void GameView::SkipIntroText()
 	introText = 0;
 }
 
-void GameView::OnTick(float dt)
+void GameView::OnTick()
 {
 	if (selectMode == PlaceSave && !placeSaveThumb)
 		selectMode = SelectNone;
@@ -1707,12 +1745,12 @@ void GameView::OnTick(float dt)
 		{
 			c->DrawFill(toolIndex, c->PointTranslate(currentMouse));
 		}
-		else if (windTool && drawMode == DrawLine)
+		else if (drawMode == DrawLine)
 		{
 			ui::Point drawPoint2 = currentMouse;
 			if (altBehaviour)
 				drawPoint2 = lineSnapCoords(c->PointTranslate(drawPoint1), currentMouse);
-			c->DrawLine(toolIndex, c->PointTranslate(drawPoint1), c->PointTranslateNoClamp(drawPoint2));
+			c->ToolDrag(toolIndex, c->PointTranslate(drawPoint1), c->PointTranslate(drawPoint2));
 		}
 	}
 
@@ -1743,53 +1781,31 @@ void GameView::OnTick(float dt)
 		}
 	}
 
-	if(introText)
-	{
-		introText -= int(dt)>0?(int(dt) < 5? int(dt):5):1;
-		if(introText < 0)
-			introText  = 0;
-	}
-	if(infoTipPresence>0)
-	{
-		infoTipPresence -= int(dt)>0?int(dt):1;
-		if(infoTipPresence<0)
-			infoTipPresence = 0;
-	}
 	if (isButtonTipFadingIn || (selectMode != PlaceSave && selectMode != SelectNone))
 	{
 		isButtonTipFadingIn = false;
-		if(buttonTipShow < 120)
-		{
-			buttonTipShow += int(dt*2)>0?int(dt*2):1;
-			if(buttonTipShow>120)
-				buttonTipShow = 120;
-		}
+		buttonTipShow.SetTarget(120);
 	}
-	else if(buttonTipShow>0)
+	else
 	{
-		buttonTipShow -= int(dt)>0?int(dt):1;
-		if(buttonTipShow<0)
-			buttonTipShow = 0;
+		buttonTipShow.SetTarget(0);
 	}
 	if (isToolTipFadingIn)
 	{
 		isToolTipFadingIn = false;
-		if(toolTipPresence < 120)
-		{
-			toolTipPresence += int(dt*2)>0?int(dt*2):1;
-			if(toolTipPresence>120)
-				toolTipPresence = 120;
-		}
+		toolTipPresence.SetTarget(120);
 	}
-	else if(toolTipPresence>0)
+	else
 	{
-		toolTipPresence -= int(dt)>0?int(dt):1;
-		if(toolTipPresence<0)
-			toolTipPresence = 0;
+		toolTipPresence.SetTarget(0);
 	}
-	c->Update();
 }
 
+void GameView::OnSimTick()
+{
+	c->Update();
+	wantFrame = true;
+}
 
 void GameView::DoMouseMove(int x, int y, int dx, int dy)
 {
@@ -1967,7 +1983,7 @@ void GameView::NotifyTransformedPlaceSaveChanged(GameModel *sender)
 {
 	if (sender->GetTransformedPlaceSave())
 	{
-		std::tie(placeSaveThumb, std::ignore) = SaveRenderer::Ref().Render(sender->GetTransformedPlaceSave(), true, true, sender->GetRenderer());
+		placeSaveThumb = SaveRenderer::Ref().Render(sender->GetTransformedPlaceSave(), true, sender->GetRendererSettings());
 		selectMode = PlaceSave;
 		selectPoint2 = mousePosition;
 	}
@@ -2037,7 +2053,7 @@ void GameView::enableCtrlBehaviour()
 		searchButton->Appearance.BackgroundInactive = searchButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
 
-		searchButton->SetToolTip(ByteString("瀏覽本地沙盤").FromUtf8());
+		searchButton->SetToolTip(ByteString("浏览本地沙盘").FromUtf8());
 		if (currentSaveType == 2)
 			saveSimulationButton->SetShowSplit(true);
 	}
@@ -2061,7 +2077,7 @@ void GameView::disableCtrlBehaviour()
 		searchButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		searchButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(255, 255, 255);
-		searchButton->SetToolTip(ByteString("開啟雲沙盤,或按住Ctrl瀏覽本地沙盤").FromUtf8());
+		searchButton->SetToolTip(ByteString("打开云沙盘,或按住Ctrl浏览本地沙盘").FromUtf8());
 		if (currentSaveType == 2)
 			saveSimulationButton->SetShowSplit(false);
 	}
@@ -2082,6 +2098,11 @@ void GameView::UpdateDrawMode()
 		drawMode = DrawLine;
 	else
 		drawMode = DrawPoints;
+	// TODO: have tools decide on draw mode
+	if (c->GetLastTool() && c->GetLastTool()->Identifier == "DEFAULT_UI_SAMPLE")
+	{
+		drawMode = DrawPoints;
+	}
 }
 
 void GameView::UpdateToolStrength()
@@ -2097,168 +2118,209 @@ void GameView::UpdateToolStrength()
 void GameView::SetSaveButtonTooltips()
 {
 	if (!Client::Ref().GetAuthUser().UserID)
-		saveSimulationButton->SetToolTips(ByteString("覆蓋本地的沙盤").FromUtf8(), ByteString("將沙盤儲存到本地,登陸後可上傳到雲伺服器").FromUtf8());
+		saveSimulationButton->SetToolTips(ByteString("覆盖本地的沙盘").FromUtf8(), ByteString("将沙盘保存到本地,登陆后可上传到云服务器").FromUtf8());
 	else if (ctrlBehaviour)
-		saveSimulationButton->SetToolTips(ByteString("覆蓋本地的沙盤").FromUtf8(), ByteString("將沙盤儲存到本地").FromUtf8());
+		saveSimulationButton->SetToolTips(ByteString("覆盖本地的沙盘").FromUtf8(), ByteString("将沙盘保存到本地").FromUtf8());
 	else if (saveSimulationButton->GetShowSplit())
-<<<<<<< Updated upstream
-		saveSimulationButton->SetToolTips(ByteString("重新上傳當前沙盤").FromUtf8(), ByteString("修改模擬屬性").FromUtf8());
-=======
-		saveSimulationButton->SetToolTips(ByteString("重新上傳當前沙盤").FromUtf8(), ByteString("修改沙盤屬性").FromUtf8());
->>>>>>> Stashed changes
+		saveSimulationButton->SetToolTips(ByteString("重新上传当前沙盘").FromUtf8(), ByteString("修改沙盘属性").FromUtf8());
 	else
-		saveSimulationButton->SetToolTips(ByteString("重新上傳當前沙盤").FromUtf8(), ByteString("上傳一個新沙盤,按住Ctrl儲存到本地").FromUtf8());
+		saveSimulationButton->SetToolTips(ByteString("重新上传当前沙盘").FromUtf8(), ByteString("上传一个新沙盘,按住Ctrl保存到本地").FromUtf8());
+}
+
+void GameView::RenderSimulation(const RenderableSimulation &sim, bool handleEvents)
+{
+	ren->sim = &sim;
+	ren->Clear();
+	ren->RenderBackground();
+	if (handleEvents)
+	{
+		c->BeforeSimDraw();
+	}
+	{
+		// we may write graphicscache here
+		auto &sd = SimulationData::Ref();
+		std::unique_lock lk(sd.elementGraphicsMx);
+		ren->RenderSimulation();
+	}
+	ren->sim = nullptr;
+}
+
+void GameView::AfterSimDraw(const RenderableSimulation &sim)
+{
+	ren->sim = &sim;
+	c->AfterSimDraw();
+	ren->sim = nullptr;
 }
 
 void GameView::OnDraw()
 {
 	Graphics * g = GetGraphics();
-	if (ren)
+
+	auto threadedRenderingAllowed = c->ThreadedRenderingAllowed();
+	if (wantFrame)
 	{
-		ren->clearScreen();
-		ren->RenderBegin();
-		ren->SetSample(c->PointTranslate(currentMouse));
-		if (showBrush && selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
+		wantFrame = false;
+		if (threadedRenderingAllowed)
 		{
-			ui::Point finalCurrentMouse = windTool ? c->PointTranslateNoClamp(currentMouse) : c->PointTranslate(currentMouse);
-			ui::Point initialDrawPoint = drawPoint1;
+			StartRendererThread();
+			WaitForRendererThread();
+			AfterSimDraw(*sim);
+			foundParticles = ren->GetFoundParticles();
+			*rendererThreadResult = ren->GetVideo();
+			rendererFrame = rendererThreadResult.get();
+			DispatchRendererThread();
+		}
+		else
+		{
+			PauseRendererThread();
+			ren->ApplySettings(*rendererSettings);
+			RenderSimulation(*sim, true);
+			AfterSimDraw(*sim);
+			foundParticles = ren->GetFoundParticles();
+			rendererFrame = &ren->GetVideo();
+		}
+	}
 
-			if (wallBrush)
-			{
-				finalCurrentMouse = c->NormaliseBlockCoord(finalCurrentMouse);
-				initialDrawPoint = c->NormaliseBlockCoord(initialDrawPoint);
-			}
+	std::copy_n(rendererFrame->data(), rendererFrame->Size().X * rendererFrame->Size().Y, g->Data());
 
-			if (drawMode == DrawRect && isMouseDown)
-			{
-				if (drawSnap)
-				{
-					finalCurrentMouse = rectSnapCoords(c->PointTranslate(initialDrawPoint), finalCurrentMouse);
-				}
-				if (wallBrush)
-				{
-					if (finalCurrentMouse.X > initialDrawPoint.X)
-						finalCurrentMouse.X += CELL-1;
-					else
-						initialDrawPoint.X += CELL-1;
+	if (showBrush && selectMode == SelectNone && (!zoomEnabled || zoomCursorFixed) && activeBrush && (isMouseDown || (currentMouse.X >= 0 && currentMouse.X < XRES && currentMouse.Y >= 0 && currentMouse.Y < YRES)))
+	{
+		ui::Point finalCurrentMouse = c->PointTranslate(currentMouse);
+		ui::Point initialDrawPoint = drawPoint1;
 
-					if (finalCurrentMouse.Y > initialDrawPoint.Y)
-						finalCurrentMouse.Y += CELL-1;
-					else
-						initialDrawPoint.Y += CELL-1;
-				}
-				activeBrush->RenderRect(ren, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
-			}
-			else if (drawMode == DrawLine && isMouseDown)
-			{
-				if (drawSnap)
-				{
-					finalCurrentMouse = lineSnapCoords(c->PointTranslate(initialDrawPoint), finalCurrentMouse);
-				}
-				activeBrush->RenderLine(ren, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
-			}
-			else if (drawMode == DrawFill)// || altBehaviour)
-			{
-				if (!decoBrush)
-					activeBrush->RenderFill(ren, finalCurrentMouse);
-			}
-			if (drawMode == DrawPoints || drawMode==DrawLine || (drawMode == DrawRect && !isMouseDown))
-			{
-				if (wallBrush)
-				{
-					ui::Point finalBrushRadius = c->NormaliseBlockCoord(activeBrush->GetRadius());
-					auto topLeft     = finalCurrentMouse - finalBrushRadius;
-					auto bottomRight = finalCurrentMouse + finalBrushRadius + Vec2{ CELL - 1, CELL - 1 };
-					ren->XorLine({     topLeft.X,     topLeft.Y     }, { bottomRight.X,     topLeft.Y     });
-					ren->XorLine({     topLeft.X, bottomRight.Y     }, { bottomRight.X, bottomRight.Y     });
-					ren->XorLine({     topLeft.X,     topLeft.Y + 1 }, {     topLeft.X, bottomRight.Y - 1 }); // offset by 1 so the corners don't get xor'd twice
-					ren->XorLine({ bottomRight.X,     topLeft.Y + 1 }, { bottomRight.X, bottomRight.Y - 1 }); // offset by 1 so the corners don't get xor'd twice
-				}
-				else
-				{
-					activeBrush->RenderPoint(ren, finalCurrentMouse);
-				}
-			}
+		if (wallBrush)
+		{
+			finalCurrentMouse = c->NormaliseBlockCoord(finalCurrentMouse);
+			initialDrawPoint = c->NormaliseBlockCoord(initialDrawPoint);
 		}
 
-		if(selectMode!=SelectNone)
+		if (drawMode == DrawRect && isMouseDown)
 		{
-			if(selectMode==PlaceSave)
+			if (drawSnap)
 			{
-				if(placeSaveThumb && selectPoint2.X!=-1)
-				{
-					auto rect = RectSized(PlaceSavePos() * CELL, placeSaveThumb->Size());
-					ren->BlendImage(placeSaveThumb->Data(), 0x80, rect);
-					ren->XorDottedRect(rect);
-				}
+				finalCurrentMouse = rectSnapCoords(c->PointTranslate(initialDrawPoint), finalCurrentMouse);
+			}
+			if (wallBrush)
+			{
+				if (finalCurrentMouse.X > initialDrawPoint.X)
+					finalCurrentMouse.X += CELL-1;
+				else
+					initialDrawPoint.X += CELL-1;
+
+				if (finalCurrentMouse.Y > initialDrawPoint.Y)
+					finalCurrentMouse.Y += CELL-1;
+				else
+					initialDrawPoint.Y += CELL-1;
+			}
+			activeBrush->RenderRect(g, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
+		}
+		else if (drawMode == DrawLine && isMouseDown)
+		{
+			if (drawSnap)
+			{
+				finalCurrentMouse = lineSnapCoords(c->PointTranslate(initialDrawPoint), finalCurrentMouse);
+			}
+			activeBrush->RenderLine(g, c->PointTranslate(initialDrawPoint), finalCurrentMouse);
+		}
+		else if (drawMode == DrawFill)// || altBehaviour)
+		{
+			if (!decoBrush)
+				activeBrush->RenderFill(g, finalCurrentMouse);
+		}
+		if (drawMode == DrawPoints || drawMode==DrawLine || (drawMode == DrawRect && !isMouseDown))
+		{
+			if (wallBrush)
+			{
+				ui::Point finalBrushRadius = c->NormaliseBlockCoord(activeBrush->GetRadius());
+				auto topLeft     = finalCurrentMouse - finalBrushRadius;
+				auto bottomRight = finalCurrentMouse + finalBrushRadius + Vec2{ CELL - 1, CELL - 1 };
+				g->XorLine({     topLeft.X,     topLeft.Y     }, { bottomRight.X,     topLeft.Y     });
+				g->XorLine({     topLeft.X, bottomRight.Y     }, { bottomRight.X, bottomRight.Y     });
+				g->XorLine({     topLeft.X,     topLeft.Y + 1 }, {     topLeft.X, bottomRight.Y - 1 }); // offset by 1 so the corners don't get xor'd twice
+				g->XorLine({ bottomRight.X,     topLeft.Y + 1 }, { bottomRight.X, bottomRight.Y - 1 }); // offset by 1 so the corners don't get xor'd twice
 			}
 			else
 			{
-				if(selectPoint1.X==-1)
-				{
-					ren->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, YRES }), 0x000000_rgb .WithAlpha(100));
-				}
-				else
-				{
-					int x2 = (selectPoint1.X>selectPoint2.X)?selectPoint1.X:selectPoint2.X;
-					int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
-					int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
-					int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
-
-					if(x2>XRES-1)
-						x2 = XRES-1;
-					if(y2>YRES-1)
-						y2 = YRES-1;
-
-					ren->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, y1 }), 0x000000_rgb .WithAlpha(100));
-					ren->BlendFilledRect(RectSized(Vec2{ 0, y2+1 }, Vec2{ XRES, YRES-y2-1 }), 0x000000_rgb .WithAlpha(100));
-
-					ren->BlendFilledRect(RectSized(Vec2{ 0, y1 }, Vec2{ x1, (y2-y1)+1 }), 0x000000_rgb .WithAlpha(100));
-					ren->BlendFilledRect(RectSized(Vec2{ x2+1, y1 }, Vec2{ XRES-x2-1, (y2-y1)+1 }), 0x000000_rgb .WithAlpha(100));
-
-					ren->XorDottedRect(RectBetween(Vec2{ x1, y1 }, Vec2{ x2, y2 }));
-				}
+				activeBrush->RenderPoint(g, finalCurrentMouse);
 			}
 		}
+	}
 
-		ren->RenderEnd();
-
-		std::copy_n(ren->Data(), ren->Size().X * ren->Size().Y, g->Data());
-
-		if (doScreenshot)
+	if(selectMode!=SelectNone)
+	{
+		if(selectMode==PlaceSave)
 		{
-			doScreenshot = false;
-			TakeScreenshot(0, 0);
-		}
-
-		if(recording)
-		{
-			std::vector<char> data = ren->DumpFrame().ToPPM();
-
-			ByteString filename = ByteString::Build("recordings", PATH_SEP_CHAR, recordingFolder, PATH_SEP_CHAR, "frame_", Format::Width(recordingIndex++, 6), ".ppm");
-
-			Platform::WriteFile(data, filename);
-		}
-
-		if (logEntries.size())
-		{
-			int startX = 20;
-			int startY = YRES-20;
-			std::deque<std::pair<String, int> >::iterator iter;
-			for(iter = logEntries.begin(); iter != logEntries.end(); iter++)
+			if(placeSaveThumb && selectPoint2.X!=-1)
 			{
-				String message = (*iter).first;
-				int alpha = std::min((*iter).second, 255);
-				if (alpha <= 0) //erase this and everything older
-				{
-					logEntries.erase(iter, logEntries.end());
-					break;
-				}
-				startY -= 14;
-				g->BlendFilledRect(RectSized(Vec2{ startX-3, startY-3 }, Vec2{ Graphics::TextSize(message).X + 5, 14 }), 0x000000_rgb .WithAlpha(std::min(100, alpha)));
-				g->BlendText({ startX, startY }, message, 0xFFFFFF_rgb .WithAlpha(alpha));
-				(*iter).second -= 3;
+				auto rect = RectSized(PlaceSavePos() * CELL, placeSaveThumb->Size());
+				g->BlendImage(placeSaveThumb->Data(), 0x80, rect);
+				g->XorDottedRect(rect);
 			}
+		}
+		else
+		{
+			if(selectPoint1.X==-1)
+			{
+				g->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, YRES }), 0x000000_rgb .WithAlpha(100));
+			}
+			else
+			{
+				int x2 = (selectPoint1.X>selectPoint2.X)?selectPoint1.X:selectPoint2.X;
+				int y2 = (selectPoint1.Y>selectPoint2.Y)?selectPoint1.Y:selectPoint2.Y;
+				int x1 = (selectPoint2.X<selectPoint1.X)?selectPoint2.X:selectPoint1.X;
+				int y1 = (selectPoint2.Y<selectPoint1.Y)?selectPoint2.Y:selectPoint1.Y;
+
+				if(x2>XRES-1)
+					x2 = XRES-1;
+				if(y2>YRES-1)
+					y2 = YRES-1;
+
+				g->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, y1 }), 0x000000_rgb .WithAlpha(100));
+				g->BlendFilledRect(RectSized(Vec2{ 0, y2+1 }, Vec2{ XRES, YRES-y2-1 }), 0x000000_rgb .WithAlpha(100));
+
+				g->BlendFilledRect(RectSized(Vec2{ 0, y1 }, Vec2{ x1, (y2-y1)+1 }), 0x000000_rgb .WithAlpha(100));
+				g->BlendFilledRect(RectSized(Vec2{ x2+1, y1 }, Vec2{ XRES-x2-1, (y2-y1)+1 }), 0x000000_rgb .WithAlpha(100));
+
+				g->XorDottedRect(RectBetween(Vec2{ x1, y1 }, Vec2{ x2, y2 }));
+			}
+		}
+	}
+
+	g->RenderZoom();
+
+	if (doScreenshot)
+	{
+		doScreenshot = false;
+		TakeScreenshot(0, 0);
+	}
+
+	if(recording)
+	{
+		std::vector<char> data = VideoBuffer(*rendererFrame).ToPPM();
+
+		ByteString filename = ByteString::Build("recordings", PATH_SEP_CHAR, recordingFolder, PATH_SEP_CHAR, "frame_", Format::Width(recordingIndex++, 6), ".ppm");
+
+		Platform::WriteFile(data, filename);
+	}
+
+	if (logEntries.size())
+	{
+		int startX = 20;
+		int startY = YRES-20;
+		std::deque<std::pair<String, int> >::iterator iter;
+		for(iter = logEntries.begin(); iter != logEntries.end(); iter++)
+		{
+			String message = (*iter).first;
+			int alpha = std::min((*iter).second, 255);
+			if (alpha <= 0) //erase this and everything older
+			{
+				logEntries.erase(iter, logEntries.end());
+				break;
+			}
+			startY -= 14;
+			g->BlendFilledRect(RectSized(Vec2{ startX-3, startY-3 }, Vec2{ Graphics::TextSize(message).X + 5, 14 }), 0x000000_rgb .WithAlpha(std::min(100, alpha)));
+			g->BlendText({ startX, startY }, message, 0xFFFFFF_rgb .WithAlpha(alpha));
+			(*iter).second -= 3;
 		}
 	}
 
@@ -2294,17 +2356,17 @@ void GameView::OnDraw()
 			{
 				if (type == PT_LAVA && c->IsValidElement(ctype))
 				{
-					sampleInfo << "Molten " << c->ElementResolve(ctype, 0);
+					sampleInfo <<  ByteString("熔融的 ").FromUtf8() << c->ElementResolve(ctype, 0);
 				}
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
 				{
 					if (ctype == PT_LAVA && c->IsValidElement(sample.particle.tmp4))
 					{
-						sampleInfo << c->ElementResolve(type, 0) << " with molten " << c->ElementResolve(sample.particle.tmp4, -1);
+						sampleInfo << c->ElementResolve(type, 0) << ByteString(" 含熔融的 ").FromUtf8() << c->ElementResolve(sample.particle.tmp4, -1);
 					}
 					else
 					{
-						sampleInfo << c->ElementResolve(type, 0) << " with " << c->ElementResolve(ctype, sample.particle.tmp4);
+						sampleInfo << c->ElementResolve(type, 0) << ByteString(" 含 ").FromUtf8() << c->ElementResolve(ctype, sample.particle.tmp4);
 					}
 				}
 				else if (type == PT_LIFE)
@@ -2337,7 +2399,7 @@ void GameView::OnDraw()
 					else if (ctype)
 						sampleInfo << " (" << ctype << ")";
 				}
-				sampleInfo << ByteString(", 溫度: ").FromUtf8();
+				sampleInfo << ByteString(", 温度: ").FromUtf8();
 				format::RenderTemperature(sampleInfo, sample.particle.temp, c->GetTemperatureScale());
 				sampleInfo << ", Life: " << sample.particle.life;
 				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL && sample.particle.type != PT_LIFE)
@@ -2360,27 +2422,27 @@ void GameView::OnDraw()
 				if (type == PT_CRAY || type == PT_DRAY || type == PT_EXOT || type == PT_LIGH || type == PT_SOAP || type == PT_TRON
 						|| type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS
 						|| type == PT_DTEC || type == PT_LSNS || type == PT_PSTN || type == PT_LDTC || type == PT_VSNS || type == PT_LITH
-						|| type == PT_CONV)
+						|| type == PT_CONV || type == PT_ETRD)
 					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
 
-				sampleInfo << ByteString(", 壓力: ").FromUtf8() << sample.AirPressure;
+				sampleInfo << ByteString(", 压力: ").FromUtf8() << sample.AirPressure;
 			}
 			else
 			{
 				sampleInfo << c->BasicParticleInfo(sample.particle);
-				sampleInfo << ByteString(", 溫度: ").FromUtf8();
+				sampleInfo << ByteString(", 温度: ").FromUtf8();
 				format::RenderTemperature(sampleInfo, sample.particle.temp, c->GetTemperatureScale());
-				sampleInfo << ByteString(", 壓力: ").FromUtf8() << sample.AirPressure;
+				sampleInfo << ByteString(", 压力: ").FromUtf8() << sample.AirPressure;
 			}
 		}
 		else if (sample.WallType)
 		{
 			sampleInfo << c->WallName(sample.WallType);
-			sampleInfo << ByteString(", 壓力: ").FromUtf8() << sample.AirPressure;
+			sampleInfo << ByteString(", 压力: ").FromUtf8() << sample.AirPressure;
 		}
 		else if (sample.isMouseInSim)
 		{
-			sampleInfo << ByteString("空, 壓力: ").FromUtf8() << sample.AirPressure;
+			sampleInfo << ByteString("空, 压力: ").FromUtf8() << sample.AirPressure;
 		}
 		else
 		{
@@ -2421,7 +2483,7 @@ void GameView::OnDraw()
 					cg *= tmp;
 					cb *= tmp;
 					for (j=0; j<h; j++)
-						g->BlendPixel({ x+29-i, y+j }, RGBA<uint8_t>(cr>255?255:cr, cg>255?255:cg, cb>255?255:cb, alpha));
+						g->BlendPixel({ x+29-i, y+j }, RGBA(cr>255?255:cr, cg>255?255:cg, cb>255?255:cb, alpha));
 				}
 			}
 		}
@@ -2436,12 +2498,14 @@ void GameView::OnDraw()
 
 			sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
 
-			if (sample.Gravity)
+			auto gravtot = std::abs(sample.GravityVelocityX) +
+			               std::abs(sample.GravityVelocityY);
+			if (gravtot)
 				sampleInfo << ", GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
 
 			if (c->GetAHeatEnable())
 			{
-				sampleInfo << ", AHeat: ";
+				sampleInfo << ByteString(", 气温: ").FromUtf8();
 				format::RenderTemperature(sampleInfo, sample.AirTemperature, c->GetTemperatureScale());
 			}
 
@@ -2455,23 +2519,85 @@ void GameView::OnDraw()
 	{
 		//FPS and some version info
 		StringBuilder fpsInfo;
-		fpsInfo << Format::Precision(2) << ByteString("幀率: ").FromUtf8() << ui::Engine::Ref().GetFps();
+		fpsInfo << Format::Precision(2) << ByteString("帧率: ").FromUtf8() << ui::Engine::Ref().GetFps();
 
 		if (showDebug)
 		{
-			if (ren->findingElement)
-				fpsInfo << ByteString(" 元素數目: ").FromUtf8() << ren->foundElements << "/" << sample.NumParts;
+			if (rendererSettings->findingElement)
+				fpsInfo << ByteString(" 元素数目: ").FromUtf8() << foundParticles << "/" << sample.NumParts;
 			else
-				fpsInfo << ByteString(" 元素數目: ").FromUtf8() << sample.NumParts;
+				fpsInfo << ByteString(" 元素数目: ").FromUtf8() << sample.NumParts;
 		}
 		if (c->GetReplaceModeFlags()&REPLACE_MODE)
-			fpsInfo <<  ByteString(" [替換模式]").FromUtf8();
+			fpsInfo <<  ByteString(" [替换模式]").FromUtf8();
 		if (c->GetReplaceModeFlags()&SPECIFIC_DELETE)
-			fpsInfo <<  ByteString(" [具體刪除]").FromUtf8();
-		if (ren && ren->GetGridSize())
-			fpsInfo <<  ByteString(" [網格: ").FromUtf8()<< ren->GetGridSize() <<  ByteString("]").FromUtf8();
-		if (ren && ren->findingElement)
-			fpsInfo <<  ByteString(" [尋找]").FromUtf8();
+			fpsInfo <<  ByteString(" [具体删除]").FromUtf8();
+		if (rendererSettings->gridSize)
+			fpsInfo <<  ByteString(" [网格: ").FromUtf8()<< rendererSettings->gridSize <<  ByteString("]").FromUtf8();
+		if (rendererSettings->findingElement)
+			fpsInfo <<  ByteString(" [寻找]").FromUtf8();
+		if (c->GetDebugFlags() & DEBUG_SIMHUD)
+		{
+			fpsInfo << "\nSimulation";
+			fpsInfo << "\n  FPS cap: ";
+			if (std::holds_alternative<FpsLimitNone>(simFpsLimit))
+			{
+				fpsInfo << "none";
+			}
+			else
+			{
+				fpsInfo << std::get<FpsLimitExplicit>(simFpsLimit).value;
+			}
+		}
+		if (c->GetDebugFlags() & DEBUG_RENHUD)
+		{
+			fpsInfo << "\nRendering";
+			fpsInfo << "\n  Draw cap: ";
+			auto drawLimit = ui::Engine::Ref().GetDrawingFrequencyLimit();
+			if (std::holds_alternative<DrawLimitDisplay>(drawLimit))
+			{
+				fpsInfo << "display";
+			}
+			else if (std::holds_alternative<DrawLimitNone>(drawLimit))
+			{
+				fpsInfo << "none";
+			}
+			else
+			{
+				fpsInfo << std::get<DrawLimitExplicit>(drawLimit).value;
+			}
+			fpsInfo << ", effective: ";
+			if (auto drawCap = ui::Engine::Ref().GetEffectiveDrawCap())
+			{
+				fpsInfo << *drawCap;
+			}
+			else
+			{
+				fpsInfo << "none";
+			}
+			fpsInfo << "\n  SRT: ";
+			if (!c->GetThreadedRendering())
+			{
+				fpsInfo << "disabled";
+			}
+			else if (threadedRenderingAllowed)
+			{
+				fpsInfo << "enabled";
+			}
+			else
+			{
+				fpsInfo << "hindered";
+			}
+			fpsInfo << "\n  Refresh rate: ";
+			auto refreshRate = ui::Engine::Ref().GetRefreshRate();
+			fpsInfo << std::visit([](auto &refreshRate) {
+				return refreshRate.value;
+			}, refreshRate);
+			if (std::holds_alternative<RefreshRateDefault>(refreshRate))
+			{
+				fpsInfo << " (default)";
+			}
+		}
 
 		int textWidth = Graphics::TextSize(fpsInfo.Build()).X - 1;
 		int alpha = 255-introText*5;
@@ -2482,7 +2608,7 @@ void GameView::OnDraw()
 	//Tooltips
 	if(infoTipPresence)
 	{
-		int infoTipAlpha = (infoTipPresence>50?50:infoTipPresence)*5;
+		int infoTipAlpha = (infoTipPresence>50?50:int(infoTipPresence))*5;
 		g->BlendTextOutline({ (XRES - (Graphics::TextSize(infoTip).X - 1)) / 2, YRES / 2 - 2 }, infoTip, 0xFFFFFF_rgb .WithAlpha(infoTipAlpha));
 	}
 
@@ -2532,17 +2658,157 @@ ui::Point GameView::rectSnapCoords(ui::Point point1, ui::Point point2)
 std::optional<FindingElement> GameView::FindingElementCandidate() const
 {
 	Tool *active = c->GetActiveTool(0);
+	auto &properties = Particle::GetProperties();
 	if (active->Identifier.Contains("_PT_"))
 	{
-		return FindingElement{ Particle::GetProperties()[FIELD_TYPE], active->ToolID };
+		return FindingElement{ properties[FIELD_TYPE], active->ToolID };
 	}
 	else if (active->Identifier == "DEFAULT_UI_PROPERTY")
 	{
 		auto configuration = static_cast<PropertyTool *>(active)->GetConfiguration();
 		if (configuration)
 		{
-			return FindingElement{ configuration->prop, configuration->propValue };
+			return FindingElement{ properties[configuration->changeProperty.propertyIndex], configuration->changeProperty.propertyValue };
 		}
 	}
 	return std::nullopt;
+}
+
+pixel GameView::GetPixelUnderMouse() const
+{
+	auto point = c->PointTranslate(currentMouse);
+	if (!rendererFrame->Size().OriginRect().Contains(point))
+	{
+		return 0;
+	}
+	return (*rendererFrame)[point];
+}
+
+void GameView::RendererThread()
+{
+	while (true)
+	{
+		{
+			std::unique_lock lk(rendererThreadMx);
+			rendererThreadOwnsRenderer = false;
+			rendererThreadCv.notify_one();
+			rendererThreadCv.wait(lk, [this]() {
+				return rendererThreadState == rendererThreadStopping || rendererThreadOwnsRenderer;
+			});
+			if (rendererThreadState == rendererThreadStopping)
+			{
+				break;
+			}
+		}
+		RenderSimulation(*rendererThreadSim, false);
+	}
+}
+
+void GameView::StartRendererThread()
+{
+	bool start = false;
+	bool notify = false;
+	{
+		std::lock_guard lk(rendererThreadMx);
+		if (rendererThreadState == rendererThreadAbsent)
+		{
+			rendererThreadSim = std::make_unique<RenderableSimulation>();
+			rendererThreadResult = std::make_unique<RendererFrame>();
+			rendererThreadState = rendererThreadRunning;
+			start = true;
+		}
+		else if (rendererThreadState == rendererThreadPaused)
+		{
+			rendererThreadState = rendererThreadRunning;
+			notify = true;
+		}
+	}
+	if (start)
+	{
+		rendererThread = std::thread([this]() {
+			RendererThread();
+		});
+		notify = true;
+	}
+	if (notify)
+	{
+		DispatchRendererThread();
+	}
+}
+
+void GameView::StopRendererThread()
+{
+	bool join = false;
+	{
+		std::lock_guard lk(rendererThreadMx);
+		if (rendererThreadState != rendererThreadAbsent)
+		{
+			rendererThreadState = rendererThreadStopping;
+			join = true;
+		}
+	}
+	if (join)
+	{
+		rendererThreadCv.notify_one();
+		rendererThread.join();
+	}
+}
+
+void GameView::PauseRendererThread()
+{
+	std::unique_lock lk(rendererThreadMx);
+	if (rendererThreadState == rendererThreadRunning)
+	{
+		rendererThreadState = rendererThreadPaused;
+		rendererThreadCv.notify_one();
+		rendererThreadCv.wait(lk, [this]() {
+			return !rendererThreadOwnsRenderer;
+		});
+	}
+}
+
+void GameView::DispatchRendererThread()
+{
+	ren->ApplySettings(*rendererSettings);
+	*rendererThreadSim = *sim;
+	rendererThreadSim->useLuaCallbacks = false;
+	rendererThreadOwnsRenderer = true;
+	{
+		std::lock_guard lk(rendererThreadMx);
+		rendererThreadOwnsRenderer = true;
+	}
+	rendererThreadCv.notify_one();
+}
+
+void GameView::WaitForRendererThread()
+{
+	std::unique_lock lk(rendererThreadMx);
+	rendererThreadCv.wait(lk, [this]() {
+		return !rendererThreadOwnsRenderer;
+	});
+}
+
+void GameView::ApplySimFpsLimit()
+{
+	if (std::holds_alternative<FpsLimitNone>(simFpsLimit))
+	{
+		if (c->GetPaused())
+		{
+			SetFpsLimit(FpsLimitFollowDraw{});
+		}
+		else
+		{
+			SetFpsLimit(FpsLimitNone{});
+		}
+	}
+	else
+	{
+		SetFpsLimit(std::get<FpsLimitExplicit>(simFpsLimit));
+	}
+}
+
+void GameView::SetSimFpsLimit(SimFpsLimit newSimFpsLimit)
+{
+	simFpsLimit = newSimFpsLimit;
+	ApplySimFpsLimit();
 }

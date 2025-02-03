@@ -32,7 +32,7 @@ void Element::Element_INVIS()
 	HeatConduct = 164;
 	Description = ByteString("虛無,當施加壓力時隱形").FromUtf8();
 
-	Properties = TYPE_SOLID | PROP_NEUTPASS;
+	Properties = TYPE_SOLID | PROP_NEUTPASS | PROP_PHOTPASS;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

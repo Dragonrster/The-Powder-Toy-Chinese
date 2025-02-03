@@ -1,15 +1,10 @@
 #include "simulation/ElementCommon.h"
+#include "STKM.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS);
 static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
 static void Free(Simulation *sim, unsigned char i);
-bool Element_FIGH_CanAlloc(Simulation *sim);
-int Element_FIGH_Alloc(Simulation *sim);
-void Element_FIGH_NewFighter(Simulation *sim, int fighterID, int i, int elem);
-int Element_STKM_graphics(GRAPHICS_FUNC_ARGS);
-void Element_STKM_init_legs(Simulation * sim, playerst *playerp, int i);
-int Element_STKM_run_stickman(playerst *playerp, UPDATE_FUNC_ARGS);
 
 void Element::Element_FIGH()
 {
@@ -64,6 +59,8 @@ void Element::Element_FIGH()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if (parts[i].tmp < 0 || parts[i].tmp >= MAX_FIGHTERS)
 	{
 		sim->kill_part(i);
@@ -104,14 +101,14 @@ static int update(UPDATE_FUNC_ARGS)
 		if ((pow(float(tarx-x), 2) + pow(float(tary-y), 2))<600)
 		{
 			if (figh->elem == PT_LIGH || figh->elem == PT_NEUT
-			    || sim->elements[figh->elem].Properties & (PROP_DEADLY | PROP_RADIOACTIVE)
-			    || sim->elements[figh->elem].DefaultProperties.temp >= 323 || sim->elements[figh->elem].DefaultProperties.temp <= 243)
+			    || elements[figh->elem].Properties & (PROP_DEADLY | PROP_RADIOACTIVE)
+			    || elements[figh->elem].DefaultProperties.temp >= 323 || elements[figh->elem].DefaultProperties.temp <= 243)
 				figh->comm = (int)figh->comm | 0x08;
 		}
 		else if (tarx<x)
 		{
-			if(figh->rocketBoots || !(sim->eval_move(PT_FIGH, int(figh->legs[4])-10, int(figh->legs[5])+6, NULL)
-			     && sim->eval_move(PT_FIGH, int(figh->legs[4])-10, int(figh->legs[5])+3, NULL)))
+			if(figh->rocketBoots || !(sim->eval_move(PT_FIGH, int(figh->legs[4])-10, int(figh->legs[5])+6, nullptr)
+			     && sim->eval_move(PT_FIGH, int(figh->legs[4])-10, int(figh->legs[5])+3, nullptr)))
 				figh->comm = 0x01;
 			else
 				figh->comm = 0x02;
@@ -121,15 +118,15 @@ static int update(UPDATE_FUNC_ARGS)
 				if (tary<y)
 					figh->comm = (int)figh->comm | 0x04;
 			}
-			else if (!sim->eval_move(PT_FIGH, int(figh->legs[4])-4, int(figh->legs[5])-1, NULL)
-			    || !sim->eval_move(PT_FIGH, int(figh->legs[12])-4, int(figh->legs[13])-1, NULL)
-			    || sim->eval_move(PT_FIGH, 2*int(figh->legs[4])-int(figh->legs[6]), int(figh->legs[5])+5, NULL))
+			else if (!sim->eval_move(PT_FIGH, int(figh->legs[4])-4, int(figh->legs[5])-1, nullptr)
+			    || !sim->eval_move(PT_FIGH, int(figh->legs[12])-4, int(figh->legs[13])-1, nullptr)
+			    || sim->eval_move(PT_FIGH, 2*int(figh->legs[4])-int(figh->legs[6]), int(figh->legs[5])+5, nullptr))
 				figh->comm = (int)figh->comm | 0x04;
 		}
 		else
 		{
-			if (figh->rocketBoots || !(sim->eval_move(PT_FIGH, int(figh->legs[12])+10, int(figh->legs[13])+6, NULL)
-			      && sim->eval_move(PT_FIGH, int(figh->legs[12])+10, int(figh->legs[13])+3, NULL)))
+			if (figh->rocketBoots || !(sim->eval_move(PT_FIGH, int(figh->legs[12])+10, int(figh->legs[13])+6, nullptr)
+			      && sim->eval_move(PT_FIGH, int(figh->legs[12])+10, int(figh->legs[13])+3, nullptr)))
 				figh->comm = 0x02;
 			else
 				figh->comm = 0x01;
@@ -139,9 +136,9 @@ static int update(UPDATE_FUNC_ARGS)
 				if (tary<y)
 					figh->comm = (int)figh->comm | 0x04;
 			}
-			else if (!sim->eval_move(PT_FIGH, int(figh->legs[4])+4, int(figh->legs[5])-1, NULL)
-			    || !sim->eval_move(PT_FIGH, int(figh->legs[4])+4, int(figh->legs[5])-1, NULL)
-			    || sim->eval_move(PT_FIGH, 2*int(figh->legs[12])-int(figh->legs[14]), int(figh->legs[13])+5, NULL))
+			else if (!sim->eval_move(PT_FIGH, int(figh->legs[4])+4, int(figh->legs[5])-1, nullptr)
+			    || !sim->eval_move(PT_FIGH, int(figh->legs[4])+4, int(figh->legs[5])-1, nullptr)
+			    || sim->eval_move(PT_FIGH, 2*int(figh->legs[12])-int(figh->legs[14]), int(figh->legs[13])+5, nullptr))
 				figh->comm = (int)figh->comm | 0x04;
 		}
 		break;

@@ -3,7 +3,7 @@
 #include "common/tpt-rand.h"
 #include <cmath>
 
-static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
+static int perform(SimTool *tool, Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
 
 void SimTool::Tool_MIX()
 {
@@ -14,8 +14,10 @@ void SimTool::Tool_MIX()
 	Perform = &perform;
 }
 
-static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
+static int perform(SimTool *tool, Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	int thisPart = sim->pmap[y][x];
 	if(!thisPart)
 		return 0;
@@ -25,7 +27,7 @@ static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX,
 
 	int distance = (int)(std::pow(strength, .5f) * 10);
 
-	if(!(sim->elements[TYP(thisPart)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS)))
+	if(!(elements[TYP(thisPart)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS)))
 		return 0;
 
 	int newX = x + (sim->rng() % distance) - (distance/2);
@@ -38,7 +40,7 @@ static int perform(Simulation * sim, Particle * cpart, int x, int y, int brushX,
 	if(!thatPart)
 		return 0;
 
-	if ((sim->elements[TYP(thisPart)].Properties&STATE_FLAGS) != (sim->elements[TYP(thatPart)].Properties&STATE_FLAGS))
+	if ((elements[TYP(thisPart)].Properties&STATE_FLAGS) != (elements[TYP(thatPart)].Properties&STATE_FLAGS))
 		return 0;
 
 	sim->pmap[y][x] = thatPart;

@@ -1,6 +1,7 @@
 #include "simulation/ElementCommon.h"
+#include "FIRE.h"
+#include "FILT.h"
 
-int Element_FIRE_update(UPDATE_FUNC_ARGS);
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
@@ -35,7 +36,7 @@ void Element::Element_PHOT()
 	HeatConduct = 251;
 	Description = ByteString("光子,沿直線傳播,不受重力影響,受牛頓萬有引力影響,可用於點燃物質或傳遞熱量").FromUtf8();
 
-	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
+	Properties = TYPE_ENERGY | PROP_PHOTPASS | PROP_LIFE_DEC | PROP_LIFE_KILL_DEC;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -56,6 +57,9 @@ void Element::Element_PHOT()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+
 	if (!(parts[i].ctype&0x3FFFFFFF)) {
 		sim->kill_part(i);
 		return 1;
@@ -107,6 +111,29 @@ static int update(UPDATE_FUNC_ARGS)
 				parts[i].vx = vx;
 				parts[i].vy = vy;
 			}
+			else if(TYP(r) == PT_RSST && !ry && !rx)//if on RSST, make it solid
+			{
+				int ct_under, tmp_under;
+
+				ct_under = parts[ID(r)].ctype;
+				tmp_under = parts[ID(r)].tmp;
+
+				//If there's a correct ctype set, solidify RSST into it
+				if(ct_under > 0 && ct_under < PT_NUM)
+				{
+					sim->create_part(ID(r), x, y, ct_under);
+
+					//If there's a correct tmp set, use it for ctype
+					if((tmp_under > 0) && (tmp_under < PT_NUM) && (elements[ct_under].CarriesTypeIn & (1U << FIELD_CTYPE)))
+						parts[ID(r)].ctype = tmp_under;
+				}
+				else
+					sim->part_change_type(ID(r), x, y, PT_RSSS); //Default to RSSS if no ctype
+
+				sim->kill_part(i);
+
+				return 1;
+			}
 			else if (TYP(r) == PT_FILT && parts[ID(r)].tmp==9)
 			{
 				parts[i].vx += ((float)sim->rng.between(-500, 500))/1000.0f;
@@ -151,7 +178,6 @@ static void create(ELEMENT_CREATE_FUNC_ARGS)
 	float a = sim->rng.between(0, 7) * 0.78540f;
 	sim->parts[i].vx = 3.0f * cosf(a);
 	sim->parts[i].vy = 3.0f * sinf(a);
-	int Element_FILT_interactWavelengths(Simulation *sim, Particle* cpart, int origWl);
 	if (TYP(sim->pmap[y][x]) == PT_FILT)
 		sim->parts[i].ctype = Element_FILT_interactWavelengths(sim, &sim->parts[ID(sim->pmap[y][x])], sim->parts[i].ctype);
 }

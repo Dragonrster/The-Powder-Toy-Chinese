@@ -4,6 +4,7 @@
 
 #include "client/Client.h"
 #include "client/SaveInfo.h"
+#include "client/GameSave.h"
 #include "client/http/AddCommentRequest.h"
 #include "client/http/ReportSaveRequest.h"
 
@@ -29,14 +30,15 @@
 #include "Format.h"
 #include "Misc.h"
 
+#include "graphics/VideoBuffer.h"
 #include "SimulationConfig.h"
 #include <SDL.h>
 
 PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+210, (YRES/2)+150)),
-	submitCommentButton(NULL),
-	addCommentBox(NULL),
-	commentWarningLabel(NULL),
+	submitCommentButton(nullptr),
+	addCommentBox(nullptr),
+	commentWarningLabel(nullptr),
 	userIsAuthor(false),
 	doOpen(false),
 	doError(false),
@@ -58,20 +60,20 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	favButton->SetTogglable(true);
 	favButton->SetIcon(IconFavourite);
-	favButton->SetActionCallback({ [this] { c->FavouriteSave(); } });
+	favButton->SetActionCallback({ [this] {
+		favButton->SetToggleState(true);
+		favButton->Appearance.BackgroundPulse = true;
+		c->FavouriteSave();
+	} });
 	favButton->Enabled = Client::Ref().GetAuthUser().UserID?true:false;
 	AddComponent(favButton);
 
-	reportButton = new ui::Button(ui::Point(100, Size.Y-19), ui::Point(51, 19), ByteString("舉報").FromUtf8());
+	reportButton = new ui::Button(ui::Point(100, Size.Y-19), ui::Point(51, 19), ByteString("举报").FromUtf8());
 	reportButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	reportButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	reportButton->SetIcon(IconReport);
 	reportButton->SetActionCallback({ [this] {
-<<<<<<< Updated upstream
-		new TextPrompt("Report Save", "Things to consider when reporting:\n\bw1)\bg When reporting stolen saves, please include the ID of the original save.\n\bw2)\bg Do not ask for saves to be removed from front page unless they break the rules.\n\bw3)\bg You may report saves for comments or tags too (including your own saves)", "", "[reason]", true, { [this](String const &resultText) {
-=======
-		new TextPrompt(ByteString("舉報沙盤").FromUtf8(), ByteString("舉報時需注意:\n\bw1)\bg 舉報抄襲行為時請附上被抄襲沙盤ID\n\bw2)\bg 除非違反規則,否則不要要求從首頁刪除沙盤\n\bw3)\bg 可以舉報沙盤的評論或標籤(包括本人沙盤)").FromUtf8(), "", ByteString("[原因]").FromUtf8(), true, { [this](String const &resultText) {
->>>>>>> Stashed changes
+		new TextPrompt(ByteString("举报沙盘").FromUtf8(), ByteString("举报时需注意:\n\bw1)\bg 举报抄袭行为时请附上被抄袭沙盘ID\n\bw2)\bg 除非违反规则,否则不要要求从首页删除沙盘\n\bw3)\bg 可以举报沙盘的评论或标签(包括本人沙盘)").FromUtf8(), "", ByteString("[原因]").FromUtf8(), true, { [this](String const &resultText) {
 			if (reportSaveRequest)
 			{
 				return;
@@ -83,25 +85,21 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	reportButton->Enabled = Client::Ref().GetAuthUser().UserID?true:false;
 	AddComponent(reportButton);
 
-	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), ByteString("開啟").FromUtf8());
+	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), ByteString("打开").FromUtf8());
 	openButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	openButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	openButton->SetIcon(IconOpen);
 	openButton->SetActionCallback({ [this] { c->DoOpen(); } });
 	AddComponent(openButton);
 
-	browserOpenButton = new ui::Button(ui::Point((XRES/2)-112, Size.Y-19), ui::Point(113, 19), ByteString("在瀏覽器中開啟").FromUtf8());
+	browserOpenButton = new ui::Button(ui::Point((XRES/2)-112, Size.Y-19), ui::Point(113, 19), ByteString("在浏览器中打开").FromUtf8());
 	browserOpenButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	browserOpenButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	browserOpenButton->SetIcon(IconOpen);
 	browserOpenButton->SetActionCallback({ [this] { c->OpenInBrowser(); } });
 	AddComponent(browserOpenButton);
 
-<<<<<<< Updated upstream
-	loadErrorButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), "Error loading save");
-=======
-	loadErrorButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), ByteString("載入沙盤時出錯").FromUtf8());
->>>>>>> Stashed changes
+	loadErrorButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), ByteString("加载沙盘时出错").FromUtf8());
 	loadErrorButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	loadErrorButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	loadErrorButton->SetIcon(IconDelete);
@@ -109,11 +107,7 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	loadErrorButton->Visible = false;
 	AddComponent(loadErrorButton);
 
-<<<<<<< Updated upstream
-	missingElementsButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), "Missing custom elements");
-=======
-	missingElementsButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), ByteString("缺少自定義元素").FromUtf8());
->>>>>>> Stashed changes
+	missingElementsButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), ByteString("缺少自定义元素").FromUtf8());
 	missingElementsButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	missingElementsButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	missingElementsButton->SetIcon(IconReport);
@@ -122,9 +116,9 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	AddComponent(missingElementsButton);
 
 	if(showAvatars)
-		saveNameLabel = new ui::Label(ui::Point(39, (YRES/2)+4), ui::Point(100, 16), "");
+		saveNameLabel = new ui::Label(ui::Point(39, (YRES/2)+4), ui::Point(265, 16), "");
 	else
-		saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+4), ui::Point(100, 16), "");
+		saveNameLabel = new ui::Label(ui::Point(5, (YRES/2)+4), ui::Point(300, 16), "");
 	saveNameLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveNameLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(saveNameLabel);
@@ -140,9 +134,9 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	AddComponent(saveDescriptionLabel);
 
 	if(showAvatars)
-		authorDateLabel = new ui::Label(ui::Point(39, (YRES/2)+4+15), ui::Point(180, 16), "");
+		authorDateLabel = new ui::Label(ui::Point(39, (YRES/2)+4+15), ui::Point(200, 16), "");
 	else
-		authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15), ui::Point(200, 16), "");
+		authorDateLabel = new ui::Label(ui::Point(5, (YRES/2)+4+15), ui::Point(220, 16), "");
 	authorDateLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	authorDateLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(authorDateLabel);
@@ -159,7 +153,7 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 		AddComponent(avatarButton);
 	}
 
-	viewsLabel = new ui::Label(ui::Point((XRES/2)-80, (YRES/2)+4+15), ui::Point(80, 16), "");
+	viewsLabel = new ui::Label(ui::Point((XRES/2)-88, (YRES/2)+4+15), ui::Point(88, 16), "");
 	viewsLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	viewsLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(viewsLabel);
@@ -186,14 +180,14 @@ void PreviewView::AttachController(PreviewController * controller)
 {
 	c = controller;
 
-	int textWidth = Graphics::TextSize(ByteString("單擊此框複製沙盤ID").FromUtf8()).X - 1;
-	saveIDLabel = new ui::Label(ui::Point((Size.X-textWidth-20)/2, Size.Y+5), ui::Point(textWidth+20, 16), ByteString("單擊此框複製沙盤ID").FromUtf8());
+	int textWidth = Graphics::TextSize(ByteString("单击此框复制沙盘ID").FromUtf8()).X - 1;
+	saveIDLabel = new ui::Label(ui::Point((Size.X-textWidth-20)/2, Size.Y+5), ui::Point(textWidth+20, 16), ByteString("单击此框复制沙盘ID").FromUtf8());
 	saveIDLabel->SetTextColour(ui::Colour(150, 150, 150));
 	saveIDLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	AddComponent(saveIDLabel);
 
 	textWidth = Graphics::TextSize(String::Build(c->SaveID())).X - 1;
-	saveIDLabel2 = new ui::Label(ui::Point((Size.X-textWidth-20)/2-37, Size.Y+22), ui::Point(40, 16), ByteString("沙盤ID:").FromUtf8());
+	saveIDLabel2 = new ui::Label(ui::Point((Size.X-textWidth-20)/2-37, Size.Y+22), ui::Point(40, 16), ByteString("沙盘ID:").FromUtf8());
 	AddComponent(saveIDLabel2);
 
 	saveIDButton = new ui::CopyTextButton(ui::Point((Size.X-textWidth-10)/2, Size.Y+20), ui::Point(textWidth+10, 18), String::Build(c->SaveID()), saveIDLabel);
@@ -215,10 +209,10 @@ void PreviewView::commentBoxAutoHeight()
 		addCommentBox->Size.Y = oldSize;
 
 		commentBoxHeight = newSize+22;
-		commentBoxPositionX = (XRES/2)+4;
-		commentBoxPositionY = float(Size.Y-(newSize+21));
-		commentBoxSizeX = float(Size.X-(XRES/2)-8);
-		commentBoxSizeY = float(newSize);
+		commentBoxPositionX.SetTarget((XRES/2)+4);
+		commentBoxPositionY.SetTarget(float(Size.Y-(newSize+21)));
+		commentBoxSizeX.SetTarget(float(Size.X-(XRES/2)-8));
+		commentBoxSizeY.SetTarget(float(newSize));
 
 		if (commentWarningLabel && commentHelpText && !commentWarningLabel->Visible && addCommentBox->Position.Y+addCommentBox->Size.Y < Size.Y-14)
 		{
@@ -230,10 +224,10 @@ void PreviewView::commentBoxAutoHeight()
 		commentBoxHeight = 20;
 		addCommentBox->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 
-		commentBoxPositionX = (XRES/2)+4;
-		commentBoxPositionY = float(Size.Y-19);
-		commentBoxSizeX = float(Size.X-(XRES/2)-48);
-		commentBoxSizeY = 17;
+		commentBoxPositionX.SetTarget((XRES/2)+4);
+		commentBoxPositionY.SetTarget(float(Size.Y-19));
+		commentBoxSizeX.SetTarget(float(Size.X-(XRES/2)-48));
+		commentBoxSizeY.SetTarget(17);
 
 		if (commentWarningLabel && commentWarningLabel->Visible)
 		{
@@ -257,11 +251,7 @@ void PreviewView::CheckComment()
 	String text = addCommentBox->GetText().ToLower();
 	if (addCommentRequest)
 	{
-<<<<<<< Updated upstream
-		commentWarningLabel->SetText("Submitting comment...");
-=======
-		commentWarningLabel->SetText(ByteString("正在提交評論...").FromUtf8());
->>>>>>> Stashed changes
+		commentWarningLabel->SetText(ByteString("正在提交评论...").FromUtf8());
 		commentHelpText = true;
 	}
 	else if (!userIsAuthor && (text.Contains("stolen") || text.Contains("copied")))
@@ -269,25 +259,15 @@ void PreviewView::CheckComment()
 		if (!commentHelpText)
 		{
 			if (interfaceRng()%2)
-<<<<<<< Updated upstream
-				commentWarningLabel->SetText("Stolen? Report the save instead");
+				commentWarningLabel->SetText(ByteString("抄袭? 请举报抄袭沙盘").FromUtf8());
 			else
-				commentWarningLabel->SetText("Please report stolen saves");
-=======
-				commentWarningLabel->SetText(ByteString("抄襲? 請舉報抄襲沙盤").FromUtf8());
-			else
-				commentWarningLabel->SetText(ByteString("抄襲? 請舉報抄襲沙盤").FromUtf8());
->>>>>>> Stashed changes
+				commentWarningLabel->SetText(ByteString("抄袭? 请举报抄袭沙盘").FromUtf8());
 			commentHelpText = true;
 		}
 	}
 	else if (userIsAuthor && text.Contains("vote"))
 	{
-<<<<<<< Updated upstream
-		commentWarningLabel->SetText("Do not ask for votes");
-=======
-		commentWarningLabel->SetText(ByteString("請勿拉贊").FromUtf8());
->>>>>>> Stashed changes
+		commentWarningLabel->SetText(ByteString("请勿拉赞").FromUtf8());
 		commentHelpText = true;
 	}
 	else if (CheckSwearing(text))
@@ -295,15 +275,9 @@ void PreviewView::CheckComment()
 		if (!commentHelpText)
 		{
 			if (interfaceRng()%2)
-<<<<<<< Updated upstream
-				commentWarningLabel->SetText("Please do not swear");
+				commentWarningLabel->SetText(ByteString("请文明发言").FromUtf8());
 			else
-				commentWarningLabel->SetText("Bad language may be deleted");
-=======
-				commentWarningLabel->SetText(ByteString("請文明發言").FromUtf8());
-			else
-				commentWarningLabel->SetText(ByteString("將刪除不文明發言").FromUtf8());
->>>>>>> Stashed changes
+				commentWarningLabel->SetText(ByteString("将删除不文明发言").FromUtf8());
 			commentHelpText = true;
 		}
 	}
@@ -334,7 +308,7 @@ void PreviewView::DoDraw()
 	{
 		g->BlendFilledRect(RectSized(Position + Size / 2 - Vec2{ 101, 26 }, { 202, 52 }), 0x000000_rgb .WithAlpha(210));
 		g->BlendRect(RectSized(Position + Size / 2 - Vec2{ 100, 25 }, Vec2{ 200, 50 }), 0xFFFFFF_rgb .WithAlpha(180));
-		g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize(ByteString("載入沙盤中...").FromUtf8()).X - 1)/2), (Size.Y/2)-5}, ByteString("載入沙盤中...").FromUtf8(), style::Colour::InformationTitle.NoAlpha().WithAlpha(255));
+		g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize(ByteString("加载沙盘中...").FromUtf8()).X - 1)/2), (Size.Y/2)-5}, ByteString("加载沙盘中...").FromUtf8(), style::Colour::InformationTitle.NoAlpha().WithAlpha(255));
 	}
 	if (!c->GetFromUrl())
 	{
@@ -389,44 +363,23 @@ void PreviewView::OnDraw()
 	}
 }
 
-void PreviewView::OnTick(float dt)
+void PreviewView::OnTick()
 {
 	if(addCommentBox)
 	{
-		ui::Point positionDiff = ui::Point(int(commentBoxPositionX), int(commentBoxPositionY))-addCommentBox->Position;
-		ui::Point sizeDiff = ui::Point(int(commentBoxSizeX), int(commentBoxSizeY))-addCommentBox->Size;
+		addCommentBox->Position.X = commentBoxPositionX;
+		addCommentBox->Position.Y = commentBoxPositionY;
 
-		if(positionDiff.X!=0)
+		if(addCommentBox->Size.X != commentBoxSizeX)
 		{
-			int xdiff = positionDiff.X/5;
-			if(xdiff == 0)
-				xdiff = 1*isign(positionDiff.X);
-			addCommentBox->Position.X += xdiff;
-		}
-		if(positionDiff.Y!=0)
-		{
-			int ydiff = positionDiff.Y/5;
-			if(ydiff == 0)
-				ydiff = 1*isign(positionDiff.Y);
-			addCommentBox->Position.Y += ydiff;
-		}
-
-		if(sizeDiff.X!=0)
-		{
-			int xdiff = sizeDiff.X/5;
-			if(xdiff == 0)
-				xdiff = 1*isign(sizeDiff.X);
-			addCommentBox->Size.X += xdiff;
+			addCommentBox->Size.X = commentBoxSizeX;
 			addCommentBox->Invalidate();
 			commentBoxAutoHeight(); //make sure textbox height is correct after resizes
 			addCommentBox->resetCursorPosition(); //make sure cursor is in correct position after resizes
 		}
-		if(sizeDiff.Y!=0)
+		if(addCommentBox->Size.Y != commentBoxSizeY)
 		{
-			int ydiff = sizeDiff.Y/5;
-			if(ydiff == 0)
-				ydiff = 1*isign(sizeDiff.Y);
-			addCommentBox->Size.Y += ydiff;
+			addCommentBox->Size.Y = commentBoxSizeY;
 			addCommentBox->Invalidate();
 		}
 		commentsPanel->Size.Y = addCommentBox->Position.Y-1;
@@ -446,19 +399,11 @@ void PreviewView::OnTick(float dt)
 		{
 			reportSaveRequest->Finish();
 			c->Exit();
-<<<<<<< Updated upstream
-			new InformationMessage("Information", "Report submitted", false);
+			new InformationMessage(ByteString("信息").FromUtf8(), ByteString("已提交举报").FromUtf8(), false);
 		}
 		catch (const http::RequestError &ex)
 		{
-			new ErrorMessage("Error", "Unable to file report: " + ByteString(ex.what()).FromUtf8());
-=======
-			new InformationMessage(ByteString("資訊").FromUtf8(), ByteString("已提交舉報").FromUtf8(), false);
-		}
-		catch (const http::RequestError &ex)
-		{
-			new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("無法提交舉報: ").FromUtf8() + ByteString(ex.what()).FromUtf8());
->>>>>>> Stashed changes
+			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法提交举报: ").FromUtf8() + ByteString(ex.what()).FromUtf8());
 		}
 		reportSaveRequest.reset();
 	}
@@ -466,18 +411,16 @@ void PreviewView::OnTick(float dt)
 	{
 		try
 		{
+			addCommentRequest->Finish();
 			addCommentBox->SetText("");
 			c->CommentAdded();
 		}
 		catch (const http::RequestError &ex)
 		{
-<<<<<<< Updated upstream
-			new ErrorMessage("Error submitting comment", ByteString(ex.what()).FromUtf8());
-=======
-			new ErrorMessage(ByteString("提交評論時出錯").FromUtf8(), ByteString(ex.what()).FromUtf8());
->>>>>>> Stashed changes
+			new ErrorMessage(ByteString("提交评论时出错").FromUtf8(), ByteString(ex.what()).FromUtf8());
 		}
-		submitCommentButton->Enabled = true;
+		isSubmittingComment = false;
+		CheckCommentSubmitEnabled();
 		commentBoxAutoHeight();
 		addCommentRequest.reset();
 		CheckComment();
@@ -526,30 +469,32 @@ void PreviewView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ct
 
 void PreviewView::ShowLoadError()
 {
-<<<<<<< Updated upstream
-	new ErrorMessage("Error loading save", doErrorMessage, {});
-=======
-	new ErrorMessage(ByteString("載入沙盤時出錯").FromUtf8(), doErrorMessage, {});
->>>>>>> Stashed changes
+	new ErrorMessage(ByteString("加载沙盘时出错").FromUtf8(), doErrorMessage, {});
 }
 
 void PreviewView::ShowMissingCustomElements()
 {
 	StringBuilder sb;
-<<<<<<< Updated upstream
-	sb << "This save uses custom elements that are not currently available. Make sure that you use the mod and/or have all the scripts the save requires to fully load. A list of identifiers of missing custom elements follows, which may help you determine how to fix this problem.\n";
-=======
-	sb << ByteString("此沙盤使用了當前不可用的自定義元素。確保使用mod和/或擁有沙盤所需的所有指令碼以完全載入。下面列出了缺少的自定義元素的識別符號列表，這可能有助於確定如何解決此問題").FromUtf8();
->>>>>>> Stashed changes
-	for (auto &identifier : missingElementTypes)
+	sb << ByteString("此沙盘使用了当前不可用的自定义元素。确保使用mod和/或拥有沙盘所需的所有脚本以完全加载。下面列出了缺少的自定义元素的标识符列表，这可能有助于确定如何解决此问题").FromUtf8();
+	auto remainingIds = missingElements.ids;
+	if (missingElements.identifiers.size())
 	{
-		sb << "\n - " << identifier.FromUtf8();
+		sb << "\n\nA list of identifiers of missing custom elements follows, which may help you determine how to fix this problem.\n";
+		for (auto &[ identifier, id ] : missingElements.identifiers)
+		{
+			sb << "\n - " << identifier.FromUtf8();
+			remainingIds.erase(id); // remove ids from the missing id set that are already covered by unknown identifiers
+		}
 	}
-<<<<<<< Updated upstream
-	new InformationMessage("Missing custom elements", sb.Build(), true);
-=======
-	new InformationMessage(ByteString("缺少自定義元素").FromUtf8(), sb.Build(), true);
->>>>>>> Stashed changes
+	if (remainingIds.size())
+	{
+		sb << "\n\nA list of element IDs of missing custom elements with no identifier associated follows. This can only be fixed by the author of the save.\n";
+		for (auto id : remainingIds)
+		{
+			sb << "\n - " << id;
+		}
+	}
+	new InformationMessage(ByteString("缺少自定义元素").FromUtf8(), sb.Build(), true);
 }
 
 void PreviewView::UpdateLoadStatus()
@@ -568,6 +513,7 @@ void PreviewView::UpdateLoadStatus()
 
 void PreviewView::NotifySaveChanged(PreviewModel * sender)
 {
+	favButton->Appearance.BackgroundPulse = false;
 	auto *save = sender->GetSaveInfo();
 	if(save)
 	{
@@ -612,10 +558,13 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 
 		if(save->GetGameSave())
 		{
-			std::tie(savePreview, missingElementTypes) = SaveRenderer::Ref().Render(save->GetGameSave(), false, true);
+			missingElements = save->GetGameSave()->missingElements;
+			RendererSettings rendererSettings;
+			rendererSettings.decorationLevel = RendererSettings::decorationAntiClickbait;
+			savePreview = SaveRenderer::Ref().Render(save->GetGameSave(), true, rendererSettings);
 			if (savePreview)
 				savePreview->ResizeToFit(RES / 2, true);
-			missingElementsButton->Visible = missingElementTypes.size();
+			missingElementsButton->Visible = missingElements;
 			UpdateLoadStatus();
 		}
 		else if (!sender->GetCanOpen())
@@ -640,24 +589,34 @@ void PreviewView::submitComment()
 	if (addCommentBox)
 	{
 		String comment = addCommentBox->GetText();
-		if (comment.length() < 4)
+		if (comment.length() == 0)
 		{
-<<<<<<< Updated upstream
-			new ErrorMessage("Error", "Comment is too short");
-=======
-			new ErrorMessage(ByteString("錯誤").FromUtf8(), ByteString("評論過短").FromUtf8());
->>>>>>> Stashed changes
-			return;
+			c->RefreshComments();
+			isRefreshingComments = true;
+		}
+		else if (comment.length() < 4)
+		{
+			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("评论过短").FromUtf8());
+		}
+		else
+		{
+			isSubmittingComment = true;
+			FocusComponent(nullptr);
+
+			addCommentRequest = std::make_unique<http::AddCommentRequest>(c->SaveID(), comment);
+			addCommentRequest->Start();
+
+			CheckComment();
 		}
 
-		submitCommentButton->Enabled = false;
-		FocusComponent(NULL);
-
-		addCommentRequest = std::make_unique<http::AddCommentRequest>(c->SaveID(), comment);
-		addCommentRequest->Start();
-
-		CheckComment();
+		CheckCommentSubmitEnabled();
 	}
+}
+
+void PreviewView::CheckCommentSubmitEnabled()
+{
+	if (submitCommentButton)
+		submitCommentButton->Enabled = !isRefreshingComments && !isSubmittingComment;
 }
 
 void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
@@ -666,32 +625,35 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	{
 		RemoveComponent(addCommentBox);
 		delete addCommentBox;
-		addCommentBox = NULL;
+		addCommentBox = nullptr;
 	}
 	if(submitCommentButton)
 	{
 		RemoveComponent(submitCommentButton);
 		delete submitCommentButton;
-		submitCommentButton = NULL;
+		submitCommentButton = nullptr;
 	}
 	if(sender->GetCommentBoxEnabled())
 	{
-		commentBoxPositionX = (XRES/2)+4;
-		commentBoxPositionY = float(Size.Y-19);
-		commentBoxSizeX = float(Size.X-(XRES/2)-48);
-		commentBoxSizeY = 17;
-
-		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", ByteString("評論").FromUtf8());
+		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", ByteString("评论").FromUtf8());
+		commentBoxPositionX.SetTarget(addCommentBox->Position.X);
+		commentBoxPositionX.SetValue(addCommentBox->Position.X);
+		commentBoxPositionY.SetTarget(addCommentBox->Position.Y);
+		commentBoxPositionY.SetValue(addCommentBox->Position.Y);
+		commentBoxSizeX.SetTarget(addCommentBox->Size.X);
+		commentBoxSizeX.SetValue(addCommentBox->Size.X);
+		commentBoxSizeY.SetTarget(addCommentBox->Size.Y);
+		commentBoxSizeY.SetValue(addCommentBox->Size.Y);
 		addCommentBox->SetActionCallback({ [this] {
 			CheckComment();
 			commentBoxAutoHeight();
 		} });
 		addCommentBox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		addCommentBox->SetMultiline(true);
+		addCommentBox->SetLimit(1000);
 		AddComponent(addCommentBox);
-		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), ByteString("釋出").FromUtf8());
+		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), ByteString("发布").FromUtf8());
 		submitCommentButton->SetActionCallback({ [this] { submitComment(); } });
-		//submitCommentButton->Enabled = false;
 		AddComponent(submitCommentButton);
 
 		commentWarningLabel = new ui::Label(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 16), "If you see this it is a bug");
@@ -702,11 +664,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	}
 	else
 	{
-<<<<<<< Updated upstream
-		submitCommentButton = new ui::Button(ui::Point(XRES/2, Size.Y-19), ui::Point(Size.X-(XRES/2), 19),  ByteString("登陸後評論").FromUtf8());
-=======
-		submitCommentButton = new ui::Button(ui::Point(XRES/2, Size.Y-19), ui::Point(Size.X-(XRES/2), 19),  ByteString("請登陸後評論").FromUtf8());
->>>>>>> Stashed changes
+		submitCommentButton = new ui::Button(ui::Point(XRES/2, Size.Y-19), ui::Point(Size.X-(XRES/2), 19),  ByteString("请登陆后评论").FromUtf8());
 		submitCommentButton->SetActionCallback({ [this] { c->ShowLogin(); } });
 		AddComponent(submitCommentButton);
 	}
@@ -721,7 +679,7 @@ void PreviewView::SaveLoadingError(String errorMessage)
 
 void PreviewView::NotifyCommentsPageChanged(PreviewModel * sender)
 {
-	pageInfo->SetText(String::Build("Page ", sender->GetCommentsPageNum(), " of ", sender->GetCommentsPageCount()));
+	pageInfo->SetText(String::Build(ByteString("第 ").FromUtf8(), sender->GetCommentsPageNum(), ByteString(" 共 ").FromUtf8(), sender->GetCommentsPageCount()));
 }
 
 void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
@@ -736,6 +694,9 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 	commentComponents.clear();
 	commentTextComponents.clear();
 	commentsPanel->InnerSize = ui::Point(0, 0);
+
+	isRefreshingComments = false;
+	CheckCommentSubmitEnabled();
 
 	if (commentsPtr)
 	{
@@ -785,11 +746,11 @@ void PreviewView::NotifyCommentsChanged(PreviewModel * sender)
 				authorNameFormatted = "\bl" + authorNameFormatted;
 			}
 			if (showAvatars)
-				tempUsername = new ui::Label(ui::Point(31, currentY+3), ui::Point(Size.X-((XRES/2) + 13 + 26), 16), authorNameFormatted);
+				tempUsername = new ui::Label(ui::Point(31, currentY+8), ui::Point(Size.X-((XRES/2) + 13 + 26), 14), authorNameFormatted);
 			else
-				tempUsername = new ui::Label(ui::Point(5, currentY+3), ui::Point(Size.X-((XRES/2) + 13), 16), authorNameFormatted);
+				tempUsername = new ui::Label(ui::Point(5, currentY+8), ui::Point(Size.X-((XRES/2) + 13), 14), authorNameFormatted);
 			tempUsername->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignBottom;
+			tempUsername->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 			currentY += 16;
 
 			commentComponents.push_back(tempUsername);

@@ -1,4 +1,3 @@
-#include "LuaSocket.h"
 #include "LuaScriptInterface.h"
 #include "Misc.h"
 #include <stdint.h>
@@ -11,7 +10,7 @@ namespace LuaSocket
 	double Now()
 	{
 		struct timeval rt;
-		gettimeofday(&rt, (struct timezone *)NULL);
+		gettimeofday(&rt, (struct timezone *)nullptr);
 		return rt.tv_sec + rt.tv_usec / 1e6;
 	}
 

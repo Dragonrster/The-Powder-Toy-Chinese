@@ -72,6 +72,11 @@ void OptionsController::SetTemperatureScale(int temperatureScale)
 	model->SetTemperatureScale(temperatureScale);
 }
 
+void OptionsController::SetThreadedRendering(bool newThreadedRendering)
+{
+	model->SetThreadedRendering(newThreadedRendering);
+}
+
 void OptionsController::SetFullscreen(bool fullscreen)
 {
 	model->SetFullscreen(fullscreen);
@@ -107,6 +112,11 @@ void OptionsController::SetGraveExitsConsole(bool graveExitsConsole)
 	model->SetGraveExitsConsole(graveExitsConsole);
 }
 
+void OptionsController::SetNativeClipoard(bool nativeClipoard)
+{
+	model->SetNativeClipoard(nativeClipoard);
+}
+
 void OptionsController::SetResizable(bool resizable)
 {
 	model->SetResizable(resizable);
@@ -115,6 +125,11 @@ void OptionsController::SetResizable(bool resizable)
 void OptionsController::SetFastQuit(bool fastquit)
 {
 	model->SetFastQuit(fastquit);
+}
+
+void OptionsController::SetGlobalQuit(bool newGlobalQuit)
+{
+	model->SetGlobalQuit(newGlobalQuit);
 }
 
 void OptionsController::SetDecoSpace(int decoSpace)
@@ -147,6 +162,16 @@ void OptionsController::SetMomentumScroll(bool momentumScroll)
 	model->SetMomentumScroll(momentumScroll);
 }
 
+void OptionsController::SetRedirectStd(bool newRedirectStd)
+{
+	model->SetRedirectStd(newRedirectStd);
+}
+
+void OptionsController::SetAutoStartupRequest(bool newAutoStartupRequest)
+{
+	model->SetAutoStartupRequest(newAutoStartupRequest);
+}
+
 void OptionsController::Exit()
 {
 	view->CloseActiveWindow();
@@ -160,9 +185,7 @@ void OptionsController::Exit()
 OptionsController::~OptionsController()
 {
 	delete model;
-	if (view->CloseActiveWindow())
-	{
-		delete view;
-	}
+	view->CloseActiveWindow();
+	delete view;
 }
 

@@ -4,6 +4,8 @@
 #include <vector>
 #include "common/String.h"
 #include "gui/interface/Window.h"
+#include "gui/interface/Fade.h"
+#include "simulation/MissingElements.h"
 
 namespace http
 {
@@ -27,7 +29,7 @@ class PreviewController;
 class PreviewView: public ui::Window
 {
 	PreviewController *c{};
-	std::vector<ByteString> missingElementTypes;
+	MissingElements missingElements;
 	std::unique_ptr<VideoBuffer> savePreview;
 	ui::Button *openButton{};
 	ui::Button *browserOpenButton{};
@@ -58,12 +60,14 @@ class PreviewView: public ui::Window
 	String doErrorMessage;
 	bool showAvatars;
 	bool prevPage;
+	bool isSubmittingComment = false;
+	bool isRefreshingComments = false;
 
 	int commentBoxHeight;
-	float commentBoxPositionX;
-	float commentBoxPositionY;
-	float commentBoxSizeX;
-	float commentBoxSizeY;
+	ui::Fade commentBoxPositionX{ ui::Fade::BasicDimensionProfile };
+	ui::Fade commentBoxPositionY{ ui::Fade::BasicDimensionProfile };
+	ui::Fade commentBoxSizeX{ ui::Fade::BasicDimensionProfile };
+	ui::Fade commentBoxSizeY{ ui::Fade::BasicDimensionProfile };
 	bool commentHelpText;
 
 	std::set<String> swearWords;
@@ -71,6 +75,7 @@ class PreviewView: public ui::Window
 	void displayComments();
 	void commentBoxAutoHeight();
 	void submitComment();
+	void CheckCommentSubmitEnabled();
 	bool CheckSwearing(String text);
 	void CheckComment();
 	void ShowMissingCustomElements();
@@ -90,7 +95,7 @@ public:
 	void SaveLoadingError(String errorMessage);
 	void OnDraw() override;
 	void DoDraw() override;
-	void OnTick(float dt) override;
+	void OnTick() override;
 	void OnTryExit(ExitMethod method) override;
 	void OnMouseWheel(int x, int y, int d) override;
 	void OnMouseUp(int x, int y, unsigned int button) override;

@@ -9,7 +9,7 @@ namespace http
 	static ByteString Url(int saveID, int saveDate)
 	{
 		ByteStringBuilder builder;
-		builder << SCHEME << SERVER  << "/Browse/View.json?ID=" << saveID;
+		builder << SERVER << "/Browse/View.json?ID=" << saveID;
 		if (saveDate)
 		{
 			builder << "&Date=" << saveDate;
@@ -62,7 +62,7 @@ namespace http
 		}
 		catch (const std::exception &ex)
 		{
-			throw RequestError("Could not read response: " + ByteString(ex.what()));
+			throw RequestError("\u65e0\u6cd5\u8bfb\u53d6\u54cd\u5e94\u003a\u0020" + ByteString(ex.what()));
 		}
 		return saveInfo;
 	}

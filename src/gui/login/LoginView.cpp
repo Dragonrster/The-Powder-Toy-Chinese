@@ -1,29 +1,33 @@
 #include "LoginView.h"
+#include "Config.h"
 #include "LoginModel.h"
 #include "LoginController.h"
 #include "graphics/Graphics.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Label.h"
+#include "gui/interface/RichLabel.h"
 #include "gui/interface/Textbox.h"
 #include "gui/Style.h"
 #include "client/Client.h"
 #include "Misc.h"
 #include <SDL.h>
 
+constexpr auto defaultSize = ui::Point(200, 87);
+
 LoginView::LoginView():
-	ui::Window(ui::Point(-1, -1), ui::Point(200, 87)),
-	loginButton(new ui::Button(ui::Point(200-100, 87-17), ui::Point(100, 17), ByteString("登入").FromUtf8())),
-	cancelButton(new ui::Button(ui::Point(0, 87-17), ui::Point(101, 17), ByteString("登出").FromUtf8())),
-	titleLabel(new ui::Label(ui::Point(4, 5), ui::Point(200-16, 16), ByteString("登入到伺服器").FromUtf8())),
-	infoLabel(new ui::Label(ui::Point(8, 67), ui::Point(200-16, 16), "")),
-	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), Client::Ref().GetAuthUser().Username.FromUtf8(), ByteString("[使用者名稱]").FromUtf8())),
-	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "", ByteString("[密碼]").FromUtf8())),
-	targetSize(0, 0)
+	ui::Window(ui::Point(-1, -1), defaultSize),
+	loginButton(new ui::Button(ui::Point(200-100, 87-17), ui::Point(100, 17), ByteString("登录").FromUtf8())),
+	cancelButton(new ui::Button(ui::Point(0, 87-17), ui::Point(101, 17), ByteString("注销").FromUtf8())),
+	titleLabel(new ui::Label(ui::Point(4, 5), ui::Point(200-16, 16), ByteString("登录到服务器").FromUtf8())),
+	infoLabel(new ui::RichLabel(ui::Point(6, 67), ui::Point(200-12, 16), "")),
+	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), Client::Ref().GetAuthUser().Username.FromUtf8(), ByteString("[用户名]").FromUtf8())),
+	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "", ByteString("[密码]").FromUtf8()))
 {
-	targetSize = Size;
+	targetSize.SetTarget(Size.Y);
+	targetSize.SetValue(Size.Y);
 	FocusComponent(usernameField);
 
-	infoLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
+	infoLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	infoLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
 	infoLabel->SetMultiline(true);
 	infoLabel->Visible = false;
@@ -80,19 +84,27 @@ void LoginView::OnTryExit(ExitMethod method)
 
 void LoginView::NotifyStatusChanged(LoginModel * sender)
 {
-	if (infoLabel->Visible)
-		targetSize.Y = 87;
-	infoLabel->SetText(sender->GetStatusText());
-	infoLabel->AutoHeight();
+	auto statusText = sender->GetStatusText();
 	auto notWorking = sender->GetStatus() != loginWorking;
+	auto userID = Client::Ref().GetAuthUser().UserID;
+	if (!statusText.size() && !userID && notWorking)
+	{
+		statusText = String::Build("\u6ca1\u6709\u8d26\u6237? {a:powdertoy.co.uk/Register.html", "|\bt\u5728\u6b64\u5904\u6ce8\u518c\x0E}.");
+	}
+	infoLabel->Visible = statusText.size();
+	infoLabel->SetText(statusText);
+	infoLabel->AutoHeight();
 	loginButton->Enabled = notWorking;
-	cancelButton->Enabled = notWorking && Client::Ref().GetAuthUser().UserID;
+	cancelButton->Enabled = notWorking && userID;
 	usernameField->Enabled = notWorking;
 	passwordField->Enabled = notWorking;
-	if (sender->GetStatusText().length())
+	if (infoLabel->Visible)
 	{
-		targetSize.Y += infoLabel->Size.Y+2;
-		infoLabel->Visible = true;
+		targetSize.SetTarget(defaultSize.Y + infoLabel->Size.Y);
+	}
+	else
+	{
+		targetSize.SetTarget(defaultSize.Y);
 	}
 	if (sender->GetStatus() == loginSucceeded)
 	{
@@ -100,30 +112,12 @@ void LoginView::NotifyStatusChanged(LoginModel * sender)
 	}
 }
 
-void LoginView::OnTick(float dt)
+void LoginView::OnTick()
 {
 	c->Tick();
-	//if(targetSize != Size)
-	{
-		ui::Point difference = targetSize-Size;
-		if(difference.X!=0)
-		{
-			int xdiff = difference.X/5;
-			if(xdiff == 0)
-				xdiff = 1*isign(difference.X);
-			Size.X += xdiff;
-		}
-		if(difference.Y!=0)
-		{
-			int ydiff = difference.Y/5;
-			if(ydiff == 0)
-				ydiff = 1*isign(difference.Y);
-			Size.Y += ydiff;
-		}
-
-		loginButton->Position.Y = Size.Y-17;
-		cancelButton->Position.Y = Size.Y-17;
-	}
+	Size.Y = targetSize.GetValue();
+	loginButton->Position.Y = Size.Y-17;
+	cancelButton->Position.Y = Size.Y-17;
 }
 
 void LoginView::OnDraw()
@@ -132,19 +126,3 @@ void LoginView::OnDraw()
 	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
 	g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 }
-
-LoginView::~LoginView() {
-	RemoveComponent(titleLabel);
-	RemoveComponent(loginButton);
-	RemoveComponent(cancelButton);
-	RemoveComponent(usernameField);
-	RemoveComponent(passwordField);
-	RemoveComponent(infoLabel);
-	delete cancelButton;
-	delete loginButton;
-	delete titleLabel;
-	delete usernameField;
-	delete passwordField;
-	delete infoLabel;
-}
-

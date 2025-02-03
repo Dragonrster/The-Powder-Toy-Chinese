@@ -12,6 +12,7 @@
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "simulation/SaveRenderer.h"
+#include "simulation/SimulationData.h"
 #include "common/tpt-rand.h"
 #include "gui/game/Favorite.h"
 #include "gui/Style.h"
@@ -21,6 +22,7 @@
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/interface/Engine.h"
+#include "gui/interface/TextWrapper.h"
 #include "Config.h"
 #include "SimulationConfig.h"
 #include <optional>
@@ -28,6 +30,8 @@
 #include <iostream>
 #include <csignal>
 #include <SDL.h>
+#include <exception>
+#include <cstdlib>
 
 void LoadWindowPosition()
 {
@@ -82,10 +86,10 @@ void LargeScreenDialog()
 {
 	StringBuilder message;
 	auto scale = ui::Engine::Ref().windowFrameOps.scale;
-	message <<  ByteString("切換到 ").FromUtf8() << scale <<  ByteString("x 模式，滿足倍數縮放要求:").FromUtf8();
-	message << desktopWidth << "x" << desktopHeight <<  ByteString("<-檢測到 ,").FromUtf8() << WINDOWW * scale << "x" << WINDOWH * scale <<  ByteString("<-要求").FromUtf8();
-	message <<  ByteString("\n要取消此操作，請點選\"取消\"。可以隨時在設定中更改。").FromUtf8();
-	new ConfirmPrompt(ByteString("檢測到高解析度螢幕").FromUtf8(), message.Build(), { nullptr, []() {
+	message <<  ByteString("切换到 ").FromUtf8() << scale <<  ByteString("x 模式，满足倍数缩放要求:").FromUtf8();
+	message << desktopWidth << "x" << desktopHeight <<  ByteString("<-检测到 ,").FromUtf8() << WINDOWW * scale << "x" << WINDOWH * scale <<  ByteString("<-要求").FromUtf8();
+	message <<  ByteString("\n要取消此操作，请点击\"取消\"。可以随时在设置中更改。").FromUtf8();
+	new ConfirmPrompt(ByteString("检测到高分辨率屏幕").FromUtf8(), message.Build(), { nullptr, []() {
 		GlobalPrefs::Ref().Set("Scale", 1);
 		ui::Engine::Ref().windowFrameOps.scale = 1;
 	} });
@@ -97,38 +101,70 @@ void TickClient()
 	Client::Ref().Tick();
 }
 
-void BlueScreen(String detailMessage)
+static void BlueScreen(String detailMessage, std::optional<std::vector<String>> stackTrace)
 {
 	auto &engine = ui::Engine::Ref();
 	engine.g->BlendFilledRect(engine.g->Size().OriginRect(), 0x1172A9_rgb .WithAlpha(0xD2));
 
-	String errorTitle = "ERROR";
-	String errorDetails = "Details: " + detailMessage;
-	String errorHelp = String("An unrecoverable fault has occurred, please report the error by visiting the website below\n") + SCHEME + SERVER;
-	auto versionInfo = ByteString::Build("Version: ", VersionInfo(), "\nTag: ", VCS_TAG).FromUtf8();
+	auto crashPrevLogPath = ByteString("crash.prev.log");
+	auto crashLogPath = ByteString("crash.log");
+	Platform::RenameFile(crashLogPath, crashPrevLogPath, true);
 
-	// We use the width of errorHelp to center, but heights of the individual texts for vertical spacing
-	auto pos = engine.g->Size() / 2 - Vec2(Graphics::TextSize(errorHelp).X / 2, 100);
-	engine.g->BlendText(pos, errorTitle, 0xFFFFFF_rgb .WithAlpha(0xFF));
-	pos.Y += 4 + Graphics::TextSize(errorTitle).Y;
-	engine.g->BlendText(pos, errorDetails, 0xFFFFFF_rgb .WithAlpha(0xFF));
-	pos.Y += 4 + Graphics::TextSize(errorDetails).Y;
-	engine.g->BlendText(pos, errorHelp, 0xFFFFFF_rgb .WithAlpha(0xFF));
-	pos.Y += 4 + Graphics::TextSize(errorHelp).Y;
-	engine.g->BlendText(pos, versionInfo, 0xFFFFFF_rgb .WithAlpha(0xFF));
+	StringBuilder crashInfo;
+	crashInfo << "ERROR - Details: " << detailMessage << "\n";
+	crashInfo << "An unrecoverable fault has occurred, please report it by visiting the website below\n\n  " << SERVER << "\n\n";
+	crashInfo << "An attempt will be made to save all of this information to " << crashLogPath.FromUtf8() << " in your data folder.\n";
+	crashInfo << "Please attach this file to your report.\n\n";
+	crashInfo << "Version: " << VersionInfo().FromUtf8() << "\n";
+	crashInfo << "Tag: " << VCS_TAG << "\n";
+	crashInfo << "Date: " << format::UnixtimeToDate(time(nullptr), "%Y-%m-%dT%H:%M:%SZ", false).FromUtf8() << "\n";
+	if (stackTrace)
+	{
+		crashInfo << "Stack trace; Main is at 0x" << Format::Hex() << intptr_t(Main) << ":\n";
+		for (auto &item : *stackTrace)
+		{
+			crashInfo << " - " << item << "\n";
+		}
+	}
+	else
+	{
+		crashInfo << "Stack trace not available\n";
+	}
+	String errorText = crashInfo.Build();
+	constexpr auto width = 440;
+	ui::TextWrapper tw;
+	tw.Update(errorText, true, width);
+	engine.g->BlendText(ui::Point((engine.g->Size().X - width) / 2, 80), tw.WrappedText(), 0xFFFFFF_rgb .WithAlpha(0xFF));
+
+	auto crashLogData = errorText.ToUtf8();
+	std::cerr << crashLogData << std::endl;
+	Platform::WriteFile(crashLogData, crashLogPath);
 
 	//Death loop
 	SDL_Event event;
-	while(true)
+	auto running = true;
+	while (running)
 	{
 		while (SDL_PollEvent(&event))
-			if(event.type == SDL_QUIT)
-				exit(-1); // Don't use Platform::Exit, we're practically zombies at this point anyway.
+		{
+			if (event.type == SDL_QUIT)
+			{
+				running = false;
+			}
+		}
 		blit(engine.g->Data());
 	}
+
+	// Don't use Platform::Exit, we're practically zombies at this point anyway.
+#if defined(__MINGW32__) || defined(__APPLE__) || defined(__EMSCRIPTEN__) || defined(__OpenBSD__)
+	// Come on...
+	exit(-1);
+#else
+	quick_exit(-1);
+#endif
 }
 
-struct
+static struct
 {
 	int sig;
 	const char *message;
@@ -140,7 +176,7 @@ struct
 	{ 0, nullptr },
 };
 
-void SigHandler(int signal)
+static void SigHandler(int signal)
 {
 	const char *message = "Unknown signal";
 	for (auto *msg = signalMessages; msg->message; ++msg)
@@ -151,7 +187,29 @@ void SigHandler(int signal)
 			break;
 		}
 	}
-	BlueScreen(ByteString(message).FromUtf8());
+	BlueScreen(ByteString(message).FromUtf8(), Platform::StackTrace());
+}
+
+static void TerminateHandler()
+{
+	ByteString err = "std::terminate called without a current exception";
+	auto eptr = std::current_exception();
+	try
+	{
+		if (eptr)
+		{
+			std::rethrow_exception(eptr);
+		}
+	}
+	catch (const std::exception &e)
+	{
+		err = "unhandled exception: " + ByteString(e.what());
+	}
+	catch (...)
+	{
+		err = "unhandled exception not derived from std::exception, cannot determine reason";
+	}
+	BlueScreen(err.FromUtf8(), Platform::StackTrace());
 }
 
 constexpr int SCALE_MAXIMUM = 10;
@@ -181,6 +239,7 @@ struct ExplicitSingletons
 	std::unique_ptr<SaveRenderer> saveRenderer;
 	std::unique_ptr<Favorite> favorite;
 	std::unique_ptr<ui::Engine> engine;
+	std::unique_ptr<SimulationData> simulationData;
 	std::unique_ptr<GameController> gameController;
 };
 static std::unique_ptr<ExplicitSingletons> explicitSingletons;
@@ -263,7 +322,7 @@ int Main(int argc, char *argv[])
 		else
 			perror("failed to chdir to requested ddir");
 	}
-	else
+	else if constexpr (SHARED_DATA_FOLDER)
 	{
 		auto ddir = Platform::DefaultDdir();
 		if (!Platform::FileExists("powder.pref"))
@@ -321,7 +380,8 @@ int Main(int argc, char *argv[])
 		prefs.Set("Fullscreen", windowFrameOps.fullscreen);
 	}
 
-	if (true_arg(arguments["redirect"]))
+	auto redirectStd = prefs.Get("RedirectStd", false);
+	if (true_arg(arguments["redirect"]) || redirectStd)
 	{
 		FILE *new_stdout = freopen("stdout.log", "w", stdout);
 		FILE *new_stderr = freopen("stderr.log", "w", stderr);
@@ -369,7 +429,9 @@ int Main(int argc, char *argv[])
 	explicitSingletons->requestManager = http::RequestManager::Create(proxyString, cafileString, capathString, disableNetwork);
 
 	explicitSingletons->client = std::make_unique<Client>();
+	Client::Ref().SetAutoStartupRequest(prefs.Get("AutoStartupRequest", true));
 	Client::Ref().Initialize();
+	Client::Ref().SetRedirectStd(redirectStd);
 
 	explicitSingletons->saveRenderer = std::make_unique<SaveRenderer>();
 	explicitSingletons->favorite = std::make_unique<Favorite>();
@@ -386,20 +448,22 @@ int Main(int argc, char *argv[])
 	engine.ShowAvatars = showAvatars;
 	engine.Begin();
 	engine.SetFastQuit(prefs.Get("FastQuit", true));
+	engine.SetGlobalQuit(prefs.Get("GlobalQuit", true));
 	engine.TouchUI = prefs.Get("TouchUI", DEFAULT_TOUCH_UI);
-	if (Client::Ref().IsFirstRun() && FORCE_WINDOW_FRAME_OPS == forceWindowFrameOpsNone)
-	{
-		auto guessed = GuessBestScale();
-		if (windowFrameOps.scale != guessed)
-		{
-			windowFrameOps.scale = guessed;
-			prefs.Set("Scale", windowFrameOps.scale);
-			showLargeScreenDialog = true;
-		}
-	}
 	engine.windowFrameOps = windowFrameOps;
 
 	SDLOpen();
+
+	if (Client::Ref().IsFirstRun() && FORCE_WINDOW_FRAME_OPS == forceWindowFrameOpsNone)
+	{
+		auto guessed = GuessBestScale();
+		if (engine.windowFrameOps.scale != guessed)
+		{
+			engine.windowFrameOps.scale = guessed;
+			prefs.Set("Scale", guessed);
+			showLargeScreenDialog = true;
+		}
+	}
 
 	bool enableBluescreen = USE_BLUESCREEN && !true_arg(arguments["disable-bluescreen"]);
 	if (enableBluescreen)
@@ -409,6 +473,7 @@ int Main(int argc, char *argv[])
 		{
 			signal(msg->sig, SigHandler);
 		}
+		std::set_terminate(TerminateHandler);
 	}
 
 	if constexpr (X86)
@@ -416,113 +481,98 @@ int Main(int argc, char *argv[])
 		X86KillDenormals();
 	}
 
-	auto wrapWithBluescreen = [&]() {
-		explicitSingletons->gameController = std::make_unique<GameController>();
-		auto *gameController = explicitSingletons->gameController.get();
-		engine.ShowWindow(gameController->GetView());
+	explicitSingletons->simulationData = std::make_unique<SimulationData>();
+	explicitSingletons->gameController = std::make_unique<GameController>();
+	auto *gameController = explicitSingletons->gameController.get();
+	engine.ShowWindow(gameController->GetView());
+	gameController->InitCommandInterface();
 
-		auto openArg = arguments["open"];
-		if (openArg.has_value())
+	auto openArg = arguments["open"];
+	if (openArg.has_value())
+	{
+		if constexpr (DEBUG)
 		{
-			if constexpr (DEBUG)
-			{
-				std::cout << "Loading " << openArg.value() << std::endl;
-			}
-			if (Platform::FileExists(openArg.value()))
-			{
-				try
-				{
-					std::vector<char> gameSaveData;
-					if (!Platform::ReadFile(gameSaveData, openArg.value()))
-					{
-						new ErrorMessage("Error", "Could not read file");
-					}
-					else
-					{
-						auto newFile = std::make_unique<SaveFile>(openArg.value());
-						auto newSave = std::make_unique<GameSave>(std::move(gameSaveData));
-						newFile->SetGameSave(std::move(newSave));
-						gameController->LoadSaveFile(std::move(newFile));
-					}
-
-				}
-				catch (std::exception & e)
-				{
-					new ErrorMessage("Error", "Could not open save file:\n" + ByteString(e.what()).FromUtf8()) ;
-				}
-			}
-			else
-			{
-				new ErrorMessage("Error", "Could not open file");
-			}
+			std::cout << "Loading " << openArg.value() << std::endl;
 		}
-
-		auto ptsaveArg = arguments["ptsave"];
-		if (ptsaveArg.has_value())
+		if (Platform::FileExists(openArg.value()))
 		{
-			engine.g->Clear();
-			engine.g->DrawRect(RectSized(engine.g->Size() / 2 - Vec2(100, 25), Vec2(200, 50)), 0xB4B4B4_rgb);
-			String loadingText = ByteString("載入沙盤中...").FromUtf8();
-			engine.g->BlendText(engine.g->Size() / 2 - Vec2((Graphics::TextSize(loadingText).X - 1) / 2, 5), loadingText, style::Colour::InformationTitle);
-
-			blit(engine.g->Data());
 			try
 			{
-				ByteString saveIdPart;
-				if (ByteString::Split split = ptsaveArg.value().SplitBy(':'))
+				std::vector<char> gameSaveData;
+				if (!Platform::ReadFile(gameSaveData, openArg.value()))
 				{
-					if (split.Before() != "ptsave")
-						throw std::runtime_error("Not a ptsave link");
-					saveIdPart = split.After().SplitBy('#').Before();
+					new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法读取文件").FromUtf8());
 				}
 				else
-					throw std::runtime_error("Invalid save link");
+				{
+					auto newFile = std::make_unique<SaveFile>(openArg.value());
+					auto newSave = std::make_unique<GameSave>(std::move(gameSaveData));
+					newFile->SetGameSave(std::move(newSave));
+					gameController->LoadSaveFile(std::move(newFile));
+				}
 
-				if (!saveIdPart.size())
-					throw std::runtime_error("No Save ID");
-				if constexpr (DEBUG)
-				{
-					std::cout << "Got Ptsave: id: " << saveIdPart << std::endl;
-				}
-				ByteString saveHistoryPart = "0";
-				if (auto split = saveIdPart.SplitBy('@'))
-				{
-					saveHistoryPart = split.After();
-					saveIdPart = split.Before();
-				}
-				int saveId = saveIdPart.ToNumber<int>();
-				int saveHistory = saveHistoryPart.ToNumber<int>();
-				gameController->OpenSavePreview(saveId, saveHistory, savePreviewUrl);
 			}
 			catch (std::exception & e)
 			{
-				new ErrorMessage("Error", ByteString(e.what()).FromUtf8());
-				Platform::MarkPresentable();
+				new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法加载沙盘文件:\n").FromUtf8() + ByteString(e.what()).FromUtf8()) ;
 			}
 		}
 		else
 		{
-			Platform::MarkPresentable();
+			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法加载此文件").FromUtf8());
 		}
+	}
 
-		MainLoop();
-	};
-
-	if (enableBluescreen)
+	auto ptsaveArg = arguments["ptsave"];
+	if (ptsaveArg.has_value())
 	{
+		engine.g->Clear();
+		engine.g->DrawRect(RectSized(engine.g->Size() / 2 - Vec2(100, 25), Vec2(200, 50)), 0xB4B4B4_rgb);
+		String loadingText = ByteString("加载沙盘中...").FromUtf8();
+		engine.g->BlendText(engine.g->Size() / 2 - Vec2((Graphics::TextSize(loadingText).X - 1) / 2, 5), loadingText, style::Colour::InformationTitle);
+
+		blit(engine.g->Data());
 		try
 		{
-			wrapWithBluescreen();
+			ByteString saveIdPart;
+			if (ByteString::Split split = ptsaveArg.value().SplitBy(':'))
+			{
+				if (split.Before() != "ptsave")
+					throw std::runtime_error("Not a ptsave link");
+				saveIdPart = split.After().SplitBy('#').Before();
+			}
+			else
+				throw std::runtime_error("Invalid save link");
+
+			if (!saveIdPart.size())
+				throw std::runtime_error("No Save ID");
+			if constexpr (DEBUG)
+			{
+				std::cout << "Got Ptsave: id: " << saveIdPart << std::endl;
+			}
+			ByteString saveHistoryPart = "0";
+			if (auto split = saveIdPart.SplitBy('@'))
+			{
+				saveHistoryPart = split.After();
+				saveIdPart = split.Before();
+			}
+			int saveId = saveIdPart.ToNumber<int>();
+			int saveHistory = saveHistoryPart.ToNumber<int>();
+			gameController->OpenSavePreview(saveId, saveHistory, savePreviewUrl);
 		}
-		catch (const std::exception &e)
+		catch (std::exception & e)
 		{
-			BlueScreen(ByteString(e.what()).FromUtf8());
+			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString(e.what()).FromUtf8());
+			Platform::MarkPresentable();
 		}
 	}
 	else
 	{
-		wrapWithBluescreen();
+		Platform::MarkPresentable();
 	}
+
+	MainLoop();
+
 	Platform::Exit(0);
 	return 0;
 }

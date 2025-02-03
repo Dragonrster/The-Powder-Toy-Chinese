@@ -7,7 +7,7 @@ namespace http
 	static ByteString Url(int start, int count, ByteString query)
 	{
 		ByteStringBuilder builder;
-		builder << SCHEME << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
+		builder << SERVER << "/Browse/Tags.json?Start=" << start << "&Count=" << count;
 		if (query.size())
 		{
 			builder << "&Search_Query=" << format::URLEncode(query);
@@ -35,7 +35,7 @@ namespace http
 		}
 		catch (const std::exception &ex)
 		{
-			throw RequestError("Could not read response: " + ByteString(ex.what()));
+			throw RequestError("\u65e0\u6cd5\u8bfb\u53d6\u54cd\u5e94\u003a\u0020" + ByteString(ex.what()));
 		}
 		return tags;
 	}

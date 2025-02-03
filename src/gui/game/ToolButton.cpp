@@ -1,5 +1,6 @@
 #include "ToolButton.h"
 #include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "Favorite.h"
 #include <SDL.h>
 
@@ -16,12 +17,15 @@ ToolButton::ToolButton(ui::Point position, ui::Point size, String text, ByteStri
 	Component::TextPosition(buttonDisplayText);
 }
 
-void ToolButton::OnMouseClick(int x, int y, unsigned int button)
+void ToolButton::OnMouseDown(int x, int y, unsigned int button)
 {
-	isButtonDown = true;
+	if (MouseDownInside)
+	{
+		isButtonDown = true;
+	}
 }
 
-void ToolButton::OnMouseUnclick(int x, int y, unsigned int button)
+void ToolButton::OnMouseClick(int x, int y, unsigned int button)
 {
 	if(isButtonDown)
 	{
@@ -46,7 +50,7 @@ void ToolButton::Draw(const ui::Point& screenPos)
 {
 	Graphics * g = GetGraphics();
 	auto rect = ClipRect;
-	if (ClipRect.Size().X && ClipRect.Size().Y)
+	if (ClipRect.size.X && ClipRect.size.Y)
 		g->SwapClipRect(rect); // old cliprect is now in rect
 
 	int totalColour = Appearance.BackgroundInactive.Blue + (3*Appearance.BackgroundInactive.Green) + (2*Appearance.BackgroundInactive.Red);
@@ -83,7 +87,7 @@ void ToolButton::Draw(const ui::Point& screenPos)
 		g->BlendText(screenPos + textPosition, buttonDisplayText, 0x000000_rgb .WithAlpha(255));
 	}
 
-	if (ClipRect.Size().X && ClipRect.Size().Y)
+	if (ClipRect.size.X && ClipRect.size.Y)
 		g->SwapClipRect(rect); // apply old clip rect
 }
 

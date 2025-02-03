@@ -1,48 +1,38 @@
 #pragma once
-#include "Graphics.h"
-#include "gui/interface/Point.h"
+#include "Icons.h"
+#include "RasterDrawMethods.h"
+#include "gui/game/RenderPreset.h"
+#include "RendererSettings.h"
 #include "common/tpt-rand.h"
-#include "SimulationConfig.h"
-#include "FindingElement.h"
+#include "RendererFrame.h"
+#include <cstdint>
 #include <optional>
-#include <array>
 #include <memory>
 #include <mutex>
 #include <vector>
 
-class RenderPreset;
-class Simulation;
+struct RenderPreset;
+class Renderer;
+struct RenderableSimulation;
+struct Particle;
 
-struct gcache_item
+struct GraphicsFuncContext
 {
-	int isready;
-	int pixel_mode;
-	int cola, colr, colg, colb;
-	int firea, firer, fireg, fireb;
-	gcache_item() :
-	isready(0),
-	pixel_mode(0),
-	cola(0),
-	colr(0),
-	colg(0),
-	colb(0),
-	firea(0),
-	firer(0),
-	fireg(0),
-	fireb(0)
-	{
-	}
+	const RendererSettings *ren;
+	const RenderableSimulation *sim;
+	RNG rng;
+	const Particle *pipeSubcallCpart;
+	Particle *pipeSubcallTpart;
 };
-typedef struct gcache_item gcache_item;
 
 int HeatToColour(float temp);
 
-class Renderer: public RasterDrawMethods<Renderer>
+class Renderer : private RendererSettings, public RasterDrawMethods<Renderer>
 {
-	using Video = PlaneAdapter<std::array<pixel, WINDOW.X * RES.Y>, WINDOW.X, RES.Y>;
-	Video video;
+	RendererFrame video;
 	std::array<pixel, WINDOW.X * RES.Y> persistentVideo;
-	Video warpVideo;
+	RendererFrame warpVideo;
+	int foundParticles = 0;
 
 	Rect<int> GetClipRect() const
 	{
@@ -51,62 +41,16 @@ class Renderer: public RasterDrawMethods<Renderer>
 
 	friend struct RasterDrawMethods<Renderer>;
 
-public:
-	Vec2<int> Size() const
-	{
-		return video.Size();
-	}
-
-	pixel const *Data() const
-	{
-		return video.data();
-	}
-
 	RNG rng;
-
-	Simulation * sim;
-	gcache_item *graphicscache;
-
-	std::vector<unsigned int> render_modes;
-	unsigned int render_mode;
-	unsigned int colour_mode;
-	std::vector<unsigned int> display_modes;
-	unsigned int display_mode;
-	std::vector<RenderPreset> renderModePresets;
-	//
 	unsigned char fire_r[YCELLS][XCELLS];
 	unsigned char fire_g[YCELLS][XCELLS];
 	unsigned char fire_b[YCELLS][XCELLS];
 	unsigned int fire_alpha[CELL*3][CELL*3];
-	//
-	bool gravityZonesEnabled;
-	bool gravityFieldEnabled;
-	int decorations_enable;
-	bool blackDecorations;
-	bool debugLines;
-	pixel sampleColor;
-	std::optional<FindingElement> findingElement;
-	int foundElements;
 
-	//Mouse position for debug information
-	ui::Point mousePos;
-
-	//Zoom window
-	ui::Point zoomWindowPosition;
-	ui::Point zoomScopePosition;
-	int zoomScopeSize;
-	bool zoomEnabled;
-	int ZFACTOR;
-
-	//Renderers
-	void RenderBegin();
-	void RenderEnd();
-
-	void RenderZoom();
-	void DrawBlob(Vec2<int> pos, RGB<uint8_t> colour);
+	void DrawBlob(Vec2<int> pos, RGB colour);
 	void DrawWalls();
 	void DrawSigns();
-	void render_gravlensing(const Video &source);
+	void render_gravlensing(const RendererFrame &source);
 	void render_fire();
 	void prepare_alpha(int size, float intensity);
 	void render_parts();
@@ -114,45 +58,42 @@ public:
 	void draw_air();
 	void draw_grav();
 	void draw_other();
-	void FinaliseParts();
 
+public:
+	Renderer();
+	void ApplySettings(const RendererSettings &newSettings);
+	void RenderSimulation();
+	void RenderBackground();
+	void ApproximateAccumulation();
 	void ClearAccumulation();
-	void clearScreen();
-	void SetSample(Vec2<int> pos);
+	void Clear();
 
-	void draw_icon(int x, int y, Icon icon);
+	const RendererFrame &GetVideo() const
+	{
+		return video;
+	}
 
-	VideoBuffer DumpFrame();
+	int GetFoundParticles() const
+	{
+		return foundParticles;
+	}
 
-	pixel GetPixel(Vec2<int> pos) const;
-	//...
-	//Display mode modifiers
-	void CompileDisplayMode();
-	void CompileRenderMode();
-	void AddRenderMode(unsigned int mode);
-	void SetRenderMode(std::vector<unsigned int> render);
-	std::vector<unsigned int> GetRenderMode();
-	void RemoveRenderMode(unsigned int mode);
-	void AddDisplayMode(unsigned int mode);
-	void RemoveDisplayMode(unsigned int mode);
-	void SetDisplayMode(std::vector<unsigned int> display);
-	std::vector<unsigned int> GetDisplayMode();
-	void SetColourMode(unsigned int mode);
-	unsigned int GetColourMode();
+	const RenderableSimulation *sim = nullptr;
 
-	void ResetModes();
+	struct GradientStop
+	{
+		RGB color;
+		float point;
 
-	int GetGridSize() { return gridSize; }
-	void SetGridSize(int value) { gridSize = value; }
-
+		bool operator <(const GradientStop &other) const;
+	};
+	static std::vector<RGB> Gradient(std::vector<GradientStop> stops, int resolution);
 	static std::unique_ptr<VideoBuffer> WallIcon(int wallID, Vec2<int> size);
-
-	Renderer(Simulation * sim);
-	~Renderer();
+	static const std::vector<RenderPreset> renderModePresets;
 
 #define RENDERER_TABLE(name) \
-	static std::vector<RGB<uint8_t>> name; \
-	static inline RGB<uint8_t> name ## At(int index) \
+	static std::vector<RGB> name; \
+	static inline RGB name ## At(int index) \
 	{ \
 		auto size = int(name.size()); \
 		if (index <        0) index =        0; \
@@ -166,7 +107,4 @@ public:
 	RENDERER_TABLE(firwTable)
 #undef RENDERER_TABLE
 	static void PopulateTables();
-
-private:
-	int gridSize;
 };

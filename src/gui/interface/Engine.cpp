@@ -11,19 +11,19 @@
 using namespace ui;
 
 Engine::Engine():
-	drawingFrequencyLimit(0),
+	drawingFrequencyLimit(DrawLimitDisplay{}),
 	FrameIndex(0),
-	state_(NULL),
+	state_(nullptr),
 	windowTargetPosition(0, 0),
 	FastQuit(1),
-	lastTick(0),
+	GlobalQuit(true),
+	lastTick(Platform::GetTime()),
 	mouseb_(0),
 	mousex_(0),
 	mousey_(0),
 	mousexp_(0),
 	mouseyp_(0)
 {
-	SetFpsLimit(FpsLimitExplicit{ 60.0f });
 }
 
 Engine::~Engine()
@@ -32,15 +32,14 @@ Engine::~Engine()
 	//Dispose of any Windows.
 	while (!windows.empty())
 	{
-		delete windows.top();
-		windows.pop();
+		delete windows.back();
+		windows.pop_back();
 	}
 }
 
-void Engine::SetFpsLimit(FpsLimit newFpsLimit)
+void Engine::ApplyFpsLimit()
 {
-	fpsLimit = newFpsLimit;
-	::SetFpsLimit(fpsLimit);
+	::ApplyFpsLimit();
 }
 
 void Engine::Begin()
@@ -57,13 +56,20 @@ void Engine::Exit()
 
 void Engine::ConfirmExit()
 {
-	new ConfirmPrompt(ByteString("退出遊戲").FromUtf8(), ByteString("確定要退出遊戲嗎?").FromUtf8(), { [] {
-		ui::Engine::Ref().Exit();
-	} });
+	if (!confirmingExit)
+	{
+		confirmingExit = true;
+		new ConfirmPrompt(ByteString("退出游戏").FromUtf8(), ByteString("确定要退出游戏吗?").FromUtf8(), { [] {
+			ui::Engine::Ref().Exit();
+		}, [this] {
+			confirmingExit = false;
+		} });
+	}
 }
 
 void Engine::ShowWindow(Window * window)
 {
+	CloseWindowAndEverythingAbove(window);
 	if (state_)
 		ignoreEvents = true;
 	if(window->Position.X==-1)
@@ -74,6 +80,8 @@ void Engine::ShowWindow(Window * window)
 	{
 		window->Position.Y = (g->Size().Y - window->Size.Y) / 2;
 	}
+	window->Size = window->Size.Min(g->Size());
+	window->Position = window->Position.Clamp(RectBetween<int>({0, 0}, g->Size()));
 	/*if(window->Position.Y > 0)
 	{
 		windowTargetPosition = window->Position;
@@ -84,14 +92,32 @@ void Engine::ShowWindow(Window * window)
 		frozenGraphics.emplace(FrozenGraphics{0, std::make_unique<pixel []>(g->Size().X * g->Size().Y)});
 		std::copy_n(g->Data(), g->Size().X * g->Size().Y, frozenGraphics.top().screen.get());
 
-		windows.push(state_);
+		windows.push_back(state_);
 		mousePositions.push(ui::Point(mousex_, mousey_));
 	}
 	if(state_)
 		state_->DoBlur();
 
 	state_ = window;
+	ApplyFpsLimit();
+}
 
+void Engine::CloseWindowAndEverythingAbove(Window *window)
+{
+	if (window == state_)
+	{
+		CloseWindow();
+		return;
+	}
+	auto it = std::find(windows.begin(), windows.end(), window);
+	if (it != windows.end())
+	{
+		auto toPop = int(windows.end() - it) + 1; // including state_
+		for (int i = 0; i < toPop; ++i)
+		{
+			CloseWindow();
+		}
+	}
 }
 
 int Engine::CloseWindow()
@@ -99,8 +125,8 @@ int Engine::CloseWindow()
 	if(!windows.empty())
 	{
 		frozenGraphics.pop();
-		state_ = windows.top();
-		windows.pop();
+		state_ = windows.back();
+		windows.pop_back();
 
 		if(state_)
 			state_->DoFocus();
@@ -116,11 +142,13 @@ int Engine::CloseWindow()
 			mouseyp_ = mousey_;
 		}
 		ignoreEvents = true;
+		ApplyFpsLimit();
 		return 0;
 	}
 	else
 	{
-		state_ = NULL;
+		state_ = nullptr;
+		ApplyFpsLimit();
 		return 1;
 	}
 }
@@ -140,8 +168,10 @@ int Engine::CloseWindow()
 
 void Engine::Tick()
 {
-	if(state_ != NULL)
-		state_->DoTick(dt);
+	if(state_ != nullptr)
+	{
+		state_->DoTick();
+	}
 
 
 	lastTick = Platform::GetTime();
@@ -161,6 +191,14 @@ void Engine::Tick()
 		if(state_ != NULL)
 			state_->DoInitialized();
 	}*/
+}
+
+void Engine::SimTick()
+{
+	if (state_)
+	{
+		state_->DoSimTick();
+	}
 }
 
 void Engine::Draw()
@@ -191,19 +229,6 @@ void Engine::Draw()
 	g->Finalise();
 	FrameIndex++;
 	FrameIndex %= 7200;
-}
-
-void Engine::SetFps(float fps)
-{
-	this->fps = fps;
-	if (std::holds_alternative<FpsLimitExplicit>(fpsLimit))
-	{
-		this->dt = 60/fps;
-	}
-	else
-	{
-		this->dt = 1.0f;
-	}
 }
 
 void Engine::onKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
@@ -259,14 +284,14 @@ void Engine::onTextEditing(String text, int start)
 	}
 }
 
-void Engine::onMouseClick(int x, int y, unsigned button)
+void Engine::onMouseDown(int x, int y, unsigned button)
 {
 	mouseb_ |= button;
 	if (state_ && !ignoreEvents)
 		state_->DoMouseDown(x, y, button);
 }
 
-void Engine::onMouseUnclick(int x, int y, unsigned button)
+void Engine::onMouseUp(int x, int y, unsigned button)
 {
 	mouseb_ &= ~button;
 	if (state_ && !ignoreEvents)
@@ -332,4 +357,56 @@ void Engine::StopTextInput()
 void Engine::TextInputRect(Point position, Point size)
 {
 	::SetTextInputRect(position.X, position.Y, size.X, size.Y);
+}
+
+std::optional<int> Engine::GetEffectiveDrawCap() const
+{
+	auto drawLimit = GetDrawingFrequencyLimit();
+	std::optional<int> effectiveDrawCap;
+	if (auto *drawLimitExplicit = std::get_if<DrawLimitExplicit>(&drawLimit))
+	{
+		effectiveDrawCap = drawLimitExplicit->value;
+	}
+	if (std::get_if<DrawLimitDisplay>(&drawLimit))
+	{
+		effectiveDrawCap = std::visit([](auto &&refreshRate) {
+			return refreshRate.value;
+		}, GetRefreshRate());
+	}
+	return effectiveDrawCap;
+}
+
+void Engine::SetFps(float newFps)
+{
+	if (state_)
+	{
+		return state_->SetFps(newFps);
+	}
+}
+
+float Engine::GetFps() const
+{
+	if (state_)
+	{
+		return state_->GetFps();
+	}
+	return 1;
+}
+
+FpsLimit Engine::GetFpsLimit() const
+{
+	if (state_)
+	{
+		return state_->GetFpsLimit();
+	}
+	return FpsLimitNone{};
+}
+
+bool Engine::GetContributesToFps() const
+{
+	if (state_)
+	{
+		return state_->contributesToFps;
+	}
+	return false;
 }

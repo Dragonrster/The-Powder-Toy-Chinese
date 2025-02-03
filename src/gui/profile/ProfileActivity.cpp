@@ -29,12 +29,12 @@ ProfileActivity::ProfileActivity(ByteString username) :
 	{
 		closeButton->Size.X = (Size.X/2)+1;
 
-		ui::Button * saveButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), ByteString("儲存").FromUtf8());
+		ui::Button * saveButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), ByteString("保存").FromUtf8());
 		saveButton->SetActionCallback({ [this, saveButton] {
 			if (!loading && !saving && editable)
 			{
 				saveButton->Enabled = false;
-				saveButton->SetText(ByteString("儲存中...").FromUtf8());
+				saveButton->SetText(ByteString("保存中...").FromUtf8());
 				saving = true;
 				info.location = location->GetText();
 				info.biography = bio->GetText();
@@ -70,7 +70,7 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	int currentY = 5;
 
 	// username label
-	ui::Label * title = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-8-(40+8+75), 15), info.username.FromUtf8());
+	ui::Label * title = new ui::Label(ui::Point(4, currentY), ui::Point(Size.X-8-(40+16+75), 15), info.username.FromUtf8());
 	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	scrollPanel->AddChild(title);
 
@@ -81,93 +81,98 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	// edit avatar button
 	if (editable)
 	{
-		ui::Button * editAvatar = new ui::Button(ui::Point(Size.X - (40 + 16 + 75), currentY), ui::Point(75, 15), ByteString("編輯").FromUtf8());
+		ui::Button * editAvatar = new ui::Button(ui::Point(Size.X - (40 + 16 + 75), currentY), ui::Point(75, 15), ByteString("编辑").FromUtf8());
 		editAvatar->SetActionCallback({ [] {
-			Platform::OpenURI(ByteString::Build(SCHEME, SERVER, "/Profile/Avatar.html"));
+			Platform::OpenURI(ByteString::Build(SERVER, "/Profile/Avatar.html"));
 		} });
 		scrollPanel->AddChild(editAvatar);
 	}
 	currentY += 23;
 
 	// age
-	ui::Label * ageTitle = new ui::Label(ui::Point(4, currentY), ui::Point(18, 15), ByteString("Age: ").FromUtf8());
+	ui::Label * ageTitle = new ui::Label(ui::Point(4, currentY), ui::Point(33, 15), ByteString("年龄:").FromUtf8());
 	ageTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	ageTitle->SetTextColour(ui::Colour(180, 180, 180));
 	scrollPanel->AddChild(ageTitle);
 
 	// can't figure out how to tell a null from a 0 in the json library we use
-	ui::Label *age = new ui::Label(ui::Point(8+ageTitle->Size.X, currentY), ui::Point(40, 15), info.age ? String::Build(info.age) : ByteString("\bg無法提供").FromUtf8());
+	ui::Label *age = new ui::Label(ui::Point(5+ageTitle->Size.X, currentY), ui::Point(Size.X-ageTitle->Size.X-56, 15), info.age ? String::Build(info.age) : ByteString("\bg无法提供").FromUtf8());
 	age->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	scrollPanel->AddChild(age);
 	currentY += 2+age->Size.Y;
 
 	// location
-	ui::Label * locationTitle = new ui::Label(ui::Point(4, currentY), ui::Point(45, 15), ByteString("位置: ").FromUtf8());
+	ui::Label * locationTitle = new ui::Label(ui::Point(4, currentY), ui::Point(35, 15), ByteString("位置: ").FromUtf8());
 	locationTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	locationTitle->SetTextColour(ui::Colour(180, 180, 180));
 	scrollPanel->AddChild(locationTitle);
 
 	if (editable)
-		location = new ui::Textbox(ui::Point(8+locationTitle->Size.X, currentY), ui::Point(Size.X-locationTitle->Size.X-16, 17), info.location);
+	{
+		location = new ui::Textbox(ui::Point(5+locationTitle->Size.X, currentY), ui::Point(Size.X-locationTitle->Size.X-16, 17), info.location);
+		((ui::Textbox*)location)->SetLimit(40);
+	}
 	else
-		location = new ui::Label(ui::Point(4+locationTitle->Size.X, currentY), ui::Point(Size.X-locationTitle->Size.X-14, 17), info.location);
+	{
+		location = new ui::Label(ui::Point(5+locationTitle->Size.X, currentY), ui::Point(Size.X-locationTitle->Size.X-14, 17), info.location);
+	}
 	location->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	scrollPanel->AddChild(location);
 	currentY += 2+location->Size.Y;
 
 	// website
-	ui::Label * websiteTitle = new ui::Label(ui::Point(4, currentY), ui::Point(38, 15), ByteString("網站:").FromUtf8());
+	ui::Label * websiteTitle = new ui::Label(ui::Point(4, currentY), ui::Point(35, 15), ByteString("网站:").FromUtf8());
 	websiteTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	websiteTitle->SetTextColour(ui::Colour(180, 180, 180));
 	scrollPanel->AddChild(websiteTitle);
 
-	ui::Label *website = new ui::Label(ui::Point(8+websiteTitle->Size.X, currentY), ui::Point(Size.X-websiteTitle->Size.X-16, 15), info.website.FromUtf8());
+	ui::Label *website = new ui::Label(ui::Point(2+websiteTitle->Size.X, currentY), ui::Point(Size.X-websiteTitle->Size.X-16, 15), info.website.FromUtf8());
 	website->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	scrollPanel->AddChild(website);
 	currentY += 2+website->Size.Y;
 
 	// saves
-	ui::Label * savesTitle = new ui::Label(ui::Point(4, currentY), ui::Point(35, 15), ByteString("沙盤").FromUtf8());
+	ui::Label * savesTitle = new ui::Label(ui::Point(4, currentY), ui::Point(35, 15), ByteString("沙盘").FromUtf8());
 	savesTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	savesTitle->SetTextColour(ui::Colour(180, 180, 180));
 	scrollPanel->AddChild(savesTitle);
 	currentY += savesTitle->Size.Y;
 
 		// saves count
-		ui::Label * saveCountTitle = new ui::Label(ui::Point(12, currentY), ui::Point(30, 15), ByteString("數量:").FromUtf8());
+		ui::Label * saveCountTitle = new ui::Label(ui::Point(12, currentY), ui::Point(34, 15), ByteString("数量:").FromUtf8());
 		saveCountTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		saveCountTitle->SetTextColour(ui::Colour(180, 180, 180));
 		scrollPanel->AddChild(saveCountTitle);
 
-		ui::Label *savesCount = new ui::Label(ui::Point(12+saveCountTitle->Size.X, currentY), ui::Point(Size.X-saveCountTitle->Size.X-16, 15), String::Build(info.saveCount));
+		ui::Label *savesCount = new ui::Label(ui::Point(13+saveCountTitle->Size.X, currentY), ui::Point(Size.X-saveCountTitle->Size.X-24, 15), String::Build(info.saveCount));
 		savesCount->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		scrollPanel->AddChild(savesCount);
 		currentY += savesCount->Size.Y;
 
 		// average score
-		ui::Label * averageScoreTitle = new ui::Label(ui::Point(12, currentY), ui::Point(70, 15), ByteString("平均評分:").FromUtf8());
+		ui::Label * averageScoreTitle = new ui::Label(ui::Point(12, currentY), ui::Point(60, 15), ByteString("平均评分:").FromUtf8());
 		averageScoreTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		averageScoreTitle->SetTextColour(ui::Colour(180, 180, 180));
 		scrollPanel->AddChild(averageScoreTitle);
 
-		ui::Label *averageScore = new ui::Label(ui::Point(12+averageScoreTitle->Size.X, currentY), ui::Point(Size.X-averageScoreTitle->Size.X-16, 15), String::Build(info.averageScore));
+		ui::Label *averageScore = new ui::Label(ui::Point(13+averageScoreTitle->Size.X, currentY), ui::Point(Size.X-averageScoreTitle->Size.X-24, 15), String::Build(info.averageScore));
 		averageScore->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		scrollPanel->AddChild(averageScore);
 		currentY += averageScore->Size.Y;
 
 		// highest score
-		ui::Label * highestScoreTitle = new ui::Label(ui::Point(12, currentY), ui::Point(69, 15), ByteString("最高評分:").FromUtf8());
+		ui::Label * highestScoreTitle = new ui::Label(ui::Point(12, currentY), ui::Point(60, 15), ByteString("最高评分:").FromUtf8());
 		highestScoreTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		highestScoreTitle->SetTextColour(ui::Colour(180, 180, 180));
 		scrollPanel->AddChild(highestScoreTitle);
 
-		ui::Label *highestScore = new ui::Label(ui::Point(12+highestScoreTitle->Size.X, currentY), ui::Point(Size.X-highestScoreTitle->Size.X-16, 15), String::Build(info.highestScore));
+		ui::Label *highestScore = new ui::Label(ui::Point(13+highestScoreTitle->Size.X, currentY), ui::Point(Size.X-highestScoreTitle->Size.X-24, 15), String::Build(info.highestScore));
 		highestScore->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		scrollPanel->AddChild(highestScore);
 		currentY += 2+highestScore->Size.Y;
 
 	// biograhy
-	ui::Label * bioTitle = new ui::Label(ui::Point(4, currentY), ui::Point(50, 15), ByteString("個人檔案:").FromUtf8());
+	ui::Label * bioTitle = new ui::Label(ui::Point(4, currentY), ui::Point(60, 15), ByteString("个人档案:").FromUtf8());
 	bioTitle->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	bioTitle->SetTextColour(ui::Colour(180, 180, 180));
 	scrollPanel->AddChild(bioTitle);
@@ -192,11 +197,11 @@ void ProfileActivity::setUserInfo(UserInfo newInfo)
 	scrollPanel->InnerSize = ui::Point(Size.X, currentY);
 }
 
-void ProfileActivity::OnTick(float dt)
+void ProfileActivity::OnTick()
 {
 	if (doError)
 	{
-		new ErrorMessage("Error", doErrorMessage, { [this]() {
+		new ErrorMessage(ByteString("错误").FromUtf8(), doErrorMessage, { [this]() {
 			Exit();
 		} });
 	}
@@ -211,7 +216,7 @@ void ProfileActivity::OnTick(float dt)
 		catch (const http::RequestError &ex)
 		{
 			doError = true;
-			doErrorMessage = ByteString("無法儲存使用者資訊: ").FromUtf8() + ByteString(ex.what()).FromUtf8();
+			doErrorMessage = ByteString("无法保存用户信息: ").FromUtf8() + ByteString(ex.what()).FromUtf8();
 		}
 		saveUserInfoRequest.reset();
 	}
@@ -226,7 +231,7 @@ void ProfileActivity::OnTick(float dt)
 		catch (const http::RequestError &ex)
 		{
 			doError = true;
-			doErrorMessage = ByteString("無法儲存使用者資訊: ").FromUtf8()  + ByteString(ex.what()).FromUtf8();
+			doErrorMessage = ByteString("无法保存用户信息: ").FromUtf8()  + ByteString(ex.what()).FromUtf8();
 		}
 		getUserInfoRequest.reset();
 	}

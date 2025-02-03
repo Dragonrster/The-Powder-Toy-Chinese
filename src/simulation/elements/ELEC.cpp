@@ -52,6 +52,8 @@ void Element::Element_ELEC()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	for (auto rx = -2; rx <= 2; rx++)
 	{
 		for (auto ry = -2; ry <= 2; ry++)
@@ -115,10 +117,19 @@ static int update(UPDATE_FUNC_ARGS)
 				parts[ID(r)].tmp2 += 5;
 				parts[ID(r)].life = 1000;
 				break;
+			case PT_RSST: //Destroy RSST
+				if(!rx && !ry)
+				{
+					sim->kill_part(ID(r));
+					sim->kill_part(i);
+
+					return 1;
+				}
+				break;
 			case PT_NONE: //seems to speed up ELEC even if it isn't used
 				break;
 			default:
-				if ((sim->elements[rt].Properties & PROP_CONDUCTS) && (rt!=PT_NBLE||parts[i].temp<2273.15))
+				if ((elements[rt].Properties & PROP_CONDUCTS) && (rt!=PT_NBLE||parts[i].temp<2273.15))
 				{
 					sim->create_part(-1, x+rx, y+ry, PT_SPRK);
 					sim->kill_part(i);

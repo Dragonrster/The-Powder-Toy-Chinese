@@ -1,6 +1,6 @@
 #include "simulation/ElementCommon.h"
+#include "FIRE.h"
 
-int Element_FIRE_update(UPDATE_FUNC_ARGS);
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
@@ -54,6 +54,8 @@ void Element::Element_NEUT()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	unsigned int pressureFactor = 3 + (int)sim->pv[y/CELL][x/CELL];
 	for (int rx = -1; rx <= 1; rx++)
 	{
@@ -164,6 +166,31 @@ static int update(UPDATE_FUNC_ARGS)
 				else
 					sim->create_part(ID(r), x+rx, y+ry, PT_CAUS);
 				break;
+			case PT_RSSS:
+				if(!rx && !ry)
+				{
+					int ct_under, tmp_under;
+
+					ct_under = parts[ID(r)].ctype;
+					tmp_under = parts[ID(r)].tmp;
+
+					//If there's a correct ctype set, liquefy into it
+					if(ct_under > 0 && ct_under < PT_NUM)
+					{
+						sim->create_part(ID(r), x, y, ct_under);
+
+						//If there's a correct tmp set, use it for ctype
+						if((tmp_under > 0) && (tmp_under < PT_NUM) && (elements[ct_under].CarriesTypeIn & (1U << FIELD_CTYPE)))
+							parts[ID(r)].ctype = tmp_under;
+					}
+					else
+						sim->part_change_type(ID(r), x, y, PT_RSST); //Default to RSST if no ctype
+
+					sim->kill_part(i);
+
+					return 1;
+				}
+				break;
 			default:
 				break;
 			}
@@ -206,7 +233,7 @@ static int DeutExplosion(Simulation * sim, int n, int x, int y, float temp, int 
 		i = sim->create_part(-3, x, y, t);
 		if (i >= 0)
 			sim->parts[i].temp = temp;
-		else if (sim->pfree < 0)
+		else if (sim->MaxPartsReached())
 			break;
 	}
 	sim->pv[y/CELL][x/CELL] += (6.0f * CFDS)*n;

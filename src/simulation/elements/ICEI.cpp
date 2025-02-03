@@ -30,9 +30,11 @@ void Element::Element_ICEI()
 
 	DefaultProperties.temp = R_TEMP - 50.0f + 273.15f;
 	HeatConduct = 46;
-	Description = ByteString("冰,在壓力下會破碎變成雪").FromUtf8();
+	LatentHeat = 1095;
+	Description = ByteString("冰,在压力下会破碎变成雪").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_NEUTPASS;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -50,6 +52,8 @@ void Element::Element_ICEI()
 
 static int update(UPDATE_FUNC_ARGS)
 {
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
 	if (parts[i].ctype==PT_FRZW)//get colder if it is from FRZW
 	{
 		parts[i].temp = restrict_flt(parts[i].temp-1.0f, MIN_TEMP, MAX_TEMP);
@@ -65,7 +69,7 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				if (TYP(r)==PT_SALT || TYP(r)==PT_SLTW)
 				{
-					if (parts[i].temp > sim->elements[PT_SLTW].LowTemperature && sim->rng.chance(1, 200))
+					if (parts[i].temp > elements[PT_SLTW].LowTemperature && sim->rng.chance(1, 200))
 					{
 						sim->part_change_type(i,x,y,PT_SLTW);
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_SLTW);

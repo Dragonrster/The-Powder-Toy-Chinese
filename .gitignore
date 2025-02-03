@@ -74,6 +74,7 @@ screenshot_*
 /.kdev4
 
 # Other IDEs / misc
+/.idea
 .vscode/
 .vs/
 *.sublime-*
@@ -90,6 +91,7 @@ screenshot_*
 *.opensdf
 *.sdf
 /font/
+/TPT/
 compile_commands.json
 ignore/
 Downloads/zpix.bdf

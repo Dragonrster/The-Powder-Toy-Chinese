@@ -32,7 +32,7 @@ void Element::Element_ISZS()
 	HeatConduct = 251;
 	Description = ByteString("固態同位素,會隨時間流逝慢慢衰減成光子,負壓會加快衰變速度").FromUtf8();
 
-	Properties = TYPE_SOLID;
+	Properties = TYPE_SOLID | PROP_PHOTPASS;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

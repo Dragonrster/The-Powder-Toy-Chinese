@@ -31,6 +31,8 @@ public:
 	void SetEdgeMode(int edgeMode);
 	int GetTemperatureScale();
 	void SetTemperatureScale(int temperatureScale);
+	int GetThreadedRendering();
+	void SetThreadedRendering(bool newThreadedRendering);
 	int GetGravityMode();
 	void SetGravityMode(int gravityMode);
 	float GetCustomGravityX();
@@ -41,6 +43,8 @@ public:
 	void SetScale(int scale);
 	bool GetGraveExitsConsole();
 	void SetGraveExitsConsole(bool graveExitsConsole);
+	bool GetNativeClipoard();
+	void SetNativeClipoard(bool nativeClipoard);
 	bool GetResizable();
 	void SetResizable(bool resizable);
 	bool GetFullscreen();
@@ -53,6 +57,8 @@ public:
 	void SetBlurryScaling(bool newBlurryScaling);
 	bool GetFastQuit();
 	void SetFastQuit(bool fastquit);
+	bool GetGlobalQuit();
+	void SetGlobalQuit(bool newGlobalQuit);
 	int GetDecoSpace();
 	void SetDecoSpace(int decoSpace);
 	bool GetMouseClickRequired();
@@ -63,5 +69,9 @@ public:
 	void SetPerfectCircle(bool perfectCircle);
 	bool GetMomentumScroll();
 	void SetMomentumScroll(bool momentumScroll);
+	bool GetRedirectStd();
+	void SetRedirectStd(bool newRedirectStd);
+	bool GetAutoStartupRequest();
+	void SetAutoStartupRequest(bool newAutoStartupRequest);
 	virtual ~OptionsModel();
 };

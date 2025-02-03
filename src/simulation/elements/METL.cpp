@@ -27,7 +27,8 @@ void Element::Element_METL()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("金屬,最基礎的導體,可以熔化").FromUtf8();
+	LatentHeat = 919;
+	Description = ByteString("金属,最基础的导体,可以熔化").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 

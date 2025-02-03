@@ -2,67 +2,44 @@
 
 #include "client/GameSave.h"
 
-#include "graphics/Graphics.h"
+#include "graphics/VideoBuffer.h"
 #include "graphics/Renderer.h"
 
 #include "Simulation.h"
+#include "SimulationData.h"
 
-SaveRenderer::SaveRenderer(){
-	sim = new Simulation();
-	ren = new Renderer(sim);
-	ren->decorations_enable = true;
-	ren->blackDecorations = true;
+SaveRenderer::SaveRenderer()
+{
+	sim = std::make_unique<Simulation>();
+	ren = std::make_unique<Renderer>();
+	ren->sim = sim.get();
 }
 
-void SaveRenderer::Flush(int begin, int end)
-{
-	std::lock_guard<std::mutex> gx(renderMutex);
-	std::fill(ren->graphicscache + begin, ren->graphicscache + end, gcache_item());
-}
+SaveRenderer::~SaveRenderer() = default;
 
-std::pair<std::unique_ptr<VideoBuffer>, std::vector<ByteString>> SaveRenderer::Render(const GameSave *save, bool decorations, bool fire, Renderer *renderModeSource)
+std::unique_ptr<VideoBuffer> SaveRenderer::Render(const GameSave *save, bool fire, RendererSettings rendererSettings)
 {
+	// this function usually runs on a thread different from where element info in SimulationData may be written, so we acquire a read-only lock on it
+	auto &sd = SimulationData::CRef();
+	std::shared_lock lk(sd.elementGraphicsMx);
 	std::lock_guard<std::mutex> gx(renderMutex);
 
-	ren->ResetModes();
-	if (renderModeSource)
-	{
-		ren->SetRenderMode(renderModeSource->GetRenderMode());
-		ren->SetDisplayMode(renderModeSource->GetDisplayMode());
-		ren->SetColourMode(renderModeSource->GetColourMode());
-	}
+	ren->ApplySettings(rendererSettings);
 
 	sim->clear_sim();
 
-	auto missingElementTypes = sim->Load(save, true, { 0, 0 });
-	ren->decorations_enable = true;
-	ren->blackDecorations = !decorations;
+	sim->Load(save, true, { 0, 0 });
 	ren->ClearAccumulation();
-	ren->clearScreen();
-
+	ren->Clear();
 	if (fire)
 	{
-   		int frame = 15;
-		while(frame)
-		{
-			frame--;
-			ren->render_parts();
-			ren->render_fire();
-			ren->clearScreen();
-		}
+		ren->ApproximateAccumulation();
 	}
-
-	ren->RenderBegin();
-	ren->RenderEnd();
+	ren->RenderSimulation();
 
 	auto tempThumb = std::make_unique<VideoBuffer>(save->blockSize * CELL);
-	tempThumb->BlendImage(ren->Data(), 0xFF, ren->Size().OriginRect());
+	auto &video = ren->GetVideo();
+	tempThumb->BlendImage(video.data(), 0xFF, video.Size().OriginRect());
 
-	return { std::move(tempThumb), missingElementTypes };
-}
-
-SaveRenderer::~SaveRenderer()
-{
-	delete ren;
-	delete sim;
+	return tempThumb;
 }

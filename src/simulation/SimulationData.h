@@ -1,28 +1,19 @@
 #pragma once
 #include "SimulationConfig.h"
+#include "ElementDefs.h"
+#include "common/ExplicitSingleton.h"
+#include "common/String.h"
+#include "MenuSection.h"
+#include "BuiltinGOL.h"
+#include "Element.h"
+#include "Particle.h"
+#include "WallType.h"
+#include "graphics/gcache_item.h"
+#include "CustomGOLData.h"
 #include <cstdint>
 #include <vector>
 #include <array>
-
-constexpr int SC_WALL      =  0;
-constexpr int SC_ELEC      =  1;
-constexpr int SC_POWERED   =  2;
-constexpr int SC_SENSOR    =  3;
-constexpr int SC_FORCE     =  4;
-constexpr int SC_EXPLOSIVE =  5;
-constexpr int SC_GAS       =  6;
-constexpr int SC_LIQUID    =  7;
-constexpr int SC_POWDERS   =  8;
-constexpr int SC_SOLIDS    =  9;
-constexpr int SC_NUCLEAR   = 10;
-constexpr int SC_SPECIAL   = 11;
-constexpr int SC_LIFE      = 12;
-constexpr int SC_TOOL      = 13;
-constexpr int SC_FAVORITES = 14;
-constexpr int SC_DECO      = 15;
-constexpr int SC_CRACKER   = 16;
-constexpr int SC_CRACKER2  = 17;
-constexpr int SC_TOTAL     = 16;
+#include <shared_mutex>
 
 constexpr int O_WL_WALLELEC     = 122;
 constexpr int O_WL_EWALL        = 123;
@@ -133,35 +124,49 @@ constexpr int NGT_BRAN = 23;
 constexpr auto REPLACE_MODE    = UINT32_C(0x00000001);
 constexpr auto SPECIFIC_DELETE = UINT32_C(0x00000002);
 
-enum EdgeMode
+class SimulationData : public ExplicitSingleton<SimulationData>
 {
-	EDGE_VOID, EDGE_SOLID, EDGE_LOOP, NUM_EDGE_MODES
+public:
+	std::array<Element, PT_NUM> elements;
+	std::array<gcache_item, PT_NUM> graphicscache;
+	std::vector<wall_type> wtypes;
+	std::vector<menu_section> msections;
+	char can_move[PT_NUM][PT_NUM];
+	static const std::array<BuiltinGOL, NGOL> builtinGol;
+
+	// Element properties that enable basic graphics (i.e. every property that has to do with graphics other than
+	// the graphics callback itself) are only ever written by the main thread, but they are read by some other
+	// threads that use Renderer to render thumbnails and such. Take this std::shared_mutex with an std::unique_lock
+	// when writing such properties in the main thread, and with an std::shared_lock when reading such properties
+	// in these secondary Renderer threads. Don't take it with an std::shared_lock when reading such properties in
+	// the main thread; the main thread doesn't race with itself.
+	mutable std::shared_mutex elementGraphicsMx;
+
+private:
+	std::vector<CustomGOLData> customGol;
+
+public:
+	SimulationData();
+	void InitElements();
+
+	void init_can_move();
+
+	const CustomGOLData *GetCustomGOLByRule(int rule) const;
+	const std::vector<CustomGOLData> &GetCustomGol() const { return customGol; }
+	void SetCustomGOL(std::vector<CustomGOLData> newCustomGol);
+
+	String ElementResolve(int type, int ctype) const;
+	String BasicParticleInfo(Particle const &sample_part) const;
+	int GetParticleType(ByteString type) const;
+
+	bool IsElement(int type) const
+	{
+		return (type > 0 && type < PT_NUM && elements[type].Enabled);
+	}
+
+	bool IsElementOrNone(int type) const
+	{
+		return (type >= 0 && type < PT_NUM && elements[type].Enabled);
+	}
+
 };
-
-enum AirMode
-{
-	AIR_ON, AIR_PRESSURE_OFF, AIR_VELOCITY_OFF, AIR_OFF, AIR_NO_UPDATE, NUM_AIR_MODES
-};
-
-enum GravityMode
-{
-	GRAV_VERTICAL, GRAV_OFF, GRAV_RADIAL, GRAV_CUSTOM, NUM_GRAV_MODES
-};
-
-struct part_type;
-struct part_transition;
-
-struct wall_type;
-struct BuiltinGOL;
-struct menu_section;
-
-class SimTool;
-class Element;
-
-extern const BuiltinGOL builtinGol[];
-
-std::vector<wall_type> LoadWalls();
-
-std::vector<menu_section> LoadMenus();
-
-std::vector<unsigned int> LoadLatent();

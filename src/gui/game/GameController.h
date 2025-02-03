@@ -1,6 +1,8 @@
 #pragma once
+#include "lua/CommandInterfacePtr.h"
 #include "client/ClientListener.h"
 #include "client/StartupInfo.h"
+#include "common/ExplicitSingleton.h"
 #include "gui/interface/Point.h"
 #include "gui/interface/Colour.h"
 #include "gui/SavePreviewType.h"
@@ -16,6 +18,9 @@ constexpr auto DEBUG_ELEMENTPOP = 0x0002;
 constexpr auto DEBUG_LINES      = 0x0004;
 constexpr auto DEBUG_PARTICLE   = 0x0008;
 constexpr auto DEBUG_SURFNORM   = 0x0010;
+constexpr auto DEBUG_SIMHUD     = 0x0020;
+constexpr auto DEBUG_RENHUD     = 0x0040;
+constexpr auto DEBUG_AIRVEL     = 0x0080;
 
 class DebugInfo;
 class SaveFile;
@@ -28,7 +33,6 @@ class LocalBrowserController;
 class SearchController;
 class PreviewController;
 class RenderController;
-class CommandInterface;
 class VideoBuffer;
 class Tool;
 class Menu;
@@ -37,8 +41,10 @@ class GameSave;
 class LoginController;
 class TagsController;
 class ConsoleController;
-class GameController: public ClientListener
+class GameController : public ClientListener, public ExplicitSingleton<GameController>
 {
+	CommandInterfacePtr commandInterface;
+
 private:
 	bool firstTick;
 	int foundSignID;
@@ -101,14 +107,17 @@ public:
 	void SetBrushSize(ui::Point newSize);
 	void AdjustZoomSize(int direction, bool logarithmic = false);
 	void ToolClick(int toolSelection, ui::Point point);
+	void ToolDrag(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawPoints(int toolSelection, ui::Point oldPos, ui::Point newPos, bool held);
 	void DrawRect(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawLine(int toolSelection, ui::Point point1, ui::Point point2);
 	void DrawFill(int toolSelection, ui::Point point);
 	ByteString StampRegion(ui::Point point1, ui::Point point2);
+	ByteString StampRegion(ui::Point point1, ui::Point point2, bool includePressure);
 	void CopyRegion(ui::Point point1, ui::Point point2);
 	void CutRegion(ui::Point point1, ui::Point point2);
 	void Update();
+	bool GetPaused() const;
 	void SetPaused(bool pauseState);
 	void SetPaused();
 	void SetDecoration(bool decorationState);
@@ -125,6 +134,7 @@ public:
 	int GetEdgeMode();
 	void SetEdgeMode(int edgeMode);
 	void SetDebugFlags(unsigned int flags) { debugFlags = flags; }
+	unsigned int GetDebugFlags() const { return debugFlags; }
 	void SetActiveMenu(int menuID);
 	std::vector<Menu*> GetMenuList();
 	int GetNumMenus(bool onlyEnabled);
@@ -133,6 +143,7 @@ public:
 	void SetActiveTool(int toolSelection, Tool * tool);
 	void SetActiveTool(int toolSelection, ByteString identifier);
 	void SetLastTool(Tool * tool);
+	Tool *GetLastTool();
 	int GetReplaceModeFlags();
 	void SetReplaceModeFlags(int flags);
 	void SetActiveColourPreset(int preset);
@@ -166,7 +177,6 @@ public:
 	void TransformPlaceSave(Mat2<int> transform, Vec2<int> nudge);
 	bool MouseInZoom(ui::Point position);
 	ui::Point PointTranslate(ui::Point point);
-	ui::Point PointTranslateNoClamp(ui::Point point);
 	ui::Point NormaliseBlockCoord(ui::Point point);
 	String ElementResolve(int type, int ctype);
 	String BasicParticleInfo(Particle const &sample_part);
@@ -194,6 +204,14 @@ public:
 	void NotifyNewNotification(Client * sender, ServerNotification notification) override;
 	void RunUpdater(UpdateInfo info);
 	bool GetMouseClickRequired();
+	bool GetThreadedRendering();
 
-	void RemoveCustomGOLType(const ByteString &identifier);
+	void RemoveCustomGol(const ByteString &identifier);
+
+	void BeforeSimDraw();
+	void AfterSimDraw();
+	bool ThreadedRenderingAllowed();
+
+	void SetToolIndex(ByteString identifier, std::optional<int> index);
+	void InitCommandInterface();
 };
