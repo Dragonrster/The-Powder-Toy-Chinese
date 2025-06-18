@@ -25,14 +25,14 @@ struct GraphicsFuncContext
 	Particle *pipeSubcallTpart;
 };
 
-int HeatToColour(float temp);
+int HeatToColour(float temp, float hdispLimitMin, float hdispLimitMax);
 
 class Renderer : private RendererSettings, public RasterDrawMethods<Renderer>
 {
 	RendererFrame video;
 	std::array<pixel, WINDOW.X * RES.Y> persistentVideo;
 	RendererFrame warpVideo;
-	int foundParticles = 0;
+	RendererStats stats;
 
 	Rect<int> GetClipRect() const
 	{
@@ -59,6 +59,8 @@ class Renderer : private RendererSettings, public RasterDrawMethods<Renderer>
 	void draw_grav();
 	void draw_other();
 
+	void AdjustHdispLimit();
+
 public:
 	Renderer();
 	void ApplySettings(const RendererSettings &newSettings);
@@ -73,21 +75,13 @@ public:
 		return video;
 	}
 
-	int GetFoundParticles() const
+	RendererStats GetStats() const
 	{
-		return foundParticles;
+		return stats;
 	}
 
 	const RenderableSimulation *sim = nullptr;
 
-	struct GradientStop
-	{
-		RGB color;
-		float point;
-
-		bool operator <(const GradientStop &other) const;
-	};
-	static std::vector<RGB> Gradient(std::vector<GradientStop> stops, int resolution);
 	static std::unique_ptr<VideoBuffer> WallIcon(int wallID, Vec2<int> size);
 	static const std::vector<RenderPreset> renderModePresets;
 

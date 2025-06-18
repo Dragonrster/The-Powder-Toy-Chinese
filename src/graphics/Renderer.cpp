@@ -1,8 +1,11 @@
 #include "Renderer.h"
+#include "Gradient.h"
 #include "Misc.h"
 #include "VideoBuffer.h"
+#include "RasterDrawMethodsImpl.h"
 #include "common/tpt-rand.h"
 #include "common/tpt-compat.h"
+#include "gui/game/RenderPreset.h"
 #include "simulation/Simulation.h"
 #include "simulation/ElementGraphics.h"
 #include "simulation/ElementClasses.h"
@@ -10,6 +13,7 @@
 #include "simulation/gravity/Gravity.h"
 #include "simulation/orbitalparts.h"
 #include <cmath>
+#include <algorithm>
 
 void Renderer::RenderBackground()
 {
@@ -261,7 +265,7 @@ void Renderer::render_parts()
 					BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
 			}
 	}
-	foundParticles = 0;
+	stats.foundParticles = 0;
 	for(i = 0; i<=sim->parts.lastActiveIndex; i++) {
 		if (sim->parts[i].type && sim->parts[i].type >= 0 && sim->parts[i].type < PT_NUM) {
 			t = sim->parts[i].type;
@@ -357,10 +361,8 @@ void Renderer::render_parts()
 				//Alter colour based on display mode
 				if(colorMode & COLOUR_HEAT)
 				{
-					constexpr float min_temp = MIN_TEMP;
-					constexpr float max_temp = MAX_TEMP;
 					firea = 255;
-					RGB color = heatTableAt(int((sim->parts[i].temp - min_temp) / (max_temp - min_temp) * 1024));
+					RGB color = heatTableAt(int((sim->parts[i].temp - stats.hdispLimitMin) / (stats.hdispLimitMax - stats.hdispLimitMin) * 1024));
 					firer = colr = color.Red;
 					fireg = colg = color.Green;
 					fireb = colb = color.Blue;
@@ -482,7 +484,7 @@ void Renderer::render_parts()
 					{
 						colr = firer = 255;
 						colg = fireg = colb = fireb = 0;
-						foundParticles++;
+						stats.foundParticles++;
 					}
 					else
 					{
@@ -576,7 +578,7 @@ void Renderer::render_parts()
 						legb = 255;
 					}
 
-					if (matchesFindingElement)
+					if (findingElement && !matchesFindingElement)
 					{
 						colr /= 10;
 						colg /= 10;
@@ -949,7 +951,7 @@ void Renderer::draw_air()
 			}
 			else if (displayMode & DISPLAY_AIRH)
 			{
-				c = RGB::Unpack(HeatToColour(hv[y][x]));
+				c = RGB::Unpack(HeatToColour(hv[y][x], stats.hdispLimitMin, stats.hdispLimitMax));
 				//c = RGB(clamp_flt(fabsf(vx[y][x]), 0.0f, 8.0f),//vx adds red
 				//	clamp_flt(hv[y][x], 0.0f, 1600.0f),//heat adds green
 				//	clamp_flt(fabsf(vy[y][x]), 0.0f, 8.0f)).Pack();//vy adds blue
@@ -1293,13 +1295,290 @@ void Renderer::render_fire()
 		}
 }
 
-int HeatToColour(float temp)
+int HeatToColour(float temp, float hdispLimitMin, float hdispLimitMax)
 {
-	constexpr float min_temp = MIN_TEMP;
-	constexpr float max_temp = MAX_TEMP;
-	RGB color = Renderer::heatTableAt(int((temp - min_temp) / (max_temp - min_temp) * 1024));
+	RGB color = Renderer::heatTableAt(int((temp - hdispLimitMin) / (hdispLimitMax - hdispLimitMin) * 1024));
 	color.Red   = uint8_t(color.Red   * 0.7f);
 	color.Green = uint8_t(color.Green * 0.7f);
 	color.Blue  = uint8_t(color.Blue  * 0.7f);
 	return color.Pack();
 }
+
+const std::vector<RenderPreset> Renderer::renderModePresets = {
+	{
+		"Alternative Velocity Display",
+		RENDER_EFFE | RENDER_BASC,
+		DISPLAY_AIRC,
+		0,
+	},
+	{
+		"Velocity Display",
+		RENDER_EFFE | RENDER_BASC,
+		DISPLAY_AIRV,
+		0,
+	},
+	{
+		"Pressure Display",
+		RENDER_EFFE | RENDER_BASC,
+		DISPLAY_AIRP,
+		0,
+	},
+	{
+		"Persistent Display",
+		RENDER_EFFE | RENDER_BASC,
+		DISPLAY_PERS,
+		0,
+	},
+	{
+		"Fire Display",
+		RENDER_FIRE | RENDER_SPRK | RENDER_EFFE | RENDER_BASC,
+		0,
+		0,
+	},
+	{
+		"Blob Display",
+		RENDER_FIRE | RENDER_SPRK | RENDER_EFFE | RENDER_BLOB,
+		0,
+		0,
+	},
+	{
+		"Heat Display",
+		RENDER_BASC,
+		DISPLAY_AIRH,
+		COLOUR_HEAT,
+	},
+	{
+		"Fancy Display",
+		RENDER_FIRE | RENDER_SPRK | RENDER_GLOW | RENDER_BLUR | RENDER_EFFE | RENDER_BASC,
+		DISPLAY_WARP,
+		0,
+	},
+	{
+		"Nothing Display",
+		RENDER_BASC,
+		0,
+		0,
+	},
+	{
+		"Heat Gradient Display",
+		RENDER_BASC,
+		0,
+		COLOUR_GRAD,
+	},
+	{
+		"Life Gradient Display",
+		RENDER_BASC,
+		0,
+		COLOUR_LIFE,
+	},
+	{
+		"Dynamic Heat Display",
+		RENDER_BASC,
+		DISPLAY_AIRH,
+		COLOUR_HEAT,
+		HdispLimitAuto{},
+		HdispLimitAuto{},
+	},
+};
+
+void Renderer::AdjustHdispLimit()
+{
+	stats.hdispLimitValid = false;
+	float autoHdispLimitMin = MAX_TEMP;
+	float autoHdispLimitMax = MIN_TEMP;
+	auto visit = [this, &autoHdispLimitMin, &autoHdispLimitMax](Vec2<int> point, float value) {
+		if (autoHdispLimitArea.Contains(point))
+		{
+			autoHdispLimitMin = std::min(autoHdispLimitMin, value);
+			autoHdispLimitMax = std::max(autoHdispLimitMax, value);
+			stats.hdispLimitValid = true;
+		}
+	};
+	if (std::holds_alternative<HdispLimitAuto>(wantHdispLimitMin) ||
+	    std::holds_alternative<HdispLimitAuto>(wantHdispLimitMax))
+	{
+		if (colorMode & COLOUR_HEAT)
+		{
+			auto &sd = SimulationData::CRef();
+			for (int i = 0; i <= sim->parts.lastActiveIndex; ++i)
+			{
+				auto t = sim->parts[i].type;
+				if (t > 0 && t < PT_NUM)
+				{
+					if (!sd.elements[t].HeatConduct)
+					{
+						continue;
+					}
+					auto nx = int(sim->parts[i].x + 0.5f);
+					auto ny = int(sim->parts[i].y + 0.5f);
+					visit({ nx, ny }, sim->parts[i].temp);
+				}
+			}
+		}
+		if (sim->aheat_enable && (displayMode & DISPLAY_AIR) && (displayMode & DISPLAY_AIRH))
+		{
+			auto *hv = sim->hv;
+			for (auto p : CELLS.OriginRect())
+			{
+				visit(p * CELL, hv[p.Y][p.X]);
+			}
+		}
+	}
+	stats.hdispLimitMin = autoHdispLimitMin;
+	stats.hdispLimitMax = autoHdispLimitMax;
+	if (auto *hdispLimitExplicit = std::get_if<HdispLimitExplicit>(&wantHdispLimitMin))
+	{
+		stats.hdispLimitMin = hdispLimitExplicit->value;
+	}
+	if (auto *hdispLimitExplicit = std::get_if<HdispLimitExplicit>(&wantHdispLimitMax))
+	{
+		stats.hdispLimitMax = hdispLimitExplicit->value;
+	}
+	if (std::isnan(stats.hdispLimitMin)) stats.hdispLimitMin = MIN_TEMP;
+	if (std::isnan(stats.hdispLimitMax)) stats.hdispLimitMax = MAX_TEMP;
+	stats.hdispLimitMax = std::clamp(stats.hdispLimitMax, MIN_TEMP, MAX_TEMP);
+	stats.hdispLimitMin = std::clamp(stats.hdispLimitMin, MIN_TEMP, stats.hdispLimitMax);
+}
+
+void Renderer::Clear()
+{
+	if(displayMode & DISPLAY_PERS)
+	{
+		std::copy(persistentVideo.begin(), persistentVideo.end(), video.RowIterator({ 0, 0 }));
+	}
+	else
+	{
+		std::fill_n(video.data(), WINDOWW * YRES, 0);
+	}
+	AdjustHdispLimit();
+}
+
+void Renderer::DrawBlob(Vec2<int> pos, RGB colour)
+{
+	BlendPixel(pos + Vec2{ +1,  0 }, colour.WithAlpha(112));
+	BlendPixel(pos + Vec2{ -1,  0 }, colour.WithAlpha(112));
+	BlendPixel(pos + Vec2{  0,  1 }, colour.WithAlpha(112));
+	BlendPixel(pos + Vec2{  0, -1 }, colour.WithAlpha(112));
+	BlendPixel(pos + Vec2{  1, -1 }, colour.WithAlpha(64));
+	BlendPixel(pos + Vec2{ -1, -1 }, colour.WithAlpha(64));
+	BlendPixel(pos + Vec2{  1,  1 }, colour.WithAlpha(64));
+	BlendPixel(pos + Vec2{ -1, +1 }, colour.WithAlpha(64));
+}
+
+float temp[CELL*3][CELL*3];
+float fire_alphaf[CELL*3][CELL*3];
+float glow_alphaf[11][11];
+float blur_alphaf[7][7];
+void Renderer::prepare_alpha(int size, float intensity)
+{
+	fireIntensity = intensity;
+	//TODO: implement size
+	int x,y,i,j;
+	float multiplier = 255.0f*fireIntensity;
+
+	memset(temp, 0, sizeof(temp));
+	for (x=0; x<CELL; x++)
+		for (y=0; y<CELL; y++)
+			for (i=-CELL; i<CELL; i++)
+				for (j=-CELL; j<CELL; j++)
+					temp[y+CELL+j][x+CELL+i] += expf(-0.1f*(i*i+j*j));
+	for (x=0; x<CELL*3; x++)
+		for (y=0; y<CELL*3; y++)
+			fire_alpha[y][x] = (int)(multiplier*temp[y][x]/(CELL*CELL));
+
+}
+
+std::vector<RGB> Renderer::flameTable;
+std::vector<RGB> Renderer::plasmaTable;
+std::vector<RGB> Renderer::heatTable;
+std::vector<RGB> Renderer::clfmTable;
+std::vector<RGB> Renderer::firwTable;
+static bool tablesPopulated = false;
+static std::mutex tablesPopulatedMx;
+void Renderer::PopulateTables()
+{
+	std::lock_guard g(tablesPopulatedMx);
+	if (!tablesPopulated)
+	{
+		tablesPopulated = true;
+		flameTable = Gradient({
+			{ 0x000000_rgb, 0.00f },
+			{ 0x60300F_rgb, 0.50f },
+			{ 0xDFBF6F_rgb, 0.90f },
+			{ 0xAF9F0F_rgb, 1.00f },
+		}, 200);
+		plasmaTable = Gradient({
+			{ 0x000000_rgb, 0.00f },
+			{ 0x301040_rgb, 0.25f },
+			{ 0x301060_rgb, 0.50f },
+			{ 0xAFFFFF_rgb, 0.90f },
+			{ 0xAFFFFF_rgb, 1.00f },
+		}, 200);
+		heatTable = Gradient({
+			{ 0x2B00FF_rgb, 0.00f },
+			{ 0x003CFF_rgb, 0.01f },
+			{ 0x00C0FF_rgb, 0.05f },
+			{ 0x00FFEB_rgb, 0.08f },
+			{ 0x00FF14_rgb, 0.19f },
+			{ 0x4BFF00_rgb, 0.25f },
+			{ 0xC8FF00_rgb, 0.37f },
+			{ 0xFFDC00_rgb, 0.45f },
+			{ 0xFF0000_rgb, 0.71f },
+			{ 0xFF00DC_rgb, 1.00f },
+		}, 1024);
+		clfmTable = Gradient({
+			{ 0x000000_rgb, 0.00f },
+			{ 0x0A0917_rgb, 0.10f },
+			{ 0x19163C_rgb, 0.20f },
+			{ 0x28285E_rgb, 0.30f },
+			{ 0x343E77_rgb, 0.40f },
+			{ 0x49769A_rgb, 0.60f },
+			{ 0x57A0B4_rgb, 0.80f },
+			{ 0x5EC4C6_rgb, 1.00f },
+		}, 200);
+		firwTable = Gradient({
+			{ 0xFF00FF_rgb, 0.00f },
+			{ 0x0000FF_rgb, 0.20f },
+			{ 0x00FFFF_rgb, 0.40f },
+			{ 0x00FF00_rgb, 0.60f },
+			{ 0xFFFF00_rgb, 0.80f },
+			{ 0xFF0000_rgb, 1.00f },
+		}, 200);
+	}
+}
+
+Renderer::Renderer()
+{
+	PopulateTables();
+
+	memset(fire_r, 0, sizeof(fire_r));
+	memset(fire_g, 0, sizeof(fire_g));
+	memset(fire_b, 0, sizeof(fire_b));
+
+	//Set defauly display modes
+	prepare_alpha(CELL, 1.0f);
+	ClearAccumulation();
+}
+
+void Renderer::ClearAccumulation()
+{
+	std::fill(&fire_r[0][0], &fire_r[0][0] + NCELL, 0);
+	std::fill(&fire_g[0][0], &fire_g[0][0] + NCELL, 0);
+	std::fill(&fire_b[0][0], &fire_b[0][0] + NCELL, 0);
+	std::fill(persistentVideo.begin(), persistentVideo.end(), 0);
+}
+
+void Renderer::ApplySettings(const RendererSettings &newSettings)
+{
+	if (!(newSettings.renderMode & FIREMODE) && (renderMode & FIREMODE))
+	{
+		ClearAccumulation();
+	}
+	if (!(newSettings.displayMode & DISPLAY_PERS) && (displayMode & DISPLAY_PERS))
+	{
+		ClearAccumulation();
+	}
+	static_cast<RendererSettings &>(*this) = newSettings;
+}
+
+template struct RasterDrawMethods<Renderer>;

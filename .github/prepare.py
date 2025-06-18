@@ -13,40 +13,72 @@ def set_output(key, value):
 	with open(os.getenv('GITHUB_OUTPUT'), 'a') as f:
 		f.write(f"{key}={value}\n")
 
+# 获取当前日期
+current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+
 match_stable     = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)', ref)
 match_beta       = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)b', ref)
 match_snapshot   = re.fullmatch(r'refs/tags/snapshot-([0-9]+)', ref)
 match_tptlibsdev = re.fullmatch(r'refs/heads/tptlibsdev-(.*)', ref)
 match_alljobs    = re.fullmatch(r'refs/heads/(.*)-alljobs', ref)
+match_main       = re.fullmatch(r'refs/heads/main', ref)
 do_release       = False
 do_priority      = 10
+display_version_major = None
+display_version_minor = None
+build_num             = None
+
+# 获取版本号
+subprocess.run([ 'meson', 'setup', '-Dprepare=true', 'build-prepare' ], check = True)
+with open('build-prepare/meson-info/intro-projectinfo.json') as f:
+	display_version = json.loads(f.read())['version']
+	display_version_split = display_version.split('-')
+	if len(display_version_split) == 3:
+		display_version = display_version_split[0]
+display_version = display_version.split('.')
+
+# 设置版本号
+version = f"{display_version[0]}.{display_version[1]}.{display_version[2]}"
+set_output('version', version)
+
 if event_name == 'pull_request':
 	do_priority = 0
 if match_stable:
+	display_version_major = match_stable.group(1)
+	display_version_minor = match_stable.group(2)
+	build_num = match_stable.group(3)
 	release_type = 'stable'
-	release_name = 'v%s.%s.%s' % (match_stable.group(1), match_stable.group(2), match_stable.group(3))
+	release_name = f'v{display_version_major}.{display_version_minor}.{build_num} ({current_date})'
 	do_release = True
 	do_priority = -5
 elif match_beta:
+	display_version_major = match_beta.group(1)
+	display_version_minor = match_beta.group(2)
+	build_num = match_beta.group(3)
 	release_type = 'beta'
-	release_name = 'v%s.%s.%sb' % (match_beta.group(1), match_beta.group(2), match_beta.group(3))
+	release_name = f'v{display_version_major}.{display_version_minor}.{build_num}b ({current_date})'
 	do_release = True
 	do_priority = -5
 elif match_snapshot:
+	build_num = match_snapshot.group(1)
 	release_type = 'snapshot'
-	release_name = 'snapshot-%s' % match_snapshot.group(1)
+	release_name = f'snapshot-{build_num} ({current_date})'
 	do_release = True
 	do_priority = -5
 elif match_tptlibsdev:
+	branch = match_tptlibsdev.group(1)
 	release_type = 'tptlibsdev'
-	release_name = 'tptlibsdev-%s' % match_tptlibsdev.group(1)
+	release_name = f'tptlibsdev-{branch} ({current_date})'
 	do_priority = 0
 else:
 	release_type = 'dev'
-	release_name = 'dev'
-	if match_alljobs:
+	release_name = f'dev-v{display_version[0]}.{display_version[1]}.{display_version[2]} ({current_date})'
+	if match_alljobs or match_main:
 		do_priority = -5
-do_publish = publish_hostport and do_release
+		do_release = True
+
+# 设置 do_publish
+do_publish = do_release
 
 set_output('release_type', release_type)
 set_output('release_name', release_name)
@@ -56,13 +88,28 @@ build_options = {}
 with open('build-prepare/meson-info/intro-buildoptions.json') as f:
 	for option in json.loads(f.read()):
 		build_options[option['name']] = option['value']
+with open('build-prepare/meson-info/intro-projectinfo.json') as f:
+	display_version = json.loads(f.read())['version']
+	display_version_split = display_version.split('-')
+	if len(display_version_split) == 3:
+		display_version = display_version_split[0]
+display_version = display_version.split('.')
 
 if int(build_options['mod_id']) == 0 and os.path.exists('.github/mod_id.txt'):
 	with open('.github/mod_id.txt') as f:
 		build_options['mod_id'] = f.read()
+mod_id = int(build_options['mod_id'])
+
+if mod_id == 0:
+	if display_version_major:
+		assert(display_version_major == display_version[0])
+	if display_version_minor:
+		assert(display_version_minor == display_version[1])
+	if build_num:
+		assert(build_num == display_version[2])
 
 steam_builds = False
-if int(build_options['mod_id']) == 0:
+if mod_id == 0:
 	if release_type == 'stable':
 		steam_builds = True
 	elif release_type == 'beta':
@@ -83,7 +130,7 @@ if int(build_options['mod_id']) == 0:
 		build_options['app_exe'    ] += 'dev'
 		build_options['app_id'     ] += 'dev'
 
-set_output('mod_id'     , build_options['mod_id'     ])
+set_output('mod_id'     , str(mod_id))
 set_output('app_name'   , build_options['app_name'   ])
 set_output('app_comment', build_options['app_comment'])
 set_output('app_exe'    , build_options['app_exe'    ])
@@ -116,24 +163,24 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 #	(  'x86_64',    'windows',      'mingw',  'static',   'linux', 'ubuntu-22.04',     '',       'archive',    '.dbg',         None,                     None, 'release',       10, False ), # ubuntu-22.04 doesn't have windows TLS headers somehow and I haven't yet figured out how to get them; worse, it's a different toolchain
 #	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None,   'debug',       10, False ), # ubuntu-22.04 doesn't have ucrt64-capable mingw >_>
 #	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None, 'release',       10, False ), # ubuntu-22.04 doesn't have ucrt64-capable mingw >_>
-	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
-	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2019', '.exe',       'archive',    '.dbg',         None,                     None, 'release',       10, False ),
-	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
-	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None, 'release',       10,  True ),
-	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
-	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',       'publish',    '.pdb',         None, 'x86_64-win-msvc-static', 'release',       10, False ),
-	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',       'publish',    '.pdb',      'steam', 'x86_64-win-msvc-static', 'release',       -5, False ), # priority = -5: steam build
-	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
-#	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,  'backendvs',                     None,   'debug',        0, False ), # priority = 0: backend=vs build
-	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None, 'release',       10, False ),
-	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
-	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',       'publish',    '.pdb',         None,   'i686-win-msvc-static', 'release',       10, False ),
-	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
-	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None, 'release',       10, False ),
-	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
-	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2019', '.exe',       'publish',    '.pdb',         None,  'arm64-win-msvc-static', 'release',       10, False ),
-	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
-	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2019', '.exe',         'check',      None,         None,                     None, 'release',       10, False ),
+	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
+	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2022', '.exe',       'archive',    '.dbg',         None,                     None, 'release',       10, False ),
+	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
+	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None, 'release',       10,  True ),
+	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
+	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',       'publish',    '.pdb',         None, 'x86_64-win-msvc-static', 'release',       10, False ),
+	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',       'publish',    '.pdb',      'steam', 'x86_64-win-msvc-static', 'release',       -5, False ), # priority = -5: steam build
+	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
+#	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,  'backendvs',                     None,   'debug',        0, False ), # priority = 0: backend=vs build
+	(  'x86_64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None, 'release',       10, False ),
+	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
+	(     'x86',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',       'publish',    '.pdb',         None,   'i686-win-msvc-static', 'release',       10, False ),
+	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
+	(     'x86',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None, 'release',       10, False ),
+	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
+	( 'aarch64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',       'publish',    '.pdb',         None,  'arm64-win-msvc-static', 'release',       10, False ),
+	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
+	( 'aarch64',    'windows',       'msvc', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None, 'release',       10, False ),
 	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
 	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',       'publish',      None,         None,  'x86_64-mac-gcc-static', 'release',       10, False ), # I have no idea how to separate debug info on macos
 	(  'x86_64',     'darwin',      'macos',  'static',  'darwin',     'macos-13', '.dmg',       'publish',      None,      'steam',  'x86_64-mac-gcc-static', 'release',       -5, False ), # priority = -5: steam build, see above regarding debug info

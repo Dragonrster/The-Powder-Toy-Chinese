@@ -1,5 +1,18 @@
 conf_data = configuration_data()
 
+upstream_version = meson.project_version()
+upstream_version_components = upstream_version.split('-')
+if upstream_version_components.length() > 1
+	upstream_version = upstream_version_components[upstream_version_components.length() - 1]
+endif
+display_version = upstream_version
+override_display_version = get_option('override_display_version')
+if override_display_version != ''
+	display_version = override_display_version
+endif
+display_version = display_version.split('.')
+upstream_version = upstream_version.split('.')
+
 app_id = get_option('app_id')
 mod_id = get_option('mod_id')
 is_snapshot = get_option('snapshot')
@@ -11,12 +24,12 @@ conf_data.set('MOD_ID', mod_id)
 conf_data.set('DEBUG', is_debug.to_string())
 conf_data.set('MOD', is_mod.to_string())
 conf_data.set('SNAPSHOT', is_snapshot.to_string())
-conf_data.set('DISPLAY_VERSION_MAJOR', get_option('display_version_major'))
-conf_data.set('DISPLAY_VERSION_MINOR', get_option('display_version_minor'))
-conf_data.set('BUILD_NUM', get_option('build_num'))
-conf_data.set('UPSTREAM_VERSION_MAJOR', get_option('upstream_version_major'))
-conf_data.set('UPSTREAM_VERSION_MINOR', get_option('upstream_version_minor'))
-conf_data.set('UPSTREAM_BUILD_NUM', get_option('upstream_build_num'))
+conf_data.set('DISPLAY_VERSION_MAJOR', display_version[0].to_int())
+conf_data.set('DISPLAY_VERSION_MINOR', display_version[1].to_int())
+conf_data.set('BUILD_NUM', display_version[2].to_int())
+conf_data.set('UPSTREAM_VERSION_MAJOR', upstream_version[0].to_int())
+conf_data.set('UPSTREAM_VERSION_MINOR', upstream_version[1].to_int())
+conf_data.set('UPSTREAM_BUILD_NUM', upstream_version[2].to_int())
 conf_data.set('MANIFEST_COPYRIGHT', get_option('manifest_copyright'))
 conf_data.set('MANIFEST_MACOS_MIN_VER', get_option('manifest_macos_min_ver'))
 conf_data.set('MANIFEST_DATE', get_option('manifest_date'))
@@ -190,46 +203,42 @@ subdir('resampler')
 subdir('simulation')
 subdir('tasks')
 
-powder_files += common_files
-render_files += common_files
-font_files += common_files
-
-simulation_elem_defs = []
+element_numbers_x = []
 foreach elem_name_id : simulation_elem_ids
-	simulation_elem_defs += 'ELEMENT_DEFINE(' + elem_name_id[0] + ', ' + elem_name_id[1].to_string() + ');'
+	element_numbers_x += 'X(@0@, @1@) \\'.format(elem_name_id[0], elem_name_id[1])
 endforeach
-elements_conf_data = configuration_data()
-elements_conf_data.set('element_defs', '\n'.join(simulation_elem_defs))
 configure_file(
 	input: 'simulation/ElementNumbers.template.h',
 	output: 'ElementNumbers.h',
-	configuration: elements_conf_data
+	configuration: configuration_data({
+		'element_numbers': '\n\t'.join(element_numbers_x),
+	}),
 )
 
 if platform_clipboard
-	clipboard_impl_defs = []
+	clipboard_impls_x = []
 	foreach impl_subsys_factory : clipboard_impl_factories
-		clipboard_impl_defs += 'IMPL_DEFINE(' + impl_subsys_factory[0] + ', ' + impl_subsys_factory[1] + ')'
+		clipboard_impls_x += 'X(@0@, @1@) \\'.format(impl_subsys_factory[0], impl_subsys_factory[1])
 	endforeach
-	clipboard_impls_data = configuration_data()
-	clipboard_impls_data.set('impl_defs', '\n'.join(clipboard_impl_defs))
 	configure_file(
 		input: 'common/clipboard/ClipboardImpls.template.h',
 		output: 'ClipboardImpls.h',
-		configuration: clipboard_impls_data
+		configuration: configuration_data({
+			'clipboard_impls': '\n\t'.join(clipboard_impls_x),
+		}),
 	)
 endif
 
-simulation_tool_defs = []
+tool_numbers_x = []
 foreach tool_name_id : simulation_tool_ids
-	simulation_tool_defs += 'TOOL_DEFINE(' + tool_name_id[0] + ', ' + tool_name_id[1].to_string() + ');'
+	tool_numbers_x += 'X(@0@, @1@) \\'.format(tool_name_id[0], tool_name_id[1])
 endforeach
-tools_conf_data = configuration_data()
-tools_conf_data.set('tool_defs', '\n'.join(simulation_tool_defs))
 configure_file(
 	input: 'simulation/ToolNumbers.template.h',
 	output: 'ToolNumbers.h',
-	configuration: tools_conf_data
+	configuration: configuration_data({
+		'tool_numbers': '\n\t'.join(tool_numbers_x),
+	}),
 )
 
 configure_file(

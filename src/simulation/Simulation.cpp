@@ -8,6 +8,7 @@
 #include "client/GameSave.h"
 #include "common/tpt-compat.h"
 #include "common/tpt-rand.h"
+#include "common/Defer.h"
 #include "gui/game/Brush.h"
 #include "elements/EMP.h"
 #include "elements/LOLZ.h"
@@ -78,6 +79,11 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 		}
 	};
 
+	auto oldPrettyPowders = pretty_powder;
+	pretty_powder = false;
+	Defer restorePrettyPowders([this, oldPrettyPowders]() {
+		pretty_powder = oldPrettyPowders;
+	});
 	std::map<unsigned int, unsigned int> soapList;
 	for (int n = 0; n < NPART && n < save->particlesCount; n++)
 	{
@@ -1192,7 +1198,7 @@ int Simulation::try_move(int i, int x, int y, int nx, int ny)
 			if (rt == PT_COAL || rt == PT_BCOL)
 				parts[ID(r)].temp = parts[i].temp;
 
-			if (rt < PT_NUM && elements[rt].HeatConduct && (rt!=PT_HSWC||parts[ID(r)].life==10) && rt!=PT_FILT)
+			if (rt < PT_NUM && !IsHeatInsulator(parts[ID(r)]) && rt != PT_FILT)
 				parts[i].temp = parts[ID(r)].temp = restrict_flt((parts[ID(r)].temp+parts[i].temp)/2, MIN_TEMP, MAX_TEMP);
 		}
 		else if ((parts[i].type==PT_NEUT || parts[i].type==PT_ELEC) && (rt==PT_CLNE || rt==PT_PCLN || rt==PT_BCLN || rt==PT_PBCN))
@@ -2099,7 +2105,7 @@ Simulation::PlanMoveResult Simulation::PlanMove(Sim &sim, int i, int x, int y)
 	auto vx = parts[i].vx;
 	auto vy = parts[i].vy;
 	auto mv = fmaxf(fabsf(vx), fabsf(vy));
-	if (mv < ISTP)
+	if (mv < ISTP || std::isnan(mv))
 	{
 		clear_x = x;
 		clear_y = y;
@@ -2197,6 +2203,11 @@ Simulation::PlanMoveResult Simulation::PlanMove(Sim &sim, int i, int x, int y)
 
 template
 Simulation::PlanMoveResult Simulation::PlanMove<false, const Simulation>(const Simulation &sim, int i, int x, int y);
+
+bool Simulation::IsHeatInsulator(Particle p) const
+{
+	return SimulationData::CRef().elements[p.type].HeatConduct == 0 || (p.type == PT_HSWC && p.life != 10) || ((p.type == PT_PIPE || p.type == PT_PPIP) && (p.tmp & PFLAG_CAN_CONDUCT) == 0);
+}
 
 void Simulation::UpdateParticles(int start, int end)
 {
@@ -2355,7 +2366,7 @@ void Simulation::UpdateParticles(int start, int end)
 				//heat transfer code
 				auto h_count = 0;
 				bool cond;
-				cond = t && (t!=PT_HSWC||parts[i].life==10) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250);
+				cond = t && !IsHeatInsulator(parts[i]) && rng.chance(int(elements[t].HeatConduct*gel_scale), 250);
 
 				if (cond)
 				{
@@ -2372,24 +2383,43 @@ void Simulation::UpdateParticles(int start, int end)
 					{
 						surround_hconduct[j] = i;
 						auto r = surround[j];
+
 						if (!r)
 							continue;
+
 						auto rt = TYP(r);
-						if (rt && elements[rt].HeatConduct && (rt!=PT_HSWC||parts[ID(r)].life==10)
-						        && (t!=PT_FILT||(rt!=PT_BRAY&&rt!=PT_BIZR&&rt!=PT_BIZRG))
-						        && (rt!=PT_FILT||(t!=PT_BRAY&&t!=PT_PHOT&&t!=PT_BIZR&&t!=PT_BIZRG))
-						        && (t!=PT_ELEC||rt!=PT_DEUT)
-						        && (t!=PT_DEUT||rt!=PT_ELEC)
-						        && (t!=PT_HSWC || rt!=PT_FILT || parts[i].tmp != 1)
-						        && (t!=PT_FILT || rt!=PT_HSWC || parts[ID(r)].tmp != 1))
+
+						if (!rt || IsHeatInsulator(parts[ID(r)])
+						        || (t == PT_FILT && (rt == PT_BRAY || rt == PT_BIZR || rt == PT_BIZRG))
+						        || (rt == PT_FILT && (t == PT_BRAY || t == PT_PHOT || t == PT_BIZR || t == PT_BIZRG))
+						        || (t == PT_ELEC && rt == PT_DEUT)
+						        || (t == PT_DEUT && rt == PT_ELEC)
+						        || (t == PT_HSWC && rt == PT_FILT && parts[i].tmp == 1)
+						        || (t == PT_FILT && rt == PT_HSWC && parts[ID(r)].tmp == 1))
+							continue;
+
+						surround_hconduct[j] = ID(r);
+						c_heat += parts[ID(r)].temp;
+
+						if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
 						{
-							surround_hconduct[j] = ID(r);
-							c_heat += parts[ID(r)].temp;
-							h_count++;
+							c_heat += parts[ID(r)].temp; // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
+						}
+
+						h_count++;
+
+						if ((rt == PT_PIPE || rt == PT_PPIP) && parts[ID(r)].ctype != 0)
+						{
+							h_count++; // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
 						}
 					}
 					float pt = R_TEMP;
-					pt = (c_heat+parts[i].temp)/(h_count+1);
+
+					if ((t == PT_PIPE || t == PT_PPIP) && parts[i].ctype != 0)
+						pt = (c_heat+parts[i].temp*2.0f)/(h_count+2); // double count the particle to account for the heat capacity of both the PIPE/PPIP and its contents
+					else
+						pt = (c_heat+parts[i].temp)/(h_count+1);
+
 					pt = parts[i].temp = restrict_flt(pt, MIN_TEMP, MAX_TEMP);
 					for (auto j=0; j<8; j++)
 					{
@@ -2469,6 +2499,19 @@ void Simulation::UpdateParticles(int start, int end)
 							else
 								t = PT_LAVA;
 						}
+						else if (t == PT_RIME)
+						{
+							if (parts[i].tmp > 5)
+							{
+								t = PT_ACID;
+								parts[i].life = 25 + 5 * parts[i].tmp;
+								parts[i].tmp = 0;
+							}
+							else
+							{
+								t = PT_WATR;
+							}
+						}
 						else
 							s = 0;
 					}
@@ -2542,7 +2585,7 @@ void Simulation::UpdateParticles(int start, int end)
 					{
 						if (t==PT_ICEI || t==PT_LAVA || t==PT_SNOW)
 							parts[i].ctype = parts[i].type;
-						if (!(t==PT_ICEI && parts[i].ctype==PT_FRZW))
+						if (!(t==PT_ICEI && parts[i].ctype==PT_FRZW) && t!=PT_ACID)
 							parts[i].life = 0;
 						if (t == PT_FIRE)
 						{
@@ -2895,12 +2938,7 @@ killed:
 
 					if ((TYP(r)==PT_PIPE || TYP(r) == PT_PPIP) && !TYP(parts[ID(r)].ctype))
 					{
-						parts[ID(r)].ctype =  parts[i].type;
-						parts[ID(r)].temp = parts[i].temp;
-						parts[ID(r)].tmp2 = parts[i].life;
-						parts[ID(r)].tmp3 = parts[i].tmp;
-						parts[ID(r)].tmp4 = parts[i].ctype;
-						kill_part(i);
+						Element_PIPE_transfer_part_to_pipe(parts+i, parts+(ID(r)));
 						continue;
 					}
 
@@ -3595,7 +3633,7 @@ void Simulation::BeforeSim()
 			air->update_airh();
 
 		DispatchNewtonianGravity();
-		// gravIn is now potentially garbage, which is ok, we were going to clear it for the frame anyway
+		// gravIn::mass is now potentially garbage, which is ok, we were going to clear it for the frame anyway
 		for (auto p : gravIn.mass.Size().OriginRect())
 		{
 			gravIn.mass[p] = 0.f;

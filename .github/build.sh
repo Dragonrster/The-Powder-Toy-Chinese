@@ -144,7 +144,7 @@ if [[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == windows-msvc ]]; then
 	case $BSH_HOST_ARCH in
 	x86_64)  vs_env_arch=x64      ; vcvars_ver=14.29;;
 	x86)     vs_env_arch=x86      ; vcvars_ver=14.29;;
-	aarch64) vs_env_arch=x64_arm64; vcvars_ver=14.29;;
+	aarch64) vs_env_arch=x64_arm64; vcvars_ver=14.43;;
 	esac
 	VS_ENV_PARAMS=$vs_env_arch$'\t'-vcvars_ver=${BSH_VS_TOOLSET-$vcvars_ver}
 	. ./.github/vs-env.sh
@@ -300,19 +300,14 @@ if [[ $stable_or_beta == yes ]]; then
 	xyz=$(echo $RELEASE_NAME | cut -d 'v' -f 2 | cut -d 'b' -f 1) # $RELEASE_NAME is vX.Y.Z or vX.Y.Zb
 	display_version_major=$(echo $xyz | cut -d '.' -f 1)
 	display_version_minor=$(echo $xyz | cut -d '.' -f 2)
-	build_num=$(echo $xyz | cut -d '.' -f 3)
+	build_num=$(            echo $xyz | cut -d '.' -f 3)
 	if [[ $MOD_ID != 0 ]]; then
-		meson_configure+=$'\t'-Ddisplay_version_major=$display_version_major
-		meson_configure+=$'\t'-Ddisplay_version_minor=$display_version_minor
-		meson_configure+=$'\t'-Dbuild_num=$build_num
+		meson_configure+=$'\t'-Doverride_display_version="$display_version_major.$display_version_minor.$build_num"
 	fi
 fi
 if [[ $RELEASE_TYPE == snapshot ]]; then
 	build_num=$(echo $RELEASE_NAME | cut -d '-' -f 2) # $RELEASE_NAME is snapshot-X
 	meson_configure+=$'\t'-Dsnapshot=true
-	if [[ $MOD_ID != 0 ]]; then
-		meson_configure+=$'\t'-Dbuild_num=$build_num
-	fi
 fi
 if [[ $RELEASE_TYPE == snapshot ]] && [[ $MOD_ID != 0 ]]; then
 	>&2 echo "mods and snapshots do not mix"
@@ -419,30 +414,9 @@ meson_configure+=$'\t'-Dc_args=[$c_args]
 meson_configure+=$'\t'-Dcpp_args=[$c_args]
 meson_configure+=$'\t'-Dc_link_args=[$c_link_args]
 meson_configure+=$'\t'-Dcpp_link_args=[$c_link_args]
+
 $meson_configure build
 cd build
-
-function verify_version_component() {
-	local key=$1
-	local expected=$2
-	local actual=$(jq -r '.[] | select(.name == "'$key'") | .value' < meson-info/intro-buildoptions.json)
-	if [[ $actual != $expected ]]; then
-		>&2 echo "meson option $key expected to be $expected, is instead $actual"
-		exit 1
-	fi
-}
-if [[ $stable_or_beta == yes ]] && [[ $MOD_ID == 0 ]]; then
-	verify_version_component display_version_major $display_version_major
-	verify_version_component display_version_minor $display_version_minor
-	verify_version_component build_num $build_num
-	verify_version_component upstream_version_major $display_version_major
-	verify_version_component upstream_version_minor $display_version_minor
-	verify_version_component upstream_build_num $build_num
-fi
-if [[ $RELEASE_TYPE == snapshot ]] && [[ $MOD_ID == 0 ]]; then
-	verify_version_component build_num $build_num
-	verify_version_component upstream_build_num $build_num
-fi
 
 strip=strip
 objcopy=objcopy

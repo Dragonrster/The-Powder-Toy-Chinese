@@ -170,12 +170,6 @@ LuaScriptInterface::LuaScriptInterface(GameController *newGameController, GameMo
 		lua_setfield(L, -2, "randomseed");
 		lua_pop(L, 1);
 	}
-	for (auto &ref : gameControllerEventHandlers)
-	{
-		lua_newtable(L);
-		ref.Assign(L, -1);
-		lua_pop(L, 1);
-	}
 	auto compatSpan = compat_lua.AsCharSpan();
 	if (luaL_loadbuffer(L, compatSpan.data(), compatSpan.size(), "@[built-in compat.lua]") || tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
 	{
@@ -202,14 +196,26 @@ void LuaScriptInterface::InitCustomCanMove()
 void CommandInterface::Init()
 {
 	auto *lsi = static_cast<LuaScriptInterface *>(this);
-	auto *L = lsi->L;
-	if (Platform::FileExists("autorun.lua"))
+	if (lsi->Autorun())
 	{
-		if(luaL_loadfile(L, "autorun.lua") || tpt_lua_pcall(L, 0, 0, 0, eventTraitNone))
-			Log(CommandInterface::LogError, LuaGetError());
-		else
-			Log(CommandInterface::LogWarning, ByteString("已載入 autorun.lua").FromUtf8());
+		lua_pop(lsi->L, 1);
 	}
+}
+
+int LuaScriptInterface::Autorun()
+{
+	if (!Platform::FileExists("autorun.lua"))
+	{
+		lua_pushliteral(L, "autorun.lua not found");
+		return 1;
+	}
+	if (luaL_loadfile(L, "autorun.lua") || tpt_lua_pcall(L, 0, 0, 0, eventTraitInterface))
+	{
+		Log(CommandInterface::LogError, LuaGetError());
+		return 1;
+	}
+	Log(CommandInterface::LogWarning, ByteString("已加载 autorun.lua").FromUtf8());
+	return 0;
 }
 
 void CommandInterface::SetToolIndex(ByteString identifier, std::optional<int> index)
@@ -313,10 +319,12 @@ void LuaSetParticleProperty(lua_State *L, int particleID, StructProperty propert
 	auto *sim = lsi->sim;
 	if (property.Name == "type")
 	{
+		lsi->AssertMonopartAccessEvent(-1);
 		sim->part_change_type(particleID, int(sim->parts[particleID].x+0.5f), int(sim->parts[particleID].y+0.5f), luaL_checkinteger(L, 3));
 	}
 	else if (property.Name == "x" || property.Name == "y")
 	{
+		lsi->AssertMonopartAccessEvent(-1);
 		float val = luaL_checknumber(L, 3);
 		float x = sim->parts[particleID].x;
 		float y = sim->parts[particleID].y;
@@ -326,6 +334,7 @@ void LuaSetParticleProperty(lua_State *L, int particleID, StructProperty propert
 	}
 	else
 	{
+		lsi->AssertMonopartAccessEvent(particleID);
 		LuaSetProperty(L, property, propertyAddress, 3);
 	}
 }
@@ -399,62 +408,94 @@ bool CommandInterface::HandleEvent(const GameControllerEvent &event)
 {
 	auto *lsi = static_cast<LuaScriptInterface *>(this);
 	auto *L = lsi->L;
+	auto eventType = int(event.index());
+	auto &list = lsi->gameControllerEventHandlers[eventType];
+	auto it = list.begin();
+	auto end = list.end();
+	lsi->currentEventHandlerIts.push_back(&it);
 	bool cont = true;
-	lsi->gameControllerEventHandlers[event.index()].Push(L);
-	int len = lua_objlen(L, -1);
-	for (int i = 1; i <= len && cont; i++)
+	while (it != end && cont)
 	{
-		lua_rawgeti(L, -1, i);
+		it->Push(L);
+		++it;
+		lua_pushvalue(L, -1);
 		int numArgs = pushGameControllerEvent(L, event);
 		int callret = tpt_lua_pcall(L, numArgs, 1, 0, std::visit([](auto &event) {
 			return event.traits;
 		}, event));
 		if (callret)
 		{
-			if (LuaGetError() == "Error: Script not responding")
-			{
-				for (int j = i; j <= len - 1; j++)
-				{
-					lua_rawgeti(L, -2, j + 1);
-					lua_rawseti(L, -3, j);
-				}
-				lua_pushnil(L);
-				lua_rawseti(L, -3, len);
-				i--;
-			}
-			Log(CommandInterface::LogError, LuaGetError());
+			auto err = LuaGetError();
 			lua_pop(L, 1);
+			Log(CommandInterface::LogError, err);
+			if (err == "Error: Script not responding")
+			{
+				lsi->RemoveEventHandler(eventType, -1);
+			}
 		}
 		else
 		{
 			if (!lua_isnoneornil(L, -1))
+			{
 				cont = lua_toboolean(L, -1);
+			}
 			lua_pop(L, 1);
 		}
-		len = lua_objlen(L, -1);
+		lua_pop(L, 1);
 	}
-	lua_pop(L, 1);
+	assert(lsi->currentEventHandlerIts.back() == &it);
+	lsi->currentEventHandlerIts.pop_back();
 	return cont;
 }
 
+void LuaScriptInterface::AddEventHandler(int eventType, int stackIndex)
+{
+	gameControllerEventHandlers[eventType].emplace_back().Assign(L, stackIndex);
+}
+
+void LuaScriptInterface::RemoveEventHandler(int eventType, int stackIndex)
+{
+	auto &list = gameControllerEventHandlers[eventType];
+	auto it = list.begin();
+	auto end = list.end();
+	lua_pushvalue(L, stackIndex);
+	while (it != end)
+	{
+		it->Push(L);
+		auto equal = lua_equal(L, -1, -2);
+		lua_pop(L, 1);
+		if (equal)
+		{
+			for (auto currentEventHandlerIt : currentEventHandlerIts)
+			{
+				if (*currentEventHandlerIt == it)
+				{
+					++*currentEventHandlerIt;
+				}
+			}
+			list.erase(it);
+			break;
+		}
+		++it;
+	}
+	lua_pop(L, 1);
+}
+
 template<size_t Index>
-std::enable_if_t<Index != std::variant_size_v<GameControllerEvent>, bool> HaveSimGraphicsEventHandlersHelper(lua_State *L, std::vector<LuaSmartRef> &gameControllerEventHandlers)
+std::enable_if_t<Index != std::variant_size_v<GameControllerEvent>, bool> HaveSimGraphicsEventHandlersHelper(const auto &gameControllerEventHandlers)
 {
 	if (std::variant_alternative_t<Index, GameControllerEvent>::traits & eventTraitHindersSrt)
 	{
-		gameControllerEventHandlers[Index].Push(L);
-		auto have = lua_objlen(L, -1) > 0;
-		lua_pop(L, 1);
-		if (have)
+		if (!gameControllerEventHandlers[Index].empty())
 		{
 			return true;
 		}
 	}
-	return HaveSimGraphicsEventHandlersHelper<Index + 1>(L, gameControllerEventHandlers);
+	return HaveSimGraphicsEventHandlersHelper<Index + 1>(gameControllerEventHandlers);
 }
 
 template<size_t Index>
-std::enable_if_t<Index == std::variant_size_v<GameControllerEvent>, bool> HaveSimGraphicsEventHandlersHelper(lua_State *L, std::vector<LuaSmartRef> &gameControllerEventHandlers)
+std::enable_if_t<Index == std::variant_size_v<GameControllerEvent>, bool> HaveSimGraphicsEventHandlersHelper(const auto &gameControllerEventHandlers)
 {
 	return false;
 }
@@ -470,13 +511,14 @@ bool CommandInterface::HaveSimGraphicsEventHandlers()
 			return true;
 		}
 	}
-	return HaveSimGraphicsEventHandlersHelper<0>(lsi->L, lsi->gameControllerEventHandlers);
+	return HaveSimGraphicsEventHandlersHelper<0>(lsi->gameControllerEventHandlers);
 }
 
 void CommandInterface::OnTick()
 {
 	auto *lsi = static_cast<LuaScriptInterface *>(this);
 	LuaMisc::Tick(lsi->L);
+	LuaHttp::Tick(lsi->L);
 	HandleEvent(TickEvent{});
 }
 
@@ -495,7 +537,15 @@ int CommandInterface::Command(String command)
 	else
 	{
 		int level = lua_gettop(L), ret = -1;
-		lsi->currentCommand = true;
+		lsi->gameModel->logSink = [this](String text) {
+			auto *lsi = static_cast<LuaScriptInterface *>(this);
+			auto lastError = GetLastError();
+			if (lsi->luacon_hasLastError)
+				lastError += "; ";
+			lastError += text;
+			SetLastError(lastError);
+			lsi->luacon_hasLastError = true;
+		};
 		if (lsi->lastCode.length())
 			lsi->lastCode += "\n";
 		lsi->lastCode += command;
@@ -519,7 +569,7 @@ int CommandInterface::Command(String command)
 		else
 		{
 			lsi->lastCode = "";
-			ret = tpt_lua_pcall(L, 0, LUA_MULTRET, 0, eventTraitNone);
+			ret = tpt_lua_pcall(L, 0, LUA_MULTRET, 0, eventTraitInterface);
 			if (ret)
 			{
 				lastError = LuaGetError();
@@ -552,7 +602,7 @@ int CommandInterface::Command(String command)
 
 			}
 		}
-		lsi->currentCommand = false;
+		lsi->gameModel->logSink = nullptr;
 		return ret;
 	}
 }
@@ -808,11 +858,6 @@ int tpt_lua_loadstring(lua_State *L, const ByteString &str)
 	return luaL_loadbuffer(L, str.data(), str.size(), str.data());
 }
 
-int tpt_lua_dostring(lua_State *L, const ByteString &str)
-{
-	return tpt_lua_loadstring(L, str) || tpt_lua_pcall(L, 0, LUA_MULTRET, 0, eventTraitNone);
-}
-
 bool tpt_lua_equalsString(lua_State *L, int index, const char *data, size_t size)
 {
 	return lua_isstring(L, index) && lua_objlen(L, index) == size && !memcmp(lua_tostring(L, index), data, size);
@@ -851,4 +896,3 @@ void CommandInterfaceDeleter::operator ()(CommandInterface *ptr) const
 {
 	delete static_cast<LuaScriptInterface *>(ptr);
 }
-

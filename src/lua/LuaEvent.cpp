@@ -5,16 +5,14 @@
 static int fregister(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int eventType = luaL_checkinteger(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
-	if (eventType < 0 || eventType >= int(lsi->gameControllerEventHandlers.size()))
+	if (eventType < 0 || eventType >= int(std::variant_size_v<GameControllerEvent>))
 	{
 		luaL_error(L, "Invalid event type: %i", lua_tointeger(L, 1));
 	}
-	lsi->gameControllerEventHandlers[eventType].Push(L);
-	auto length = lua_objlen(L, -1);
-	lua_pushvalue(L, 2);
-	lua_rawseti(L, -2, length + 1);
+	lsi->AddEventHandler(eventType, 2);
 	lua_pushvalue(L, 2);
 	return 1;
 }
@@ -22,31 +20,20 @@ static int fregister(lua_State *L)
 static int unregister(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int eventType = luaL_checkinteger(L, 1);
 	luaL_checktype(L, 2, LUA_TFUNCTION);
-	if (eventType < 0 || eventType >= int(lsi->gameControllerEventHandlers.size()))
+	if (eventType < 0 || eventType >= int(std::variant_size_v<GameControllerEvent>))
 	{
 		luaL_error(L, "Invalid event type: %i", lua_tointeger(L, 1));
 	}
-	lsi->gameControllerEventHandlers[eventType].Push(L);
-	auto length = lua_objlen(L, -1);
-	int skip = 0;
-	for (auto i = 1U; i <= length; ++i)
-	{
-		lua_rawgeti(L, -1, i);
-		if (!skip && lua_equal(L, -1, 2))
-		{
-			skip = 1;
-		}
-		lua_pop(L, 1);
-		lua_rawgeti(L, -1, i + skip);
-		lua_rawseti(L, -2, i);
-	}
+	lsi->RemoveEventHandler(eventType, 2);
 	return 0;
 }
 
 static int getModifiers(lua_State *L)
 {
+	GetLSI()->AssertInterfaceEvent();
 	lua_pushnumber(L, GetModifiers());
 	return 1;
 }

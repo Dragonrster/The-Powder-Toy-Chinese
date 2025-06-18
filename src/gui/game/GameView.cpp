@@ -225,7 +225,7 @@ GameView::GameView():
 	scrollBar->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(scrollBar);
 
-	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", ByteString("開啟雲沙盤,或按住Ctrl瀏覽本地沙盤").FromUtf8());  //Open
+	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", ByteString("打开云沙盘,或按住Ctrl浏览本地沙盘").FromUtf8());  //Open
 	searchButton->SetIcon(IconOpen);
 	currentX+=18;
 	searchButton->SetTogglable(false);
@@ -237,14 +237,14 @@ GameView::GameView():
 	} });
 	AddComponent(searchButton);
 
-	reloadButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", ByteString("重新載入沙盤").FromUtf8());
+	reloadButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", ByteString("重新加载沙盘").FromUtf8());
 	reloadButton->SetIcon(IconReload);
 	reloadButton->Appearance.Margin.Left+=2;
 	currentX+=18;
 	reloadButton->SetActionCallback({ [this] { c->ReloadSim(); }, [this] { c->OpenSavePreview(); } });
 	AddComponent(reloadButton);
 
-	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), ByteString("[未命沙盤]").FromUtf8(), "", "", 19);
+	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), ByteString("[未命沙盘]").FromUtf8(), "", "", 19);
 	saveSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveSimulationButton->SetIcon(IconSave);
 	currentX+=151;
@@ -265,7 +265,7 @@ GameView::GameView():
 	SetSaveButtonTooltips();
 	AddComponent(saveSimulationButton);
 
-	upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(39, 15), "", ByteString("贊").FromUtf8());
+	upVoteButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(39, 15), "", ByteString("赞").FromUtf8());
 	upVoteButton->SetIcon(IconVoteUp);
 	upVoteButton->Appearance.Margin.Top+=2;
 	upVoteButton->Appearance.Margin.Left+=2;
@@ -281,20 +281,20 @@ GameView::GameView():
 
 	ResetVoteButtons();
 
-	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(WINDOWW - 402, 15), ByteString("[無標籤]").FromUtf8(), ByteString("新增沙盤標籤").FromUtf8());
+	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(WINDOWW - 402, 15), ByteString("[无标签]").FromUtf8(), ByteString("添加沙盘标签").FromUtf8());
 	tagSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tagSimulationButton->SetIcon(IconTag);
 	//currentX+=252;
 	tagSimulationButton->SetActionCallback({ [this] { c->OpenTags(); } });
 	AddComponent(tagSimulationButton);
 
-	clearSimButton = new ui::Button(ui::Point(Size.X-159, Size.Y-16), ui::Point(17, 15), "", ByteString("新建沙盤(覆蓋一切)").FromUtf8());
+	clearSimButton = new ui::Button(ui::Point(Size.X-159, Size.Y-16), ui::Point(17, 15), "", ByteString("新建沙盘(覆盖一切)").FromUtf8());
 	clearSimButton->SetIcon(IconNew);
 	clearSimButton->Appearance.Margin.Left+=2;
 	clearSimButton->SetActionCallback({ [this] { c->ClearSim(); } });
 	AddComponent(clearSimButton);
 
-	loginButton = new SplitButton(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), ByteString("[登入]").FromUtf8(), ByteString("登入以儲存到雲伺服器").FromUtf8(), ByteString("編輯配置").FromUtf8(), 19);
+	loginButton = new SplitButton(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), ByteString("[登录]").FromUtf8(), ByteString("登录以保存到云服务器").FromUtf8(), ByteString("编辑配置").FromUtf8(), 19);
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	loginButton->SetIcon(IconLogin);
 	loginButton->SetSplitActionCallback({
@@ -303,7 +303,7 @@ GameView::GameView():
 	});
 	AddComponent(loginButton);
 
-	simulationOptionButton = new ui::Button(ui::Point(Size.X-48, Size.Y-16), ui::Point(15, 15), "", ByteString("設定").FromUtf8());
+	simulationOptionButton = new ui::Button(ui::Point(Size.X-48, Size.Y-16), ui::Point(15, 15), "", ByteString("设置").FromUtf8());
 	simulationOptionButton->SetIcon(IconSimulationSettings);
 	simulationOptionButton->Appearance.Margin.Left+=2;
 	simulationOptionButton->SetActionCallback({ [this] { c->OpenOptions(); } });
@@ -315,18 +315,18 @@ GameView::GameView():
 	displayModeButton->SetActionCallback({ [this] { c->OpenRenderOptions(); } });
 	AddComponent(displayModeButton);
 
-	pauseButton = new ui::Button(ui::Point(Size.X-16, Size.Y-16), ui::Point(15, 15), "", ByteString("暫停/繼續").FromUtf8());  //Pause
+	pauseButton = new ui::Button(ui::Point(Size.X-16, Size.Y-16), ui::Point(15, 15), "", ByteString("暂停/继续").FromUtf8());  //Pause
 	pauseButton->SetIcon(IconPause);
 	pauseButton->SetTogglable(true);
 	pauseButton->SetActionCallback({ [this] { c->SetPaused(pauseButton->GetToggleState()); } });
 	AddComponent(pauseButton);
 
-	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), 0xE065, ByteString("查詢元素").FromUtf8());
+	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), 0xE065, ByteString("查找元素").FromUtf8());
 	tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 	tempButton->SetActionCallback({ [this] { c->OpenElementSearch(); } });
 	AddComponent(tempButton);
 
-	colourPicker = new ui::Button(ui::Point((XRES/2)-8, YRES+1), ui::Point(16, 16), "", ByteString("選擇顏色").FromUtf8());
+	colourPicker = new ui::Button(ui::Point((XRES/2)-8, YRES+1), ui::Point(16, 16), "", ByteString("选择颜色").FromUtf8());
 	colourPicker->SetActionCallback({ [this] { c->OpenColourPicker(); } });
 }
 
@@ -416,7 +416,7 @@ void GameView::NotifyMenuListChanged(GameModel * sender)
 			tempString += menuList[i]->GetIcon();
 			String description = menuList[i]->GetDescription();
 			if (i == SC_FAVORITES && !Favorite::Ref().AnyFavorites())
-				description += ByteString("收藏夾(使用Ctrl+Shift+Click切操元素的收藏狀態)").FromUtf8();
+				description += ByteString("收藏夹(使用Ctrl+Shift+Click切操元素的收藏状态)").FromUtf8();
 			auto *tempButton = new MenuButton(ui::Point(WINDOWW-16, currentY), ui::Point(15, 15), tempString, description);
 			tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 			tempButton->menuID = i;
@@ -692,7 +692,7 @@ void GameView::NotifyColourPresetsChanged(GameModel * sender)
 	int i = 0;
 	for(std::vector<ui::Colour>::iterator iter = colours.begin(), end = colours.end(); iter != end; ++iter)
 	{
-		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", "", ByteString("預設裝飾").FromUtf8());
+		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", "", ByteString("预设装饰").FromUtf8());
 		tempButton->Appearance.BackgroundInactive = *iter;
 		tempButton->SetActionCallback({ [this, i, tempButton] {
 			c->SetActiveColourPreset(i);
@@ -747,15 +747,15 @@ void GameView::NotifyUserChanged(GameModel * sender)
 {
 	if(!sender->GetUser().UserID)
 	{
-		loginButton->SetText(ByteString("登入").FromUtf8());
+		loginButton->SetText(ByteString("登录").FromUtf8());
 		loginButton->SetShowSplit(false);
-		loginButton->SetRightToolTip(ByteString("登入到雲端伺服器").FromUtf8());
+		loginButton->SetRightToolTip(ByteString("登录到云端服务器").FromUtf8());
 	}
 	else
 	{
 		loginButton->SetText(sender->GetUser().Username.FromUtf8());
 		loginButton->SetShowSplit(true);
-		loginButton->SetRightToolTip(ByteString("編輯個人配置").FromUtf8());
+		loginButton->SetRightToolTip(ByteString("编辑个人配置").FromUtf8());
 	}
 	// saveSimulationButtonEnabled = sender->GetUser().ID;
 	saveSimulationButtonEnabled = true;
@@ -782,7 +782,7 @@ void GameView::NotifyInfoTipChanged(GameModel * sender)
 
 void GameView::ResetVoteButtons()
 {
-	upVoteButton->SetToolTip( ByteString("贊").FromUtf8());
+	upVoteButton->SetToolTip( ByteString("赞").FromUtf8());
 	downVoteButton->SetToolTip( ByteString("踩").FromUtf8());
 	upVoteButton->Appearance.BackgroundPulse = false;
 	downVoteButton->Appearance.BackgroundPulse = false;
@@ -881,12 +881,12 @@ void GameView::NotifySaveChanged(GameModel * sender)
 			}
 			else
 			{
-				tagSimulationButton->SetText(ByteString("無標籤").FromUtf8());
+				tagSimulationButton->SetText(ByteString("无标签").FromUtf8());
 			}
 		}
 		else
 		{
-			tagSimulationButton->SetText(ByteString("無標籤").FromUtf8());
+			tagSimulationButton->SetText(ByteString("无标签").FromUtf8());
 		}
 		currentSaveType = 1;
 		int saveID = sender->GetSave()->GetID();
@@ -908,13 +908,13 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 		downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 		tagSimulationButton->Enabled = false;
-		tagSimulationButton->SetText(ByteString("無標籤").FromUtf8());
+		tagSimulationButton->SetText(ByteString("无标签").FromUtf8());
 		currentSaveType = 2;
 	}
 	else
 	{
 		saveSimulationButton->SetShowSplit(false);
-		saveSimulationButton->SetText(ByteString("[未命名沙盤]").FromUtf8());
+		saveSimulationButton->SetText(ByteString("[未命名沙盘]").FromUtf8());
 		reloadButton->Enabled = false;
 		upVoteButton->Enabled = false;
 		upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
@@ -923,7 +923,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 		downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100),
 		tagSimulationButton->Enabled = false;
-		tagSimulationButton->SetText(ByteString("無標籤").FromUtf8());
+		tagSimulationButton->SetText(ByteString("无标签").FromUtf8());
 		currentSaveType = 0;
 	}
 	saveSimulationButton->Enabled = (saveSimulationButtonEnabled && saveReuploadAllowed) || ctrlBehaviour;
@@ -1348,7 +1348,7 @@ void GameView::BeginStampSelection()
 	selectMode = SelectStamp;
 	selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 	isMouseDown = false;
-	buttonTip = ByteString("\x0F\xEF\xEF\020單擊並拖動以指定要建立Stamp的區域(右鍵單擊=取消)").FromUtf8();
+	buttonTip = ByteString("\x0F\xEF\xEF\020单击并拖动以指定要创建Stamp的区域(右键单击=取消)").FromUtf8();
 	buttonTipShow = 120;
 }
 
@@ -1450,7 +1450,7 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		if (Client::Ref().GetAuthUser().UserElevation != User::ElevationNone && ctrl)
 		{
 			ByteString authorString = Client::Ref().GetAuthorInfo().toStyledString();
-			new InformationMessage( ByteString("儲存作者資訊").FromUtf8(), authorString.FromUtf8(), true);
+			new InformationMessage( ByteString("保存作者信息").FromUtf8(), authorString.FromUtf8(), true);
 		}
 		break;
 	case SDL_SCANCODE_R:
@@ -1558,7 +1558,7 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			selectMode = SelectCopy;
 			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 			isMouseDown = false;
-			buttonTip = ByteString("\x0F\xEF\xEF\020單擊並拖動以指定要複製的區域(右鍵單擊=取消)").FromUtf8();
+			buttonTip = ByteString("\x0F\xEF\xEF\020单击并拖动以指定要复制的区域(右键单击=取消)").FromUtf8();
 			buttonTipShow = 120;
 		}
 		break;
@@ -1568,7 +1568,7 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			selectMode = SelectCut;
 			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 			isMouseDown = false;
-			buttonTip = ByteString("\x0F\xEF\xEF\020單擊並拖動以指定要剪下複製的區域(右鍵單擊=取消)").FromUtf8();
+			buttonTip = ByteString("\x0F\xEF\xEF\020单击并拖动以指定要剪切复制的区域(右键单击=取消)").FromUtf8();
 			buttonTipShow = 120;
 		}
 		break;
@@ -1654,7 +1654,13 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 	}
 
 	if (shift && showDebug && key == '1')
+	{
 		c->LoadRenderPreset(10);
+	}
+	else if (shift && key == '6')
+	{
+		c->LoadRenderPreset(11);
+	}
 	else if (key >= '0' && key <= '9')
 	{
 		c->LoadRenderPreset(key-'0');
@@ -1687,7 +1693,7 @@ void GameView::OnFileDrop(ByteString filename)
 {
 	if (!(filename.EndsWith(".cps") || filename.EndsWith(".stm")))
 	{
-		new ErrorMessage( ByteString("載入沙盤錯誤").FromUtf8(), ByteString("刪除的檔案不是TPT沙盤檔案(.cps或.stm格式)").FromUtf8());
+		new ErrorMessage( ByteString("加载沙盘错误").FromUtf8(), ByteString("删除的文件不是TPT沙盘文件(.cps或.stm格式)").FromUtf8());
 		return;
 	}
 
@@ -1696,7 +1702,7 @@ void GameView::OnFileDrop(ByteString filename)
 		auto saveFile = Client::Ref().GetStamp(filename);
 		if (!saveFile || !saveFile->GetGameSave())
 		{
-			new ErrorMessage(ByteString("載入沙盤錯誤").FromUtf8(), ByteString("無法載入已刪除的沙盤檔案: ").FromUtf8() + saveFile->GetError());
+			new ErrorMessage(ByteString("加载沙盘错误").FromUtf8(), ByteString("无法加载已删除的沙盘文件: ").FromUtf8() + saveFile->GetError());
 			return;
 		}
 		c->LoadStamp(saveFile->TakeGameSave());
@@ -2053,7 +2059,7 @@ void GameView::enableCtrlBehaviour()
 		searchButton->Appearance.BackgroundInactive = searchButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
 
-		searchButton->SetToolTip(ByteString("瀏覽本地沙盤").FromUtf8());
+		searchButton->SetToolTip(ByteString("浏览本地沙盘").FromUtf8());
 		if (currentSaveType == 2)
 			saveSimulationButton->SetShowSplit(true);
 	}
@@ -2077,7 +2083,7 @@ void GameView::disableCtrlBehaviour()
 		searchButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		searchButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(255, 255, 255);
-		searchButton->SetToolTip(ByteString("開啟雲沙盤,或按住Ctrl瀏覽本地沙盤").FromUtf8());
+		searchButton->SetToolTip(ByteString("打开云沙盘,或按住Ctrl浏览本地沙盘").FromUtf8());
 		if (currentSaveType == 2)
 			saveSimulationButton->SetShowSplit(false);
 	}
@@ -2118,13 +2124,13 @@ void GameView::UpdateToolStrength()
 void GameView::SetSaveButtonTooltips()
 {
 	if (!Client::Ref().GetAuthUser().UserID)
-		saveSimulationButton->SetToolTips(ByteString("覆蓋本地的沙盤").FromUtf8(), ByteString("將沙盤儲存到本地,登陸後可上傳到雲伺服器").FromUtf8());
+		saveSimulationButton->SetToolTips(ByteString("覆盖本地的沙盘").FromUtf8(), ByteString("将沙盘保存到本地,登陆后可上传到云服务器").FromUtf8());
 	else if (ctrlBehaviour)
-		saveSimulationButton->SetToolTips(ByteString("覆蓋本地的沙盤").FromUtf8(), ByteString("將沙盤儲存到本地").FromUtf8());
+		saveSimulationButton->SetToolTips(ByteString("覆盖本地的沙盘").FromUtf8(), ByteString("将沙盘保存到本地").FromUtf8());
 	else if (saveSimulationButton->GetShowSplit())
-		saveSimulationButton->SetToolTips(ByteString("重新上傳當前沙盤").FromUtf8(), ByteString("修改沙盤屬性").FromUtf8());
+		saveSimulationButton->SetToolTips(ByteString("重新上传当前沙盘").FromUtf8(), ByteString("修改沙盘属性").FromUtf8());
 	else
-		saveSimulationButton->SetToolTips(ByteString("重新上傳當前沙盤").FromUtf8(), ByteString("上傳一個新沙盤,按住Ctrl儲存到本地").FromUtf8());
+		saveSimulationButton->SetToolTips(ByteString("重新上传当前沙盘").FromUtf8(), ByteString("上传一个新沙盘,按住Ctrl保存到本地").FromUtf8());
 }
 
 void GameView::RenderSimulation(const RenderableSimulation &sim, bool handleEvents)
@@ -2165,7 +2171,7 @@ void GameView::OnDraw()
 			StartRendererThread();
 			WaitForRendererThread();
 			AfterSimDraw(*sim);
-			foundParticles = ren->GetFoundParticles();
+			rendererStats = ren->GetStats();
 			*rendererThreadResult = ren->GetVideo();
 			rendererFrame = rendererThreadResult.get();
 			DispatchRendererThread();
@@ -2176,7 +2182,7 @@ void GameView::OnDraw()
 			ren->ApplySettings(*rendererSettings);
 			RenderSimulation(*sim, true);
 			AfterSimDraw(*sim);
-			foundParticles = ren->GetFoundParticles();
+			rendererStats = ren->GetStats();
 			rendererFrame = &ren->GetVideo();
 		}
 	}
@@ -2399,7 +2405,7 @@ void GameView::OnDraw()
 					else if (ctype)
 						sampleInfo << " (" << ctype << ")";
 				}
-				sampleInfo << ByteString(", 溫度: ").FromUtf8();
+				sampleInfo << ByteString(", 温度: ").FromUtf8();
 				format::RenderTemperature(sampleInfo, sample.particle.temp, c->GetTemperatureScale());
 				sampleInfo << ", Life: " << sample.particle.life;
 				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL && sample.particle.type != PT_LIFE)
@@ -2425,24 +2431,24 @@ void GameView::OnDraw()
 						|| type == PT_CONV || type == PT_ETRD)
 					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
 
-				sampleInfo << ByteString(", 壓力: ").FromUtf8() << sample.AirPressure;
+				sampleInfo << ByteString(", 压力: ").FromUtf8() << sample.AirPressure;
 			}
 			else
 			{
 				sampleInfo << c->BasicParticleInfo(sample.particle);
-				sampleInfo << ByteString(", 溫度: ").FromUtf8();
+				sampleInfo << ByteString(", 温度: ").FromUtf8();
 				format::RenderTemperature(sampleInfo, sample.particle.temp, c->GetTemperatureScale());
-				sampleInfo << ByteString(", 壓力: ").FromUtf8() << sample.AirPressure;
+				sampleInfo << ByteString(", 压力: ").FromUtf8() << sample.AirPressure;
 			}
 		}
 		else if (sample.WallType)
 		{
 			sampleInfo << c->WallName(sample.WallType);
-			sampleInfo << ByteString(", 壓力: ").FromUtf8() << sample.AirPressure;
+			sampleInfo << ByteString(", 压力: ").FromUtf8() << sample.AirPressure;
 		}
 		else if (sample.isMouseInSim)
 		{
-			sampleInfo << ByteString("空, 壓力: ").FromUtf8() << sample.AirPressure;
+			sampleInfo << ByteString("空, 压力: ").FromUtf8() << sample.AirPressure;
 		}
 		else
 		{
@@ -2505,7 +2511,7 @@ void GameView::OnDraw()
 
 			if (c->GetAHeatEnable())
 			{
-				sampleInfo << ByteString(", 氣溫: ").FromUtf8();
+				sampleInfo << ByteString(", 气温: ").FromUtf8();
 				format::RenderTemperature(sampleInfo, sample.AirTemperature, c->GetTemperatureScale());
 			}
 
@@ -2519,23 +2525,41 @@ void GameView::OnDraw()
 	{
 		//FPS and some version info
 		StringBuilder fpsInfo;
-		fpsInfo << Format::Precision(2) << ByteString("幀率: ").FromUtf8() << ui::Engine::Ref().GetFps();
+		fpsInfo << Format::Precision(2) << ByteString("帧率: ").FromUtf8() << ui::Engine::Ref().GetFps();
 
 		if (showDebug)
 		{
 			if (rendererSettings->findingElement)
-				fpsInfo << ByteString(" 元素數目: ").FromUtf8() << foundParticles << "/" << sample.NumParts;
+				fpsInfo << ByteString(" 元素数目: ").FromUtf8() << rendererStats.foundParticles << "/" << sample.NumParts;
 			else
-				fpsInfo << ByteString(" 元素數目: ").FromUtf8() << sample.NumParts;
+				fpsInfo << ByteString(" 元素数目: ").FromUtf8() << sample.NumParts;
+		}
+		if ((std::holds_alternative<HdispLimitAuto>(rendererSettings->wantHdispLimitMin) ||
+		     std::holds_alternative<HdispLimitAuto>(rendererSettings->wantHdispLimitMax)) && rendererStats.hdispLimitValid)
+		{
+			fpsInfo << " [TEMP L:";
+			format::RenderTemperature(fpsInfo, rendererStats.hdispLimitMin, c->GetTemperatureScale());
+			fpsInfo << " H:";
+			format::RenderTemperature(fpsInfo, rendererStats.hdispLimitMax, c->GetTemperatureScale());
+			fpsInfo << "]";
+		}
+		if ((std::holds_alternative<HdispLimitAuto>(rendererSettings->wantHdispLimitMin) ||
+		     std::holds_alternative<HdispLimitAuto>(rendererSettings->wantHdispLimitMax)) && rendererStats.hdispLimitValid)
+		{
+			fpsInfo << " [TEMP L:";
+			format::RenderTemperature(fpsInfo, rendererStats.hdispLimitMin, c->GetTemperatureScale());
+			fpsInfo << " H:";
+			format::RenderTemperature(fpsInfo, rendererStats.hdispLimitMax, c->GetTemperatureScale());
+			fpsInfo << "]";
 		}
 		if (c->GetReplaceModeFlags()&REPLACE_MODE)
-			fpsInfo <<  ByteString(" [替換模式]").FromUtf8();
+			fpsInfo <<  ByteString(" [替换模式]").FromUtf8();
 		if (c->GetReplaceModeFlags()&SPECIFIC_DELETE)
-			fpsInfo <<  ByteString(" [具體刪除]").FromUtf8();
+			fpsInfo <<  ByteString(" [具体删除]").FromUtf8();
 		if (rendererSettings->gridSize)
-			fpsInfo <<  ByteString(" [網格: ").FromUtf8()<< rendererSettings->gridSize <<  ByteString("]").FromUtf8();
+			fpsInfo <<  ByteString(" [网格: ").FromUtf8()<< rendererSettings->gridSize <<  ByteString("]").FromUtf8();
 		if (rendererSettings->findingElement)
-			fpsInfo <<  ByteString(" [尋找]").FromUtf8();
+			fpsInfo <<  ByteString(" [寻找]").FromUtf8();
 		if (c->GetDebugFlags() & DEBUG_SIMHUD)
 		{
 			fpsInfo << "\nSimulation";

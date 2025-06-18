@@ -4,10 +4,12 @@
 #include "gui/interface/Point.h"
 #include "graphics/RendererSettings.h"
 #include "simulation/CustomGOLData.h"
+#include "simulation/SimulationSettings.h"
 #include <vector>
 #include <deque>
 #include <memory>
 #include <optional>
+#include <functional>
 #include <array>
 
 constexpr auto NUM_TOOLINDICES = 4;
@@ -94,7 +96,7 @@ private:
 	bool mouseClickRequired;
 	bool includePressure;
 	bool perfectCircle = true;
-	int temperatureScale;
+	TempScale temperatureScale;
 
 	size_t activeColourPreset;
 	std::vector<ui::Colour> colourPresets;
@@ -149,8 +151,8 @@ public:
 
 	void SetEdgeMode(int edgeMode);
 	int GetEdgeMode();
-	void SetTemperatureScale(int temperatureScale);
-	inline int GetTemperatureScale() const
+	void SetTemperatureScale(TempScale temperatureScale);
+	inline TempScale GetTemperatureScale() const
 	{
 		return temperatureScale;
 	}
@@ -276,7 +278,10 @@ public:
 	void SetClipboard(std::unique_ptr<GameSave> save);
 	void SetPlaceSave(std::unique_ptr<GameSave> save);
 	void TransformPlaceSave(Mat2<int> transform, Vec2<int> nudge);
+
+	std::function<void (String)> logSink;
 	void Log(String message, bool printToFile);
+
 	std::deque<String> GetLog();
 	const GameSave *GetClipboard() const;
 	const GameSave *GetPlaceSave() const;

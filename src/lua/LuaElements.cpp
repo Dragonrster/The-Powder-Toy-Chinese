@@ -170,7 +170,7 @@ static int luaGraphicsWrapper(GRAPHICS_FUNC_ARGS)
 		lua_pushinteger(lsi->L, *colr);
 		lua_pushinteger(lsi->L, *colg);
 		lua_pushinteger(lsi->L, *colb);
-		callret = tpt_lua_pcall(lsi->L, 4, 10, 0, eventTraitSimGraphics);
+		callret = tpt_lua_pcall(lsi->L, 4, 10, 0, eventTraitSimGraphics | eventTraitConstSim);
 		if (callret)
 		{
 			lsi->Log(CommandInterface::LogError, LuaGetError());
@@ -225,11 +225,13 @@ static void luaCreateWrapper(ELEMENT_CREATE_FUNC_ARGS)
 		lua_pushinteger(lsi->L, y);
 		lua_pushinteger(lsi->L, t);
 		lua_pushinteger(lsi->L, v);
-		if (tpt_lua_pcall(lsi->L, 5, 0, 0, eventTraitSimRng))
+		lsi->monopartAccessPartID = i;
+		if (tpt_lua_pcall(lsi->L, 5, 0, 0, eventTraitSimRng | eventTraitMonopartAccess))
 		{
 			lsi->Log(CommandInterface::LogError, "In create func: " + LuaGetError());
 			lua_pop(lsi->L, 1);
 		}
+		lsi->monopartAccessPartID = -1;
 	}
 }
 
@@ -252,7 +254,7 @@ static bool luaCreateAllowedWrapper(ELEMENT_CREATE_ALLOWED_FUNC_ARGS)
 		lua_pushinteger(lsi->L, x);
 		lua_pushinteger(lsi->L, y);
 		lua_pushinteger(lsi->L, t);
-		if (tpt_lua_pcall(lsi->L, 4, 1, 0, eventTraitSimRng))
+		if (tpt_lua_pcall(lsi->L, 4, 1, 0, eventTraitSimRng | eventTraitConstSim))
 		{
 			lsi->Log(CommandInterface::LogError, "In create allowed: " + LuaGetError());
 			lua_pop(lsi->L, 1);
@@ -283,11 +285,13 @@ static void luaChangeTypeWrapper(ELEMENT_CHANGETYPE_FUNC_ARGS)
 		lua_pushinteger(lsi->L, y);
 		lua_pushinteger(lsi->L, from);
 		lua_pushinteger(lsi->L, to);
-		if (tpt_lua_pcall(lsi->L, 5, 0, 0, eventTraitSimRng))
+		lsi->monopartAccessPartID = i;
+		if (tpt_lua_pcall(lsi->L, 5, 0, 0, eventTraitSimRng | eventTraitMonopartAccess))
 		{
 			lsi->Log(CommandInterface::LogError, "In change type: " + LuaGetError());
 			lua_pop(lsi->L, 1);
 		}
+		lsi->monopartAccessPartID = -1;
 	}
 }
 
@@ -324,6 +328,7 @@ static bool luaCtypeDrawWrapper(CTYPEDRAW_FUNC_ARGS)
 static int allocate(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertMutableToolsEvent();
 	luaL_checktype(L, 1, LUA_TSTRING);
 	luaL_checktype(L, 2, LUA_TSTRING);
 	auto group = tpt_lua_toByteString(L, 1).ToUpper();
@@ -421,6 +426,7 @@ static int element(lua_State *L)
 
 	if (lua_gettop(L) > 1)
 	{
+		lsi->AssertMutableToolsEvent();
 		{
 			auto &sd = SimulationData::Ref();
 			std::unique_lock lk(sd.elementGraphicsMx);
@@ -531,28 +537,25 @@ static int element(lua_State *L)
 
 		return 0;
 	}
-	else
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	//Write values from native data to a table
+	lua_newtable(L);
+	for (auto &prop : Element::GetProperties())
 	{
-		auto &sd = SimulationData::CRef();
-		auto &elements = sd.elements;
-		//Write values from native data to a table
-		lua_newtable(L);
-		for (auto &prop : Element::GetProperties())
-		{
-			tpt_lua_pushByteString(L, prop.Name);
-			intptr_t propertyAddress = (intptr_t)(((unsigned char*)&elements[id]) + prop.Offset);
-			LuaGetProperty(L, prop, propertyAddress);
-			lua_settable(L, -3);
-		}
-
-		tpt_lua_pushByteString(L, elements[id].Identifier);
-		lua_setfield(L, -2, "Identifier");
-
-		getDefaultProperties(L, id);
-		lua_setfield(L, -2, "DefaultProperties");
-
-		return 1;
+		tpt_lua_pushByteString(L, prop.Name);
+		intptr_t propertyAddress = (intptr_t)(((unsigned char*)&elements[id]) + prop.Offset);
+		LuaGetProperty(L, prop, propertyAddress);
+		lua_settable(L, -3);
 	}
+
+	tpt_lua_pushByteString(L, elements[id].Identifier);
+	lua_setfield(L, -2, "Identifier");
+
+	getDefaultProperties(L, id);
+	lua_setfield(L, -2, "DefaultProperties");
+
+	return 1;
 }
 
 static int property(lua_State *L)
@@ -574,6 +577,7 @@ static int property(lua_State *L)
 
 	if (lua_gettop(L) > 2)
 	{
+		lsi->AssertMutableToolsEvent();
 		auto &sd = SimulationData::Ref();
 		std::unique_lock lk(sd.elementGraphicsMx);
 		auto &elements = sd.elements;
@@ -703,35 +707,32 @@ static int property(lua_State *L)
 		}
 		return 0;
 	}
-	else
+	auto &sd = SimulationData::CRef();
+	auto &elements = sd.elements;
+	if (prop != properties.end())
 	{
-		auto &sd = SimulationData::CRef();
-		auto &elements = sd.elements;
-		if (prop != properties.end())
-		{
-			intptr_t propertyAddress = (intptr_t)(((const unsigned char*)&elements[id]) + prop->Offset);
-			LuaGetProperty(L, *prop, propertyAddress);
-			return 1;
-		}
-		else if (propertyName == "Identifier")
-		{
-			tpt_lua_pushByteString(L, elements[id].Identifier);
-			return 1;
-		}
-		else if (propertyName == "DefaultProperties")
-		{
-			getDefaultProperties(L, id);
-			return 1;
-		}
-		else
-		{
-			return luaL_error(L, "Invalid element property");
-		}
+		intptr_t propertyAddress = (intptr_t)(((const unsigned char*)&elements[id]) + prop->Offset);
+		LuaGetProperty(L, *prop, propertyAddress);
+		return 1;
 	}
+	else if (propertyName == "Identifier")
+	{
+		tpt_lua_pushByteString(L, elements[id].Identifier);
+		return 1;
+	}
+	else if (propertyName == "DefaultProperties")
+	{
+		getDefaultProperties(L, id);
+		return 1;
+	}
+	return luaL_error(L, "Invalid element property");
 }
 
 static int ffree(lua_State *L)
 {
+	auto *lsi = GetLSI();
+	lsi->AssertMutableToolsEvent();
+
 	int id = luaL_checkinteger(L, 1);
 	ByteString identifier;
 	{
@@ -748,7 +749,6 @@ static int ffree(lua_State *L)
 		}
 	}
 
-	auto *lsi = GetLSI();
 	{
 		auto &sd = SimulationData::Ref();
 		std::unique_lock lk(sd.elementGraphicsMx);
@@ -776,11 +776,12 @@ static int exists(lua_State *L)
 
 static int loadDefault(lua_State *L)
 {
+	auto *lsi = GetLSI();
+	lsi->AssertMutableToolsEvent();
 	auto &sd = SimulationData::Ref();
 	std::unique_lock lk(sd.elementGraphicsMx);
 	auto &elements = sd.elements;
 	auto &builtinElements = GetElements();
-	auto *lsi = GetLSI();
 	{
 		auto loadDefaultOne = [lsi, L, &elements, &builtinElements](int id) {
 			lua_getglobal(L, "elements");
@@ -790,13 +791,22 @@ static int loadDefault(lua_State *L)
 			lua_settable(L, -3);
 
 			manageElementIdentifier(L, id, false);
-			if (id < (int)builtinElements.size())
+			auto oldEnabled = elements[id].Enabled;
+			if (id < (int)builtinElements.size() && builtinElements[id].Enabled)
 			{
 				elements[id] = builtinElements[id];
 			}
 			else
 			{
 				elements[id] = Element();
+			}
+			// TODO: somehow unify element and corresponding element tool management in a way that makes it hard to mess up
+			if (oldEnabled && elements[id].Enabled)
+			{
+				lsi->gameModel->UpdateElementTool(id);
+			}
+			else if (oldEnabled && !elements[id].Enabled)
+			{
 				lsi->gameModel->FreeTool(lsi->gameModel->GetToolFromIdentifier(identifier));
 			}
 			manageElementIdentifier(L, id, true);

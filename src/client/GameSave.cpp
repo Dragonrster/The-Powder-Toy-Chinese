@@ -17,7 +17,7 @@
 #include <algorithm>
 
 constexpr auto currentVersion = UPSTREAM_VERSION.displayVersion;
-constexpr auto nextVersion = Version(99, 2);
+constexpr auto nextVersion = Version(99, 3);
 static_assert(!ALLOW_FAKE_NEWER_VERSION || nextVersion >= currentVersion);
 
 constexpr auto effectiveVersion = ALLOW_FAKE_NEWER_VERSION ? nextVersion : currentVersion;
@@ -123,7 +123,7 @@ void GameSave::MapPalette()
 				found = info;
 			}
 		}
-		for (int i = 1; i < found.maxValid; i++)
+		for (int i = 1; i <= found.maxValid; i++)
 		{
 			if (i >= found.golHoleFirst && i <= found.golHoleLast)
 			{
@@ -2012,6 +2012,11 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 
 std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 {
+	if (blockSize.X > 255 || blockSize.Y > 255)
+	{
+		throw BuildException("simulation size not supported by the save format");
+	}
+
 	// minimum version this save is compatible with
 	// when building, this number may be increased depending on what elements are used
 	// or what properties are detected

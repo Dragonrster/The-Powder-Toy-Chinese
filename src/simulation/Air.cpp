@@ -133,7 +133,7 @@ void Air::update_airh(void)
 			auto j = (int)ty;
 			tx -= i;
 			ty -= j;
-			if (!(bmap_blockairh[y][x]&0x8) && i>=2 && i<=XCELLS-3 && j>=2 && j<=YCELLS-3)
+			if (!(bmap_blockairh[y][x]&0x8) && i>=2 && i<XCELLS-3 && j>=2 && j<YCELLS-3)
 			{
 				auto odh = dh;
 				dh *= 1.0f - AIR_VADV;
@@ -153,18 +153,40 @@ void Air::update_airh(void)
 			// We use the Boussinesq approximation, i.e. we assume density to be nonconstant only
 			// near the gravity term of the fluid equation, and we suppose that it depends linearly on the
 			// difference between the current temperature (hv[y][x]) and some "stationary" temperature (ambientAirTemp).
+			float dvx, dvy;
+			dvx = vx[y][x];
+		       	dvy = vy[y][x];
+
 			if (x>=2 && x<XCELLS-2 && y>=2 && y<YCELLS-2)
 			{
 				float convGravX, convGravY;
 				sim.GetGravityField(x*CELL, y*CELL, -1.0f, -1.0f, convGravX, convGravY);
+
+				// Cap the gravity field
+				float gravMagn = std::sqrt(convGravX*convGravX + convGravY*convGravY);
+				if (gravMagn > 10.0f)
+				{
+					convGravX /= 0.1f*gravMagn;
+					convGravY /= 0.1f*gravMagn;
+				}
+
 				auto weight = (hv[y][x] - ambientAirTemp) / 10000.0f;
 
 				// Our approximation works best when the temperature difference is small, so we cap it from above.
 				if (weight > 0.01f) weight = 0.01f;
 
-				vx[y][x] += weight * convGravX;
-				vy[y][x] += weight * convGravY;
+				dvx += weight * convGravX;
+				dvy += weight * convGravY;
 			}
+
+			// Velocity cap
+			if (dvx > MAX_PRESSURE) dvx = MAX_PRESSURE;
+			if (dvx < MIN_PRESSURE) dvx = MIN_PRESSURE;
+			if (dvy > MAX_PRESSURE) dvy = MAX_PRESSURE;
+			if (dvy < MIN_PRESSURE) dvy = MIN_PRESSURE;
+
+			vx[y][x] = dvx;
+			vy[y][x] = dvy;
 		}
 	}
 	memcpy(hv, ohv, sizeof(hv));
@@ -333,7 +355,7 @@ void Air::update_air(void)
 				auto j = (int)ty;
 				tx -= i;
 				ty -= j;
-				if (!bmap_blockair[y][x] && i>=2 && i<=XCELLS-3 && j>=2 && j<=YCELLS-3)
+				if (!bmap_blockair[y][x] && i>=2 && i<XCELLS-3 && j>=2 && j<YCELLS-3)
 				{
 					dx *= 1.0f - AIR_VADV;
 					dy *= 1.0f - AIR_VADV;
@@ -436,7 +458,7 @@ void Air::ApproximateBlockAirMaps()
 			}
 		}
 		// mostly accurate insulator blocking, besides checking GEL
-		else if ((type == PT_HSWC && sim.parts[i].life != 10) || elements[type].HeatConduct <= (sim.rng()%250))
+		else if (sim.IsHeatInsulator(sim.parts[i]) || elements[type].HeatConduct <= (sim.rng()%250))
 		{
 			int x = ((int)(sim.parts[i].x+0.5f))/CELL, y = ((int)(sim.parts[i].y+0.5f))/CELL;
 			if (InBounds(x, y) && !(bmap_blockairh[y][x]&0x8))

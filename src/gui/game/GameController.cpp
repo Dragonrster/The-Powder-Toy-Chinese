@@ -868,6 +868,8 @@ void GameController::LoadRenderPreset(int presetNum)
 	settings.renderMode = preset.renderMode;
 	settings.displayMode = preset.displayMode;
 	settings.colorMode = preset.colorMode;
+	settings.wantHdispLimitMin = preset.wantHdispLimitMin;
+	settings.wantHdispLimitMax = preset.wantHdispLimitMax;
 }
 
 void GameController::Update()
@@ -1031,12 +1033,12 @@ bool GameController::GetDebugHUD()
 	return gameView->GetDebugHUD();
 }
 
-void GameController::SetTemperatureScale(int temperatureScale)
+void GameController::SetTemperatureScale(TempScale temperatureScale)
 {
 	gameModel->SetTemperatureScale(temperatureScale);
 }
 
-int GameController::GetTemperatureScale()
+TempScale GameController::GetTemperatureScale()
 {
 	return gameModel->GetTemperatureScale();
 }

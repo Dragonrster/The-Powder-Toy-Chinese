@@ -6,6 +6,8 @@
 
 static int allocate(lua_State *L)
 {
+	auto *lsi = GetLSI();
+	lsi->AssertMutableToolsEvent();
 	luaL_checktype(L, 1, LUA_TSTRING);
 	luaL_checktype(L, 2, LUA_TSTRING);
 	auto group = tpt_lua_toByteString(L, 1).ToUpper();
@@ -22,7 +24,6 @@ static int allocate(lua_State *L)
 	{
 		return luaL_error(L, "You cannot create tools in the 'DEFAULT' group.");
 	}
-	auto *lsi = GetLSI();
 	auto identifier = group + "_TOOL_" + name;
 	if (lsi->gameModel->GetToolFromIdentifier(identifier))
 	{
@@ -49,8 +50,9 @@ static bool IsCustom(int index)
 
 static int ffree(lua_State *L)
 {
-	int index = luaL_checkinteger(L, 1);
 	auto *lsi = GetLSI();
+	lsi->AssertMutableToolsEvent();
+	int index = luaL_checkinteger(L, 1);
 	auto *tool = lsi->gameModel->GetToolByIndex(index);
 	if (!tool)
 	{
@@ -125,7 +127,7 @@ static void luaClickWrapper(SimTool *tool, Simulation *sim, const Brush &brush, 
 		lua_pushboolean(L, tool->shiftBehaviour);
 		lua_pushboolean(L, tool->ctrlBehaviour);
 		lua_pushboolean(L, tool->altBehaviour);
-		if (tpt_lua_pcall(L, 7, 0, 0, eventTraitNone))
+		if (tpt_lua_pcall(L, 7, 0, 0, eventTraitInterface | eventTraitConstTools))
 		{
 			lsi->Log(CommandInterface::LogError, "In click func: " + LuaGetError());
 			lua_pop(L, 1);
@@ -269,7 +271,7 @@ static void luaSelectWrapper(SimTool *tool, int toolSelection)
 	{
 		lua_rawgeti(L, LUA_REGISTRYINDEX, customTools[index].select);
 		lua_pushinteger(L, toolSelection);
-		if (tpt_lua_pcall(L, 1, 0, 0, eventTraitNone))
+		if (tpt_lua_pcall(L, 1, 0, 0, eventTraitInterface | eventTraitConstTools))
 		{
 			lsi->Log(CommandInterface::LogError, "In select func: " + LuaGetError());
 			lua_pop(L, 1);
@@ -285,6 +287,7 @@ struct DependentFalse : std::false_type
 static int property(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertMutableToolsEvent();
 	int index = luaL_checkinteger(L, 1);
 	auto *tool = lsi->gameModel->GetToolByIndex(index);
 	if (!tool)
@@ -383,8 +386,9 @@ static int property(lua_State *L)
 
 static int exists(lua_State *L)
 {
-	int index = luaL_checkinteger(L, 1);
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
+	int index = luaL_checkinteger(L, 1);
 	lua_pushboolean(L, bool(lsi->gameModel->GetToolByIndex(index)));
 	return 1;
 }
@@ -392,6 +396,7 @@ static int exists(lua_State *L)
 static int isCustom(lua_State *L)
 {
 	auto *lsi = GetLSI();
+	lsi->AssertInterfaceEvent();
 	int index = luaL_checkinteger(L, 1);
 	auto *tool = lsi->gameModel->GetToolByIndex(index);
 	if (!tool)

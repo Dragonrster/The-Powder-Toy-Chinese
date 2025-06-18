@@ -126,6 +126,7 @@ Special 感谢
 | `disable-network`     | 禁用互联网连接                         |                                             |
 | `disable-bluescreen`  | 禁用蓝屏处理程序                       |                                             |
 | `redirect`            | 将输出重定向到 stdout.txt / stderr.txt |                                             |
+| `console`             | 将输出重定向到Windows上的新控制台     |                                             |
 | `cafile:CAFILE`       | 设置证书路径                           | `cafile:/etc/ssl/certs/ca-certificates.crt` |
 | `capath:CAPATH`       | 设置证书目录路径                       | `capath:/etc/ssl/certs`                     |
 

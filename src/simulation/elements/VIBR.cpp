@@ -105,9 +105,9 @@ int Element_VIBR_update(UPDATE_FUNC_ARGS)
 			auto rx = rndstore%7-3;
 			auto ry = (rndstore>>3)%7-3;
 			auto r = pmap[y+ry][x+rx];
-			if (TYP(r) && TYP(r)!=PT_VIBR  && TYP(r)!=PT_BVBR && elements[TYP(r)].HeatConduct && (TYP(r)!=PT_HSWC||parts[ID(r)].life==10))
+			if (TYP(r) && TYP(r) != PT_VIBR && TYP(r) != PT_BVBR && (!sim->IsHeatInsulator(parts[ID(r)])))
 			{
-				parts[ID(r)].temp += parts[i].tmp*3;
+				parts[ID(r)].temp = restrict_flt(parts[ID(r)].temp + parts[i].tmp * 3, MIN_TEMP, MAX_TEMP);
 				parts[i].tmp = 0;
 			}
 		}
@@ -210,8 +210,7 @@ int Element_VIBR_update(UPDATE_FUNC_ARGS)
 			}
 		}
 	}
-	if (parts[i].tmp < 0)
-		parts[i].tmp = 0; // only preventing because negative tmp doesn't save
+	parts[i].tmp = std::clamp(parts[i].tmp, 0, 1 << 15);
 	return 0;
 }
 
