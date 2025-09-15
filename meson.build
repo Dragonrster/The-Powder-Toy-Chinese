@@ -3,7 +3,7 @@ project('the-powder-toy', 'cpp', version:
 #	                    # A.B.C is the version number shown by meson and by your local builds. note that this version
 #	                    # number is overridden by the tag you push to github, so ghactions builds will show that version
 #	                    # number instead. you can also replace 'the-powder-toy' with your mod's simplified name.
-	'99.3.387', meson_version: '>=0.63.0')
+	'99.3.389', meson_version: '>=0.64.0')
 
 if get_option('prepare')
 	# we're being run by prepare.py in a ghactions workflow only to determine the values of options; exit early
@@ -80,13 +80,14 @@ tpt_libs_debug = is_debug ? 'debug' : 'release'
 tpt_libs_variant = '@0@-@1@-@2@-@3@'.format(host_arch, host_platform, host_libc, tpt_libs_static)
 tpt_libs_vtag = get_option('tpt_libs_vtag')
 if tpt_libs_vtag == ''
-	tpt_libs_vtag = 'v20250622192228'
+	tpt_libs_vtag = 'v20250901181559'
 endif
 if tpt_libs_static != 'none'
 	if tpt_libs_variant not in [
 		'x86_64-linux-gnu-static',
 		'aarch64-linux-gnu-static',
 		'x86_64-windows-mingw-static',
+		'x86-windows-mingw-static',
 		'x86_64-windows-msvc-static',
 		'x86_64-windows-msvc-dynamic',
 		'x86-windows-msvc-static',
@@ -225,7 +226,6 @@ if host_platform == 'emscripten'
 		'-s', 'USE_BZIP2=1',
 		'-s', 'USE_LIBPNG',
 		'-s', 'USE_PTHREADS',
-#		'-s', 'USE_ZLIB=1',
 		'-s', 'DISABLE_EXCEPTION_CATCHING=0',
 		'-gsource-map',
 	]

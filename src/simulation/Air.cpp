@@ -26,6 +26,21 @@ void Air::make_kernel(void) //used for velocity
 	}
 }
 
+
+float Air::vorticity(const RenderableSimulation & sm, int y, int x)
+{
+	auto &vx = sm.vx;
+	auto &vy = sm.vy;
+
+	if (x > 1 && x < XCELLS-2 && y > 1 && y < YCELLS-2)
+	{
+		// dvy/dx - dvx/dy
+		return (vy[y][x+1] - vy[y][x-1] - (vx[y+1][x] - vx[y-1][x]))*0.5f;
+	}
+	else
+		return 0.0f;
+}
+
 void Air::Clear()
 {
 	std::fill(&sim.pv[0][0], &sim.pv[0][0]+NCELL, 0.0f);
@@ -133,7 +148,7 @@ void Air::update_airh(void)
 			auto j = (int)ty;
 			tx -= i;
 			ty -= j;
-			if (!(bmap_blockairh[y][x]&0x8) && i>=2 && i<XCELLS-3 && j>=2 && j<YCELLS-3)
+			if (!(bmap_blockairh[y][x]&0x8) && i>=0 && i<XCELLS-1 && j>=0 && j<YCELLS-1)
 			{
 				auto odh = dh;
 				dh *= 1.0f - AIR_VADV;
@@ -373,6 +388,18 @@ void Air::update_air(void)
 					dy += AIR_VADV*tx*ty*vy[j+1][i+1];
 				}
 
+				//Vorticity confinement
+				if (vorticityCoeff > 0.0f && x > 1 && x < XCELLS-2 && y > 1 && y < YCELLS-2)
+				{
+					auto dwx = (std::abs(vorticity(sim, y, x+1)) - std::abs(vorticity(sim, y, x-1)))*0.5f;
+					auto dwy = (std::abs(vorticity(sim, y+1, x)) - std::abs(vorticity(sim, y-1, x)))*0.5f;
+					auto norm = std::sqrt(dwx*dwx + dwy*dwy);
+					auto w = vorticity(sim, y, x);
+
+					dx += vorticityCoeff/5.0f * dwy / (norm + 0.001f) * w;
+					dy += vorticityCoeff/5.0f * (-dwx) / (norm + 0.001f) * w;
+				}
+
 				if (bmap[y][x] == WL_FAN)
 				{
 					dx += fvx[y][x];
@@ -458,7 +485,7 @@ void Air::ApproximateBlockAirMaps()
 			}
 		}
 		// mostly accurate insulator blocking, besides checking GEL
-		else if (sim.IsHeatInsulator(sim.parts[i]) || elements[type].HeatConduct <= (sim.rng()%250))
+		else if (sd.IsHeatInsulator(sim.parts[i]) || elements[type].HeatConduct <= (sim.rng()%250))
 		{
 			int x = ((int)(sim.parts[i].x+0.5f))/CELL, y = ((int)(sim.parts[i].y+0.5f))/CELL;
 			if (InBounds(x, y) && !(bmap_blockairh[y][x]&0x8))
@@ -470,7 +497,8 @@ void Air::ApproximateBlockAirMaps()
 Air::Air(Simulation & simulation):
 	sim(simulation),
 	airMode(AIR_ON),
-	ambientAirTemp(R_TEMP + 273.15f)
+	ambientAirTemp(R_TEMP + 273.15f),
+	vorticityCoeff(0.0f)
 {
 	//Simulation should do this.
 	make_kernel();

@@ -988,6 +988,14 @@ void Renderer::draw_air()
 					c = RGB(r, g, b);
 				}
 			}
+			else if (displayMode & DISPLAY_AIRW)
+			{
+				auto w = 4*Air::vorticity(*sim, y, x);
+				if (w > 0.0f)
+					c = RGB(clamp_flt(w, 0.0f, 8.0f), 0, 0); //positive vorticity is red
+				else
+					c = RGB(0, 0, clamp_flt(-w, 0.0f, 8.0f)); //negative vorticity is blue
+			}
 			if (findingElement)
 			{
 				c.Red   /= 10;
@@ -1465,10 +1473,6 @@ void Renderer::DrawBlob(Vec2<int> pos, RGB colour)
 	BlendPixel(pos + Vec2{ -1, +1 }, colour.WithAlpha(64));
 }
 
-float temp[CELL*3][CELL*3];
-float fire_alphaf[CELL*3][CELL*3];
-float glow_alphaf[11][11];
-float blur_alphaf[7][7];
 void Renderer::prepare_alpha(int size, float intensity)
 {
 	fireIntensity = intensity;
@@ -1476,6 +1480,7 @@ void Renderer::prepare_alpha(int size, float intensity)
 	int x,y,i,j;
 	float multiplier = 255.0f*fireIntensity;
 
+	float temp[CELL*3][CELL*3];
 	memset(temp, 0, sizeof(temp));
 	for (x=0; x<CELL; x++)
 		for (y=0; y<CELL; y++)

@@ -100,6 +100,16 @@ RenderView::RenderView():
 	addDisplayModeCheckbox(DISPLAY_EFFE, IconEffect, ui::Point(205, 4), ByteString("\u5141\u8bb8\u56fa\u4f53\u79fb\u52a8\u663e\u793a\u002c\u548c\u9ad8\u7ea7\u56fe\u5f62").FromUtf8());
 	addDisplayModeCheckbox(DISPLAY_PERS, IconPersistant, ui::Point(237, 4), ByteString("\u663e\u793a\u7269\u8d28\u79fb\u52a8\u8f68\u8ff9").FromUtf8());
 	line3 = 270;
+	addDisplayModeCheckbox(DISPLAY_AIRC, IconAltAir    , ui::Point(135,  4), "Displays pressure as red and blue, and velocity as white");
+	addDisplayModeCheckbox(DISPLAY_AIRP, IconPressure  , ui::Point(135, 22), "Displays pressure, red is positive and blue is negative");
+	addDisplayModeCheckbox(DISPLAY_AIRV, IconVelocity  , ui::Point(167,  4), "Displays velocity and positive pressure: up/down adds blue, right/left adds red, still pressure adds green");
+	addDisplayModeCheckbox(DISPLAY_AIRH, IconHeat      , ui::Point(167, 22), "Displays the temperature of the air like heat display does");
+	addDisplayModeCheckbox(DISPLAY_AIRW, IconVort      , ui::Point(199,  4), "Displays vorticity, red is clockwise and blue is anticlockwise");
+	line2 = 232;
+	addDisplayModeCheckbox(DISPLAY_WARP, IconWarp      , ui::Point(237, 22), "Gravity lensing, Newtonian Gravity bends light with this on");
+	addDisplayModeCheckbox(DISPLAY_EFFE, IconEffect    , ui::Point(237,  4), "Enables moving solids, stickmen guns, and premium(tm) graphics");
+	addDisplayModeCheckbox(DISPLAY_PERS, IconPersistant, ui::Point(269,  4), "Element paths persist on the screen for a while");
+	line3 = 302;
 
 	auto addColourModeCheckbox = [this](unsigned int mode, Icon icon, ui::Point offset, String tooltip)
 	{
@@ -122,10 +132,10 @@ RenderView::RenderView():
 		} });
 		AddComponent(colourModeCheckbox);
 	};
-	addColourModeCheckbox(COLOUR_HEAT, IconHeat, ui::Point(275, 4), ByteString("\u663e\u793a\u7269\u8d28\u6e29\u5ea6\u002c\u4f4e\u6e29\u6df1\u84dd\u8272\u002c\u9ad8\u6e29\u7c89\u7ea2\u8272").FromUtf8());
-	addColourModeCheckbox(COLOUR_LIFE, IconLife, ui::Point(275, 22), ByteString("\u7070\u5ea6\u663e\u793a\u7269\u8d28\u006c\u0069\u0066\u0065\u503c\u5927\u5c0f").FromUtf8());
+	addColourModeCheckbox(COLOUR_HEAT, IconHeat    , ui::Point(275,  4), ByteString("\u663e\u793a\u7269\u8d28\u6e29\u5ea6\u002c\u4f4e\u6e29\u6df1\u84dd\u8272\u002c\u9ad8\u6e29\u7c89\u7ea2\u8272").FromUtf8());
+	addColourModeCheckbox(COLOUR_LIFE, IconLife    , ui::Point(275, 22), ByteString("\u7070\u5ea6\u663e\u793a\u7269\u8d28\u006c\u0069\u0066\u0065\u503c\u5927\u5c0f").FromUtf8());
 	addColourModeCheckbox(COLOUR_GRAD, IconGradient, ui::Point(307, 22), ByteString("\u8f7b\u5fae\u6539\u53d8\u5143\u7d20\u7684\u989c\u8272\u002c\u663e\u793a\u70ed\u91cf\u6269\u6563\u6548\u679c").FromUtf8());
-	addColourModeCheckbox(COLOUR_BASC, IconBasic, ui::Point(307, 4), ByteString("\u6ca1\u6709\u4efb\u4f55\u7279\u6b8a\u6548\u679c\u002c\u4ec5\u505a\u8986\u76d6\u663e\u793a").FromUtf8());
+	addColourModeCheckbox(COLOUR_BASC, IconBasic   , ui::Point(307,  4), ByteString("\u8f7b\u5fae\u6539\u53d8\u5143\u7d20\u7684\u989c\u8272\u002c\u663e\u793a\u70ed\u91cf\u6269\u6563\u6548\u679c").FromUtf8());
 	line4 = 340;
 }
 

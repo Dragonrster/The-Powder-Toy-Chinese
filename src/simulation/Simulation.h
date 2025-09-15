@@ -128,6 +128,10 @@ public:
 
 	float fvx[YCELLS][XCELLS];
 	float fvy[YCELLS][XCELLS];
+	int Element_LOLZ_lolz[XRES/9][YRES/9];
+	int Element_LOVE_love[XRES/9][YRES/9];
+	int Element_PSTN_tempParts[std::max(XRES, YRES)];
+	int Element_PPIP_ppip_changed;
 
 	unsigned int pmap_count[YRES][XRES];
 
@@ -199,7 +203,6 @@ public:
 	int is_wire_off(int x, int y);
 	void set_emap(int x, int y);
 	int parts_avg(int ci, int ni, int t);
-	bool IsHeatInsulator(Particle) const;
 	void UpdateParticles(int start, int end); // Dispatches an update to the range [start, end).
 	void SimulateGoL();
 	void RecalcFreeParticles(bool do_life_dec);
