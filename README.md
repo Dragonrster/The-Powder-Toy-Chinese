@@ -52,8 +52,6 @@ Special 感谢
 * [Mallangche](https://github.com/JammPark/Mallangche)
 * [mbedtls](https://www.trustedfirmware.org/projects/mbed-tls/)
 * [SDL](https://libsdl.org/)
-* [zlib](https://www.zlib.net/)
-* [zpix](https://github.com/SolidZORO/zpix-pixel-font)
 
 指导
 ===========================================================================

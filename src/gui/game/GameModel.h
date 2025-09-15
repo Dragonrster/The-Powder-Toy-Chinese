@@ -87,7 +87,7 @@ private:
 	Tool **activeTools = nullptr;
 	std::array<Tool *, NUM_TOOLINDICES> decoToolset;
 	std::array<Tool *, NUM_TOOLINDICES> regularToolset;
-	User currentUser;
+	std::optional<User> currentUser;
 	float toolStrength;
 	std::deque<HistoryEntry> history;
 	std::unique_ptr<Snapshot> historyCurrent;
@@ -105,6 +105,7 @@ private:
 
 	int edgeMode;
 	float ambientAirTemp;
+	float vorticityCoeff;
 	int decoSpace;
 
 	String infoTip;
@@ -163,6 +164,8 @@ public:
 	}
 	void SetAmbientAirTemperature(float ambientAirTemp);
 	float GetAmbientAirTemperature();
+	void SetVorticityCoeff(float vorticityCoeff);
+	float GetVorticityCoeff();
 	void SetDecoSpace(int decoSpace);
 	int GetDecoSpace();
 
@@ -255,8 +258,8 @@ public:
 	void SetActiveMenu(int menuID);
 	int GetActiveMenu();
 	void FrameStep(int frames);
-	User GetUser();
-	void SetUser(User user);
+	const std::optional<User> &GetUser() const;
+	void SetUser(std::optional<User> user);
 	Simulation * GetSimulation();
 	Renderer * GetRenderer();
 	RendererSettings &GetRendererSettings()

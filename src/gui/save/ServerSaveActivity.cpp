@@ -87,8 +87,9 @@ ServerSaveActivity::ServerSaveActivity(std::unique_ptr<SaveInfo> newSave, OnUplo
 	descriptionField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(descriptionField);
 
-	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X / 2) - 80, 16), ByteString("公开").FromUtf8(), "");
-	if (Client::Ref().GetAuthUser().Username != save->GetUserName())
+	publishedCheckbox = new ui::Checkbox(ui::Point(8, 45), ui::Point((Size.X/2)-80, 16), "Publish", "");
+	auto user = Client::Ref().GetAuthUser();
+	if (!(user && user->Username == save->GetUserName()))
 	{
 		// Save is not owned by the user, disable by default
 		publishedCheckbox->SetChecked(false);
@@ -197,7 +198,8 @@ void ServerSaveActivity::Save()
 		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("必须为沙盘指定一个名称").FromUtf8());
 		return;
 	}
-	if (Client::Ref().GetAuthUser().Username != save->GetUserName() && publishedCheckbox->GetChecked())
+	auto user = Client::Ref().GetAuthUser();
+	if (!(user && user->Username == save->GetUserName()) && publishedCheckbox->GetChecked())
 	{
 		new ConfirmPrompt(ByteString("发布").FromUtf8(), ByteString("此沙盘由").FromUtf8() + save->GetUserName().FromUtf8() + ByteString("发布,即将以自己的名义发布此沙盘:如没有获得授予,请取消选中发布框,否则继续").FromUtf8(), {[this]
 																																																								  {
@@ -215,7 +217,8 @@ void ServerSaveActivity::AddAuthorInfo()
 	Json::Value serverSaveInfo;
 	serverSaveInfo["type"] = "save";
 	serverSaveInfo["id"] = save->GetID();
-	serverSaveInfo["username"] = Client::Ref().GetAuthUser().Username;
+	auto user = Client::Ref().GetAuthUser();
+	serverSaveInfo["username"] = user ? user->Username : ByteString("");
 	serverSaveInfo["title"] = save->GetName().ToUtf8();
 	serverSaveInfo["description"] = save->GetDescription().ToUtf8();
 	serverSaveInfo["published"] = (int)save->GetPublished();
@@ -234,7 +237,8 @@ void ServerSaveActivity::saveUpload()
 	save->SetName(nameField->GetText());
 	save->SetDescription(descriptionField->GetText());
 	save->SetPublished(publishedCheckbox->GetChecked());
-	save->SetUserName(Client::Ref().GetAuthUser().Username);
+	auto user = Client::Ref().GetAuthUser();
+	save->SetUserName(user ? user->Username : ByteString(""));
 	save->SetID(0);
 	{
 		auto gameSave = save->TakeGameSave();
@@ -345,7 +349,8 @@ void ServerSaveActivity::ShowRules()
 
 void ServerSaveActivity::CheckName(String newname)
 {
-	if (newname.length() && newname == save->GetName() && save->GetUserName() == Client::Ref().GetAuthUser().Username)
+	auto user = Client::Ref().GetAuthUser();
+	if (newname.length() && newname == save->GetName() && user && save->GetUserName() == user->Username)
 		titleLabel->SetText(ByteString("修改沙盘属性:").FromUtf8());
 	else
 		titleLabel->SetText(ByteString("保存到云端").FromUtf8());

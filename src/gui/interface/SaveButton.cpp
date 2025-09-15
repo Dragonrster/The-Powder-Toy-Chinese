@@ -300,7 +300,7 @@ void SaveButton::AddContextMenu(int menuType)
 	{
 		menu = new ContextMenu(this);
 		menu->AddItem(ContextMenuItem(ByteString("打开").FromUtf8(), 0, true));
-		if (Client::Ref().GetAuthUser().UserID)
+		if (Client::Ref().GetAuthUser())
 			menu->AddItem(ContextMenuItem(ByteString("选择").FromUtf8(), 1, true));
 		menu->AddItem(ContextMenuItem(ByteString("历史").FromUtf8(), 2, true));
 		menu->AddItem(ContextMenuItem(ByteString("更多作品").FromUtf8(), 3, true));

@@ -71,7 +71,7 @@ void LoginModel::Tick()
 		{
 			logoutRequest->Finish();
 			auto &client = Client::Ref();
-			client.SetAuthUser(User(0, ""));
+			client.SetAuthUser(std::nullopt);
 			statusText = ByteString("已注销").FromUtf8();
 		}
 		catch (const http::RequestError &ex)

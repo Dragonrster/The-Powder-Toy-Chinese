@@ -31,6 +31,8 @@ aarch64-linux-gnu-static) ;;
 aarch64-linux-gnu-dynamic) ;;
 x86_64-windows-mingw-static) ;;
 x86_64-windows-mingw-dynamic) ;;
+x86-windows-mingw-static) ;;
+x86-windows-mingw-dynamic) ;;
 x86_64-windows-msvc-static) ;;
 x86_64-windows-msvc-dynamic) ;;
 x86-windows-msvc-static) ;;
@@ -78,15 +80,20 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 		;;
 	windows)
 		if [[ $BSH_BUILD_PLATFORM-$BSH_HOST_LIBC == windows-mingw ]]; then
-			pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-gcc
-			if [[ $BSH_STATIC_DYNAMIC == static ]]; then
-				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{cmake,7zip,jq} patch
+			if [[ $BSH_HOST_ARCH == x86_64 ]]; then
+				variant=ucrt-x86_64
 			else
-				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,meson,fftw,jq}
+				variant=i686
+			fi
+			pacman -S --noconfirm --needed mingw-w64-"$variant"-{gcc,meson}
+			if [[ $BSH_STATIC_DYNAMIC == static ]]; then
+				pacman -S --noconfirm --needed mingw-w64-"$variant"-{cmake,7zip,jq} patch
+			else
+				pacman -S --noconfirm --needed mingw-w64-"$variant"-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,fftw,jq}
 			fi
 			export PKG_CONFIG=$(which pkg-config.exe)
 			if [[ $BSH_LINT == yes ]]; then
-				pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-clang-tools-extra
+				pacman -S --noconfirm --needed mingw-w64-"$variant"-clang-tools-extra
 			fi
 		fi
 		;;
@@ -95,7 +102,7 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 		if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 			sudo apt install libc6-dev
 		else
-			sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev zlib1g-dev libsdl2-dev libbz2-dev libjsoncpp-dev libpng-dev
+			sudo apt install libluajit-5.1-dev libcurl4-openssl-dev libfftw3-dev libsdl2-dev libbz2-dev libjsoncpp-dev libpng-dev
 		fi
 		if [[ $PACKAGE_MODE == appimage ]]; then
 			sudo apt install libfuse2
@@ -107,7 +114,7 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 	darwin)
 		brew install binutils # pkg-config
 		if [[ $BSH_STATIC_DYNAMIC != static ]]; then
-			brew install luajit fftw zlib sdl2 bzip2 jsoncpp # curl
+			brew install luajit fftw sdl2 bzip2 jsoncpp # curl
 		fi
 		if [[ $BSH_LINT == yes ]]; then
 			# gg brew :(
@@ -260,15 +267,22 @@ if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 		c_link_args+=\'-static\',
 		c_link_args+=\'-static-libgcc\',
 		c_link_args+=\'-static-libstdc++\',
+		if [[ $BSH_HOST_ARCH == x86 ]]; then
+			meson_configure+=$'\t'-Dwindows_utf8cp=false
+		fi
 	elif [[ $BSH_HOST_PLATFORM == linux ]]; then
 		c_link_args+=\'-static-libgcc\',
 		c_link_args+=\'-static-libstdc++\',
 	fi
 else
-	if [[ "$BSH_HOST_PLATFORM-$BSH_HOST_LIBC $BSH_BUILD_PLATFORM" == "windows-mingw windows" ]]; then
+	if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC $BSH_BUILD_PLATFORM" == "x86_64-windows-mingw windows" ]]; then
 		meson_configure+=$'\t'-Dworkaround_elusive_bzip2=true
 		meson_configure+=$'\t'-Dworkaround_elusive_bzip2_include_dir=/ucrt64/include
 		meson_configure+=$'\t'-Dworkaround_elusive_bzip2_lib_dir=/ucrt64/lib
+	fi
+	if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC $BSH_BUILD_PLATFORM" == "x86-windows-mingw windows" ]]; then
+		>&2 echo "nyi elusive bzip2"
+		exit 1
 	fi
 	if [[ $BSH_BUILD_PLATFORM == linux ]]; then
 		meson_configure+=$'\t'-Dworkaround_elusive_bzip2=true
@@ -323,11 +337,14 @@ fi
 if [[ $RELEASE_TYPE != dev ]]; then
 	meson_configure+=$'\t'-Dignore_updates=false
 fi
-if [[ "$BSH_HOST_PLATFORM-$BSH_HOST_LIBC" == "windows-mingw" ]]; then
+if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC" == "x86_64-windows-mingw" ]]; then
 	meson_configure+=$'\t'--cross-file=.github/mingw-ghactions.ini
 	# there is some mingw bug that only ever manifests on ghactions which makes MakeIco.exe use tons of memory and fail
 	# TODO: remove this hack once we figure out how to fix that
 	meson_configure+=$'\t'-Dwindows_icons=false
+fi
+if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC" == "x86-windows-mingw" ]]; then
+	meson_configure+=$'\t'--cross-file=.github/mingw32-ghactions.ini
 fi
 if [[ $BSH_DEBUG_RELEASE-$BSH_STATIC_DYNAMIC == release-static ]]; then
 	meson_configure+=$'\t'-Dlto=true
@@ -521,7 +538,8 @@ if [[ $BSH_HOST_PLATFORM == darwin ]]; then
 		exit 1
 	fi
 elif [[ $PACKAGE_MODE == emscripten ]]; then
-	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.wasm
+	cp resources/serve-wasm.py .
+	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.wasm serve-wasm.py
 elif [[ $PACKAGE_MODE == appimage ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
 	case $BSH_HOST_ARCH in

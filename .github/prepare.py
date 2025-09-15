@@ -165,6 +165,7 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 #	(  'x86_64',    'windows',      'mingw', 'dynamic',   'linux', 'ubuntu-22.04',     '',         'check',      None,         None,                     None, 'release',       10, False ), # ubuntu-22.04 doesn't have ucrt64-capable mingw >_>
 	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
 	(  'x86_64',    'windows',      'mingw',  'static', 'windows', 'windows-2022', '.exe',       'archive',    '.dbg',         None,                     None, 'release',       10, False ),
+	(     'x86',    'windows',      'mingw',  'static', 'windows', 'windows-2022', '.exe',       'archive',    '.dbg',         None,                     None, 'release',       10, False ), # windows xp
 	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',       10, False ),
 	(  'x86_64',    'windows',      'mingw', 'dynamic', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None, 'release',       10,  True ),
 	(  'x86_64',    'windows',       'msvc',  'static', 'windows', 'windows-2022', '.exe',         'check',      None,         None,                     None,   'debug',        0, False ), # priority = 0: static debug build
@@ -260,6 +261,10 @@ for        arch,     platform,         libc,   statdyn, bplatform,         runso
 		'bsh_lint': 'no',
 		'runs_on': runson,
 		'force_msys2_bash': msys2_bash and 'yes' or 'no',
+		'msys2_msystem': arch == 'x86_64' and 'UCRT64' or 'MINGW32',
+		# this list doesn't have to mirror the one in build.sh perfectly
+		# but the packages listed here get cached properly and take less time to install
+		'msys2_cache_install': arch == 'x86_64' and 'git curl patch mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-pkgconf mingw-w64-ucrt-x86_64-bzip2 mingw-w64-ucrt-x86_64-luajit mingw-w64-ucrt-x86_64-jsoncpp mingw-w64-ucrt-x86_64-curl mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-libpng mingw-w64-ucrt-x86_64-meson mingw-w64-ucrt-x86_64-python mingw-w64-ucrt-x86_64-python-pip mingw-w64-ucrt-x86_64-fftw mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-7zip mingw-w64-ucrt-x86_64-jq' or 'git curl patch mingw-w64-i686-gcc mingw-w64-i686-meson mingw-w64-i686-python mingw-w64-i686-python-pip mingw-w64-i686-cmake mingw-w64-i686-7zip mingw-w64-i686-jq',
 		'package_suffix': suffix,
 		'package_mode': mode,
 		'publish': publish and 'yes' or 'no',

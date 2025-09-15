@@ -250,13 +250,13 @@ GameView::GameView():
 	currentX+=151;
 	saveSimulationButton->SetSplitActionCallback({
 		[this] {
-			if (CtrlBehaviour() || !Client::Ref().GetAuthUser().UserID)
+			if (CtrlBehaviour() || !Client::Ref().GetAuthUser())
 				c->OpenLocalSaveWindow(true);
 			else
 				c->SaveAsCurrent();
 		},
 		[this] {
-			if (CtrlBehaviour() || !Client::Ref().GetAuthUser().UserID)
+			if (CtrlBehaviour() || !Client::Ref().GetAuthUser())
 				c->OpenLocalSaveWindow(false);
 			else
 				c->OpenSaveWindow();
@@ -745,7 +745,8 @@ void GameView::NotifySimulationChanged(GameModel * sender)
 }
 void GameView::NotifyUserChanged(GameModel * sender)
 {
-	if(!sender->GetUser().UserID)
+	auto user = sender->GetUser();
+	if (!user)
 	{
 		loginButton->SetText(ByteString("登录").FromUtf8());
 		loginButton->SetShowSplit(false);
@@ -753,7 +754,7 @@ void GameView::NotifyUserChanged(GameModel * sender)
 	}
 	else
 	{
-		loginButton->SetText(sender->GetUser().Username.FromUtf8());
+		loginButton->SetText(user->Username.FromUtf8());
 		loginButton->SetShowSplit(true);
 		loginButton->SetRightToolTip(ByteString("编辑个人配置").FromUtf8());
 	}
@@ -797,13 +798,14 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		if (introText > 50)
 			introText = 50;
 
+		auto user = sender->GetUser();
 		saveSimulationButton->SetText(sender->GetSave()->GetName());
-		if (sender->GetSave()->GetUserName() == sender->GetUser().Username)
+		if (user && sender->GetSave()->GetUserName() == user->Username)
 			saveSimulationButton->SetShowSplit(true);
 		else
 			saveSimulationButton->SetShowSplit(false);
 		reloadButton->Enabled = true;
-		upVoteButton->Enabled = sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetUser().Username != sender->GetSave()->GetUserName();
+		upVoteButton->Enabled = sender->GetSave()->GetID() && user && user->Username != sender->GetSave()->GetUserName();
 
 		auto upVoteButtonColor = [this](bool active) {
 			if(active)
@@ -819,7 +821,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 				upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 			}
 		};
-		auto upvoted = sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote() == 1;
+		auto upvoted = sender->GetSave()->GetID() && user && sender->GetSave()->GetVote() == 1;
 		upVoteButtonColor(upvoted);
 
 		downVoteButton->Enabled = upVoteButton->Enabled;
@@ -837,10 +839,10 @@ void GameView::NotifySaveChanged(GameModel * sender)
 				downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 			}
 		};
-		auto downvoted = sender->GetSave()->GetID() && sender->GetUser().UserID && sender->GetSave()->GetVote() == -1;
+		auto downvoted = sender->GetSave()->GetID() && user && sender->GetSave()->GetVote() == -1;
 		downVoteButtonColor(downvoted);
 
-		if (sender->GetUser().UserID)
+		if (user)
 		{
 			upVoteButton->Appearance.BorderDisabled = upVoteButton->Appearance.BorderInactive;
 			downVoteButton->Appearance.BorderDisabled = downVoteButton->Appearance.BorderInactive;
@@ -940,11 +942,11 @@ ByteString GameView::TakeScreenshot(int captureUI, int fileType)
 	std::unique_ptr<VideoBuffer> screenshot;
 	if (captureUI)
 	{
-		screenshot = std::make_unique<VideoBuffer>(*rendererFrame);
+		screenshot = std::make_unique<VideoBuffer>(ui::Engine::Ref().g->DumpFrame());
 	}
 	else
 	{
-		screenshot = std::make_unique<VideoBuffer>(ui::Engine::Ref().g->DumpFrame());
+		screenshot = std::make_unique<VideoBuffer>(rendererFrame->data(), RES, WINDOW.X);
 	}
 
 	ByteString filename;
@@ -1447,10 +1449,13 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 		c->ReloadSim();
 		break;
 	case SDL_SCANCODE_A:
-		if (Client::Ref().GetAuthUser().UserElevation != User::ElevationNone && ctrl)
 		{
-			ByteString authorString = Client::Ref().GetAuthorInfo().toStyledString();
-			new InformationMessage( ByteString("保存作者信息").FromUtf8(), authorString.FromUtf8(), true);
+			auto user = Client::Ref().GetAuthUser();
+			if (user && user->UserElevation != User::ElevationNone && ctrl)
+			{
+				ByteString authorString = Client::Ref().GetAuthorInfo().toStyledString();
+				new InformationMessage(ByteString("保存作者信息").FromUtf8(), authorString.FromUtf8(), true);
+			}
 		}
 		break;
 	case SDL_SCANCODE_R:
@@ -2123,7 +2128,7 @@ void GameView::UpdateToolStrength()
 
 void GameView::SetSaveButtonTooltips()
 {
-	if (!Client::Ref().GetAuthUser().UserID)
+	if (!Client::Ref().GetAuthUser())
 		saveSimulationButton->SetToolTips(ByteString("覆盖本地的沙盘").FromUtf8(), ByteString("将沙盘保存到本地,登陆后可上传到云服务器").FromUtf8());
 	else if (ctrlBehaviour)
 		saveSimulationButton->SetToolTips(ByteString("覆盖本地的沙盘").FromUtf8(), ByteString("将沙盘保存到本地").FromUtf8());

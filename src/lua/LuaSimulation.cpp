@@ -934,7 +934,7 @@ static int resetTemp(lua_State *L)
 	bool onlyConductors = luaL_optint(L, 1, 0);
 	for (int i = 0; i < sim->parts.lastActiveIndex; i++)
 	{
-		if (sim->parts[i].type && (!onlyConductors || !sim->IsHeatInsulator(sim->parts[i])))
+		if (sim->parts[i].type && (!onlyConductors || !sd.IsHeatInsulator(sim->parts[i])))
 		{
 			sim->parts[i].temp = elements[sim->parts[i].type].DefaultProperties.temp;
 		}
@@ -1272,6 +1272,21 @@ static int ambientAirTemp(lua_State *L)
 	lsi->AssertInterfaceEvent();
 	float ambientAirTemp = restrict_flt(luaL_optnumber(L, 1, R_TEMP + 273.15f), MIN_TEMP, MAX_TEMP);
 	lsi->gameModel->SetAmbientAirTemperature(ambientAirTemp);
+	return 0;
+}
+
+static int vorticityCoeff(lua_State *L)
+{
+	auto *lsi = GetLSI();
+	int acount = lua_gettop(L);
+	if (acount == 0)
+	{
+		lua_pushnumber(L, lsi->sim->air->vorticityCoeff);
+		return 1;
+	}
+	lsi->AssertInterfaceEvent();
+	float vorticityCoeff = restrict_flt(luaL_optnumber(L, 1, 0.0f), 0.0f, 1.0f);
+	lsi->gameModel->SetVorticityCoeff(vorticityCoeff);
 	return 0;
 }
 
@@ -2013,6 +2028,7 @@ void LuaSimulation::Open(lua_State *L)
 		LFUNC(airMode),
 		LFUNC(waterEqualization),
 		LFUNC(ambientAirTemp),
+		LFUNC(vorticityCoeff),
 		LFUNC(elementCount),
 		LFUNC(canMove),
 		LFUNC(brush),
