@@ -40,7 +40,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 	};
 	std::vector<ExistingParticle> existingParticles;
 	auto pasteArea = RES.OriginRect() & RectSized(partP, save->blockSize * CELL);
-	for (int i = 0; i <= parts.lastActiveIndex; i++)
+	for (int i = 0; i < parts.active; i++)
 	{
 		if (parts[i].type)
 		{
@@ -138,10 +138,6 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 		{
 			continue;
 		}
-		if (i > parts.lastActiveIndex)
-		{
-			parts.lastActiveIndex = i;
-		}
 		parts[i] = tempPart;
 
 
@@ -226,7 +222,7 @@ void Simulation::Load(const GameSave *save, bool includePressure, Vec2<int> bloc
 			parts[i].tmp3 = 0;
 		}
 	}
-	parts.lastActiveIndex = NPART-1;
+	parts.active = NPART;
 	force_stacking_check = true;
 	Element_PPIP_ppip_changed = 1;
 
@@ -986,12 +982,13 @@ int Simulation::parts_avg(int ci, int ni,int t)
 void Parts::Reset()
 {
 	memset(data.data(), 0, sizeof(Particle)*NPART);
-	lastActiveIndex = 0;
+	active = 0;
+	pfree = -1;
 }
 
 void Simulation::clear_sim(void)
 {
-	for (auto i = 0; i <= parts.lastActiveIndex; i++)
+	for (auto i = 0; i < parts.active; i++)
 	{
 		if (parts[i].type)
 		{
@@ -1008,10 +1005,6 @@ void Simulation::clear_sim(void)
 	memset(bmap, 0, sizeof(bmap));
 	memset(emap, 0, sizeof(emap));
 	parts.Reset();
-	for (int i = 0; i < NPART-1; i++)
-		parts[i].life = i+1;
-	parts[NPART-1].life = -1;
-	pfree = 0;
 	NUM_PARTS = 0;
 	memset(pmap, 0, sizeof(pmap));
 	memset(fvx, 0, sizeof(fvx));
@@ -1766,10 +1759,15 @@ void Simulation::kill_part(int i)//kills particle number i
 
 	elementCount[t]--;
 
-	parts[i].type = PT_NONE;
-	parts[i].life = pfree;
-	pfree = i;
+	parts.Free(i);
 	NUM_PARTS -= 1;
+}
+
+void Parts::Free(int i)
+{
+	data[i].type = PT_NONE;
+	data[i].life = pfree;
+	pfree = i;
 }
 
 // Changes the type of particle number i, to t.  This also changes pmap at the same time
@@ -1889,10 +1887,11 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 				return -1;
 			}
 		}
-		if (pfree == -1)
+		i = parts.Alloc();
+		if (i == -1)
+		{
 			return -1;
-		i = pfree;
-		pfree = parts[i].life;
+		}
 		NUM_PARTS += 1;
 	}
 	else
@@ -1913,8 +1912,6 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 
 		i = p;
 	}
-
-	if (i>parts.lastActiveIndex) parts.lastActiveIndex = i;
 
 	parts[i] = elements[t].DefaultProperties;
 	parts[i].type = t;
@@ -1953,9 +1950,26 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	return i;
 }
 
+int Parts::Alloc()
+{
+	if (pfree != -1)
+	{
+		auto i = pfree;
+		pfree = data[i].life;
+		return i;
+	}
+	if (active < NPART)
+	{
+		auto i = active;
+		active += 1;
+		return i;
+	}
+	return -1;
+}
+
 void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLOW
 {
-	if (MaxPartsReached())
+	if (parts.MaxPartsReached())
 	{
 		return;
 	}
@@ -1992,7 +2006,7 @@ void Simulation::create_gain_photon(int pp)//photons from PHOT going through GLO
 
 void Simulation::create_cherenkov_photon(int pp)//photons from NEUT going through GLAS
 {
-	if (MaxPartsReached())
+	if (parts.MaxPartsReached())
 	{
 		return;
 	}
@@ -2214,7 +2228,7 @@ void Simulation::UpdateParticles(int start, int end)
 	//the main particle loop function, goes over all particles.
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
-	for (auto i = start; i < end && i <= parts.lastActiveIndex; i++)
+	for (auto i = start; i < end && i < parts.active; i++)
 	{
 		if (parts[i].type)
 		{
@@ -2600,13 +2614,13 @@ void Simulation::UpdateParticles(int start, int end)
 						if (t == PT_NONE)
 						{
 							kill_part(i);
-							goto killed;
+							continue;
 						}
 						// part_change_type could refuse to change the type and kill the particle
 						// for example, changing type to STKM but one already exists
 						// we need to account for that to not cause simulation corruption issues
 						if (part_change_type(i,x,y,t))
-							goto killed;
+							continue;
 
 						if (t==PT_FIRE || t==PT_PLSM || t==PT_CFLM)
 							parts[i].life = rng.between(120, 169);
@@ -2739,14 +2753,14 @@ void Simulation::UpdateParticles(int start, int end)
 					if (t == PT_NONE)
 					{
 						kill_part(i);
-						goto killed;
+						continue;
 					}
 					parts[i].life = 0;
 					// part_change_type could refuse to change the type and kill the particle
 					// for example, changing type to STKM but one already exists
 					// we need to account for that to not cause simulation corruption issues
 					if (part_change_type(i,x,y,t))
-						goto killed;
+						continue;
 					if (t == PT_FIRE)
 						parts[i].life = rng.between(120, 169);
 					transitionOccurred = true;
@@ -2765,7 +2779,6 @@ void Simulation::UpdateParticles(int start, int end)
 			if(legacy_enable)//if heat sim is off
 				Element::legacyUpdate(this, i,x,y,surround_space,nt, parts, pmap);
 
-killed:
 			if (parts[i].type == PT_NONE)//if its dead, skip to next particle
 				continue;
 
@@ -3027,7 +3040,7 @@ killed:
 				if (water_equal_test && elements[t].Falldown == 2 && rng.chance(1, 200))
 				{
 					if (flood_water(x, y, i))
-						goto movedone;
+						continue;
 				}
 				// liquids and powders
 				if (!do_move(i, x, y, fin_xf, fin_yf))
@@ -3062,7 +3075,7 @@ killed:
 							{
 								parts[i].vx *= elements[t].Collision;
 								parts[i].vy *= elements[t].Collision;
-								goto movedone;
+								continue;
 							}
 							{
 								auto swappage = dx;
@@ -3073,7 +3086,7 @@ killed:
 							{
 								parts[i].vx *= elements[t].Collision;
 								parts[i].vy *= elements[t].Collision;
-								goto movedone;
+								continue;
 							}
 						}
 						if (elements[t].Falldown>1 && !grav && gravityMode==GRAV_VERTICAL && parts[i].vy>fabsf(parts[i].vx))
@@ -3235,8 +3248,6 @@ killed:
 					}
 				}
 			}
-movedone:
-			continue;
 		}
 	}
 
@@ -3249,10 +3260,6 @@ movedone:
 
 void Simulation::RecalcFreeParticles(bool do_life_dec)
 {
-	int x, y, t;
-	int lastPartUsed = 0;
-	int lastPartUnused = -1;
-
 	memset(pmap, 0, sizeof(pmap));
 	memset(pmap_count, 0, sizeof(pmap_count));
 	memset(photons, 0, sizeof(photons));
@@ -3261,90 +3268,96 @@ void Simulation::RecalcFreeParticles(bool do_life_dec)
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
 	//the particle loop that resets the pmap/photon maps every frame, to update them.
-	for (int i = 0; i <= parts.lastActiveIndex; i++)
+	for (int i = 0; i < parts.active; i++)
 	{
-		if (parts[i].type)
+		if (!parts[i].type)
 		{
-			t = parts[i].type;
-			x = (int)(parts[i].x+0.5f);
-			y = (int)(parts[i].y+0.5f);
-			bool inBounds = false;
-			if (x>=0 && y>=0 && x<XRES && y<YRES)
+			continue;
+		}
+		auto t = parts[i].type;
+		auto x = int(parts[i].x+0.5f);
+		auto y = int(parts[i].y+0.5f);
+		bool inBounds = false;
+		if (x>=0 && y>=0 && x<XRES && y<YRES)
+		{
+			if (elements[t].Properties & TYPE_ENERGY)
+				photons[y][x] = PMAP(i, t);
+			else
 			{
-				if (elements[t].Properties & TYPE_ENERGY)
-					photons[y][x] = PMAP(i, t);
-				else
-				{
-					// Particles are sometimes allowed to go inside INVS and FILT
-					// To make particles collide correctly when inside these elements, these elements must not overwrite an existing pmap entry from particles inside them
-					if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT))
-						pmap[y][x] = PMAP(i, t);
-					// (there are a few exceptions, including energy particles - currently no limit on stacking those)
-					if (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH && t!=PT_PLSM)
-						pmap_count[y][x]++;
-				}
-				inBounds = true;
+				// Particles are sometimes allowed to go inside INVS and FILT
+				// To make particles collide correctly when inside these elements, these elements must not overwrite an existing pmap entry from particles inside them
+				if (!pmap[y][x] || (t!=PT_INVIS && t!= PT_FILT))
+					pmap[y][x] = PMAP(i, t);
+				// (there are a few exceptions, including energy particles - currently no limit on stacking those)
+				if (t!=PT_THDR && t!=PT_EMBR && t!=PT_FIGH && t!=PT_PLSM)
+					pmap_count[y][x]++;
 			}
-			lastPartUsed = i;
-			NUM_PARTS ++;
+			inBounds = true;
+		}
+		NUM_PARTS ++;
 
-			if (elementRecount && t >= 0 && t < PT_NUM && elements[t].Enabled)
-				elementCount[t]++;
+		if (elementRecount && t >= 0 && t < PT_NUM && elements[t].Enabled)
+			elementCount[t]++;
 
-			//decrease particle life
-			if (do_life_dec && (!sys_pause || framerender))
+		//decrease particle life
+		if (do_life_dec && (!sys_pause || framerender))
+		{
+			if (t<0 || t>=PT_NUM || !elements[t].Enabled)
 			{
-				if (t<0 || t>=PT_NUM || !elements[t].Enabled)
-				{
-					kill_part(i);
-					continue;
-				}
+				kill_part(i);
+				continue;
+			}
 
-				unsigned int elem_properties = elements[t].Properties;
-				if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC) && !(inBounds && bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
+			unsigned int elem_properties = elements[t].Properties;
+			if (parts[i].life>0 && (elem_properties&PROP_LIFE_DEC) && !(inBounds && bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
+			{
+				// automatically decrease life
+				parts[i].life--;
+				if (parts[i].life<=0 && (elem_properties&(PROP_LIFE_KILL_DEC|PROP_LIFE_KILL)))
 				{
-					// automatically decrease life
-					parts[i].life--;
-					if (parts[i].life<=0 && (elem_properties&(PROP_LIFE_KILL_DEC|PROP_LIFE_KILL)))
-					{
-						// kill on change to no life
-						kill_part(i);
-						continue;
-					}
-				}
-				else if (parts[i].life<=0 && (elem_properties&PROP_LIFE_KILL) && !(inBounds && bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
-				{
-					// kill if no life
+					// kill on change to no life
 					kill_part(i);
 					continue;
 				}
 			}
+			else if (parts[i].life<=0 && (elem_properties&PROP_LIFE_KILL) && !(inBounds && bmap[y/CELL][x/CELL] == WL_STASIS && emap[y/CELL][x/CELL]<8))
+			{
+				// kill if no life
+				kill_part(i);
+				continue;
+			}
 		}
-		else
-		{
-			if (lastPartUnused<0) pfree = i;
-			else parts[lastPartUnused].life = i;
-			lastPartUnused = i;
-		}
 	}
-	if (lastPartUnused == -1)
-	{
-		pfree = (parts.lastActiveIndex>=(NPART-1)) ? -1 : parts.lastActiveIndex+1;
-	}
-	else
-	{
-		parts[lastPartUnused].life = (parts.lastActiveIndex>=(NPART-1)) ? -1 : parts.lastActiveIndex+1;
-	}
-	parts.lastActiveIndex = lastPartUsed;
+	parts.Flatten();
 	if (elementRecount)
 		elementRecount = false;
+}
+
+void Parts::Flatten()
+{
+	int newActive = 0;
+	auto *ppfree = &pfree;
+	for (int i = 0; i < active; i++)
+	{
+		if (data[i].type)
+		{
+			for (auto j = newActive; j < i; ++j)
+			{
+				*ppfree = j;
+				ppfree = &data[j].life;
+			}
+			newActive = i + 1;
+		}
+	}
+	*ppfree = -1;
+	active = newActive;
 }
 
 void Simulation::SimulateGoL()
 {
 	auto &builtinGol = SimulationData::builtinGol;
 	CGOL = 0;
-	for (int i = 0; i <= parts.lastActiveIndex; ++i)
+	for (int i = 0; i < parts.active; ++i)
 	{
 		auto &part = parts[i];
 		if (part.type != PT_LIFE)
@@ -3550,7 +3563,7 @@ void Simulation::CheckStacking()
 	}
 	if (excessive_stacking_found)
 	{
-		for (int i = 0; i <= parts.lastActiveIndex; i++)
+		for (int i = 0; i < parts.active; i++)
 		{
 			if (parts[i].type)
 			{
@@ -3774,7 +3787,7 @@ void Simulation::BeforeSim()
 		// update PPIP tmp?
 		if (Element_PPIP_ppip_changed)
 		{
-			for (int i = 0; i <= parts.lastActiveIndex; i++)
+			for (int i = 0; i < parts.active; i++)
 			{
 				if (parts[i].type==PT_PPIP)
 				{
