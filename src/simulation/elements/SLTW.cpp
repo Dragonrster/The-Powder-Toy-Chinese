@@ -29,7 +29,6 @@ void Element::Element_SLTW()
 	Weight = 35;
 
 	HeatConduct = 75;
-	LatentHeat = 7500;
 	Description = ByteString("盐水,SALT+WATR的产物能更快的导电(比WATR快),具有更高沸点和更低的凝固点").FromUtf8();
 
 	Properties = TYPE_LIQUID | PROP_CONDUCTS | PROP_LIFE_DEC | PROP_NEUTPENETRATE | PROP_PHOTPASS;

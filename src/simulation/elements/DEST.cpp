@@ -90,7 +90,8 @@ static int update(UPDATE_FUNC_ARGS)
 	else if (!sd.IsHeatInsulator(parts[ID(r)]))
 		parts[ID(r)].temp = MAX_TEMP;
 	parts[i].temp=MAX_TEMP;
-	sim->pv[y/CELL][x/CELL]+=80.0f;
+	sim->pv[y/CELL][x/CELL] = restrict_flt(sim->pv[y/CELL][x/CELL] + 80.0f, MIN_PRESSURE, MAX_PRESSURE);
+
 	return 0;
 }
 

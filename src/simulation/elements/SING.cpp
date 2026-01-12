@@ -58,10 +58,10 @@ static int update(UPDATE_FUNC_ARGS)
 	if (sim->pv[y/CELL-1][x/CELL]<singularity)
 		sim->pv[y/CELL-1][x/CELL] += 0.1f*(singularity-sim->pv[y/CELL-1][x/CELL]);
 
-	sim->pv[y/CELL][x/CELL+1] += 0.1f*(singularity-sim->pv[y/CELL][x/CELL+1]);
-	sim->pv[y/CELL+1][x/CELL+1] += 0.1f*(singularity-sim->pv[y/CELL+1][x/CELL+1]);
-	sim->pv[y/CELL][x/CELL-1] += 0.1f*(singularity-sim->pv[y/CELL][x/CELL-1]);
-	sim->pv[y/CELL-1][x/CELL-1] += 0.1f*(singularity-sim->pv[y/CELL-1][x/CELL-1]);
+	sim->pv[y/CELL][x/CELL+1]   = restrict_flt(sim->pv[y/CELL][x/CELL+1]   + 0.1f*(singularity-sim->pv[y/CELL][x/CELL+1]),   MIN_PRESSURE, MAX_PRESSURE);
+	sim->pv[y/CELL+1][x/CELL+1] = restrict_flt(sim->pv[y/CELL+1][x/CELL+1] + 0.1f*(singularity-sim->pv[y/CELL+1][x/CELL+1]), MIN_PRESSURE, MAX_PRESSURE);
+	sim->pv[y/CELL][x/CELL-1]   = restrict_flt(sim->pv[y/CELL][x/CELL-1]   + 0.1f*(singularity-sim->pv[y/CELL][x/CELL-1]),   MIN_PRESSURE, MAX_PRESSURE);
+	sim->pv[y/CELL-1][x/CELL-1] = restrict_flt(sim->pv[y/CELL-1][x/CELL-1] + 0.1f*(singularity-sim->pv[y/CELL-1][x/CELL-1]), MIN_PRESSURE, MAX_PRESSURE);
 
 	if (parts[i].life<1) {
 		//Pop!
@@ -72,7 +72,7 @@ static int update(UPDATE_FUNC_ARGS)
 			{
 				auto cry = (y/CELL)+ry;
 				if (cry >= 0 && crx >= 0 && crx < XCELLS && cry < YCELLS) {
-					sim->pv[cry][crx] += (float)parts[i].tmp;
+					sim->pv[cry][crx] = restrict_flt(sim->pv[cry][crx] + (float)parts[i].tmp, MIN_PRESSURE, MAX_PRESSURE);
 				}
 			}
 		}

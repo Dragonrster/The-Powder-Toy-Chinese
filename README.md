@@ -41,7 +41,6 @@ Special 感谢
 使用的库和其他资源
 ===========================================================================
 
-* [BSON](https://github.com/interactive-matter/bson-c)
 * [bzip2](http://www.bzip.org/)
 * [FFTW](http://fftw.org/)
 * [JsonCpp](https://github.com/open-source-parsers/jsoncpp)

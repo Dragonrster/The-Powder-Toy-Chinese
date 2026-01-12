@@ -482,12 +482,12 @@ void GameController::CopyRegion(ui::Point point1, ui::Point point2)
 	auto newSave = gameModel->GetSimulation()->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), SaneSaveRect(point1, point2));
 	if(newSave)
 	{
-		Json::Value clipboardInfo;
+		Bson clipboardInfo;
 		clipboardInfo["type"] = "clipboard";
 		auto user = Client::Ref().GetAuthUser();
 		clipboardInfo["username"] = user ? user->Username : ByteString("");
-		clipboardInfo["date"] = (Json::Value::UInt64)time(nullptr);
-		Client::Ref().SaveAuthorInfo(&clipboardInfo);
+		clipboardInfo["date"] = int64_t(time(nullptr));
+		Client::Ref().SaveAuthorInfo(clipboardInfo);
 		newSave->authors = clipboardInfo;
 
 		newSave->paused = gameModel->GetPaused();
@@ -783,6 +783,7 @@ void GameController::ResetSpark()
 	auto &sd = SimulationData::CRef();
 	Simulation * sim = gameModel->GetSimulation();
 	for (int i = 0; i < NPART; i++)
+	{
 		if (sim->parts[i].type == PT_SPRK)
 		{
 			if (sim->parts[i].ctype >= 0 && sim->parts[i].ctype < PT_NUM && sd.elements[sim->parts[i].ctype].Enabled)
@@ -791,8 +792,15 @@ void GameController::ResetSpark()
 				sim->parts[i].ctype = sim->parts[i].life = 0;
 			}
 			else
+			{
 				sim->kill_part(i);
+			}
 		}
+		else if (sim->parts[i].type == PT_WIRE)
+		{
+			sim->parts[i].ctype = sim->parts[i].tmp = 0;
+		}
+	}
 	memset(sim->wireless, 0, sizeof(sim->wireless));
 }
 
@@ -884,7 +892,7 @@ void GameController::Update()
 		gameView->SetSample(gameModel->GetSimulation()->GetSample(pos.X, pos.Y));
 
 	Simulation * sim = gameModel->GetSimulation();
-	if (!sim->sys_pause || sim->framerender)
+	if (gameModel->IsSimRunning())
 	{
 		gameModel->UpdateUpTo(NPART);
 	}
@@ -1234,13 +1242,13 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 		}
 		else if (gameModel->GetSaveFile())
 		{
-			Json::Value localSaveInfo;
+			Bson localSaveInfo;
 			localSaveInfo["type"] = "localsave";
 			auto user = Client::Ref().GetAuthUser();
 			localSaveInfo["username"] = user ? user->Username : ByteString("");
 			localSaveInfo["title"] = gameModel->GetSaveFile()->GetName();
-			localSaveInfo["date"] = (Json::Value::UInt64)time(nullptr);
-			Client::Ref().SaveAuthorInfo(&localSaveInfo);
+			localSaveInfo["date"] = int64_t(time(nullptr));
+			Client::Ref().SaveAuthorInfo(localSaveInfo);
 			gameSave->authors = localSaveInfo;
 
 			Platform::MakeDirectory(LOCAL_SAVE_DIR);
