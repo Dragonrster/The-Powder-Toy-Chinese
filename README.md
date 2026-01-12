@@ -135,3 +135,8 @@ Special 感谢
 * [Dragonrster/The-Powder-Toy-Chinese-Instruction](https://github.com/Dragonrster/The-Powder-Toy-Chinese-Instruction)
 * [ByteString::FromUtf8方法代碼示例](https://vimsky.com/zh-tw/examples/detail/cpp-ex---ByteString-FromUtf8-method.html)
 * [How to display Unicode in TPT?](https://powdertoy.co.uk/Discussions/Thread/View.html?Thread=26330)
+
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Dragonrster/The-Powder-Toy-Chinese&type=Date)](https://www.star-history.com/#Dragonrster/The-Powder-Toy-Chinese&Date)
