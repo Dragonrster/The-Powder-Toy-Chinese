@@ -30,7 +30,7 @@ void Element::Element_RSST()
 
 	DefaultProperties.temp = R_TEMP + 20.0f + 273.15f;
 	HeatConduct = 55;
-	Description = "Resist. Solidifies on contact with photons, is destroyed by electrons and spark.";
+	Description = ByteString("光刻胶,遇PHOT固化,会被ELEC和SPRK破坏").FromUtf8();
 
 	Properties = TYPE_LIQUID | PROP_CONDUCTS | PROP_LIFE_DEC | PROP_NEUTPASS | PROP_PHOTPASS;
 	CarriesTypeIn = (1U << FIELD_CTYPE) | (1U << FIELD_TMP);
