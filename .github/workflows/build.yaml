@@ -121,7 +121,11 @@ jobs:
           ASSET_PATH: ${{ matrix.asset_path }}
           DEBUG_ASSET_PATH: ${{ matrix.debug_asset_path }}
 
-      # 上传构建产物到 GitHub Release
+      # 安装 GitHub CLI
+      - name: Setup GitHub CLI
+        uses: cli/gh-action@v2
+
+      # 上传构建产物到 GitHub Release（主资产）
       - if: needs.prepare.outputs.do_release == 'yes' && matrix.publish == 'yes'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -129,6 +133,7 @@ jobs:
           ASSET_NAME: ${{ matrix.asset_name }}
         run: bash -c './.github/upload-release-asset.sh'
 
+      # 上传构建产物到 GitHub Release（debug 资产）
       - if: needs.prepare.outputs.do_release == 'yes' && matrix.publish == 'yes' && matrix.separate_debug == 'yes'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
