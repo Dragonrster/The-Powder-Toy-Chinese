@@ -6,12 +6,11 @@ on:
       - '*'
     tags:
       - 'v*.*'
+      - 'snapshot-*'
+      - 'tptlibsdev-*'
   pull_request:
     branches:
       - '*'
-
-permissions:
-  contents: write
 
 jobs:
   prepare:
@@ -30,7 +29,6 @@ jobs:
       app_data: ${{ steps.prepare.outputs.app_data }}
       app_vendor: ${{ steps.prepare.outputs.app_vendor }}
       do_publish: ${{ steps.prepare.outputs.do_publish }}
-      version: ${{ steps.prepare.outputs.version }}
     steps:
       - run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
@@ -50,14 +48,6 @@ jobs:
           PUBLISH_USERNAME: ${{ vars.STARCATCHER_PUBLISH_USERNAME }}
           PUBLISH_PASSWORD: ${{ secrets.STARCATCHER_PUBLISH_PASSWORD }}
           PUBLISH_ACCESSCHECK: yes
-      - if: steps.prepare.outputs.do_release == 'yes' && !startsWith(github.ref, 'refs/tags/')
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git tag -a "v${{ steps.prepare.outputs.version }}" -m "Release v${{ steps.prepare.outputs.version }}"
-          git push origin "v${{ steps.prepare.outputs.version }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - if: steps.prepare.outputs.do_release == 'yes'
         id: create_release
         env:
