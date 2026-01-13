@@ -1,3 +1,4 @@
+apt install gh
 set -euo pipefail
 IFS=$'\t\n'
 
