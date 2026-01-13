@@ -100,16 +100,16 @@ RenderView::RenderView():
 	addDisplayModeCheckbox(DISPLAY_EFFE, IconEffect, ui::Point(205, 4), ByteString("\u5141\u8bb8\u56fa\u4f53\u79fb\u52a8\u663e\u793a\u002c\u548c\u9ad8\u7ea7\u56fe\u5f62").FromUtf8());
 	addDisplayModeCheckbox(DISPLAY_PERS, IconPersistant, ui::Point(237, 4), ByteString("\u663e\u793a\u7269\u8d28\u79fb\u52a8\u8f68\u8ff9").FromUtf8());
 	line3 = 270;
-	addDisplayModeCheckbox(DISPLAY_AIRC, IconAltAir    , ui::Point(135,  4), "Displays pressure as red and blue, and velocity as white");
-	addDisplayModeCheckbox(DISPLAY_AIRP, IconPressure  , ui::Point(135, 22), "Displays pressure, red is positive and blue is negative");
-	addDisplayModeCheckbox(DISPLAY_AIRV, IconVelocity  , ui::Point(167,  4), "Displays velocity and positive pressure: up/down adds blue, right/left adds red, still pressure adds green");
-	addDisplayModeCheckbox(DISPLAY_AIRH, IconHeat      , ui::Point(167, 22), "Displays the temperature of the air like heat display does");
-	addDisplayModeCheckbox(DISPLAY_AIRW, IconVort      , ui::Point(199,  4), "Displays vorticity, red is clockwise and blue is anticlockwise");
-	line2 = 232;
-	addDisplayModeCheckbox(DISPLAY_WARP, IconWarp      , ui::Point(237, 22), "Gravity lensing, Newtonian Gravity bends light with this on");
-	addDisplayModeCheckbox(DISPLAY_EFFE, IconEffect    , ui::Point(237,  4), "Enables moving solids, stickmen guns, and premium(tm) graphics");
-	addDisplayModeCheckbox(DISPLAY_PERS, IconPersistant, ui::Point(269,  4), "Element paths persist on the screen for a while");
-	line3 = 302;
+	// addDisplayModeCheckbox(DISPLAY_AIRC, IconAltAir    , ui::Point(135,  4), "Displays pressure as red and blue, and velocity as white");
+	// addDisplayModeCheckbox(DISPLAY_AIRP, IconPressure  , ui::Point(135, 22), "Displays pressure, red is positive and blue is negative");
+	// addDisplayModeCheckbox(DISPLAY_AIRV, IconVelocity  , ui::Point(167,  4), "Displays velocity and positive pressure: up/down adds blue, right/left adds red, still pressure adds green");
+	// addDisplayModeCheckbox(DISPLAY_AIRH, IconHeat      , ui::Point(167, 22), "Displays the temperature of the air like heat display does");
+	// addDisplayModeCheckbox(DISPLAY_AIRW, IconVort      , ui::Point(199,  4), "Displays vorticity, red is clockwise and blue is anticlockwise");
+	// line2 = 232;
+	// addDisplayModeCheckbox(DISPLAY_WARP, IconWarp      , ui::Point(237, 22), "Gravity lensing, Newtonian Gravity bends light with this on");
+	// addDisplayModeCheckbox(DISPLAY_EFFE, IconEffect    , ui::Point(237,  4), "Enables moving solids, stickmen guns, and premium(tm) graphics");
+	// addDisplayModeCheckbox(DISPLAY_PERS, IconPersistant, ui::Point(269,  4), "Element paths persist on the screen for a while");
+	// line3 = 302;
 
 	auto addColourModeCheckbox = [this](unsigned int mode, Icon icon, ui::Point offset, String tooltip)
 	{
