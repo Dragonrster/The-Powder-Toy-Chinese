@@ -40,9 +40,11 @@ jobs:
       - id: prepare
         run: python ./.github/prepare.py
         env:
+          # 外部 publish 参数保留，但不会再使用
           PUBLISH_HOSTPORT: ${{ vars.STARCATCHER_PUBLISH_HOSTPORT }}
           GITHUB_REF: ${{ github.ref }}
 
+      # 禁用外部 starcatcher publish
       # - if: steps.prepare.outputs.do_publish == 'yes'
       #   run: bash -c './.github/starcatcher-publish.sh'
       #   env:
@@ -51,6 +53,7 @@ jobs:
       #     PUBLISH_PASSWORD: ${{ secrets.STARCATCHER_PUBLISH_PASSWORD }}
       #     PUBLISH_ACCESSCHECK: yes
 
+      # 创建 GitHub Release（基于 tag）
       - if: steps.prepare.outputs.do_release == 'yes'
         id: create_release
         env:
@@ -71,6 +74,7 @@ jobs:
     steps:
       - if: matrix.runs_on == 'ubuntu-22.04-arm'
         run: for var in HOME PATH XDG_CONFIG_HOME; do sed -Ee "s/^/${var}=/" -e 's/(runner)admin/\1/g' <<< "${!var}"; done | tee -a "$GITHUB_ENV"
+
       - if: matrix.force_msys2_bash == 'yes'
         uses: msys2/setup-msys2@v2
         with:
@@ -79,16 +83,21 @@ jobs:
           path-type: strict
           cache: true
           install: ${{ matrix.msys2_cache_install }}
+
       - run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
+
       - if: matrix.force_msys2_bash != 'yes'
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+
       - if: matrix.force_msys2_bash != 'yes'
         run: python -m pip install meson ninja
+
       - if: matrix.bsh_build_platform == 'darwin'
         run: brew install bash coreutils
+
       - run: bash -c './.github/build.sh'
         env:
           BSH_HOST_ARCH: ${{ matrix.bsh_host_arch }}
@@ -112,6 +121,7 @@ jobs:
           ASSET_PATH: ${{ matrix.asset_path }}
           DEBUG_ASSET_PATH: ${{ matrix.debug_asset_path }}
 
+      # 上传构建产物到 GitHub Release
       - if: needs.prepare.outputs.do_release == 'yes' && matrix.publish == 'yes'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -126,6 +136,19 @@ jobs:
           ASSET_NAME: ${{ matrix.debug_asset_name }}
         run: bash -c './.github/upload-release-asset.sh'
 
+      - uses: actions/upload-artifact@v4
+        if: matrix.artifact == 'yes'
+        with:
+          path: build/${{ matrix.asset_path }}
+          name: ${{ matrix.asset_name }}
+
+      - uses: actions/upload-artifact@v4
+        if: matrix.artifact == 'yes' && matrix.separate_debug == 'yes'
+        with:
+          path: build/${{ matrix.debug_asset_path }}
+          name: ${{ matrix.debug_asset_name }}
+
+  # 禁用外部 publish job（保留占位，防止 YAML 校验失败）
   publish:
     if: false
     runs-on: ubuntu-24.04
@@ -133,9 +156,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.prepare.outputs.publish_matrix) }}
-    steps: []
+    steps:
+      - name: disabled
+        run: echo "publish job disabled (GitHub Release only)"
+
+  # 禁用外部 release job（starcatcher release）
   release:
     if: false
     runs-on: ubuntu-24.04
     needs: [build, publish, prepare]
-    steps: []
+    steps:
+      - name: disabled
+        run: echo "external release disabled"
