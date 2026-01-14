@@ -27,6 +27,7 @@ jobs:
       app_id: ${{ steps.prepare.outputs.app_id }}
       app_data: ${{ steps.prepare.outputs.app_data }}
       app_vendor: ${{ steps.prepare.outputs.app_vendor }}
+
     steps:
       - run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
@@ -52,12 +53,15 @@ jobs:
     runs-on: ${{ matrix.runs_on }}
     name: ${{ matrix.job_name }}
     needs: prepare
+
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.prepare.outputs.build_matrix) }}
+
     defaults:
       run:
         shell: ${{ matrix.shell }}
+
     steps:
       - if: matrix.runs_on == 'ubuntu-22.04-arm'
         run: |
@@ -111,21 +115,24 @@ jobs:
           ASSET_PATH: ${{ matrix.asset_path }}
           DEBUG_ASSET_PATH: ${{ matrix.debug_asset_path }}
 
+      # ===== 普通产物 =====
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.asset_name }}
+          name: ${{ matrix.job_name }}__${{ matrix.asset_name }}
           path: build/${{ matrix.asset_path }}
 
+      # ===== Debug 产物 =====
       - if: matrix.separate_debug == 'yes'
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.debug_asset_name }}
+          name: ${{ matrix.job_name }}__${{ matrix.debug_asset_name }}
           path: build/${{ matrix.debug_asset_path }}
 
   release_upload:
     runs-on: ubuntu-24.04
     needs: [prepare, build]
     if: needs.prepare.outputs.do_release == 'yes'
+
     steps:
       - run: git config --global core.autocrlf false
       - uses: actions/checkout@v4
