@@ -15,7 +15,7 @@ def set_output(key, value):
 
 match_stable     = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)', ref)
 match_beta       = re.fullmatch(r'refs/tags/v([0-9]+)\.([0-9]+)\.([0-9]+)b', ref)
-match_snapshot   = re.fullmatch(r'refs/tags/snapshot-([0-9A-Za-z]+)', ref)
+match_snapshot   = re.fullmatch(r'refs/tags/snapshot-([0-9]+)', ref)
 match_tptlibsdev = re.fullmatch(r'refs/heads/tptlibsdev-(.*)', ref)
 match_alljobs    = re.fullmatch(r'refs/heads/(.*)-alljobs', ref)
 do_release       = False
@@ -57,7 +57,7 @@ else:
 	release_name = 'dev'
 	if match_alljobs:
 		do_priority = -5
-do_publish = do_release
+do_publish = publish_hostport and do_release
 
 set_output('release_type', release_type)
 set_output('release_name', release_name)
