@@ -30,7 +30,7 @@ void Element::Element_RSSS()
 	Weight = 100;
 
 	HeatConduct = 130;
-	Description = "Solidified resist. Blocks pressure and insulates electricity. Liquefies on contact with neutrons.";
+	Description = ByteString("固化光刻胶,绝缘,遇NEUT液化,且会反射PHOT").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_NEUTPASS;
 	CarriesTypeIn = (1U << FIELD_CTYPE) | (1U << FIELD_TMP);
