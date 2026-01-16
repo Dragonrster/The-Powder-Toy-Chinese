@@ -204,7 +204,7 @@ void RenderView::NotifyColourChanged(RenderModel *sender)
 void RenderView::OnDraw()
 {
 	Graphics * g = GetGraphics();
-	g->DrawFilledRect(WINDOW.OriginRect(), 0x000000_rgb);
+	g->DrawFilledRect(WINDOW.OriginRect(), 0x0000FF_rgb);
 	auto *view = GameController::Ref().GetView();
 	view->PauseRendererThread();
 	ren->ApplySettings(*rendererSettings);
