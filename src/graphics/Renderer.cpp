@@ -41,7 +41,7 @@ void Renderer::RenderSimulation()
 	if (displayMode & DISPLAY_WARP)
 	{
 		warpVideo = video;
-		std::fill_n(video.data(), WINDOWW * YRES, 0x0000ff);
+		std::fill_n(video.data(), WINDOWW * YRES, 0x0000ff_rgb);
 		render_gravlensing(warpVideo);
 	}
 }
@@ -1456,7 +1456,7 @@ void Renderer::Clear()
 	}
 	else
 	{
-		std::fill_n(video.data(), WINDOWW * YRES, 0x0000ff);
+		std::fill_n(video.data(), WINDOWW * YRES, 0x0000ff_rgb);
 	}
 	AdjustHdispLimit();
 }
