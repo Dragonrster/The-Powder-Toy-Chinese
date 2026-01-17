@@ -44,7 +44,7 @@ void ElementPopulationDebug::Draw()
 	halfValString = String::Build(maxAverage/2);
 
 
-	g->BlendFilledRect(RectSized(Vec2{ xStart-5, yBottom - 263 }, Vec2{ bars+10+Graphics::TextSize(maxValString).X+9, 255 + 13 }), 0x0000ff_rgb .WithAlpha(180));
+	g->BlendFilledRect(RectSized(Vec2{ xStart-5, yBottom - 263 }, Vec2{ bars+10+Graphics::TextSize(maxValString).X+9, 255 + 13 }), 0x000000_rgb .WithAlpha(180));
 
 	bars = 0;
 	for(int i = 0; i < PT_NUM; i++)

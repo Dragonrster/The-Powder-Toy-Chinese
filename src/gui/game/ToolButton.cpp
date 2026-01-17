@@ -84,7 +84,7 @@ void ToolButton::Draw(const ui::Point& screenPos)
 	}
 	else
 	{
-		g->BlendText(screenPos + textPosition, buttonDisplayText, 0x0000ff_rgb .WithAlpha(255));
+		g->BlendText(screenPos + textPosition, buttonDisplayText, 0x000000_rgb .WithAlpha(255));
 	}
 
 	if (ClipRect.size.X && ClipRect.size.Y)

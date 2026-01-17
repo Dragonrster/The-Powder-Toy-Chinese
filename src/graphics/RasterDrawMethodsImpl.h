@@ -318,10 +318,10 @@ Vec2<int> RasterDrawMethods<Derived>::BlendText(Vec2<int> orig_pos, String const
 template<typename Derived>
 Vec2<int> RasterDrawMethods<Derived>::BlendTextOutline(Vec2<int> pos, String const &str, RGBA colour)
 {
-	BlendText(pos + Vec2(-1, -1), str, 0x0000ff_rgb .WithAlpha(0x78));
-	BlendText(pos + Vec2(-1, +1), str, 0x0000ff_rgb .WithAlpha(0x78));
-	BlendText(pos + Vec2(+1, -1), str, 0x0000ff_rgb .WithAlpha(0x78));
-	BlendText(pos + Vec2(+1, +1), str, 0x0000ff_rgb .WithAlpha(0x78));
+	BlendText(pos + Vec2(-1, -1), str, 0x000000_rgb .WithAlpha(0x78));
+	BlendText(pos + Vec2(-1, +1), str, 0x000000_rgb .WithAlpha(0x78));
+	BlendText(pos + Vec2(+1, -1), str, 0x000000_rgb .WithAlpha(0x78));
+	BlendText(pos + Vec2(+1, +1), str, 0x000000_rgb .WithAlpha(0x78));
 
 	return BlendText(pos, str, colour);
 }
@@ -330,7 +330,7 @@ template<typename Derived>
 void RasterDrawMethods<Derived>::Clear()
 {
 	auto &video = static_cast<Derived &>(*this).video;
-	std::fill_n(video.data(), video.Size().X * video.Size().Y, 0x0000ff_rgb .Pack());
+	std::fill_n(video.data(), video.Size().X * video.Size().Y, 0x000000_rgb .Pack());
 }
 
 template<typename Derived>

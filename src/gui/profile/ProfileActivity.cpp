@@ -241,7 +241,7 @@ void ProfileActivity::OnTick()
 void ProfileActivity::OnDraw()
 {
 	Graphics * g = GetGraphics();
-	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x0000ff_rgb);
+	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
 	g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 }
 

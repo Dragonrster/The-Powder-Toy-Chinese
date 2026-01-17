@@ -217,7 +217,7 @@ void Renderer::DrawSigns()
 		if (currentSign.text.length())
 		{
 			String text = currentSign.getDisplayText(sim, x, y, w, h);
-			DrawFilledRect(RectSized(Vec2{ x + 1, y + 1 }, Vec2{ w, h - 1 }), 0x0000ff_rgb);
+			DrawFilledRect(RectSized(Vec2{ x + 1, y + 1 }, Vec2{ w, h - 1 }), 0x000000_rgb);
 			DrawRect(RectSized(Vec2{ x, y }, Vec2{ w+1, h }), 0xC0C0C0_rgb);
 			BlendText({ x+3, y+4 }, text, 0xFFFFFF_rgb .WithAlpha(255));
 
@@ -932,7 +932,7 @@ void Renderer::draw_air()
 	auto *hv = sim->hv;
 	auto *vx = sim->vx;
 	auto *vy = sim->vy;
-	auto c = 0x0000ff_rgb;
+	auto c = 0x000000_rgb;
 	for (y=0; y<YCELLS; y++)
 		for (x=0; x<XCELLS; x++)
 		{
@@ -1077,7 +1077,7 @@ void Renderer::DrawWalls()
 									video[{ x * CELL + i, y * CELL + j }] = 0x242424_rgb .Pack();
 							for (int j = 0; j < CELL; j += 2)
 								for (int i = 0; i < CELL; i += 2)
-									video[{ x * CELL + i, y * CELL + j }] = 0x0000ff_rgb .Pack();
+									video[{ x * CELL + i, y * CELL + j }] = 0x000000_rgb .Pack();
 						}
 						else
 						{
@@ -1202,7 +1202,7 @@ void Renderer::DrawWalls()
 								for (int j = 0; j < CELL; j += 2)
 									for (int i = 0; i < CELL; i += 2)
 										// looks bad if drawing black blobs
-										video[{ x * CELL + i, y * CELL + j }] = 0x0000ff_rgb .Pack();
+										video[{ x * CELL + i, y * CELL + j }] = 0x000000_rgb .Pack();
 							}
 							else
 							{
@@ -1507,13 +1507,13 @@ void Renderer::PopulateTables()
 	{
 		tablesPopulated = true;
 		flameTable = Gradient({
-			{ 0x0000ff_rgb, 0.00f },
+			{ 0x000000_rgb, 0.00f },
 			{ 0x60300F_rgb, 0.50f },
 			{ 0xDFBF6F_rgb, 0.90f },
 			{ 0xAF9F0F_rgb, 1.00f },
 		}, 200);
 		plasmaTable = Gradient({
-			{ 0x0000ff_rgb, 0.00f },
+			{ 0x000000_rgb, 0.00f },
 			{ 0x301040_rgb, 0.25f },
 			{ 0x301060_rgb, 0.50f },
 			{ 0xAFFFFF_rgb, 0.90f },
@@ -1532,7 +1532,7 @@ void Renderer::PopulateTables()
 			{ 0xFF00DC_rgb, 1.00f },
 		}, 1024);
 		clfmTable = Gradient({
-			{ 0x0000ff_rgb, 0.00f },
+			{ 0x000000_rgb, 0.00f },
 			{ 0x0A0917_rgb, 0.10f },
 			{ 0x19163C_rgb, 0.20f },
 			{ 0x28285E_rgb, 0.30f },

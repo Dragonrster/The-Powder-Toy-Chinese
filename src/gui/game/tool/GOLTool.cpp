@@ -179,7 +179,7 @@ void GOLWindow::OnDraw()
 {
 	Graphics * g = GetGraphics();
 
-	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x0000ff_rgb);
+	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
 	g->DrawRect(RectSized(Position, Size), 0xC8C8C8_rgb);
 
 	int width = Size.X - 60;

@@ -255,7 +255,7 @@ void ColourPickerActivity::OnKeyPress(int key, int scan, bool repeat, bool shift
 void ColourPickerActivity::OnDraw()
 {
 	Graphics * g = GetGraphics();
-	g->BlendFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x0000ff_rgb .WithAlpha(currentAlpha));
+	g->BlendFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb .WithAlpha(currentAlpha));
 	g->DrawRect(RectSized(Position, Size), 0xFFFFFF_rgb);
 
 	g->DrawRect(RectSized(Position + Vec2{ 4, 4 }, Vec2{ 258, 130 }), 0xB4B4B4_rgb);

@@ -144,7 +144,7 @@ void VideoBuffer::ResizeToFit(Vec2<int> bound, bool resample)
 
 std::unique_ptr<VideoBuffer> VideoBuffer::FromPNG(std::span<const char> data)
 {
-	auto video = format::PixelsFromPNG(data, 0x0000ff_rgb);
+	auto video = format::PixelsFromPNG(data, 0x000000_rgb);
 	if (video)
 	{
 		auto buf = std::make_unique<VideoBuffer>(Vec2<int>::Zero);
@@ -177,19 +177,19 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 	{
 	case IconOpen:
 		if(invert)
-			BlendChar({ x, y }, 0xE001, 0x0000ff_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE001, 0x000000_rgb .WithAlpha(alpha));
 		else
 			BlendChar({ x, y }, 0xE001, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconReload:
 		if(invert)
-			BlendChar({ x, y }, 0xE011, 0x0000ff_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE011, 0x000000_rgb .WithAlpha(alpha));
 		else
 			BlendChar({ x, y }, 0xE011, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconSave:
 		if(invert)
-			BlendChar({ x, y }, 0xE002, 0x0000ff_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE002, 0x000000_rgb .WithAlpha(alpha));
 		else
 			BlendChar({ x, y }, 0xE002, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
@@ -213,25 +213,25 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		break;
 	case IconTag:
 		if(invert)
-			BlendChar({ x, y }, 0xE003, 0x0000ff_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE003, 0x000000_rgb .WithAlpha(alpha));
 		else
 			BlendChar({ x, y }, 0xE003, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconNew:
 		if(invert)
-			BlendChar({ x, y }, 0xE012, 0x0000ff_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE012, 0x000000_rgb .WithAlpha(alpha));
 		else
 			BlendChar({ x, y }, 0xE012, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconLogin:
 		if(invert)
-			BlendChar({ x, y + 1 }, 0xE004, 0x0000ff_rgb .WithAlpha(alpha));
+			BlendChar({ x, y + 1 }, 0xE004, 0x000000_rgb .WithAlpha(alpha));
 		else
 			BlendChar({ x, y + 1 }, 0xE004, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
 	case IconSimulationSettings:
 		if(invert)
-			BlendChar({ x, y + 1 }, 0xE04F, 0x0000ff_rgb .WithAlpha(alpha));
+			BlendChar({ x, y + 1 }, 0xE04F, 0x000000_rgb .WithAlpha(alpha));
 		else
 			BlendChar({ x, y + 1 }, 0xE04F, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
@@ -251,7 +251,7 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		break;
 	case IconPause:
 		if(invert)
-			BlendChar({ x, y }, 0xE010, 0x0000ff_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE010, 0x000000_rgb .WithAlpha(alpha));
 		else
 			BlendChar({ x, y }, 0xE010, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
@@ -271,7 +271,7 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		if(invert)
 		{
 			BlendChar({ x, y }, 0xE00B, 0x204080_rgb .WithAlpha(alpha));
-			BlendChar({ x, y }, 0xE00A, 0x0000ff_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE00A, 0x000000_rgb .WithAlpha(alpha));
 		}
 		else
 		{
@@ -283,7 +283,7 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		if(invert)
 		{
 			BlendChar({ x, y }, 0xE00C, 0xA09020_rgb .WithAlpha(alpha));
-			BlendChar({ x, y }, 0xE004, 0x0000ff_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE004, 0x000000_rgb .WithAlpha(alpha));
 		}
 		else
 		{
@@ -341,7 +341,7 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		if(invert)
 		{
 			BlendChar({ x, y }, 0xE006, 0x9F2F1F_rgb .WithAlpha(alpha));
-			BlendChar({ x, y }, 0xE005, 0x0000ff_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE005, 0x000000_rgb .WithAlpha(alpha));
 		}
 		else
 		{
@@ -353,7 +353,7 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		if(invert)
 		{
 			BlendChar({ x, y }, 0xE006, 0x209020_rgb .WithAlpha(alpha));
-			BlendChar({ x, y }, 0xE009, 0x0000ff_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 0xE009, 0x000000_rgb .WithAlpha(alpha));
 		}
 		else
 		{
@@ -389,7 +389,7 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 	case IconHeat:
 		BlendChar({ x + 3, y }, 0xE03E, 0xFF0000_rgb .WithAlpha(alpha));
 		if(invert)
-			BlendChar({ x + 3, y }, 0xE03D, 0x0000ff_rgb .WithAlpha(alpha));
+			BlendChar({ x + 3, y }, 0xE03D, 0x000000_rgb .WithAlpha(alpha));
 		else
 			BlendChar({ x + 3, y }, 0xE03D, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
@@ -407,7 +407,7 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		break;
 	case IconLife:
 		if(invert)
-			BlendChar({ x, y + 1 }, 0xE060, 0x0000ff_rgb .WithAlpha(alpha));
+			BlendChar({ x, y + 1 }, 0xE060, 0x000000_rgb .WithAlpha(alpha));
 		else
 			BlendChar({ x, y + 1 }, 0xE060, 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
@@ -443,7 +443,7 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		break;
 	default:
 		if(invert)
-			BlendChar({ x, y }, 't', 0x0000ff_rgb .WithAlpha(alpha));
+			BlendChar({ x, y }, 't', 0x000000_rgb .WithAlpha(alpha));
 		else
 			BlendChar({ x, y }, 't', 0xFFFFFF_rgb .WithAlpha(alpha));
 		break;
@@ -471,9 +471,9 @@ void Graphics::RenderZoom()
 		int x, y, i, j;
 		pixel pix;
 
-		DrawFilledRect(RectSized(zoomWindowPosition, { zoomScopeSize * ZFACTOR, zoomScopeSize * ZFACTOR }), 0x0000ff_rgb);
+		DrawFilledRect(RectSized(zoomWindowPosition, { zoomScopeSize * ZFACTOR, zoomScopeSize * ZFACTOR }), 0x000000_rgb);
 		DrawRect(RectSized(zoomWindowPosition - Vec2{ 2, 2 }, Vec2{ zoomScopeSize*ZFACTOR+3, zoomScopeSize*ZFACTOR+3 }), 0xC0C0C0_rgb);
-		DrawRect(RectSized(zoomWindowPosition - Vec2{ 1, 1 }, Vec2{ zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1 }), 0x0000ff_rgb);
+		DrawRect(RectSized(zoomWindowPosition - Vec2{ 1, 1 }, Vec2{ zoomScopeSize*ZFACTOR+1, zoomScopeSize*ZFACTOR+1 }), 0x000000_rgb);
 		for (j=0; j<zoomScopeSize; j++)
 			for (i=0; i<zoomScopeSize; i++)
 			{

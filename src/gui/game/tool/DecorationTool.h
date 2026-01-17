@@ -16,7 +16,7 @@ public:
 
 	DecorationTool(GameView *newGameView, int decoMode, String name, String description, RGB colour, ByteString identifier):
 		Tool(decoMode, name, description, colour, identifier),
-		Colour(0x0000ff_rgb .WithAlpha(0x00)),
+		Colour(0x000000_rgb .WithAlpha(0x00)),
 		gameView(newGameView)
 	{
 		MenuSection = SC_DECO;
