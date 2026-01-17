@@ -165,7 +165,7 @@ void SignWindow::DoDraw()
 		Graphics * g = GetGraphics();
 
 		String text = currentSign.getDisplayText(sim, x, y, w, h);
-		g->DrawFilledRect(RectSized(Vec2{ x + 1, y + 1 }, Vec2{ w, h - 1 }), 0x000000_rgb);
+		g->DrawFilledRect(RectSized(Vec2{ x + 1, y + 1 }, Vec2{ w, h - 1 }), 0x0000ff_rgb);
 		g->DrawRect(RectSized(Vec2{ x, y }, Vec2{ w+1, h }), 0xC0C0C0_rgb);
 		g->BlendText({ x+3, y+4 }, text, 0xFFFFFF_rgb .WithAlpha(255));
 
@@ -219,7 +219,7 @@ void SignWindow::OnDraw()
 {
 	Graphics * g = GetGraphics();
 
-	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
+	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x0000ff_rgb);
 	g->DrawRect(RectSized(Position, Size), 0xC8C8C8_rgb);
 }
 

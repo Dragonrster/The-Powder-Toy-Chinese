@@ -24,7 +24,7 @@ void DebugParts::Draw()
 		if (sim->parts[i].type)
 			g->AddPixel({ x, y }, 0xFFFFFF_rgb .WithAlpha(180));
 		else
-			g->AddPixel({ x, y }, 0x000000_rgb .WithAlpha(180));
+			g->AddPixel({ x, y }, 0x0000ff_rgb .WithAlpha(180));
 
 		if (i == sim->parts.active - 1)
 		{
@@ -47,7 +47,7 @@ void DebugParts::Draw()
 	g->AddPixel({ lpx, lpy+1 }, 0xFF3232_rgb .WithAlpha(120));
 	g->AddPixel({ lpx, lpy-1 }, 0xFF3232_rgb .WithAlpha(120));
 
-	g->BlendFilledRect(RectSized(Vec2{ 7, YRES-26}, Vec2{ g->TextSize(info).X + 4, 14}), 0x000000_rgb .WithAlpha(180));
+	g->BlendFilledRect(RectSized(Vec2{ 7, YRES-26}, Vec2{ g->TextSize(info).X + 4, 14}), 0x0000ff_rgb .WithAlpha(180));
 	g->BlendText({ 10, YRES-22 }, info, 0xFFFFFF_rgb .WithAlpha(255));
 }
 

@@ -63,7 +63,7 @@ class SignTool: public Tool
 public:
 	SignTool(GameModel &model):
 		Tool(0, "SIGN", ByteString("标记工具,显示文本.点击一个标记进行编辑,或在其他地方放置一个新的标记").FromUtf8(),
-			0x000000_rgb, "DEFAULT_UI_SIGN", SignTool::GetIcon
+			0x0000ff_rgb, "DEFAULT_UI_SIGN", SignTool::GetIcon
 		),
 		gameModel(model)
 	{}
@@ -86,7 +86,7 @@ class SampleTool: public Tool
 public:
 	SampleTool(GameModel &model):
 		Tool(0, "SMPL", ByteString("元素吸管,与默认鼠标中键功能一样").FromUtf8(),
-			0x000000_rgb, "DEFAULT_UI_SAMPLE", SampleTool::GetIcon
+			0x0000ff_rgb, "DEFAULT_UI_SAMPLE", SampleTool::GetIcon
 		),
 		gameModel(model)
 	{}
@@ -159,7 +159,7 @@ public:
 	virtual ~GOLTool()
 	{}
 
-	void OpenWindow(Simulation *sim, int toolSelection, int rule = 0, RGB<uint8_t> colour1 = 0x000000_rgb, RGB<uint8_t> colour2 = 0x000000_rgb);
+	void OpenWindow(Simulation *sim, int toolSelection, int rule = 0, RGB<uint8_t> colour1 = 0x0000ff_rgb, RGB<uint8_t> colour2 = 0x0000ff_rgb);
 	void Click(Simulation * sim, Brush const &brush, ui::Point position) override { }
 	void Draw(Simulation *sim, Brush const &brush, ui::Point position) override { };
 	void DrawLine(Simulation * sim, Brush const &brush, ui::Point position1, ui::Point position2, bool dragging = false) override { };

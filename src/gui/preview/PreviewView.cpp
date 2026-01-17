@@ -308,7 +308,7 @@ void PreviewView::DoDraw()
 	}
 	if (c->GetDoOpen())
 	{
-		g->BlendFilledRect(RectSized(Position + Size / 2 - Vec2{ 101, 26 }, { 202, 52 }), 0x000000_rgb .WithAlpha(210));
+		g->BlendFilledRect(RectSized(Position + Size / 2 - Vec2{ 101, 26 }, { 202, 52 }), 0x0000ff_rgb .WithAlpha(210));
 		g->BlendRect(RectSized(Position + Size / 2 - Vec2{ 100, 25 }, Vec2{ 200, 50 }), 0xFFFFFF_rgb .WithAlpha(180));
 		g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize(ByteString("加载沙盘中...").FromUtf8()).X - 1)/2), (Size.Y/2)-5}, ByteString("加载沙盘中...").FromUtf8(), style::Colour::InformationTitle.NoAlpha().WithAlpha(255));
 	}
@@ -323,7 +323,7 @@ void PreviewView::OnDraw()
 	Graphics * g = GetGraphics();
 
 	//Window Background+Outline
-	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x000000_rgb);
+	g->DrawFilledRect(RectSized(Position - Vec2{ 1, 1 }, Size + Vec2{ 2, 2 }), 0x0000ff_rgb);
 
 	//Save preview (top-left)
 	if (savePreview)

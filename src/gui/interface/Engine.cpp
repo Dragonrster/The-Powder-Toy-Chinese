@@ -211,7 +211,7 @@ void Engine::Draw()
 		{
 			// from 0x00 at 0 to about 0x54 at 20
 			auto alpha = uint8_t((1 - std::pow(0.98, frozen.fadeTicks)) * 0xFF);
-			g->BlendFilledRect(g->Size().OriginRect(), 0x000000_rgb .WithAlpha(alpha));
+			g->BlendFilledRect(g->Size().OriginRect(), 0x0000ff_rgb .WithAlpha(alpha));
 		}
 		// If this is the last frame in the fade, save what the faded image looks like
 		if (frozen.fadeTicks == maxFadeTicks)

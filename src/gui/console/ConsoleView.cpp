@@ -111,7 +111,7 @@ void ConsoleView::NotifyCurrentCommandChanged(ConsoleModel * sender)
 void ConsoleView::OnDraw()
 {
 	Graphics * g = GetGraphics();
-	g->BlendFilledRect(RectSized(Position, Size), 0x000000_rgb .WithAlpha(110));
+	g->BlendFilledRect(RectSized(Position, Size), 0x0000ff_rgb .WithAlpha(110));
 	g->BlendLine(Position + Vec2{ 0, Size.Y-16 }, Position + Size - Vec2{ 0, 16 }, 0xFFFFFF_rgb .WithAlpha(160));
 	g->BlendLine(Position + Vec2{ 0, Size.Y }, Position + Size, 0xFFFFFF_rgb .WithAlpha(200));
 }

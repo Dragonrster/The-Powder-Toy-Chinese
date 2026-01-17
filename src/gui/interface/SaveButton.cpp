@@ -256,7 +256,7 @@ void SaveButton::Draw(const Point& screenPos)
 
 	if(isMouseInside && selectable)
 	{
-		g->DrawFilledRect(RectSized(screenPos + Vec2{ Size.X - 19, 7 }, Vec2{ 13, 13 }), 0x000000_rgb);
+		g->DrawFilledRect(RectSized(screenPos + Vec2{ Size.X - 19, 7 }, Vec2{ 13, 13 }), 0x0000ff_rgb);
 		g->DrawRect(RectSized(screenPos + Vec2{ Size.X-20, 6 }, Vec2{ 14, 14 }), 0xFFFFFF_rgb);
 		if(selected)
 			g->DrawFilledRect(RectSized(screenPos + Vec2{ Size.X-18, 8 }, Vec2{ 10, 10 }), 0xFFFFFF_rgb);

@@ -12,13 +12,13 @@ namespace ui
 		HorizontalAlign(AlignCentre),
 
 		BackgroundHover(0x141414_rgb .WithAlpha(0xFF)),
-		BackgroundInactive(0x000000_rgb .WithAlpha(0xFF)),
+		BackgroundInactive(0x0000ff_rgb .WithAlpha(0xFF)),
 		BackgroundActive(0xFFFFFF_rgb .WithAlpha(0xFF)),
 		BackgroundDisabled(0x0A0A0A_rgb .WithAlpha(0xFF)),
 
 		TextHover(0xFFFFFF_rgb .WithAlpha(0xFF)),
 		TextInactive(0xFFFFFF_rgb .WithAlpha(0xFF)),
-		TextActive(0x000000_rgb .WithAlpha(0xFF)),
+		TextActive(0x0000ff_rgb .WithAlpha(0xFF)),
 		TextDisabled(0x646464_rgb .WithAlpha(0xFF)),
 
 		BorderHover(0xFFFFFF_rgb .WithAlpha(0xFF)),

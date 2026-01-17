@@ -59,18 +59,18 @@ void ProgressBar::Draw(const Point &screenPos)
 		}, progressStatus, textColour);
 		g->SwapClipRect(clip);
 	};
-	drawContent(0, inner.size.X, 0x000000_rgb .WithAlpha(0), 0xFFFFFF_rgb .WithAlpha(255));
+	drawContent(0, inner.size.X, 0x0000ff_rgb .WithAlpha(0), 0xFFFFFF_rgb .WithAlpha(255));
 	if (progress == -1)
 	{
 		constexpr auto size = 40;
 		auto pos = int(inner.size.X * intermediatePos / 100);
-		drawContent(pos, pos + size, style::Colour::WarningTitle, 0x000000_rgb .WithAlpha(255));
+		drawContent(pos, pos + size, style::Colour::WarningTitle, 0x0000ff_rgb .WithAlpha(255));
 		pos -= inner.size.X;
-		drawContent(pos, pos + size, style::Colour::WarningTitle, 0x000000_rgb .WithAlpha(255));
+		drawContent(pos, pos + size, style::Colour::WarningTitle, 0x0000ff_rgb .WithAlpha(255));
 	}
 	else
 	{
-		drawContent(0, inner.size.X * progress / 100, style::Colour::WarningTitle, 0x000000_rgb .WithAlpha(255));
+		drawContent(0, inner.size.X * progress / 100, style::Colour::WarningTitle, 0x0000ff_rgb .WithAlpha(255));
 	}
 }
 

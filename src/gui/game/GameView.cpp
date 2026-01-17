@@ -1885,8 +1885,8 @@ void GameView::DoDraw()
 	auto *g = GetGraphics();
 	for (auto x = 0; x < int(fadeout.size()); ++x)
 	{
-		g->BlendLine({ x, YRES + 1 }, { x, YRES + 18 }, 0x000000_rgb .WithAlpha(fadeout[x]));
-		g->BlendLine({ XRES - x, YRES + 1 }, { XRES - x, YRES + 18 }, 0x000000_rgb .WithAlpha(fadeout[x]));
+		g->BlendLine({ x, YRES + 1 }, { x, YRES + 18 }, 0x0000ff_rgb .WithAlpha(fadeout[x]));
+		g->BlendLine({ XRES - x, YRES + 1 }, { XRES - x, YRES + 18 }, 0x0000ff_rgb .WithAlpha(fadeout[x]));
 	}
 
 	c->Tick();
@@ -2262,7 +2262,7 @@ void GameView::OnDraw()
 		{
 			if(selectPoint1.X==-1)
 			{
-				g->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, YRES }), 0x000000_rgb .WithAlpha(100));
+				g->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, YRES }), 0x0000ff_rgb .WithAlpha(100));
 			}
 			else
 			{
@@ -2276,11 +2276,11 @@ void GameView::OnDraw()
 				if(y2>YRES-1)
 					y2 = YRES-1;
 
-				g->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, y1 }), 0x000000_rgb .WithAlpha(100));
-				g->BlendFilledRect(RectSized(Vec2{ 0, y2+1 }, Vec2{ XRES, YRES-y2-1 }), 0x000000_rgb .WithAlpha(100));
+				g->BlendFilledRect(RectSized(Vec2{ 0, 0 }, Vec2{ XRES, y1 }), 0x0000ff_rgb .WithAlpha(100));
+				g->BlendFilledRect(RectSized(Vec2{ 0, y2+1 }, Vec2{ XRES, YRES-y2-1 }), 0x0000ff_rgb .WithAlpha(100));
 
-				g->BlendFilledRect(RectSized(Vec2{ 0, y1 }, Vec2{ x1, (y2-y1)+1 }), 0x000000_rgb .WithAlpha(100));
-				g->BlendFilledRect(RectSized(Vec2{ x2+1, y1 }, Vec2{ XRES-x2-1, (y2-y1)+1 }), 0x000000_rgb .WithAlpha(100));
+				g->BlendFilledRect(RectSized(Vec2{ 0, y1 }, Vec2{ x1, (y2-y1)+1 }), 0x0000ff_rgb .WithAlpha(100));
+				g->BlendFilledRect(RectSized(Vec2{ x2+1, y1 }, Vec2{ XRES-x2-1, (y2-y1)+1 }), 0x0000ff_rgb .WithAlpha(100));
 
 				g->XorDottedRect(RectBetween(Vec2{ x1, y1 }, Vec2{ x2, y2 }));
 			}
@@ -2319,7 +2319,7 @@ void GameView::OnDraw()
 				break;
 			}
 			startY -= 14;
-			g->BlendFilledRect(RectSized(Vec2{ startX-3, startY-3 }, Vec2{ Graphics::TextSize(message).X + 5, 14 }), 0x000000_rgb .WithAlpha(std::min(100, alpha)));
+			g->BlendFilledRect(RectSized(Vec2{ startX-3, startY-3 }, Vec2{ Graphics::TextSize(message).X + 5, 14 }), 0x0000ff_rgb .WithAlpha(std::min(100, alpha)));
 			g->BlendText({ startX, startY }, message, 0xFFFFFF_rgb .WithAlpha(alpha));
 			(*iter).second -= 3;
 		}
@@ -2330,7 +2330,7 @@ void GameView::OnDraw()
 		String sampleInfo = String::Build("#", screenshotIndex, " ", String(0xE00E), " REC");
 
 		int textWidth = Graphics::TextSize(sampleInfo).X - 1;
-		g->BlendFilledRect(RectSized(Vec2{ XRES-20-textWidth, 12 }, Vec2{ textWidth+8, 15 }), 0x000000_rgb .WithAlpha(127));
+		g->BlendFilledRect(RectSized(Vec2{ XRES-20-textWidth, 12 }, Vec2{ textWidth+8, 15 }), 0x0000ff_rgb .WithAlpha(127));
 		g->BlendText({ XRES-16-textWidth, 16 }, sampleInfo, 0xFF3214_rgb .WithAlpha(255));
 	}
 	else if(showHud)
@@ -2451,7 +2451,7 @@ void GameView::OnDraw()
 		}
 
 		int textWidth = Graphics::TextSize(sampleInfo.Build()).X - 1;
-		g->BlendFilledRect(RectSized(Vec2{ XRES-20-textWidth, 12 }, Vec2{ textWidth+8, 15 }), 0x000000_rgb .WithAlpha(int(alpha*0.5f)));
+		g->BlendFilledRect(RectSized(Vec2{ XRES-20-textWidth, 12 }, Vec2{ textWidth+8, 15 }), 0x0000ff_rgb .WithAlpha(int(alpha*0.5f)));
 		g->BlendText({ XRES-16-textWidth, 16 }, sampleInfo.Build(), 0xFFFFFF_rgb .WithAlpha(int(alpha*0.75f)));
 
 		if (wavelengthGfx)
@@ -2511,7 +2511,7 @@ void GameView::OnDraw()
 			}
 
 			auto textWidth = Graphics::TextSize(sampleInfo.Build()).X - 1;
-			g->BlendFilledRect(RectSized(Vec2{ XRES-20-textWidth, 27 }, Vec2{ textWidth+8, 14 }), 0x000000_rgb .WithAlpha(int(alpha*0.5f)));
+			g->BlendFilledRect(RectSized(Vec2{ XRES-20-textWidth, 27 }, Vec2{ textWidth+8, 14 }), 0x0000ff_rgb .WithAlpha(int(alpha*0.5f)));
 			g->BlendText({ XRES-16-textWidth, 30 }, sampleInfo.Build(), 0xFFFFFF_rgb .WithAlpha(int(alpha*0.75f)));
 		}
 	}
@@ -2620,7 +2620,7 @@ void GameView::OnDraw()
 
 		int textWidth = Graphics::TextSize(fpsInfo.Build()).X - 1;
 		int alpha = 255-introText*5;
-		g->BlendFilledRect(RectSized(Vec2{ 12, 12 }, Vec2{ textWidth+8, 15 }), 0x000000_rgb .WithAlpha(int(alpha*0.5)));
+		g->BlendFilledRect(RectSized(Vec2{ 12, 12 }, Vec2{ textWidth+8, 15 }), 0x0000ff_rgb .WithAlpha(int(alpha*0.5)));
 		g->BlendText({ 16, 16 }, fpsInfo.Build(), 0x20D8FF_rgb .WithAlpha(int(alpha*0.75)));
 	}
 
@@ -2647,7 +2647,7 @@ void GameView::OnDraw()
 	//Introduction text
 	if(introText && showHud)
 	{
-		g->BlendFilledRect(RectSized(Vec2{ 0, 0 }, WINDOW), 0x000000_rgb .WithAlpha(introText>51?102:introText*2));
+		g->BlendFilledRect(RectSized(Vec2{ 0, 0 }, WINDOW), 0x0000ff_rgb .WithAlpha(introText>51?102:introText*2));
 		g->BlendText({ 16, 16 }, introTextMessage, 0xFFFFFF_rgb .WithAlpha(introText>51?255:introText*5));
 	}
 }

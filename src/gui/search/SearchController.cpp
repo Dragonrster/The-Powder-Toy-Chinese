@@ -242,7 +242,7 @@ void SearchController::OpenSave(int saveID, int saveDate, std::unique_ptr<VideoB
 {
 	delete activePreview;
 	Graphics * g = searchView->GetGraphics();
-	g->BlendFilledRect(RectSized(Vec2{ XRES/3, WINDOWH-20 }, Vec2{ XRES/3, 20 }), 0x000000_rgb .WithAlpha(150)); //dim the "Page X of Y" a little to make the CopyTextButton more noticeable
+	g->BlendFilledRect(RectSized(Vec2{ XRES/3, WINDOWH-20 }, Vec2{ XRES/3, 20 }), 0x0000ff_rgb .WithAlpha(150)); //dim the "Page X of Y" a little to make the CopyTextButton more noticeable
 	activePreview = new PreviewController(saveID, saveDate, instantOpen ? savePreviewInstant : savePreviewNormal, [this] { OpenSaveDone(); }, std::move(thumbnail));
 	activePreview->GetView()->MakeActiveWindow();
 }

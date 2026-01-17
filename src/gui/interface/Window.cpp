@@ -222,9 +222,9 @@ void Window::DoDraw()
 		pos.X = std::min(pos.X, g->Size().X - (Graphics::TextSize(posText).X - 1) - 5);
 		pos.X = std::min(pos.X, g->Size().X - (Graphics::TextSize(sizeText).X - 1) - 5);
 
-		g->BlendText(pos + Vec2(0, 1), posText, 0x000000_rgb .WithAlpha(0xC8));
+		g->BlendText(pos + Vec2(0, 1), posText, 0x0000ff_rgb .WithAlpha(0xC8));
 		g->BlendText(pos + Vec2(0, 0), posText, 0xFFFFFF_rgb .WithAlpha(0xFF));
-		g->BlendText(pos + Vec2(0, 13), sizeText, 0x000000_rgb .WithAlpha(0xC8));
+		g->BlendText(pos + Vec2(0, 13), sizeText, 0x0000ff_rgb .WithAlpha(0xC8));
 		g->BlendText(pos + Vec2(0, 12), sizeText, 0xFFFFFF_rgb .WithAlpha(0xFF));
 	}
 }

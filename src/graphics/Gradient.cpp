@@ -2,7 +2,7 @@
 
 std::vector<RGB> Gradient(std::vector<GradientStop> stops, int resolution)
 {
-	std::vector<RGB> table(resolution, 0x000000_rgb);
+	std::vector<RGB> table(resolution, 0x0000ff_rgb);
 	if (stops.size() >= 2)
 	{
 		std::sort(stops.begin(), stops.end());

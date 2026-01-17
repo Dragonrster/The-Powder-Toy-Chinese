@@ -12,7 +12,7 @@ class SignTool: public Tool
 public:
 	SignTool(GameModel &model):
 		Tool(0, "SIGN", "Sign. Displays text. Click on a sign to edit it or anywhere else to place a new one.",
-			0x000000_rgb, "DEFAULT_UI_SIGN", SignTool::GetIcon
+			0x0000ff_rgb, "DEFAULT_UI_SIGN", SignTool::GetIcon
 		),
 		gameModel(model)
 	{}

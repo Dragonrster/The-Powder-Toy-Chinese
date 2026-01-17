@@ -51,25 +51,25 @@ static std::vector<wall_type> LoadWalls()
 {
 	return
 	std::vector<wall_type>{
-		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("ERASE"),           "DEFAULT_WL_ERASE",  String(ByteString("清除所有墙类").FromUtf8())},
+		{0x808080_rgb, 0x0000ff_rgb, 0, Renderer::WallIcon, String("ERASE"),           "DEFAULT_WL_ERASE",  String(ByteString("清除所有墙类").FromUtf8())},
 		{0xC0C0C0_rgb, 0x101010_rgb, 0, Renderer::WallIcon, String("CONDUCTIVE WALL"), "DEFAULT_WL_CNDTW",  String(ByteString("阻挡一切,可以当作导体").FromUtf8()) },
 		{0x808080_rgb, 0x808080_rgb, 0, Renderer::WallIcon, String("EWALL"),           "DEFAULT_WL_EWALL",  String(ByteString("电控墙,通电时允许通过").FromUtf8()) },
 		{0xFF8080_rgb, 0xFF2008_rgb, 1, Renderer::WallIcon, String("DETECTOR"),        "DEFAULT_WL_DTECT",  String(ByteString("检测器,内部存在物质时,发出电脉冲").FromUtf8()) },
-		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("STREAMLINE"),      "DEFAULT_WL_STRM",   String(ByteString("风向计,设置一个风向计的起始点").FromUtf8()) },
-		{0x8080FF_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("FAN"),             "DEFAULT_WL_FAN",    String(ByteString("风扇,风扇产生气压使用直线工具设置方向和强度").FromUtf8()) },
+		{0x808080_rgb, 0x0000ff_rgb, 0, Renderer::WallIcon, String("STREAMLINE"),      "DEFAULT_WL_STRM",   String(ByteString("风向计,设置一个风向计的起始点").FromUtf8()) },
+		{0x8080FF_rgb, 0x0000ff_rgb, 1, Renderer::WallIcon, String("FAN"),             "DEFAULT_WL_FAN",    String(ByteString("风扇,风扇产生气压使用直线工具设置方向和强度").FromUtf8()) },
 		{0xC0C0C0_rgb, 0x101010_rgb, 2, Renderer::WallIcon, String("LIQUID WALL"),     "DEFAULT_WL_LIQD",   String(ByteString("液体墙,阻挡大多数物体,除了液体,可以导电").FromUtf8()) },
-		{0x808080_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("ABSORB WALL"),     "DEFAULT_WL_ABSRB",  String(ByteString("吸收墙,吸收物质,允许气压通过").FromUtf8()) },
-		{0x808080_rgb, 0x000000_rgb, 3, Renderer::WallIcon, String("WALL"),            "DEFAULT_WL_WALL",   String(ByteString("基础墙,阻挡一切").FromUtf8()) },
-		{0x3C3C3C_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("AIRONLY WALL"),    "DEFAULT_WL_AIR",    String(ByteString("压力墙,允许压力通过,阻挡一切物质").FromUtf8()) },
-		{0x575757_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("POWDER WALL"),     "DEFAULT_WL_POWDR",  String(ByteString("粉末墙,允许粉末通过,阻挡其他所有物质").FromUtf8()) },
+		{0x808080_rgb, 0x0000ff_rgb, 1, Renderer::WallIcon, String("ABSORB WALL"),     "DEFAULT_WL_ABSRB",  String(ByteString("吸收墙,吸收物质,允许气压通过").FromUtf8()) },
+		{0x808080_rgb, 0x0000ff_rgb, 3, Renderer::WallIcon, String("WALL"),            "DEFAULT_WL_WALL",   String(ByteString("基础墙,阻挡一切").FromUtf8()) },
+		{0x3C3C3C_rgb, 0x0000ff_rgb, 1, Renderer::WallIcon, String("AIRONLY WALL"),    "DEFAULT_WL_AIR",    String(ByteString("压力墙,允许压力通过,阻挡一切物质").FromUtf8()) },
+		{0x575757_rgb, 0x0000ff_rgb, 1, Renderer::WallIcon, String("POWDER WALL"),     "DEFAULT_WL_POWDR",  String(ByteString("粉末墙,允许粉末通过,阻挡其他所有物质").FromUtf8()) },
 		{0xFFFF22_rgb, 0x101010_rgb, 2, Renderer::WallIcon, String("CONDUCTOR"),       "DEFAULT_WL_CNDTR",  String(ByteString("导体墙,允许所有物质通过.可以导电").FromUtf8()) },
 		{0x242424_rgb, 0x101010_rgb, 0, Renderer::WallIcon, String("EHOLE"),           "DEFAULT_WL_EHOLE",  String(ByteString("电锁体,吸收物质,通电时释放").FromUtf8()) },
-		{0x579777_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("GAS WALL"),        "DEFAULT_WL_GAS",    String(ByteString("气体墙,允许气体通过").FromUtf8()) },
+		{0x579777_rgb, 0x0000ff_rgb, 1, Renderer::WallIcon, String("GAS WALL"),        "DEFAULT_WL_GAS",    String(ByteString("气体墙,允许气体通过").FromUtf8()) },
 		{0xFFEE00_rgb, 0xAA9900_rgb, 4, Renderer::WallIcon, String("GRAVITY WALL"),    "DEFAULT_WL_GRVTY",  String(ByteString("引力墙,范围内的万有引力(注:默认的普通引力除外,可以按W切换)将失效").FromUtf8()) },
 		{0xFFAA00_rgb, 0xAA5500_rgb, 4, Renderer::WallIcon, String("ENERGY WALL"),     "DEFAULT_WL_ENRGY",  String(ByteString("能量墙,允许能量粒子通过,阻挡其他物质").FromUtf8()) },
-		{0xDCDCDC_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("AIRBLOCK WALL"),   "DEFAULT_WL_NOAIR",  String(ByteString("阻压墙,允许所有物质通过,隔绝压力").FromUtf8()) },
-		{0xDCDCDC_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("ERASEALL"),        "DEFAULT_WL_ERASEA", String(ByteString("清除墙,物质,标记").FromUtf8()) },
-		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("STASIS WALL"),     "DEFAULT_WL_STASIS", String(ByteString("静止墙,静止其内所有物质,除非通电").FromUtf8()) },
+		{0xDCDCDC_rgb, 0x0000ff_rgb, 1, Renderer::WallIcon, String("AIRBLOCK WALL"),   "DEFAULT_WL_NOAIR",  String(ByteString("阻压墙,允许所有物质通过,隔绝压力").FromUtf8()) },
+		{0xDCDCDC_rgb, 0x0000ff_rgb, 0, Renderer::WallIcon, String("ERASEALL"),        "DEFAULT_WL_ERASEA", String(ByteString("清除墙,物质,标记").FromUtf8()) },
+		{0x808080_rgb, 0x0000ff_rgb, 0, Renderer::WallIcon, String("STASIS WALL"),     "DEFAULT_WL_STASIS", String(ByteString("静止墙,静止其内所有物质,除非通电").FromUtf8()) },
 
 	};
 }
