@@ -41,7 +41,7 @@ void Renderer::RenderSimulation()
 	if (displayMode & DISPLAY_WARP)
 	{
 		warpVideo = video;
-		std::fill_n(video.data(), WINDOWW * YRES, 0);
+		std::fill_n(video.data(), WINDOWW * YRES, 0x0000ff);
 		render_gravlensing(warpVideo);
 	}
 }
