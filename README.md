@@ -1,3 +1,8 @@
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Dragonrster/The-Powder-Toy-Chinese/total)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/t/Dragonrster/The-Powder-Toy-Chinese)
+
+
+
 The Powder Toy - February 2025
 ==========================
 
