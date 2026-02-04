@@ -469,6 +469,9 @@ void Air::Invert()
 // called when loading saves / stamps to ensure nothing "leaks" the first frame
 void Air::ApproximateBlockAirMaps()
 {
+	std::fill(&bmap_blockair [0][0], &bmap_blockair [0][0] + NCELL, 0);
+	std::fill(&bmap_blockairh[0][0], &bmap_blockairh[0][0] + NCELL, 0);
+
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
 	for (int i = 0; i < sim.parts.active; i++)
