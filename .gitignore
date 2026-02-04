@@ -98,3 +98,5 @@ Downloads/zpix.bdf
 resources/cmex16m.bdf
 resources/cnxt.bdf
 push.bat
+src/VcsTag.h
+*.bak

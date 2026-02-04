@@ -148,7 +148,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		}});
 		vorticityCoeff->SetLimit(9);
 		scrollPanel->AddChild(vorticityCoeff);
-		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-105, 16), "Vorticity confinement");
+		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-105, 16), ByteString("涡度限制").FromUtf8());
 		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 		scrollPanel->AddChild(label);
