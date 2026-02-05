@@ -166,36 +166,34 @@ void SearchView::doSearch()
 		c->DoSearch(searchField->GetText());
 }
 
-void SearchView::searchHelp()
-{
-	String info =
-		"Type in the search bar to begin automatically searching save titles and tags. Search terms are ORed together.\n"
-		"\n"
-		"Sorting: click the \bt\"By Votes\"\bw / \bt\"By Date\"\bw buttons to change the order saves are displayed in\n"
-		"Categories: If you're logged in, use \bt\"My Own\"\bw to view only your own saves, or click the Star icon to view your favorited saves\n"
-		"Date Range: Click the dropdown to the right of the search box to select the date range for your search\n"
-		"\n"
-		"Special search terms:\n"
-		"\btid:#######\bw - search by save id\n"
-		"\bthistory:#######\bw - see previous versions for a save id\n"
-		"\btuser:XXXXXX\bw - search for saves by a specific user\n"
-		"\btbefore:YYYY-MM-DD\bw - all saves originally created before a certain date. Month and Day portions are both optional\n"
-		"\btafter:YYYY-MM-DD\bw - all saves originally created after a certain date. Month and Day portions are both optional\n"
-		"\n"
-		"Advanced search:\n"
-		"Start a search with \bt~\bw to do an advanced search. This search works across save titles, descriptions, usernames, and tags, rather than only save titles and tags."
-		" It also concatenates search terms with AND instead of OR.\n"
-		"Use \bt|\bw to OR together search terms, for example \bg~bomb | nuke | explosive\bw\n"
-		"Use \bt!\bw to negate terms, for example \bg~city !destroyable !desert\bw\n"
-		"Use \bt\"\bw to create multi-word search terms, for example \bg~\"power plant\" uran | plut | polo\bw\n"
-		"Use \bt@title\bw to limit search to only save titles, for example \bg~@title subframe\bw\n"
-		"Use \bt@description\bw to limit search to only save descriptions, for example \bg~@description \"No description provided\"\bw\n"
-		"Use \bt@user\bw to limit search to only specific users, for example \bg~@user 117n00b | Catelite | Fluttershy @title laser\bw\n"
-		"Use \bt@tags\bw to limit search to just save tags, for example \bg~@tags resistcup @title printer | @description spider before:2024-06\bw\n"
-		"Parenthesis can be used to further complicate your searches. For example: \bg~(@user MG99 @description complete) | (@user goglesq @tags tutorial)\bw"
-		;
-
-	new InformationMessage("Search Help", info, true);
+void SearchView::searchHelp()  
+{  
+	String info =  
+		ByteString("在搜索栏输入以自动搜索沙盘标题和标签。搜索词之间为 OR 关系。\n"  
+		"\n"  
+		"排序：点击 \bt\"按评分\"\bw / \bt\"按日期\"\bw 按钮更改沙盘显示顺序\n"  
+		"分类：若已登录，使用 \bt\"我的沙盘\"\bw 仅查看自己的沙盘，或点击星标图标查看收藏的沙盘\n"  
+		"日期范围：点击搜索框右侧的下拉菜单选择搜索的日期范围\n"  
+		"\n"  
+		"特殊搜索词：\n"  
+		"\btid:#######\bw - 按沙盘 ID 搜索\n"  
+		"\bthistory:#######\bw - 查看指定 ID 沙盘的历史版本\n"  
+		"\btuser:XXXXXX\bw - 搜索特定用户的沙盘\n"  
+		"\btbefore:YYYY-MM-DD\bw - 某日期之前创建的沙盘（月和日可选）\n"  
+		"\btafter:YYYY-MM-DD\bw - 某日期之后创建的沙盘（月和日可选）\n"  
+		"\n"  
+		"高级搜索：\n"  
+		"以 \bt~\bw 开头进行高级搜索，范围涵盖标题、描述、用户名和标签（默认仅标题和标签），且搜索词之间为 AND 关系。\n"  
+		"使用 \bt|\bw 组合搜索词，例如 \bg~bomb | nuke | explosive\bw\n"  
+		"使用 \bt!\bw 排除词，例如 \bg~city !destroyable !desert\bw\n"  
+		"使用 \bt\"\bw 创建多词搜索，例如 \bg~\"power plant\" uran | plut | polo\bw\n"  
+		"使用 \bt@title\bw 限定标题，例如 \bg~@title subframe\bw\n"  
+		"使用 \bt@description\bw 限定描述，例如 \bg~@description \"No description provided\"\bw\n"  
+		"使用 \bt@user\bw 限定用户，例如 \bg~@user 117n00b | Catelite | Fluttershy @title laser\bw\n"  
+		"使用 \bt@tags\bw 限定标签，例如 \bg~@tags resistcup @title printer | @description spider before:2024-06\bw\n"  
+		"可用括号进一步组合，例如：\bg~(@user MG99 @description complete) | (@user goglesq @tags tutorial)\bw").FromUtf8();  
+  
+	new InformationMessage(ByteString("搜索帮助").FromUtf8(), info, true);  
 }
 
 void SearchView::clearSearch()

@@ -26,6 +26,7 @@ public:
 	void SetVorticityCoeff(float vorticityCoeff);
 	void SetEdgeMode(int edgeMode);
 	void SetTemperatureScale(TempScale temperatureScale);
+	void SetLanguage(int language);
 	void SetThreadedRendering(bool newThreadedRendering);
 	void SetFullscreen(bool fullscreen);
 	void SetChangeResolution(bool newChangeResolution);

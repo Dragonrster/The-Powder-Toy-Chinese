@@ -34,6 +34,8 @@ public:
 	void SetEdgeMode(int edgeMode);
 	TempScale GetTemperatureScale();
 	void SetTemperatureScale(TempScale temperatureScale);
+	int GetLanguage();  
+	void SetLanguage(int language);
 	int GetThreadedRendering();
 	void SetThreadedRendering(bool newThreadedRendering);
 	int GetGravityMode();

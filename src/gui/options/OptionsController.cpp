@@ -77,6 +77,11 @@ void OptionsController::SetTemperatureScale(TempScale temperatureScale)
 	model->SetTemperatureScale(temperatureScale);
 }
 
+void OptionsController::SetLanguage(int language)  
+{  
+    model->SetLanguage(language);  
+}
+
 void OptionsController::SetThreadedRendering(bool newThreadedRendering)
 {
 	model->SetThreadedRendering(newThreadedRendering);
