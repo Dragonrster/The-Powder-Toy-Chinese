@@ -23,6 +23,7 @@
 #include "gui/interface/DirectionSelector.h"
 #include "PowderToySDL.h"
 #include "Config.h"
+#include "common/Localization.h"
 #include <cstdio>
 #include <cstring>
 #include <cmath>
@@ -35,12 +36,14 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	};
 	
 	{
-		auto *label = new ui::Label(ui::Point(4, 1), ui::Point(Size.X-8, 22), ByteString("设置").FromUtf8());
-		label->SetTextColour(style::Colour::InformationTitle);
-		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
-		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
-		autoWidth(label, 0);
-		AddComponent(label);
+		// 顶部标题使用本地化文本
+		titleLabel = new ui::Label(ui::Point(4, 1), ui::Point(Size.X-8, 22),
+			Localization::Ref().Tr("options.title", "设置"));
+		titleLabel->SetTextColour(style::Colour::InformationTitle);
+		titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+		titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+		autoWidth(titleLabel, 0);
+		AddComponent(titleLabel);
 	}
 
 	auto *tmpSeparator = new ui::Separator(ui::Point(0, 22), ui::Point(Size.X, 1));
@@ -237,7 +240,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	}, [this] {
 		c->SetEdgeMode(edgeMode->GetOption().second);
 	});
-	temperatureScale = addDropDown(ByteString("温度单位").FromUtf8(), {
+	temperatureScale = addDropDown(Localization::Ref().Tr("options.temperature"), {
 		{ ByteString("开尔文").FromUtf8(), TEMPSCALE_KELVIN },
 		{ ByteString("摄氏度").FromUtf8(), TEMPSCALE_CELSIUS },
 		{ ByteString("华氏度").FromUtf8(), TEMPSCALE_FAHRENHEIT },
@@ -247,12 +250,15 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	if (FORCE_WINDOW_FRAME_OPS != forceWindowFrameOpsHandheld)
 	{
 		addSeparator();
-		language = addDropDown(ByteString("\bg语言").FromUtf8(), {  
-		{ ByteString("简体中文").FromUtf8(), 0 },  
-		{ ByteString("English").FromUtf8(), 1 },  
-		}, [this] {  
-		c->SetLanguage(language->GetOption().second);  
-		});  
+		// 语言标签文字本地化
+		String langLabel = Localization::Ref().Tr("options.language", "语言");
+		langLabel = String("\bg") + langLabel;
+		language = addDropDown(langLabel, {
+			{ ByteString("简体中文").FromUtf8(), 0 },
+			{ ByteString("English").FromUtf8(), 1 },
+		}, [this] {
+			c->SetLanguage(language->GetOption().second);
+		});
   
 		std::vector<std::pair<String, int>> options;
 		int currentScale = ui::Engine::Ref().GetScale();
@@ -575,6 +581,12 @@ void OptionsView::UpdateVorticityCoeff(String vort, bool isDefocus)
 
 void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 {
+	// 切换语言后刷新本窗口使用到的本地化文本
+	if (titleLabel)
+	{
+		titleLabel->SetText(Localization::Ref().Tr("options.title", "设置"));
+	}
+
 	temperatureScale->SetOption(sender->GetTemperatureScale()); // has to happen before AmbientAirTempToTextBox is called
 	heatSimulation->SetChecked(sender->GetHeatSimulation());
 	ambientHeatSimulation->SetChecked(sender->GetAmbientHeatSimulation());

@@ -1,9 +1,9 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat">nul 2>&1
+call "C:\Program Files\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat">nul 2>&1
 
-set "PATH=%LOCALAPPDATA%\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\Scripts;C:\tools\sccache;%PATH%"
+set "PATH=%LOCALAPPDATA%\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\Scripts;C:\tools\sccache;%PATH%"
 set "SCCACHE_DIR=%USERPROFILE%\.sccache"
 set "SCCACHE_CACHE_SIZE=4GiB"
 set CC=sccache cl
