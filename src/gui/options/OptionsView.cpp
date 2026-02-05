@@ -247,6 +247,13 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	if (FORCE_WINDOW_FRAME_OPS != forceWindowFrameOpsHandheld)
 	{
 		addSeparator();
+		language = addDropDown(ByteString("\bg语言").FromUtf8(), {  
+		{ ByteString("简体中文").FromUtf8(), 0 },  
+		{ ByteString("English").FromUtf8(), 1 },  
+		}, [this] {  
+		c->SetLanguage(language->GetOption().second);  
+		});  
+  
 		std::vector<std::pair<String, int>> options;
 		int currentScale = ui::Engine::Ref().GetScale();
 		int scaleIndex = 1;
@@ -571,6 +578,7 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	temperatureScale->SetOption(sender->GetTemperatureScale()); // has to happen before AmbientAirTempToTextBox is called
 	heatSimulation->SetChecked(sender->GetHeatSimulation());
 	ambientHeatSimulation->SetChecked(sender->GetAmbientHeatSimulation());
+	language->SetOption(sender->GetLanguage());
 	newtonianGravity->SetChecked(sender->GetNewtonianGravity());
 	waterEqualisation->SetChecked(sender->GetWaterEqualisation());
 	airMode->SetOption(sender->GetAirMode());

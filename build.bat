@@ -38,4 +38,4 @@ cd .. && ^
 start "" powder.exe 2>nul
 
 sccache --show-stats
-timeout /t 8 >nul
+timeout /t 8 >nul 

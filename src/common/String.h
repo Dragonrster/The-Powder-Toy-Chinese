@@ -401,7 +401,9 @@ public:
 	inline String(super &&other): super(std::move(other)) {}
 	inline String(String const &other): super(other) {}
 	inline String(String &&other): super(std::move(other)) {}
-	template<size_t N> inline String(ByteString::value_type const (&ch)[N]): super(ByteString(ch, N - 1).FromAscii()) {}
+	// template<size_t N> inline String(ByteString::value_type const (&ch)[N]): super(ByteString(ch, N - 1).FromAscii()) {}
+	// 在 String 类中修改构造函数  
+	template<size_t N> inline String(const char (&ch)[N]): super(ByteString(ch, N-1).FromUtf8()) {}
 
 	inline String &operator=(String const &other) { super::operator=(other); return *this; }
 	inline String &operator=(String &&other) { super::operator=(other); return *this; }
