@@ -469,8 +469,14 @@ void Air::Invert()
 // called when loading saves / stamps to ensure nothing "leaks" the first frame
 void Air::ApproximateBlockAirMaps()
 {
-	std::fill(&bmap_blockair [0][0], &bmap_blockair [0][0] + NCELL, 0);
-	std::fill(&bmap_blockairh[0][0], &bmap_blockairh[0][0] + NCELL, 0);
+	for (int y = 0; y < YCELLS; y++)
+	{
+		for (int x = 0; x < XCELLS; x++)
+		{
+			bmap_blockair[y][x] = (sim.bmap[y][x]==WL_WALL || sim.bmap[y][x]==WL_WALLELEC || sim.bmap[y][x]==WL_BLOCKAIR || (sim.bmap[y][x]==WL_EWALL && !sim.emap[y][x]));
+			bmap_blockairh[y][x] = (bmap_blockair[y][x] || sim.bmap[y][x]==WL_GRAV) ? 0x8 : 0;
+		}
+	}
 
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
@@ -482,7 +488,7 @@ void Air::ApproximateBlockAirMaps()
 		// Real TTAN would only block if there was enough TTAN
 		// but it would be more expensive and complicated to actually check that
 		// so just block for a frame, if it wasn't supposed to block it will continue allowing air next frame
-		if (type == PT_TTAN)
+		if (type == PT_TTAN || type == PT_RSSS)
 		{
 			int x = ((int)(sim.parts[i].x+0.5f))/CELL, y = ((int)(sim.parts[i].y+0.5f))/CELL;
 			if (InBounds(x, y))
