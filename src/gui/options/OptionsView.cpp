@@ -38,7 +38,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	{
 		// 顶部标题使用本地化文本
 		titleLabel = new ui::Label(ui::Point(4, 1), ui::Point(Size.X-8, 22),
-			Localization::Ref().Tr("options.title", "设置"));
+			Localization::Ref().Tr("options.title"));
 		titleLabel->SetTextColour(style::Colour::InformationTitle);
 		titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -251,7 +251,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	{
 		addSeparator();
 		// 语言标签文字本地化
-		String langLabel = Localization::Ref().Tr("options.language", "语言");
+		String langLabel = Localization::Ref().Tr("options.language");
 		langLabel = String("\bg") + langLabel;
 		language = addDropDown(langLabel, {
 			{ ByteString("简体中文").FromUtf8(), 0 },
@@ -584,7 +584,7 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	// 切换语言后刷新本窗口使用到的本地化文本
 	if (titleLabel)
 	{
-		titleLabel->SetText(Localization::Ref().Tr("options.title", "设置"));
+		titleLabel->SetText(Localization::Ref().Tr("options.title"));
 	}
 
 	temperatureScale->SetOption(sender->GetTemperatureScale()); // has to happen before AmbientAirTempToTextBox is called
