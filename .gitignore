@@ -100,3 +100,4 @@ resources/cnxt.bdf
 push.bat
 src/VcsTag.h
 *.bak
+*.bat
