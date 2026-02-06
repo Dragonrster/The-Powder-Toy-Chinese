@@ -37,7 +37,8 @@ class OptionsView: public ui::Window
 	ui::Checkbox *fastquit{};
 	ui::Checkbox *globalQuit{};
 	ui::DropDown *decoSpace{};
-	ui::DropDown *language{}; 
+	ui::DropDown *language{};
+	ui::Label *titleLabel{};       // 顶部标题（设置）
 	ui::Checkbox *showAvatars{};
 	ui::Checkbox *momentumScroll{};
 	ui::Checkbox *mouseClickRequired{};

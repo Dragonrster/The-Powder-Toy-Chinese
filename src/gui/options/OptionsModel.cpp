@@ -8,6 +8,7 @@
 #include "gui/interface/Engine.h"
 #include "gui/game/GameModel.h"
 #include "client/Client.h"
+#include "common/Localization.h"
 
 OptionsModel::OptionsModel(GameModel * gModel_) {
 	gModel = gModel_;
@@ -103,9 +104,13 @@ int OptionsModel::GetLanguage()
   
 void OptionsModel::SetLanguage(int language)  
 {  
-    GlobalPrefs::Ref().Set("Language", language);  
-    // 此处可添加运行时语言切换逻辑（如重新加载 UI 字符串）  
-    notifySettingsChanged();  
+	GlobalPrefs::Ref().Set("Language", language);
+
+	// 切换全局本地化语言
+	Localization::Ref().SetLanguageIndex(language);
+
+	// 通知所有观察者刷新界面
+	notifySettingsChanged();
 }
 
 int OptionsModel::GetThreadedRendering()

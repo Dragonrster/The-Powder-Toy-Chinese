@@ -31,7 +31,7 @@ void Element::Element_BASE()
 
 	HeatConduct = 31;
 	HeatCapacity = 1.5f;
-	Description = "Corrosive liquid. Rusts conductive solids, neutralizes acid.";
+	Description = ByteString("腐蚀性液体,能够腐蚀导电固体,会中和酸").FromUtf8();
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 

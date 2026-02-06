@@ -24,6 +24,7 @@
 #include "gui/interface/Engine.h"
 #include "gui/interface/TextWrapper.h"
 #include "Config.h"
+#include "common/Localization.h"
 #include "SimulationConfig.h"
 #include <optional>
 #include <climits>
@@ -345,6 +346,10 @@ int Main(int argc, char *argv[])
 	explicitSingletons->globalPrefs = std::make_unique<GlobalPrefs>();
 
 	auto &prefs = GlobalPrefs::Ref();
+
+	// 初始化全局语言（在创建任何 UI 之前）
+	int languageIndex = prefs.Get("Language", 0);
+	Localization::Ref().SetLanguageIndex(languageIndex);
 
 	WindowFrameOps windowFrameOps{
 		prefs.Get("Scale", 1),
