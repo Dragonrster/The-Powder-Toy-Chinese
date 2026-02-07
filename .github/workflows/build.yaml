@@ -41,7 +41,13 @@ jobs:
         env:
           PUBLISH_HOSTPORT: ${{ vars.STARCATCHER_PUBLISH_HOSTPORT }}
           GITHUB_REF: ${{ github.ref }}
-
+      - if: steps.prepare.outputs.do_publish == 'yes'
+        run: bash -c './.github/starcatcher-publish.sh'
+        env:
+          PUBLISH_HOSTPORT: ${{ vars.STARCATCHER_PUBLISH_HOSTPORT }}
+          PUBLISH_USERNAME: ${{ vars.STARCATCHER_PUBLISH_USERNAME }}
+          PUBLISH_PASSWORD: ${{ secrets.STARCATCHER_PUBLISH_PASSWORD }}
+          PUBLISH_ACCESSCHECK: yes
       - if: steps.prepare.outputs.do_release == 'yes'
         id: create_release
         env:
@@ -139,7 +145,13 @@ jobs:
         with:
           name: ${{ matrix.asset_name }}
       - run: mv ${{ matrix.asset_path }} ${{ matrix.starcatcher_name }}
-
+      - run: bash -c './.github/starcatcher-publish.sh'
+        env:
+          PUBLISH_HOSTPORT: ${{ vars.STARCATCHER_PUBLISH_HOSTPORT }}
+          PUBLISH_USERNAME: ${{ vars.STARCATCHER_PUBLISH_USERNAME }}
+          PUBLISH_PASSWORD: ${{ secrets.STARCATCHER_PUBLISH_PASSWORD }}
+          PUBLISH_DIRECTORY: ${{ vars.STARCATCHER_PUBLISH_DIRECTORY }}
+          PUBLISH_FILENAME: ${{ matrix.starcatcher_name }}
   release:
     runs-on: ubuntu-24.04
     needs: [build, publish, prepare]
