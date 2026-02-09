@@ -359,7 +359,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 			}
 			else
 			{
-				std::cerr << "Cannot open data folder: Platform::GetCwd(...) failed" << std::endl;
+				std::cerr << "无法打开数据目录: Platform::GetCwd(...) 失败" << std::endl;
 			}
 		} });
 		scrollPanel->AddChild(dataFolderButton);
@@ -465,15 +465,15 @@ void OptionsView::UpdateStartupRequestStatus()
 	switch (Client::Ref().GetStartupRequestStatus())
 	{
 	case Client::StartupRequestStatus::notYetDone:
-		startupRequestStatus->SetText("\bg - Not yet fetched");
+		startupRequestStatus->SetText("\bg - 尚未获取");
 		break;
 
 	case Client::StartupRequestStatus::inProgress:
-		startupRequestStatus->SetText("\bg - In progress...");
+		startupRequestStatus->SetText("\bg - 进行中...");
 		break;
 
 	case Client::StartupRequestStatus::succeeded:
-		startupRequestStatus->SetText(String::Build("\bg - OK, ", Client::Ref().GetServerNotifications().size(), " notifications fetched"));
+		startupRequestStatus->SetText(String::Build("\bg - OK, ", Client::Ref().GetServerNotifications().size(), " 通知已获取"));
 		break;
 
 	case Client::StartupRequestStatus::failed:
@@ -483,7 +483,7 @@ void OptionsView::UpdateStartupRequestStatus()
 			{
 				error = "???";
 			}
-			startupRequestStatus->SetText("\bg - Failed: " + error->FromUtf8());
+			startupRequestStatus->SetText("\bg - 失败: " + error->FromUtf8());
 		}
 		break;
 	}

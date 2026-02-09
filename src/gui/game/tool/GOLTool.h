@@ -8,7 +8,7 @@ class GOLTool: public Tool
 	GameModel &gameModel;
 public:
 	GOLTool(GameModel &gameModel):
-		Tool(0, "CUST", "Add a new custom GOL type. (Use ctrl+shift+rightclick to remove them)",
+		Tool(0, "CUST", "添加新的自定义GOL类型(使用ctrl+shift+右键删除它们)",
 			0xFEA900_rgb, "DEFAULT_UI_ADDLIFE", NULL
 		),
 		gameModel(gameModel)

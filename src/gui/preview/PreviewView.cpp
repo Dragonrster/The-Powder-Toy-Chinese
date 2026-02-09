@@ -310,7 +310,7 @@ void PreviewView::DoDraw()
 	{
 		g->BlendFilledRect(RectSized(Position + Size / 2 - Vec2{ 101, 26 }, { 202, 52 }), 0x000000_rgb .WithAlpha(210));
 		g->BlendRect(RectSized(Position + Size / 2 - Vec2{ 100, 25 }, Vec2{ 200, 50 }), 0xFFFFFF_rgb .WithAlpha(180));
-		g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize(ByteString("加载沙盘中...").FromUtf8()).X - 1)/2), (Size.Y/2)-5}, ByteString("加载沙盘中...").FromUtf8(), style::Colour::InformationTitle.NoAlpha().WithAlpha(255));
+		g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize(ByteString("沙盘加载中...").FromUtf8()).X - 1)/2), (Size.Y/2)-5}, ByteString("沙盘加载中...").FromUtf8(), style::Colour::InformationTitle.NoAlpha().WithAlpha(255));
 	}
 	if (!c->GetFromUrl())
 	{
@@ -481,7 +481,7 @@ void PreviewView::ShowMissingCustomElements()
 	auto remainingIds = missingElements.ids;
 	if (missingElements.identifiers.size())
 	{
-		sb << "\n\nA list of identifiers of missing custom elements follows, which may help you determine how to fix this problem.\n";
+		sb << "\n\n下面是缺少的自定义元素的标识符列表,这可以帮助您确定如何解决此问题。\n";
 		for (auto &[ identifier, id ] : missingElements.identifiers)
 		{
 			sb << "\n - " << identifier.FromUtf8();
@@ -490,7 +490,7 @@ void PreviewView::ShowMissingCustomElements()
 	}
 	if (remainingIds.size())
 	{
-		sb << "\n\nA list of element IDs of missing custom elements with no identifier associated follows. This can only be fixed by the author of the save.\n";
+		sb << "\n\n以下是没有关联标识符的缺失自定义元素的元素 ID 列表,这只能由沙盘的作者来修复。\n";
 		for (auto id : remainingIds)
 		{
 			sb << "\n - " << id;
@@ -524,9 +524,9 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		saveNameLabel->SetText(save->name);
 		String dateType;
 		if (save->updatedDate == save->createdDate)
-			dateType = "Created:";
+			dateType = "创建于:";
 		else
-			dateType = "Updated:";
+			dateType = "更新于:";
 		if (showAvatars)
 		{
 			avatarButton->SetUsername(save->userName);
@@ -534,14 +534,14 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		}
 		else
 		{
-			authorDateLabel->SetText("\bgAuthor:\bw " + save->userName.FromUtf8() + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate).FromAscii());
+			authorDateLabel->SetText(ByteString("\bg作者:\bw ").FromUtf8() + save->userName.FromUtf8() + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate).FromAscii());
 		}
 		auto user = Client::Ref().GetAuthUser();
 		if (user && save->userName == user->Username)
 			userIsAuthor = true;
 		else
 			userIsAuthor = false;
-		viewsLabel->SetText(String::Build("\bgViews:\bw ", save->Views));
+		viewsLabel->SetText(String::Build("\bg浏览次数:\bw ", save->Views));
 		saveDescriptionLabel->SetText(save->Description);
 		if(save->Favourite)
 		{
@@ -659,7 +659,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 		submitCommentButton->SetActionCallback({ [this] { submitComment(); } });
 		AddComponent(submitCommentButton);
 
-		commentWarningLabel = new ui::Label(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 16), "If you see this it is a bug");
+		commentWarningLabel = new ui::Label(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 16), "如果你看到这个,就表示出现了bug");
 		commentWarningLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		commentWarningLabel->SetTextColour(ui::Colour(255, 0, 0));
 		commentWarningLabel->Visible = false;

@@ -132,7 +132,7 @@ RenderView::RenderView():
 		AddComponent(colourModeCheckbox);
 	};
 	addColourModeCheckbox(COLOUR_HEAT, IconHeat    , ui::Point(275,  4), ByteString("渲染物质温度,低温深蓝色,高温粉红色").FromUtf8());
-	addColourModeCheckbox(COLOUR_LIFE, IconLife    , ui::Point(275, 22), ByteString("灰度渲染物质life值大小").FromUtf8());
+	addColourModeCheckbox(COLOUR_LIFE, IconLife    , ui::Point(275, 22), ByteString("灰度渲染物质Life值大小").FromUtf8());
 	addColourModeCheckbox(COLOUR_GRAD, IconGradient, ui::Point(307, 22), ByteString("轻微改变元素的颜色,渲染热量扩散效果").FromUtf8());
 	addColourModeCheckbox(COLOUR_BASC, IconBasic   , ui::Point(307,  4), ByteString("轻微改变元素的颜色,渲染热量扩散效果").FromUtf8());
 	line4 = 340;

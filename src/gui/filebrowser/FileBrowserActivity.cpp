@@ -96,7 +96,7 @@ FileBrowserActivity::FileBrowserActivity(ByteString directory, OnSelected onSele
 	progressBar = new ui::ProgressBar(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17));
 	AddComponent(progressBar);
 
-	infoText = new ui::Label(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17), "No saves found");
+	infoText = new ui::Label(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17), "没有找到沙盘");
 	AddComponent(infoText);
 
 	filesX = 4;
@@ -198,7 +198,7 @@ void FileBrowserActivity::loadDirectory(ByteString directory, ByteString search)
 	itemList->Visible = false;
 	progressBar->Visible = true;
 	progressBar->SetProgress(-1);
-	progressBar->SetStatus(ByteString("加载沙盘中").FromUtf8());
+	progressBar->SetStatus(ByteString("沙盘加载中").FromUtf8());
 	loadFiles = new LoadFilesTask(directory, search);
 	loadFiles->AddTaskListener(this);
 	loadFiles->Start();

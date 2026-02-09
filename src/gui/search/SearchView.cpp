@@ -315,7 +315,7 @@ void SearchView::NotifyPageChanged(SearchModel * sender)
 	}
 	else
 	{
-		String pageInfo = String::Build(ByteString("共").FromUtf8(), pageCount);
+		String pageInfo = String::Build(ByteString("共 ").FromUtf8(), pageCount);
 		pageCountLabel->SetText(pageInfo);
 		int width = Graphics::TextSize(pageInfo).X - 1;
 

@@ -81,8 +81,8 @@ Credits::Credits():
 	};
 
 
-	addHeader("The Powder Toy is an open source project, developed by members of the community.\n"
-			"We'd like to thank everyone who contributed to our \bt{a:https://github.com/The-Powder-Toy/The-Powder-Toy|GitHub repo}\x0E:", false);
+	addHeader("The Powder Toy 是一个开源项目,由社区成员开发.\n"
+			"我们感谢所有为我们的 \bt{a:https://github.com/The-Powder-Toy/The-Powder-Toy|GitHub 仓库}\x0E: 做出贡献的人.", false);
 
 	auto GitHub = root["GitHub"];
 	int grayscale = 255;

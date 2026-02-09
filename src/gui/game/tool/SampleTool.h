@@ -9,7 +9,7 @@ class SampleTool: public Tool
 
 public:
 	SampleTool(GameModel &model):
-		Tool(0, "SMPL", "Sample an element on the screen.",
+		Tool(0, "SMPL", ByteString("元素吸管,采样选中的元素").FromUtf8(),
 			0x000000_rgb, "DEFAULT_UI_SAMPLE", SampleTool::GetIcon
 		),
 		gameModel(model)

@@ -255,7 +255,7 @@ void SearchController::ClearSelection()
 void SearchController::RemoveSelected()
 {
 	StringBuilder desc;
-	desc << ByteString("真的想要删除 ").FromUtf8() << searchModel->GetSelected().size() << ByteString(" 沙盘").FromUtf8();
+	desc << ByteString("真的想要删除 ").FromUtf8() << searchModel->GetSelected().size() << ByteString(" 个沙盘").FromUtf8();
 	if(searchModel->GetSelected().size()>1)
 		desc << "s";
 	desc << "?";
@@ -276,7 +276,7 @@ void SearchController::removeSelectedC()
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
-				notifyStatus(String::Build("Deleting save [", saves[i], "] ..."));
+				notifyStatus(String::Build("删除沙盘 [", saves[i], "] ..."));
 				auto deleteSaveRequest = std::make_unique<http::DeleteSaveRequest>(saves[i]);
 				deleteSaveRequest->Start();
 				deleteSaveRequest->Wait();
@@ -286,7 +286,7 @@ void SearchController::removeSelectedC()
 				}
 				catch (const http::RequestError &ex)
 				{
-					notifyError(String::Build("Failed to delete [", saves[i], "]: ", ByteString(ex.what()).FromAscii()));
+					notifyError(String::Build("删除失败 [", saves[i], "]: ", ByteString(ex.what()).FromAscii()));
 					c->Refresh();
 					return false;
 				}
@@ -298,7 +298,7 @@ void SearchController::removeSelectedC()
 	};
 
 	std::vector<int> selected = searchModel->GetSelected();
-	new TaskWindow("Removing saves", new RemoveSavesTask(selected, this));
+	new TaskWindow("正在删除沙盘", new RemoveSavesTask(selected, this));
 	ClearSelection();
 	searchModel->UpdateSaveList(searchModel->GetPageNum(), searchModel->GetLastQuery());
 }
@@ -327,7 +327,7 @@ void SearchController::unpublishSelectedC(bool publish)
 
 		void PublishSave(int saveID)
 		{
-			notifyStatus(String::Build("Publishing save [", saveID, "]"));
+			notifyStatus(String::Build("公开沙盘 [", saveID, "]"));
 			auto publishSaveRequest = std::make_unique<http::PublishSaveRequest>(saveID);
 			publishSaveRequest->Start();
 			publishSaveRequest->Wait();
@@ -336,7 +336,7 @@ void SearchController::unpublishSelectedC(bool publish)
 
 		void UnpublishSave(int saveID)
 		{
-			notifyStatus(String::Build("Unpublishing save [", saveID, "]"));
+			notifyStatus(String::Build("取消公开沙盘 [", saveID, "]"));
 			auto unpublishSaveRequest = std::make_unique<http::UnpublishSaveRequest>(saveID);
 			unpublishSaveRequest->Start();
 			unpublishSaveRequest->Wait();
@@ -362,11 +362,11 @@ void SearchController::unpublishSelectedC(bool publish)
 				{
 					if (publish) // uses html page so error message will be spam
 					{
-						notifyError(String::Build("Failed to publish [", saves[i], "], is this save yours?"));
+						notifyError(String::Build("公开失败 [", saves[i], "], 这是你的沙盘吗?"));
 					}
 					else
 					{
-						notifyError(String::Build("Failed to unpublish [", saves[i], "]: ", ByteString(ex.what()).FromAscii()));
+						notifyError(String::Build("取消公开失败 [", saves[i], "]: ", ByteString(ex.what()).FromAscii()));
 					}
 					c->Refresh();
 					return false;
@@ -379,7 +379,7 @@ void SearchController::unpublishSelectedC(bool publish)
 	};
 
 	std::vector<int> selected = searchModel->GetSelected();
-	new TaskWindow(publish ? String("Publishing Saves") : String("Unpublishing Saves"), new UnpublishSavesTask(selected, this, publish));
+	new TaskWindow(publish ? String("正在公开沙盘") : String("正在取消公开沙盘"), new UnpublishSavesTask(selected, this, publish));
 }
 
 void SearchController::FavouriteSelected()
@@ -403,7 +403,7 @@ void SearchController::FavouriteSelected()
 				}
 				catch (const http::RequestError &ex)
 				{
-					notifyError(String::Build("Failed to favourite [", saves[i], "]: ", ByteString(ex.what()).FromAscii()));
+					notifyError(String::Build("收藏失败 [", saves[i], "]: ", ByteString(ex.what()).FromAscii()));
 					return false;
 				}
 				notifyProgress((i + 1) * 100 / saves.size());
@@ -431,7 +431,7 @@ void SearchController::FavouriteSelected()
 				}
 				catch (const http::RequestError &ex)
 				{
-					notifyError(String::Build("Failed to unfavourite [", saves[i], "]: ", ByteString(ex.what()).FromAscii()));
+					notifyError(String::Build("取消收藏失败 [", saves[i], "]: ", ByteString(ex.what()).FromAscii()));
 					return false;
 				}
 				notifyProgress((i + 1) * 100 / saves.size());

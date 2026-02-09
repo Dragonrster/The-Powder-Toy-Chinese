@@ -70,8 +70,8 @@ inline ByteString IntroText()
 		"\n";
 	if constexpr (BETA)
 	{
-		sb << "\brThis is a BETA, you cannot save things publicly, nor open local saves and stamps made with it in older versions.\n"
-		      "\brIf you are planning on publishing any saves, use the release version.\n";
+		sb << "\br这是一个 BETA 版本,您无法公开保存任何内容,也无法打开较旧版本中使用它创建的本地保存和贴图.\n"
+		      "\br如果您计划发布任何保存,请使用发布版本.\n";
 	}
 	else
 	{

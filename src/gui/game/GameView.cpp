@@ -1689,7 +1689,7 @@ void GameView::OnFileDrop(ByteString filename)
 {
 	if (!(filename.EndsWith(".cps") || filename.EndsWith(".stm")))
 	{
-		new ErrorMessage( ByteString("加载沙盘错误").FromUtf8(), ByteString("删除的文件不是TPT沙盘文件(.cps或.stm格式)").FromUtf8());
+		new ErrorMessage( ByteString("沙盘加载错误").FromUtf8(), ByteString("删除的文件不是TPT沙盘文件(.cps或.stm格式)").FromUtf8());
 		return;
 	}
 
@@ -1698,7 +1698,7 @@ void GameView::OnFileDrop(ByteString filename)
 		auto saveFile = Client::Ref().GetStamp(filename);
 		if (!saveFile || !saveFile->GetGameSave())
 		{
-			new ErrorMessage(ByteString("加载沙盘错误").FromUtf8(), ByteString("无法加载已删除的沙盘文件: ").FromUtf8() + saveFile->GetError());
+			new ErrorMessage(ByteString("沙盘加载错误").FromUtf8(), ByteString("无法加载已删除的沙盘文件: ").FromUtf8() + saveFile->GetError());
 			return;
 		}
 		c->LoadStamp(saveFile->TakeGameSave());
@@ -1710,7 +1710,7 @@ void GameView::OnFileDrop(ByteString filename)
 			return;
 		if (saveFile->GetError().length())
 		{
-			new ErrorMessage("Error loading save", "Dropped save file could not be loaded: " + saveFile->GetError());
+			new ErrorMessage("沙盘加载错误", "无法加载已删除的沙盘文件: " + saveFile->GetError());
 			return;
 		}
 		c->LoadSaveFile(std::move(saveFile));
@@ -1766,13 +1766,13 @@ void GameView::OnTick()
 		switch (si.second)
 		{
 		case sign::Type::Save:
-			tooltip << "Go to save ID:" << str.Substr(3, si.first - 3);
+			tooltip << "前往沙盘ID:" << str.Substr(3, si.first - 3);
 			break;
 		case sign::Type::Thread:
-			tooltip << "Open forum thread " << str.Substr(3, si.first - 3) << " in browser";
+			tooltip << "在浏览器中打开 " << str.Substr(3, si.first - 3) << " 论坛帖子";
 			break;
 		case sign::Type::Search:
-			tooltip << "Search for " << str.Substr(3, si.first - 3);
+			tooltip << "搜索 " << str.Substr(3, si.first - 3);
 			break;
 		default: break;
 		}

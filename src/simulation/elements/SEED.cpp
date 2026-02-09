@@ -33,7 +33,7 @@ void Element::Element_SEED()
 	Weight = 36;
 
 	HeatConduct = 32;
-	Description = "Seeds. Put on sand and add water to grow a tree.";
+	Description = ByteString("种子,放在沙子上时浇水会生长树木").FromUtf8();
 
 	Properties = TYPE_PART | PROP_NEUTPASS;
 
