@@ -42,11 +42,11 @@ std::unique_ptr<SaveFile> LocalBrowserController::TakeSave()
 void LocalBrowserController::RemoveSelected()
 {
 	StringBuilder desc;
-	desc << "Are you sure you want to delete " << browserModel->GetSelected().size() << " stamp";
+	desc << "您确定要删除 " << browserModel->GetSelected().size() << " 个图章吗";
 	if(browserModel->GetSelected().size()>1)
 		desc << "s";
 	desc << "?";
-	new ConfirmPrompt("Delete stamps", desc.Build(), { [this] { removeSelectedC(); } });
+	new ConfirmPrompt("删除图章", desc.Build(), { [this] { removeSelectedC(); } });
 }
 
 void LocalBrowserController::removeSelectedC()
@@ -61,7 +61,7 @@ void LocalBrowserController::removeSelectedC()
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
-				notifyStatus(String::Build("Deleting stamp [", saves[i].FromUtf8(), "] ..."));
+				notifyStatus(String::Build("删除图章 [", saves[i].FromUtf8(), "] ..."));
 				Client::Ref().DeleteStamp(saves[i]);
 				notifyProgress((i + 1) * 100 / saves.size());
 			}
@@ -74,17 +74,17 @@ void LocalBrowserController::removeSelectedC()
 	};
 
 	std::vector<ByteString> selected = browserModel->GetSelected();
-	new TaskWindow("Removing stamps", new RemoveSavesTask(this, selected));
+	new TaskWindow("移除图章", new RemoveSavesTask(this, selected));
 }
 
 void LocalBrowserController::RenameSelected()
 {
 	ByteString save = browserModel->GetSelected()[0];
 
-	new TextPrompt("Rename stamp", "Enter a new name for the stamp:", "", "[new name]", false, { [this, save](const String &newName) {
+	new TextPrompt("重命名图章", "输入图章的新名称:", "", "[新名称]", false, { [this, save](const String &newName) {
 		if (newName.length() == 0)
 		{
-			new ErrorMessage("Error renaming stamp", "You have to specify the filename.");
+			new ErrorMessage("重命名图章时出错", "您必须指定文件名.");
 			return;
 		}
 

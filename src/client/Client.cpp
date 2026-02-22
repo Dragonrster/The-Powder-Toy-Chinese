@@ -321,13 +321,13 @@ void Client::RenameStamp(ByteString stampID, ByteString newName)
 
 	if (Platform::FileExists(newPath))
 	{
-		new ErrorMessage("Error renaming stamp", "A stamp with this name already exists.");
+		new ErrorMessage("重命名图章时出错", "同名的图章已存在");
 		return;
 	}
 
 	if (!Platform::RenameFile(oldPath, newPath, false))
 	{
-		new ErrorMessage("Error renaming stamp", "Could not rename the stamp.");
+		new ErrorMessage("重命名图章时出错", "无法重命名图章");
 		return;
 	}
 
@@ -547,7 +547,7 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 		toDir = toDir + '/';
 
 	std::ofstream logFile(fromDir + "/migrationlog.txt", std::ios::out);
-	logFile << "Running migration of data from " << fromDir + " to " << toDir << std::endl;
+	logFile << "运行数据迁移从" << fromDir + " 前往 " << toDir << std::endl;
 
 	// Get lists of files to migrate
 	auto stamps = Platform::DirectorySearch(fromDir + "stamps", "", { ".stm" });
@@ -561,8 +561,8 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 
 	if (stamps.empty() && saves.empty() && scripts.empty() && downloadedScripts.empty() && screenshots.empty() && !hasAutorun && !hasPref)
 	{
-		logFile << "Nothing to migrate.";
-		return "Nothing to migrate. This button is used to migrate data from pre-96.0 TPT installations to the shared directory";
+		logFile << "无需迁移";
+		return "无需迁移,此按钮用于将96.0版本之前的TPT安装数据迁移到共享目录";
 	}
 
 	StringBuilder result;
@@ -583,17 +583,17 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 				if (Platform::RenameFile(from, to, false))
 				{
 					failedCount++;
-					logFile << "failed to move " << from << " to " << to << std::endl;
+					logFile << "无法移动 " << from << " to " << to << std::endl;
 				}
 				else
 				{
 					migratedCount++;
-					logFile << "moved " << from << " to " << to << std::endl;
+					logFile << "已移动 " << from << " to " << to << std::endl;
 				}
 			}
 			else
 			{
-				logFile << "skipping " << from << "(already exists)" << std::endl;
+				logFile << "正在跳过 " << from << "(already exists)" << std::endl;
 			}
 		}
 
@@ -612,23 +612,23 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 		{
 			if (Platform::RenameFile(from, to, false))
 			{
-				logFile << "failed to move " << from << " to " << to << std::endl;
+				logFile << "无法移动 " << from << " to " << to << std::endl;
 				result << "\n\br" << filename.FromUtf8() << " migration failed\x0E";
 			}
 			else
 			{
-				logFile << "moved " << from << " to " << to << std::endl;
+				logFile << "已移动 " << from << " to " << to << std::endl;
 				result << '\n' << filename.FromUtf8() << " migrated";
 			}
 		}
 		else
 		{
-			logFile << "skipping " << from << "(already exists)" << std::endl;
+			logFile << "正在跳过 " << from << "(already exists)" << std::endl;
 			result << '\n' << filename.FromUtf8() << " skipped (already exists)";
 		}
 
 		if (!Platform::RemoveFile(fromDir + filename)) {
-			logFile << "failed to delete " << filename << std::endl;
+			logFile << "无法删除 " << filename << std::endl;
 		}
 	};
 
@@ -656,7 +656,7 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 	{
 		ByteString toDelete = dirsToDelete.top();
 		if (!Platform::DeleteDirectory(fromDir + toDelete)) {
-			logFile << "failed to delete " << toDelete << std::endl;
+			logFile << "删除失败 " << toDelete << std::endl;
 		}
 		dirsToDelete.pop();
 	}
@@ -666,7 +666,7 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 
 	RescanStamps();
 
-	logFile << std::endl << std::endl << "Migration complete. Results: " << result.Build().ToUtf8();
+	logFile << std::endl << std::endl << "迁移完成,运行结果: " << result.Build().ToUtf8();
 	logFile.close();
 
 	return result.Build();

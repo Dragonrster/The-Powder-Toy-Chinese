@@ -467,12 +467,12 @@ ByteString GameController::StampRegion(ui::Point point1, ui::Point point2, bool 
 		newSave->paused = gameModel->GetPaused();
 		ByteString stampName = Client::Ref().AddStamp(std::move(newSave));
 		if (stampName.length() == 0)
-			new ErrorMessage(ByteString("无法创建stamp").FromUtf8(), ByteString("序列化保存文件时出错").FromUtf8());
+			new ErrorMessage(ByteString("无法创建图章").FromUtf8(), ByteString("序列化保存文件时出错").FromUtf8());
 		return stampName;
 	}
 	else
 	{
-		new ErrorMessage(ByteString("无法创建stamp").FromUtf8(), ByteString("生成保存文件时出错").FromUtf8());
+		new ErrorMessage(ByteString("无法创建图章").FromUtf8(), ByteString("生成保存文件时出错").FromUtf8());
 		return "";
 	}
 }
@@ -1382,7 +1382,7 @@ void GameController::OpenStamps()
 		if (file)
 		{
 			if (file->GetError().length())
-				new ErrorMessage(ByteString("加载stamps时出错").FromUtf8(), file->GetError());
+				new ErrorMessage(ByteString("加载图章时出错").FromUtf8(), file->GetError());
 			else if (localBrowser->GetMoveToFront())
 				Client::Ref().MoveStampToFront(file->GetDisplayName().ToUtf8());
 			LoadStamp(file->TakeGameSave());

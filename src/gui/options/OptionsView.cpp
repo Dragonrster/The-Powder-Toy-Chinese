@@ -313,7 +313,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	mouseClickRequired = addCheckbox(0, ByteString("置顶类别").FromUtf8(), ByteString("启用此项时将滑动切换类别改为点击").FromUtf8(), [this] {
 		c->SetMouseClickrequired(mouseClickRequired->GetChecked());
 	});
-	includePressure = addCheckbox(0, ByteString("压力数据").FromUtf8(), ByteString("沙盘,Stamps,复制时保存压力数据").FromUtf8(), [this] {
+	includePressure = addCheckbox(0, ByteString("压力数据").FromUtf8(), ByteString("沙盘,图章,复制时保存压力数据").FromUtf8(), [this] {
 		c->SetIncludePressure(includePressure->GetChecked());
 	});
 	perfectCircle = addCheckbox(0, ByteString("完美的圆").FromUtf8(), ByteString("由Notch创造的最完美的圆").FromUtf8(), [this] {
@@ -369,9 +369,9 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 			migrationButton->SetActionCallback({ [] {
 				ByteString from = Platform::originalCwd;
 				ByteString to = Platform::sharedCwd;
-				new ConfirmPrompt("Do Migration?", "This will migrate all stamps, saves, and scripts from\n\bt" + from.FromUtf8() + "\bw\nto the shared data directory at\n\bt" + to.FromUtf8() + "\bw\n\n" + "Files that already exist will not be overwritten.", { [from, to]() {
+				new ConfirmPrompt(ByteString("进行迁移?").FromUtf8(), ByteString("这将从中迁移所有图章,沙盘和脚本\n\bt").FromUtf8() + from.FromUtf8() + ByteString("\bw\n到共享数据目录\n\bt").FromUtf8() + to.FromUtf8() + "\bw\n\n" + ByteString("已经存在的文件不会被覆盖").FromUtf8(), { [from, to]() {
 					String ret = Client::Ref().DoMigration(from, to);
-					new InformationMessage("Migration Complete", ret, false);
+					new InformationMessage(ByteString("迁移完成").FromUtf8(), ret, false);
 				} });
 			} });
 			scrollPanel->AddChild(migrationButton);
@@ -406,7 +406,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	{
 		addSeparator();
 
-		auto *creditsButton = new ui::Button(ui::Point(10, currentY), ui::Point(90, 16), "Credits");
+		auto *creditsButton = new ui::Button(ui::Point(10, currentY), ui::Point(90, 16), "贡献者");
 		creditsButton->SetActionCallback({ [] {
 			auto *credits = new Credits();
 			ui::Engine::Ref().ShowWindow(credits);
@@ -473,7 +473,7 @@ void OptionsView::UpdateStartupRequestStatus()
 		break;
 
 	case Client::StartupRequestStatus::succeeded:
-		startupRequestStatus->SetText(String::Build("\bg - OK, ", Client::Ref().GetServerNotifications().size(), " 通知已获取"));
+		startupRequestStatus->SetText(String::Build("\bg - 完成, ", Client::Ref().GetServerNotifications().size(), " 个通知已获取"));
 		break;
 
 	case Client::StartupRequestStatus::failed:

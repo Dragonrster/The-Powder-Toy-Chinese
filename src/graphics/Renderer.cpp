@@ -1362,7 +1362,7 @@ const std::vector<RenderPreset> Renderer::renderModePresets = {
 		0,
 	},
 	{
-		ByteString("火焰渲染模式").FromUtf8(),
+		ByteString("标准渲染模式").FromUtf8(),
 		RENDER_BASC,
 		0,
 		0,

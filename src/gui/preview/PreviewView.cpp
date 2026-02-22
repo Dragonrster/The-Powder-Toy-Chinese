@@ -541,7 +541,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 			userIsAuthor = true;
 		else
 			userIsAuthor = false;
-		viewsLabel->SetText(String::Build("\bg浏览次数:\bw ", save->Views));
+		viewsLabel->SetText(String::Build("\bg浏览量:\bw ", save->Views));
 		saveDescriptionLabel->SetText(save->Description);
 		if(save->Favourite)
 		{
@@ -682,7 +682,7 @@ void PreviewView::SaveLoadingError(String errorMessage)
 
 void PreviewView::NotifyCommentsPageChanged(PreviewModel * sender)
 {
-	pageInfo->SetText(String::Build(ByteString("第 ").FromUtf8(), sender->GetCommentsPageNum(), ByteString(" 共 ").FromUtf8(), sender->GetCommentsPageCount()));
+	pageInfo->SetText(String::Build(ByteString("第 ").FromUtf8(), sender->GetCommentsPageNum(), ByteString(" 共").FromUtf8(), sender->GetCommentsPageCount()));
 }
 
 void PreviewView::NotifyCommentsChanged(PreviewModel * sender)

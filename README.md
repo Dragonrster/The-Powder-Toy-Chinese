@@ -72,9 +72,9 @@ Special 感谢
 | Space                   | 暂停                                                            |
 | Q / Esc                 | 退出                                                            |
 | Z                       | 放大                                                            |
-| S                       | 保存 Stamp                                                      |
-| L                       | 加载保存的 Stamp                                                |
-| K                       | 浏览保存的 Stamp                                                |
+| S                       | 保存图章                                                        |
+| L                       | 加载保存的图章                                                |
+| K                       | 浏览保存的图章                                                |
 | 0-9                     | 设置渲染模式                                                    |
 | P / F2                  | 将屏幕截图另存为 .png                                           |
 | E                       | 调出元素搜索                                                    |
@@ -92,7 +92,7 @@ Special 感谢
 | Ctrl + B                | 打开/关闭装饰                                       |
 | N                       | 打开/关闭牛顿引力                                 |
 | U                       | 打开/关闭牛顿引力                                      |
-| Ctrl + I                | 安装The Powder Toy，通过双击加载沙盘/Stamp |
+| Ctrl + I                | 安装The Powder Toy，通过双击加载沙盘/图章 |
 | Backtick                | 切换控制台                                                 |
 | =                       | 重置压力和速度图                                 |
 | Ctrl + =                | 清除电脉冲                                               |
@@ -110,9 +110,9 @@ Special 感谢
 | Mouse scroll            | 更改画笔大小                                               |
 | Ctrl + Mouse scroll     | 更改垂直画笔大小                                      |
 | Shift + Mouse scroll    | 更改水平画笔大小                                    |
-| Shift + R               | 粘贴 Stamps 图章时所选区域的水平镜像          |
-| Ctrl + Shift + R        | 粘贴 Stamps 时选定区域的垂直镜像          |
-| R                       | 粘贴 Stamps 时逆时针旋转所选区域          |
+| Shift + R               | 粘贴图章时所选区域的水平镜像          |
+| Ctrl + Shift + R        | 粘贴图章时选定区域的垂直镜像          |
+| R                       | 粘贴图章时逆时针旋转所选区域          |
 | F11                     | 切换全屏                                               |
 
 命令行
@@ -123,8 +123,8 @@ Special 感谢
 | `scale:SIZE`          | 更改窗口比例                           | `scale:2`                                   |
 | `kiosk`               | 全屏模式                               |                                             |
 | `proxy:SERVER[:PORT]` | 使用代理服务器                         | `proxy:wwwcache.lancs.ac.uk:8080`           |
-| `open FILE`           | 将文件打开为 Stamps 或游戏沙盘         |                                             |
-| `ddir DIRECTORY`      | 用于保存 Stamps 和首选项的目录         |                                             |
+| `open FILE`           | 将文件打开为图章或游戏沙盘         |                                             |
+| `ddir DIRECTORY`      | 用于保存图章和首选项的目录         |                                             |
 | `ptsave:SAVEID`       | 打开在线保存，由 ptsave 使用：URL      | `ptsave:2198`                               |
 | `disable-network`     | 禁用互联网连接                         |                                             |
 | `disable-bluescreen`  | 禁用蓝屏处理程序                       |                                             |

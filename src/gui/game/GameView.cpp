@@ -1351,7 +1351,7 @@ void GameView::BeginStampSelection()
 	selectMode = SelectStamp;
 	selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 	isMouseDown = false;
-	buttonTip = ByteString("\x0F\xEF\xEF\020单击并拖动以指定要创建Stamp的区域(右键单击=取消)").FromUtf8();
+	buttonTip = ByteString("\x0F\xEF\xEF\020单击并拖动以指定要创建图章的区域(右键单击=取消)").FromUtf8();
 	buttonTipShow = 120;
 }
 
