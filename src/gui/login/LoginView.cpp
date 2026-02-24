@@ -1,4 +1,5 @@
 #include "LoginView.h"
+#include "common/Localization.h"
 #include "Config.h"
 #include "LoginModel.h"
 #include "LoginController.h"
@@ -16,12 +17,12 @@ constexpr auto defaultSize = ui::Point(200, 87);
 
 LoginView::LoginView():
 	ui::Window(ui::Point(-1, -1), defaultSize),
-	loginButton(new ui::Button(ui::Point(200-100, 87-17), ui::Point(100, 17), "Sign in")),
-	cancelButton(new ui::Button(ui::Point(0, 87-17), ui::Point(101, 17), "Sign Out")),
-	titleLabel(new ui::Label(ui::Point(4, 5), ui::Point(200-16, 16), "Server login")),
+	loginButton(new ui::Button(ui::Point(200-100, 87-17), ui::Point(100, 17), Localization::Ref().Tr("login.sign_in"))),
+	cancelButton(new ui::Button(ui::Point(0, 87-17), ui::Point(101, 17), Localization::Ref().Tr("login.sign_out"))),
+	titleLabel(new ui::Label(ui::Point(4, 5), ui::Point(200-16, 16), Localization::Ref().Tr("login.title"))),
 	infoLabel(new ui::RichLabel(ui::Point(6, 67), ui::Point(200-12, 16), "")),
-	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), "", "[username]")),
-	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "", "[password]"))
+	usernameField(new ui::Textbox(ui::Point(8, 25), ui::Point(200-16, 17), "", Localization::Ref().Tr("login.username_placeholder"))),
+	passwordField(new ui::Textbox(ui::Point(8, 46), ui::Point(200-16, 17), "", Localization::Ref().Tr("login.password_placeholder")))
 {
 	if (auto user = Client::Ref().GetAuthUser())
 	{

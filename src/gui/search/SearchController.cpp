@@ -4,6 +4,7 @@
 #include "SearchModel.h"
 #include "SearchView.h"
 
+#include "common/Localization.h"
 #include "client/Client.h"
 #include "client/SaveInfo.h"
 #include "client/GameSave.h"
@@ -259,7 +260,7 @@ void SearchController::RemoveSelected()
 	if(searchModel->GetSelected().size()>1)
 		desc << "s";
 	desc << "?";
-	new ConfirmPrompt("Delete saves", desc.Build(), { [this] {
+	new ConfirmPrompt(Localization::Ref().Tr("search.confirm_delete_title"), desc.Build(), { [this] {
 		removeSelectedC();
 	} });
 }
@@ -298,7 +299,7 @@ void SearchController::removeSelectedC()
 	};
 
 	std::vector<int> selected = searchModel->GetSelected();
-	new TaskWindow("Removing saves", new RemoveSavesTask(selected, this));
+	new TaskWindow(Localization::Ref().Tr("search.task_removing"), new RemoveSavesTask(selected, this));
 	ClearSelection();
 	searchModel->UpdateSaveList(searchModel->GetPageNum(), searchModel->GetLastQuery());
 }
@@ -310,7 +311,7 @@ void SearchController::UnpublishSelected(bool publish)
 	if (searchModel->GetSelected().size() > 1)
 		desc << "s";
 	desc << "?";
-	new ConfirmPrompt(publish ? String("Publish Saves") : String("Unpublish Saves"), desc.Build(), { [this, publish] {
+	new ConfirmPrompt(publish ? Localization::Ref().Tr("search.confirm_publish_title") : Localization::Ref().Tr("search.confirm_unpublish_title"), desc.Build(), { [this, publish] {
 		unpublishSelectedC(publish);
 	} });
 }
@@ -379,7 +380,7 @@ void SearchController::unpublishSelectedC(bool publish)
 	};
 
 	std::vector<int> selected = searchModel->GetSelected();
-	new TaskWindow(publish ? String("Publishing Saves") : String("Unpublishing Saves"), new UnpublishSavesTask(selected, this, publish));
+	new TaskWindow(publish ? Localization::Ref().Tr("search.task_publishing") : Localization::Ref().Tr("search.task_unpublishing"), new UnpublishSavesTask(selected, this, publish));
 }
 
 void SearchController::FavouriteSelected()
@@ -442,8 +443,8 @@ void SearchController::FavouriteSelected()
 
 	std::vector<int> selected = searchModel->GetSelected();
 	if (!searchModel->GetShowFavourite())
-		new TaskWindow("Favouring saves", new FavouriteSavesTask(selected));
+		new TaskWindow(Localization::Ref().Tr("search.task_favouring"), new FavouriteSavesTask(selected));
 	else
-		new TaskWindow("Unfavouring saves", new UnfavouriteSavesTask(selected));
+		new TaskWindow(Localization::Ref().Tr("search.task_unfavouring"), new UnfavouriteSavesTask(selected));
 	ClearSelection();
 }
