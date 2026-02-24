@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "simulation/Air.h"
 
 static int update(UPDATE_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_RSSS()
 	Weight = 100;
 
 	HeatConduct = 130;
-	Description = "Solidified resist. Blocks pressure and insulates electricity. Liquefies on contact with neutrons.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_RSSS");
 
 	Properties = TYPE_SOLID|PROP_NEUTPASS;
 	CarriesTypeIn = (1U << FIELD_CTYPE) | (1U << FIELD_TMP);

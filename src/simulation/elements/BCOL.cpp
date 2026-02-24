@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "COAL.h"
 
 void Element::Element_BCOL()
@@ -29,7 +30,7 @@ void Element::Element_BCOL()
 	Weight = 90;
 
 	HeatConduct = 150;
-	Description = "Broken Coal. Heavy particles, burns slowly.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_BCOL");
 
 	Properties = TYPE_PART;
 

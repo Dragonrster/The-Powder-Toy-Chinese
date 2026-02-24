@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -30,7 +31,7 @@ void Element::Element_ISZS()
 
 	DefaultProperties.temp = 140.00f;
 	HeatConduct = 251;
-	Description = "Solid form of ISOZ, slowly decays into PHOT.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_ISZS");
 
 	Properties = TYPE_SOLID | PROP_PHOTPASS;
 

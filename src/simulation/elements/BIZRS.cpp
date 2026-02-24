@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "BIZR.h"
 
 void Element::Element_BIZRS()
@@ -29,7 +30,7 @@ void Element::Element_BIZRS()
 
 	DefaultProperties.temp = R_TEMP + 300.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Bizarre solid.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_BIZRS");
 
 	Properties = TYPE_SOLID;
 

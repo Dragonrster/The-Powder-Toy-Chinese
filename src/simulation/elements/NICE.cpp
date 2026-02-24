@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_NICE()
 {
@@ -28,7 +29,7 @@ void Element::Element_NICE()
 
 	DefaultProperties.temp = 35.0f;
 	HeatConduct = 46;
-	Description = "Nitrogen Ice. Very cold, will melt into LN2 when heated only slightly.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_NICE");
 
 	Properties = TYPE_SOLID;
 

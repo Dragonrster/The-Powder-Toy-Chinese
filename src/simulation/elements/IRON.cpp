@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_IRON()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Rusts with salt, can be used for electrolysis of WATR.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_IRON");
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 

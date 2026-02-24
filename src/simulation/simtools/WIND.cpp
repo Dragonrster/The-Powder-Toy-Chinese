@@ -1,6 +1,7 @@
 #include "simulation/ToolCommon.h"
 #include "simulation/Air.h"
 #include "gui/game/Brush.h"
+#include "common/Localization.h"
 
 static void performDrawLine(SimTool *tool, Simulation *sim, const Brush &brush, ui::Point position1, ui::Point position2, bool dragging);
 static void performDrag(SimTool *tool, Simulation *sim, const Brush &brush, ui::Point position1, ui::Point position2);
@@ -10,7 +11,7 @@ void SimTool::Tool_WIND()
 	Identifier = "DEFAULT_TOOL_WIND";
 	Name = "WIND";
 	Colour = 0x404040_rgb;
-	Description = "Creates air movement.";
+	Description = Localization::Ref().Tr("sim.tool.DEFAULT_TOOL_WIND");
 	PerformDrawLine = &performDrawLine;
 	PerformDrag = &performDrag;
 }

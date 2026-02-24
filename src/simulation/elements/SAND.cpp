@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_SAND()
 {
@@ -27,7 +28,7 @@ void Element::Element_SAND()
 	Weight = 90;
 
 	HeatConduct = 150;
-	Description = "Sand, Heavy particles. Melts into glass.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_SAND");
 
 	Properties = TYPE_PART;
 

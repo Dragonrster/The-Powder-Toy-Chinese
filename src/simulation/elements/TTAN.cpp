@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "simulation/Air.h"
 
 static int update(UPDATE_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_TTAN()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Titanium. Higher melting temperature than most other metals, blocks all air pressure.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_TTAN");
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_HOT_GLOW|PROP_LIFE_DEC;
 

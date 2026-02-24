@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -30,7 +31,7 @@ void Element::Element_WTRV()
 
 	DefaultProperties.temp = R_TEMP + 100.0f + 273.15f;
 	HeatConduct = 48;
-	Description = "Steam. Produced from hot water.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_WTRV");
 
 	Properties = TYPE_GAS;
 

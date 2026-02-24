@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include <algorithm>
 
 struct StackData;
@@ -36,7 +37,7 @@ void Element::Element_PSTN()
 
 	DefaultProperties.temp = 10.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "Piston, pushes particles. PSCN extends, NSCN retracts";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PSTN");
 
 	Properties = TYPE_SOLID;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

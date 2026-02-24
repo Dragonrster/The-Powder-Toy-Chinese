@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -30,7 +31,7 @@ void Element::Element_ISOZ()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
-	Description = "Isotope-Z. Radioactive liquid, decays into photons when touching PHOT or under negative pressure.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_ISOZ");
 
 	Properties = TYPE_LIQUID | PROP_NEUTPENETRATE | PROP_PHOTPASS;
 

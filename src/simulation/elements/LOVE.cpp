@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_LOVE()
 {
@@ -28,7 +29,7 @@ void Element::Element_LOVE()
 
 	DefaultProperties.temp = 373.0f;
 	HeatConduct = 40;
-	Description = "Love...";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_LOVE");
 
 	Properties = TYPE_SOLID;
 

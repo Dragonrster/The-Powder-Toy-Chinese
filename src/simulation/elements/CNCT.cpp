@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_CNCT()
 {
@@ -27,7 +28,7 @@ void Element::Element_CNCT()
 	Weight = 55;
 
 	HeatConduct = 100;
-	Description = "Concrete. Can stack on itself or ROCK, collapses with pressure.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_CNCT");
 
 	Properties = TYPE_PART|PROP_HOT_GLOW;
 

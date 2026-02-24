@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "QRTZ.h"
 
 static void create(ELEMENT_CREATE_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_QRTZ()
 	Weight = 100;
 
 	HeatConduct = 3;
-	Description = "Quartz, breakable mineral. Conducts but becomes brittle when cold. Scatters photons.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_QRTZ");
 
 	Properties = TYPE_SOLID | PROP_PHOTPASS | PROP_HOT_GLOW | PROP_LIFE_DEC;
 

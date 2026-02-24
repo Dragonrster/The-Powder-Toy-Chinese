@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "PLNT.h"
 
 static int update(UPDATE_FUNC_ARGS);
@@ -33,7 +34,7 @@ void Element::Element_SEED()
 	Weight = 36;
 
 	HeatConduct = 32;
-	Description = "Seeds. Put on sand and add water to grow a tree.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_SEED");
 
 	Properties = TYPE_PART | PROP_NEUTPASS;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "PLNT.h"
 #include <algorithm>
 
@@ -33,7 +34,7 @@ void Element::Element_PLNT()
 	Weight = 100;
 
 	HeatConduct = 65;
-	Description = "Plant, drinks water and grows.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PLNT");
 
 	Properties = TYPE_SOLID|PROP_NEUTPENETRATE|PROP_LIFE_DEC;
 

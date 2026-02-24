@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "RFRG.h"
 
 void Element::Element_RFGL()
@@ -28,7 +29,7 @@ void Element::Element_RFGL()
 	Weight = 10;
 
 	HeatConduct = 3;
-	Description = "Liquid refrigerant.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_RFGL");
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 

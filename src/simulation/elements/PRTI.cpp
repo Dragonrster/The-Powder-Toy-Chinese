@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "simulation/orbitalparts.h"
 #include "PIPE.h"
 #include "SOAP.h"
@@ -34,7 +35,7 @@ void Element::Element_PRTI()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Portal IN. Particles go in here. Also has temperature dependent channels. (same as WIFI)";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PRTI");
 
 	Properties = TYPE_SOLID;
 

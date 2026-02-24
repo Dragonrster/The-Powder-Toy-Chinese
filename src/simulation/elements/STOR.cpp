@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "SOAP.h"
 
 static int update(UPDATE_FUNC_ARGS);
@@ -32,7 +33,7 @@ void Element::Element_STOR()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Storage. Captures and stores a single particle. Releases when charged with PSCN, also passes to PIPE.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_STOR");
 
 	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = (1U << FIELD_CTYPE) | (1U << FIELD_TMP);

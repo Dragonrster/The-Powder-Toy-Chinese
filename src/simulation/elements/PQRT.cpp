@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "QRTZ.h"
 
 static void create(ELEMENT_CREATE_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_PQRT()
 	Weight = 90;
 
 	HeatConduct = 3;
-	Description = "Powdered quartz, broken form of QRTZ.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PQRT");
 
 	Properties = TYPE_PART | PROP_PHOTPASS | PROP_HOT_GLOW;
 

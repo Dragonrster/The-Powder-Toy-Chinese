@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_CONV()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Converter. Converts everything into whatever it first touches.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_CONV");
 
 	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = (1U << FIELD_CTYPE) | (1U << FIELD_TMP);

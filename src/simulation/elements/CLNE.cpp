@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_CLNE()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Clone. Duplicates any particles it touches.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_CLNE");
 
 	Properties = TYPE_SOLID | PROP_PHOTPASS | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

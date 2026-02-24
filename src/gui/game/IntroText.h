@@ -2,6 +2,7 @@
 #include "Config.h"
 #include "SimulationConfig.h"
 #include "common/String.h"
+#include "common/Localization.h"
 
 inline ByteString VersionInfo()
 {
@@ -39,37 +40,37 @@ inline ByteString VersionInfo()
 	return sb.Build();
 }
 
-inline ByteString IntroText()
-{
-	ByteStringBuilder sb;
-	sb << "\bl\bU" << APPNAME << "\bU - Version " << DISPLAY_VERSION[0] << "." << DISPLAY_VERSION[1] << " - https://powdertoy.co.uk, irc.libera.chat #powder, https://tpt.io/discord\n"
-	      "\n"
-	      "\n"
-	      "\bgControl+C/V/X are Copy, Paste and cut respectively.\n"
-	      "\bgTo choose a material, hover over one of the icons on the right, it will show a selection of elements in that group.\n"
-	      "\bgPick your material from the menu using mouse left/right buttons.\n"
-	      "Draw freeform lines by dragging your mouse left/right button across the drawing area.\n"
-	      "Shift+drag will create straight lines of particles.\n"
-	      "Ctrl+drag will result in filled rectangles.\n"
-	      "Ctrl+Shift+click will flood-fill a closed area.\n"
-	      "Use the mouse scroll wheel, or '[' and ']', to change the tool size for particles.\n"
-	      "Middle click or Alt+Click to \"sample\" the particles.\n"
-	      "Ctrl+Z will act as Undo.\n"
-	      "\n\boUse 'Z' for a zoom tool. Click to make the drawable zoom window stay around. Use the wheel to change the zoom strength.\n"
-	      "The spacebar can be used to pause physics. Use 'F' to step ahead by one frame.\n"
-	      "Use 'S' to save parts of the window as 'stamps'. 'L' loads the most recent stamp, 'K' shows a library of stamps you saved.\n"
-	      "Use 'P' to take a screenshot and save it into the current directory.\n"
-	      "Use 'H' to toggle the HUD. Use 'D' to toggle debug mode in the HUD.\n"
-	      "\n";
-	if constexpr (BETA)
-	{
-		sb << "\brThis is a BETA, you cannot save things publicly, nor open local saves and stamps made with it in older versions.\n"
-		      "\brIf you are planning on publishing any saves, use the release version.\n";
-	}
-	else
-	{
-		sb << "\bgTo use online features such as saving, you need to register at: \br" << SERVER << "/Register.html\n";
-	}
-	sb << "\n\bt" << VersionInfo();
-	return sb.Build();
+inline ByteString IntroText()  
+{  
+	ByteStringBuilder sb;  
+	sb << "\bl\bU" << APPNAME << "\bU - Version " << DISPLAY_VERSION[0] << "." << DISPLAY_VERSION[1] << " - https://powdertoy.co.uk, irc.libera.chat #powder, https://tpt.io/discord\n"  
+	      "\n"  
+	      "\n"  
+	      "\bg" << Localization::Ref().Tr("intro.control.copy_paste_cut").ToUtf8() << "\n"  
+	      "\bg" << Localization::Ref().Tr("intro.material.hover").ToUtf8() << "\n"  
+	      "\bg" << Localization::Ref().Tr("intro.material.pick").ToUtf8() << "\n"  
+	      << Localization::Ref().Tr("intro.draw.freeform").ToUtf8() << "\n"  
+	      << Localization::Ref().Tr("intro.draw.straight").ToUtf8() << "\n"  
+	      << Localization::Ref().Tr("intro.draw.rectangles").ToUtf8() << "\n"  
+	      << Localization::Ref().Tr("intro.draw.flood_fill").ToUtf8() << "\n"  
+	      << Localization::Ref().Tr("intro.tool.size").ToUtf8() << "\n"  
+	      << Localization::Ref().Tr("intro.tool.sample").ToUtf8() << "\n"  
+	      << Localization::Ref().Tr("intro.tool.undo").ToUtf8() << "\n"  
+	      "\n\bo" << Localization::Ref().Tr("intro.zoom.tool").ToUtf8() << "\n"  
+	      << Localization::Ref().Tr("intro.sim.pause").ToUtf8() << "\n"  
+	      << Localization::Ref().Tr("intro.save.stamps").ToUtf8() << "\n"  
+	      << Localization::Ref().Tr("intro.screenshot").ToUtf8() << "\n"  
+	      << Localization::Ref().Tr("intro.hud.debug").ToUtf8() << "\n"  
+	      "\n";  
+	if constexpr (BETA)  
+	{  
+		sb << "\br" << Localization::Ref().Tr("intro.beta.warning").ToUtf8() << "\n"  
+		      "\br" << Localization::Ref().Tr("intro.beta.publish").ToUtf8() << "\n";  
+	}  
+	else  
+	{  
+		sb << "\bg" << Localization::Ref().Tr("intro.online.register").ToUtf8() << " \br" << SERVER << "/Register.html\n";  
+	}  
+	sb << "\n\bt" << VersionInfo();  
+	return sb.Build();  
 }

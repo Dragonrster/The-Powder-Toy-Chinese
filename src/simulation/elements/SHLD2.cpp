@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_SHLD2()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Shield lvl 2.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_SHLD2");
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

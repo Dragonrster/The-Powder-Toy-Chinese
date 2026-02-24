@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -31,7 +32,7 @@ void Element::Element_ACID()
 	Weight = 10;
 
 	HeatConduct = 34;
-	Description = "Dissolves almost everything.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_ACID");
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 

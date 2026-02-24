@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_BTRY()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Battery. Generates infinite electricity.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_BTRY");
 
 	Properties = TYPE_SOLID;
 

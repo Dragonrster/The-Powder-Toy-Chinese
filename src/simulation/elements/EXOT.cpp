@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -31,7 +32,7 @@ void Element::Element_EXOT()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 250;
-	Description = "Exotic matter. Explodes with excess exposure to electrons. Has many other odd reactions.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_EXOT");
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 

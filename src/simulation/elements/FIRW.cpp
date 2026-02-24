@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_FIRW()
 	Weight = 55;
 
 	HeatConduct = 70;
-	Description = "Fireworks! Colorful, set off by fire.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_FIRW");
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

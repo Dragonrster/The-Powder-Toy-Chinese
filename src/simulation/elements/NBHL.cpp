@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_NBHL()
 	Weight = 100;
 
 	HeatConduct = 186;
-	Description = "Black hole, sucks in particles using gravity. (Requires Newtonian gravity)";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_NBHL");
 
 	Properties = TYPE_SOLID;
 

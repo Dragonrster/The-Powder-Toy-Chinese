@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "PIPE.h"
 
 void Element::Element_PPIP()
@@ -29,7 +30,7 @@ void Element::Element_PPIP()
 
 	DefaultProperties.temp = 295.15f;
 	HeatConduct = 251;
-	Description = "Powered version of PIPE, use PSCN/NSCN to Activate/Deactivate.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PPIP");
 
 	Properties = TYPE_SOLID | PROP_LIFE_DEC;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

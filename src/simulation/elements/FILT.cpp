@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "FILT.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -31,7 +32,7 @@ void Element::Element_FILT()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Filter. Changes color of PHOT and BIZR. Color depends on temperature.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_FILT");
 
 	Properties = TYPE_SOLID | PROP_PHOTPASS | PROP_NOAMBHEAT | PROP_LIFE_DEC;
 

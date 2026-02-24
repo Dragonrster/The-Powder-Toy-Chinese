@@ -1,4 +1,5 @@
 #include "simulation/ToolCommon.h"
+#include "common/Localization.h"
 
 static int perform(SimTool *tool, Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
 
@@ -7,7 +8,7 @@ void SimTool::Tool_AMBM()
 	Identifier = "DEFAULT_TOOL_AMBM";
 	Name = "AMBM";
 	Colour = 0x00DDFF_rgb;
-	Description = "Decreases ambient air temperature.";
+	Description = Localization::Ref().Tr("sim.tool.DEFAULT_TOOL_AMBM");
 	Perform = &perform;
 }
 

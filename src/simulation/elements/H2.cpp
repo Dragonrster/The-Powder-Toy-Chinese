@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_H2()
 	Weight = 1;
 
 	HeatConduct = 251;
-	Description = "Hydrogen. Combusts with OXYG to make WATR. Undergoes fusion at high temperature and pressure.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_H2");
 
 	Properties = TYPE_GAS | PROP_PHOTPASS;
 

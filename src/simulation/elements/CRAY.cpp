@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "FILT.h"
 
 static int update(UPDATE_FUNC_ARGS);
@@ -32,7 +33,7 @@ void Element::Element_CRAY()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Particle Ray Emitter. Creates a beam of particles set by its ctype, with a range set by tmp.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_CRAY");
 
 	Properties = TYPE_SOLID;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

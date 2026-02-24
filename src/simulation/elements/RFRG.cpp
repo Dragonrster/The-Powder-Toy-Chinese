@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "RFRG.h"
 
 void Element::Element_RFRG()
@@ -28,7 +29,7 @@ void Element::Element_RFRG()
 	Weight = 1;
 
 	HeatConduct = 3;
-	Description = "Refrigerant. Heats up and liquefies under pressure.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_RFRG");
 
 	Properties = TYPE_GAS|PROP_DEADLY;
 

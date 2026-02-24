@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_BHOL()
 {
@@ -28,7 +29,7 @@ void Element::Element_BHOL()
 
 	DefaultProperties.temp = R_TEMP + 70.0f + 273.15f;
 	HeatConduct = 255;
-	Description = "Vacuum, sucks in other particles and heats up.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_BHOL");
 
 	Properties = TYPE_SOLID;
 

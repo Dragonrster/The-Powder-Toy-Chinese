@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "NTCT.h"
 
 void Element::Element_NTCT()
@@ -28,7 +29,7 @@ void Element::Element_NTCT()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "NTC Thermistor. Conducts with PSCN and NSCN, but only when heated above 100C.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_NTCT");
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

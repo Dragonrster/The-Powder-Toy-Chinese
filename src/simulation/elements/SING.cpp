@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_SING()
 	Weight = 86;
 
 	HeatConduct = 70;
-	Description = "Singularity. Creates huge amounts of negative pressure and destroys everything.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_SING");
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

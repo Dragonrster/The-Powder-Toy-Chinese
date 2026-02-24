@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "BIZR.h"
 
 void Element::Element_BIZR()
@@ -28,7 +29,7 @@ void Element::Element_BIZR()
 	Weight = 30;
 
 	HeatConduct = 29;
-	Description = "Bizarre... contradicts the normal state changes. Paints other elements with its deco color.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_BIZR");
 
 	Properties = TYPE_LIQUID;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_PLEX()
 {
@@ -28,7 +29,7 @@ void Element::Element_PLEX()
 	Weight = 100;
 
 	HeatConduct = 88;
-	Description = "Solid pressure sensitive explosive.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PLEX");
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 

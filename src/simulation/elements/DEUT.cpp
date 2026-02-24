@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include <algorithm>
 
 static int update(UPDATE_FUNC_ARGS);
@@ -32,7 +33,7 @@ void Element::Element_DEUT()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Deuterium oxide. Gets more concentrated when cold, explodes with neutrons or protons.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_DEUT");
 
 	Properties = TYPE_LIQUID|PROP_NEUTPASS;
 

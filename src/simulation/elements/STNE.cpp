@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_STNE()
 {
@@ -27,7 +28,7 @@ void Element::Element_STNE()
 	Weight = 90;
 
 	HeatConduct = 150;
-	Description = "Stone. Heavy particles, meltable.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_STNE");
 
 	Properties = TYPE_PART;
 

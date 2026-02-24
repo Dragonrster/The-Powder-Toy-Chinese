@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_YEST()
 	Weight = 80;
 
 	HeatConduct = 70;
-	Description = "Yeast, grows when warm (~37C).";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_YEST");
 
 	Properties = TYPE_PART;
 

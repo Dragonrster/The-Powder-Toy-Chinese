@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "VIBR.h"
 
 void Element::Element_BVBR()
@@ -29,7 +30,7 @@ void Element::Element_BVBR()
 
 	DefaultProperties.temp = 273.15f;
 	HeatConduct = 164;
-	Description = "Broken vibranium.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_BVBR");
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

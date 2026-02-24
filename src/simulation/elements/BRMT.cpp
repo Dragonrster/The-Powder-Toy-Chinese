@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_BRMT()
 	Weight = 90;
 
 	HeatConduct = 211;
-	Description = "Broken metal. Created when iron rusts or when metals break from pressure.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_BRMT");
 
 	Properties = TYPE_PART|PROP_CONDUCTS|PROP_LIFE_DEC|PROP_HOT_GLOW;
 

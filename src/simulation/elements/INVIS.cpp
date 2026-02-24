@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_INVIS()
 	Weight = 100;
 
 	HeatConduct = 164;
-	Description = "Invisible under pressure, allowing particles through.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_INVIS");
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS | PROP_PHOTPASS;
 

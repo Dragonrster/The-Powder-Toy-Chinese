@@ -1,4 +1,5 @@
 #include "simulation/ToolCommon.h"
+#include "common/Localization.h"
 
 #include "common/tpt-rand.h"
 #include <cmath>
@@ -10,7 +11,7 @@ void SimTool::Tool_MIX()
 	Identifier = "DEFAULT_TOOL_MIX";
 	Name = "MIX";
 	Colour = 0xFFD090_rgb;
-	Description = "Mixes particles.";
+	Description = Localization::Ref().Tr("sim.tool.DEFAULT_TOOL_MIX");
 	Perform = &perform;
 }
 

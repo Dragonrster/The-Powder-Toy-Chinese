@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "FILT.h"
 
 static int update(UPDATE_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_LDTC()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Linear detector. Scans in 8 directions for particles with its ctype and creates a spark on the opposite side.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_LDTC");
 
 	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

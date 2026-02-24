@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "FIRE.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -32,7 +33,7 @@ void Element::Element_PLSM()
 
 	DefaultProperties.temp = MAX_TEMP;
 	HeatConduct = 5;
-	Description = "Plasma, extremely hot.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PLSM");
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

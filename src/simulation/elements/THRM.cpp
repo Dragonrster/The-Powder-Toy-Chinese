@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_THRM()
 {
@@ -27,7 +28,7 @@ void Element::Element_THRM()
 	Weight = 90;
 
 	HeatConduct = 211;
-	Description = "Thermite. Burns into extremely hot molten metal.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_THRM");
 
 	Properties = TYPE_PART;
 

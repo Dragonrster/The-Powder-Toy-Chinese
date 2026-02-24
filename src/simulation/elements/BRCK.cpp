@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_BRCK()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Brick, breakable building material.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_BRCK");
 
 	Properties = TYPE_SOLID|PROP_HOT_GLOW;
 

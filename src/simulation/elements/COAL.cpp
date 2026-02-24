@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "COAL.h"
 
 void Element::Element_COAL()
@@ -29,7 +30,7 @@ void Element::Element_COAL()
 	Weight = 100;
 
 	HeatConduct = 200;
-	Description = "Coal, Burns very slowly. Gets red when hot.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_COAL");
 
 	Properties = TYPE_SOLID;
 

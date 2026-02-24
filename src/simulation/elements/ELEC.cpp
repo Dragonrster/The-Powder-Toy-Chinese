@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -32,7 +33,7 @@ void Element::Element_ELEC()
 
 	DefaultProperties.temp = R_TEMP + 200.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Electrons. Sparks electronics, reacts with NEUT and WATR.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_ELEC");
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

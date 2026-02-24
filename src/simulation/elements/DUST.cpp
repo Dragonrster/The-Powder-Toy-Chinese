@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_DUST()
 {
@@ -28,7 +29,7 @@ void Element::Element_DUST()
 	Weight = 85;
 
 	HeatConduct = 70;
-	Description = "Very light dust. Flammable.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_DUST");
 
 	Properties = TYPE_PART;
 

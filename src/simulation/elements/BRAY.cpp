@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_BRAY()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Ray Point. Rays create points when they collide.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_BRAY");
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

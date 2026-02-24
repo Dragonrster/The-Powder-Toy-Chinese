@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_INST()
 {
@@ -27,7 +28,7 @@ void Element::Element_INST()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Instantly conducts, PSCN to charge, NSCN to take.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_INST");
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

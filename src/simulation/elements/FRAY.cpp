@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -30,7 +31,7 @@ void Element::Element_FRAY()
 
 	DefaultProperties.temp = 20.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "Force Emitter. Pushes or pulls objects based on its temperature. Use like ARAY.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_FRAY");
 
 	Properties = TYPE_SOLID;
 

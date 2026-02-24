@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -30,7 +31,7 @@ void Element::Element_BOYL()
 
 	DefaultProperties.temp = R_TEMP + 2.0f + 273.15f;
 	HeatConduct = 42;
-	Description = "Boyle, variable pressure gas. Expands when heated.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_BOYL");
 
 	Properties = TYPE_GAS;
 

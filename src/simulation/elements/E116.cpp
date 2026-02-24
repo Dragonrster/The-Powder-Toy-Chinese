@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_E116()
 {
@@ -27,7 +28,7 @@ void Element::Element_E116()
 	Weight = 85;
 
 	HeatConduct = 70;
-	Description = "A failed shared velocity test.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_116");
 
 	Properties = TYPE_PART;
 

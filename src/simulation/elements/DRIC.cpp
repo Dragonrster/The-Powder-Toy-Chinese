@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_DRIC()
 {
@@ -28,7 +29,7 @@ void Element::Element_DRIC()
 
 	DefaultProperties.temp = 172.65f;
 	HeatConduct = 2;
-	Description = "Dry Ice, formed when CO2 is cooled.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_DRIC");
 
 	Properties = TYPE_SOLID;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_SAWD()
 {
@@ -27,7 +28,7 @@ void Element::Element_SAWD()
 	Weight = 18;
 
 	HeatConduct = 70;
-	Description = "Sawdust. Floats on water.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_SAWD");
 
 	Properties = TYPE_PART | PROP_NEUTPASS;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -30,7 +31,7 @@ void Element::Element_RIME()
 
 	DefaultProperties.temp = -30.0f + 273.15f;
 	HeatConduct = 100;
-	Description = "Solid, created when steam cools rapidly and goes through deposition, skipping the liquid phase.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_RIME");
 
 	Properties = TYPE_SOLID;
 

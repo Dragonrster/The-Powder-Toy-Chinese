@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "STKM.h"
 
 static int update(UPDATE_FUNC_ARGS);
@@ -35,7 +36,7 @@ void Element::Element_FIGH()
 
 	DefaultProperties.temp = R_TEMP + 14.6f + 273.15f;
 	HeatConduct = 0;
-	Description = "Fighter. Tries to kill stickmen. You must first give it an element to kill him with.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_FIGH");
 
 	Properties = PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

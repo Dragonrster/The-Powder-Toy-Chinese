@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_LNTG()
 {
@@ -28,7 +29,7 @@ void Element::Element_LNTG()
 
 	DefaultProperties.temp = 70.15f;
 	HeatConduct = 70;
-	Description = "Liquid Nitrogen. Very cold, disappears whenever it touches anything warmer.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_LNTG");
 
 	Properties = TYPE_LIQUID;
 

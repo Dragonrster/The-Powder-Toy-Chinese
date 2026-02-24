@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_IGNT()
 	Weight = 100;
 
 	HeatConduct = 88;
-	Description = "Ignition cord. Burns slowly with fire and sparks.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_IGNT");
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE | PROP_SPARKSETTLE | PROP_LIFE_KILL;
 

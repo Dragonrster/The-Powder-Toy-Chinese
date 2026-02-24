@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -30,7 +31,7 @@ void Element::Element_FRZZ()
 
 	DefaultProperties.temp = 253.15f;
 	HeatConduct = 46;
-	Description = "Freeze powder. When melted, forms ice that always cools. Spreads with regular water.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_FRZZ");
 
 	Properties = TYPE_PART;
 

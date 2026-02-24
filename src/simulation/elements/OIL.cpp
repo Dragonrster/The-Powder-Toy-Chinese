@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_OIL()
 {
@@ -27,7 +28,7 @@ void Element::Element_OIL()
 	Weight = 20;
 
 	HeatConduct = 42;
-	Description = "Flammable, turns into GAS at low pressure or high temperature.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_OIL");
 
 	Properties = TYPE_LIQUID | PROP_NEUTPASS;
 

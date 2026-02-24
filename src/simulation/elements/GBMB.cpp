@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -31,7 +32,7 @@ void Element::Element_GBMB()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
-	Description = "Gravity bomb. Sticks to the first object it touches then produces a strong gravity push.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_GBMB");
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

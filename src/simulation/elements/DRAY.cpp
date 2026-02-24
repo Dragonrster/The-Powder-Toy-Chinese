@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_DRAY()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Duplicator ray. Replicates a line of particles in front of it.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_DRAY");
 
 	Properties = TYPE_SOLID;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

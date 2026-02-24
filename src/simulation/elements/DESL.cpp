@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_DESL()
 {
@@ -27,7 +28,7 @@ void Element::Element_DESL()
 	Weight = 15;
 
 	HeatConduct = 42;
-	Description = "Liquid diesel. Explodes under high pressure and temperatures.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_DESL");
 
 	Properties = TYPE_LIQUID;
 

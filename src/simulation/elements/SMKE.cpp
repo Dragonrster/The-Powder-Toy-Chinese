@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
 
@@ -30,7 +31,7 @@ void Element::Element_SMKE()
 
 	DefaultProperties.temp = R_TEMP + 320.0f + 273.15f;
 	HeatConduct = 88;
-	Description = "Smoke, created by fire.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_SMKE");
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

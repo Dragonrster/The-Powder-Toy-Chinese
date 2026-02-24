@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_C5()
 	Weight = 100;
 
 	HeatConduct = 88;
-	Description = "Cold explosive, set off by anything cold.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_C5");
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE | PROP_PHOTPASS | PROP_LIFE_DEC;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_CAUS()
 	Weight = 1;
 
 	HeatConduct = 70;
-	Description = "Caustic Gas, acts like ACID.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_CAUS");
 
 	Properties = TYPE_GAS|PROP_DEADLY;
 

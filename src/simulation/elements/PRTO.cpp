@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "simulation/orbitalparts.h"
 #include "PRTI.h"
 
@@ -32,7 +33,7 @@ void Element::Element_PRTO()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Portal OUT. Particles come out here. Also has temperature dependent channels. (same as WIFI)";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PRTO");
 
 	Properties = TYPE_SOLID;
 

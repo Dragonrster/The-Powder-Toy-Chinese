@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_PTNM()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Platinum. Catalyzes certain reactions.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PTNM");
 
 	Properties = TYPE_SOLID | PROP_CONDUCTS | PROP_LIFE_DEC | PROP_HOT_GLOW | PROP_SPARKSETTLE;
 

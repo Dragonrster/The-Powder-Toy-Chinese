@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -31,7 +32,7 @@ void Element::Element_URAN()
 
 	DefaultProperties.temp = R_TEMP + 30.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Uranium. Heavy particles. Generates heat under pressure.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_URAN");
 
 	Properties = TYPE_PART | PROP_RADIOACTIVE;
 

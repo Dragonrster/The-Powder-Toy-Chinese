@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_DYST()
 {
@@ -27,7 +28,7 @@ void Element::Element_DYST()
 	Weight = 80;
 
 	HeatConduct = 70;
-	Description = "Dead Yeast.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_DYST");
 
 	Properties = TYPE_PART;
 

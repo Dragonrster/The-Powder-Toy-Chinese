@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_LO2()
 {
@@ -28,7 +29,7 @@ void Element::Element_LO2()
 
 	DefaultProperties.temp = 80.0f;
 	HeatConduct = 70;
-	Description = "Liquid Oxygen. Very cold. Reacts with fire.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_LO2");
 
 	Properties = TYPE_LIQUID;
 

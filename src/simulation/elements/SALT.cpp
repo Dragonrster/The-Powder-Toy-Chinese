@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_SALT()
 {
@@ -27,7 +28,7 @@ void Element::Element_SALT()
 	Weight = 75;
 
 	HeatConduct = 110;
-	Description = "Salt, dissolves in water.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_SALT");
 
 	Properties = TYPE_PART;
 

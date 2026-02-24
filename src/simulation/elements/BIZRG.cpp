@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "BIZR.h"
 
 void Element::Element_BIZRG()
@@ -29,7 +30,7 @@ void Element::Element_BIZRG()
 
 	DefaultProperties.temp = R_TEMP - 200.0f + 273.15f;
 	HeatConduct = 42;
-	Description = "Bizarre gas.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_BIZRG");
 
 	Properties = TYPE_GAS;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -31,7 +32,7 @@ void Element::Element_PLUT()
 
 	DefaultProperties.temp = R_TEMP + 4.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Plutonium. Heavy, fissile particles. Generates neutrons under pressure.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PLUT");
 
 	Properties = TYPE_PART|PROP_NEUTPASS|PROP_RADIOACTIVE;
 

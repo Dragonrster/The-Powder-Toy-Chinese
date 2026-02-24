@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "PCLN.h"
 
 static int update(UPDATE_FUNC_ARGS);
@@ -31,7 +32,7 @@ void Element::Element_PCLN()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Powered clone. When activated, duplicates any particles it touches.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PCLN");
 
 	Properties = TYPE_SOLID | PROP_PHOTPASS | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -30,7 +31,7 @@ void Element::Element_GOO()
 	Weight = 100;
 
 	HeatConduct = 75;
-	Description = "Deforms and disappears under pressure.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_GOO");
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

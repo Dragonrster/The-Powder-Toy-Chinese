@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_GAS()
 {
@@ -28,7 +29,7 @@ void Element::Element_GAS()
 
 	DefaultProperties.temp = R_TEMP + 2.0f + 273.15f;
 	HeatConduct = 42;
-	Description = "Diffuses quickly and is flammable. Liquefies into OIL under pressure.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_GAS");
 
 	Properties = TYPE_GAS | PROP_NEUTPASS;
 

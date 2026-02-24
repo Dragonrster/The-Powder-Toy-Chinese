@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_FUSE()
 	Weight = 100;
 
 	HeatConduct = 200;
-	Description = "Burns slowly. Ignites at very high temperatures or when sparked.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_FUSE");
 
 	Properties = TYPE_SOLID;
 

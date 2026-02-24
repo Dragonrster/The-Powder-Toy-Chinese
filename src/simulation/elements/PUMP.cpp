@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -31,7 +32,7 @@ void Element::Element_PUMP()
 
 	DefaultProperties.temp = 273.15f;
 	HeatConduct = 0;
-	Description = "Pressure pump. Changes pressure to its temp when activated. (use HEAT/COOL).";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PUMP");
 
 	Properties = TYPE_SOLID;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_PSTS()
 {
@@ -28,7 +29,7 @@ void Element::Element_PSTS()
 
 	DefaultProperties.temp = R_TEMP - 2.0f + 273.15f;
 	HeatConduct = 29;
-	Description = "Solid form of PSTE.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PSTS");
 
 	Properties = TYPE_SOLID;
 

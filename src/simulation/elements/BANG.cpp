@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_BANG()
 	Weight = 100;
 
 	HeatConduct = 88;
-	Description = "TNT, explodes all at once.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_BANG");
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 

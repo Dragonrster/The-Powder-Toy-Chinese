@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_MWAX()
 {
@@ -28,7 +29,7 @@ void Element::Element_MWAX()
 
 	DefaultProperties.temp = R_TEMP + 28.0f + 273.15f;
 	HeatConduct = 44;
-	Description = "Liquid Wax. Hardens into WAX at 45 degrees.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_MWAX");
 
 	Properties = TYPE_LIQUID;
 

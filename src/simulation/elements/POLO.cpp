@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -32,7 +33,7 @@ void Element::Element_POLO()
 
 	DefaultProperties.temp = 388.15f;
 	HeatConduct = 251;
-	Description = "Polonium, highly radioactive. Decays into NEUT and heats up.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_POLO");
 
 	Properties = TYPE_PART|PROP_NEUTPASS|PROP_RADIOACTIVE|PROP_LIFE_DEC|PROP_DEADLY;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_INSL()
 {
@@ -27,7 +28,7 @@ void Element::Element_INSL()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Insulator. Blocks heat, electricity, and radiation.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_INSL");
 
 	Properties = TYPE_SOLID;
 

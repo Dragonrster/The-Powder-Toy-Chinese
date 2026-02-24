@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_WAX()
 {
@@ -27,7 +28,7 @@ void Element::Element_WAX()
 	Weight = 100;
 
 	HeatConduct = 44;
-	Description = "Flammable, melts at moderately high temperatures.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_WAX");
 
 	Properties = TYPE_SOLID;
 

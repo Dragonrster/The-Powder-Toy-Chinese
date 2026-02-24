@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_DEST()
 	Weight = 101;
 
 	HeatConduct = 150;
-	Description = "More destructive Bomb, can break through virtually anything.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_DEST");
 
 	Properties = TYPE_PART|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static bool createAllowed(ELEMENT_CREATE_ALLOWED_FUNC_ARGS);
 static void changeType(ELEMENT_CHANGETYPE_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_SPAWN()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "STKM spawn point.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_SPAWN");
 
 	Properties = TYPE_SOLID;
 

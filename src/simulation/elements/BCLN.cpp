@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_BCLN()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Breakable Clone.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_BCLN");
 
 	Properties = TYPE_SOLID | PROP_PHOTPASS | PROP_LIFE_DEC | PROP_LIFE_KILL_DEC | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

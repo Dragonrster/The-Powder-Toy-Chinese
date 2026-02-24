@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_HSWC()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Heat switch. Conducts heat only when activated.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_HSWC");
 
 	Properties = TYPE_SOLID;
 

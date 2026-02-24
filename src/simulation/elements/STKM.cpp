@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "STKM.h"
 
 static int update(UPDATE_FUNC_ARGS);
@@ -35,7 +36,7 @@ void Element::Element_STKM()
 
 	DefaultProperties.temp = R_TEMP + 14.6f + 273.15f;
 	HeatConduct = 0;
-	Description = "Stickman. Don't kill him! Control with the arrow keys.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_STKM");
 
 	Properties = PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

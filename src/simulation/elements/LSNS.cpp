@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -30,7 +31,7 @@ void Element::Element_LSNS()
 
 	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "Life sensor, creates a spark when there's a nearby particle with a life higher than its temperature.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_LSNS");
 
 	Properties = TYPE_SOLID;
 

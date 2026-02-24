@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -32,7 +33,7 @@ void Element::Element_PROT()
 	Weight = -1;
 
 	HeatConduct = 61;
-	Description = "Protons. Transfer heat to materials, and remove sparks.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PROT");
 
 	Properties = TYPE_ENERGY;
 

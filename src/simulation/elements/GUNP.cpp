@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_GUNP()
 {
@@ -27,7 +28,7 @@ void Element::Element_GUNP()
 	Weight = 85;
 
 	HeatConduct = 97;
-	Description = "Gunpowder. Light dust, explodes on contact with fire or spark.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_GUNP");
 
 	Properties = TYPE_PART;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "VIRS.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -31,7 +32,7 @@ void Element::Element_VIRS()
 
 	DefaultProperties.temp = 72.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Virus. Turns everything it touches into virus.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_VIRS");
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 	CarriesTypeIn = 1U << FIELD_TMP2;

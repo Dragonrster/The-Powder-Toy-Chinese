@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -30,7 +31,7 @@ void Element::Element_VSNS()
 
 	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "Velocity sensor, creates a spark when there's a nearby particle with velocity higher than its temperature.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_VSNS");
 
 	Properties = TYPE_SOLID;
 

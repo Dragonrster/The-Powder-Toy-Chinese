@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "VIBR.h"
 
 void Element::Element_VIBR()
@@ -29,7 +30,7 @@ void Element::Element_VIBR()
 
 	DefaultProperties.temp = 273.15f;
 	HeatConduct = 251;
-	Description = "Vibranium. Stores energy and releases it in violent explosions.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_VIBR");
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
@@ -31,7 +32,7 @@ void Element::Element_LIFE()
 
 	DefaultProperties.temp = 9000.0f;
 	HeatConduct = 40;
-	Description = "Game Of Life! B3/S23";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_LIFE");
 
 	Properties = TYPE_SOLID|PROP_LIFE;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include <algorithm>
 
 static int update(UPDATE_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_FWRK()
 	Weight = 97;
 
 	HeatConduct = 100;
-	Description = "Original version of fireworks, activated by heat/neutrons.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_FWRK");
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
 

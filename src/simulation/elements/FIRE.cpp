@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "FIRE.h"
 #include <algorithm>
 
@@ -34,7 +35,7 @@ void Element::Element_FIRE()
 
 	DefaultProperties.temp = R_TEMP + 400.0f + 273.15f;
 	HeatConduct = 88;
-	Description = "Ignites flammable materials. Heats air.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_FIRE");
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

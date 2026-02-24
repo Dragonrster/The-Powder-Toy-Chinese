@@ -1,4 +1,5 @@
 #include "simulation/ToolCommon.h"
+#include "common/Localization.h"
 
 static int perform(SimTool *tool, Simulation * sim, Particle * cpart, int x, int y, int brushX, int brushY, float strength);
 
@@ -7,7 +8,7 @@ void SimTool::Tool_COOL()
 	Identifier = "DEFAULT_TOOL_COOL";
 	Name = "COOL";
 	Colour = 0x00DDFF_rgb;
-	Description = "Cools the targeted element.";
+	Description = Localization::Ref().Tr("sim.tool.DEFAULT_TOOL_COOL");
 	Perform = &perform;
 }
 

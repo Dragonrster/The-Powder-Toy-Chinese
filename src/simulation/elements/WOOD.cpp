@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include <algorithm>
 
 static int update(UPDATE_FUNC_ARGS);
@@ -31,7 +32,7 @@ void Element::Element_WOOD()
 	Weight = 100;
 
 	HeatConduct = 164;
-	Description = "Wood, flammable.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_WOOD");
 
 	Properties = TYPE_SOLID | PROP_NEUTPENETRATE;
 

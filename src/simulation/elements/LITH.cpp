@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_LITH()
 	Weight = 17;
 
 	HeatConduct = 70;
-	Description = "Lithium. Reactive element that explodes on contact with water.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_LITH");
 
 	Properties = TYPE_PART | PROP_LIFE_DEC;
 

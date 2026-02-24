@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_RBDM()
 {
@@ -27,7 +28,7 @@ void Element::Element_RBDM()
 	Weight = 100;
 
 	HeatConduct = 240;
-	Description = "Rubidium. Explosive, especially on contact with water. Low melting point.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_RBDM");
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

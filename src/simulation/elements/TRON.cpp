@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -35,7 +36,7 @@ void Element::Element_TRON()
 
 	DefaultProperties.temp = 0.0f;
 	HeatConduct = 40;
-	Description = "Smart particles, Travels in straight lines and avoids obstacles. Grows with time.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_TRON");
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "graphics/VideoBuffer.h"
 
 static std::unique_ptr<VideoBuffer> iconGen(int wallID, Vec2<int> size);
@@ -30,7 +31,7 @@ void Element::Element_NONE()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Erases particles.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_NONE");
 
 	Properties = 0;
 

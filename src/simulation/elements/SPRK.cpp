@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "NTCT.h"
 #include "PIPE.h"
 #include "FIRE.h"
@@ -35,7 +36,7 @@ void Element::Element_SPRK()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Electricity. The basis of all electronics in TPT, travels along conductive elements.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_SPRK");
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

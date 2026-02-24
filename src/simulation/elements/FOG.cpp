@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -30,7 +31,7 @@ void Element::Element_FOG()
 
 	DefaultProperties.temp = 243.15f;
 	HeatConduct = 100;
-	Description = "Fog, created when an electric current is passed through RIME.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_FOG");
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_NITR()
 {
@@ -28,7 +29,7 @@ void Element::Element_NITR()
 	Weight = 23;
 
 	HeatConduct = 50;
-	Description = "Nitroglycerin. Pressure sensitive explosive. Mix with CLST to make TNT.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_NITR");
 
 	Properties = TYPE_LIQUID;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "FILT.h"
 
 static int update(UPDATE_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_ARAY()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Ray Emitter. Rays create points when they collide.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_ARAY");
 
 	Properties = TYPE_SOLID;
 

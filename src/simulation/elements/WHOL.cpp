@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_WHOL()
 {
@@ -28,7 +29,7 @@ void Element::Element_WHOL()
 
 	DefaultProperties.temp = R_TEMP - 16.0f + 273.15f;
 	HeatConduct = 255;
-	Description = "Air vent, creates pressure and pushes other particles away.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_WHOL");
 
 	Properties = TYPE_SOLID;
 

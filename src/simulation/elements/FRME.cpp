@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_FRME()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Frame, can be used with pistons to push many particles.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_FRME");
 
 	Properties = TYPE_SOLID;
 

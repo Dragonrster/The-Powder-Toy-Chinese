@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_DMND()
 {
@@ -27,7 +28,7 @@ void Element::Element_DMND()
 	Weight = 100;
 
 	HeatConduct = 186;
-	Description = "Diamond. Indestructible.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_DMND");
 
 	Properties = TYPE_SOLID;
 

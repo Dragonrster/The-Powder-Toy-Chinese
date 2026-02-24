@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_GLAS()
 	Weight = 100;
 
 	HeatConduct = 150;
-	Description = "Glass. Meltable. Shatters under pressure, and refracts photons.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_GLAS");
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS | PROP_PHOTPASS | PROP_HOT_GLOW | PROP_SPARKSETTLE;
 

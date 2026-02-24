@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -30,7 +31,7 @@ void Element::Element_ICEI()
 
 	DefaultProperties.temp = R_TEMP - 50.0f + 273.15f;
 	HeatConduct = 46;
-	Description = "Crushes under pressure. Cools down air.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_ICEI");
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_NEUTPASS;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

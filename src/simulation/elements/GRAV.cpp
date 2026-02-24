@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include <algorithm>
 
 static int update(UPDATE_FUNC_ARGS);
@@ -31,7 +32,7 @@ void Element::Element_GRAV()
 	Weight = 85;
 
 	HeatConduct = 70;
-	Description = "Very light dust. Changes colour based on velocity.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_GRAV");
 
 	Properties = TYPE_PART | PROP_LIFE_DEC;
 

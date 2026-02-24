@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "LOLZ.h"
 
 void Element::Element_LOLZ()
@@ -29,7 +30,7 @@ void Element::Element_LOLZ()
 
 	DefaultProperties.temp = 373.0f;
 	HeatConduct = 40;
-	Description = "Lolz";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_LOLZ");
 
 	Properties = TYPE_SOLID;
 

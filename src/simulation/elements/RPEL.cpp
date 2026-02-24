@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -30,7 +31,7 @@ void Element::Element_RPEL()
 
 	DefaultProperties.temp = 20.0f + 273.15f;
 	HeatConduct = 0;
-	Description = "Repels or attracts particles based on its temperature.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_RPEL");
 
 	Properties = TYPE_SOLID;
 

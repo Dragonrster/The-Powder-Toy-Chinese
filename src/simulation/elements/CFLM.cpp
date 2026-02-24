@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
@@ -31,7 +32,7 @@ void Element::Element_CFLM()
 
 	DefaultProperties.temp = 0.0f;
 	HeatConduct = 88;
-	Description = "Sub-zero flame.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_HFLM");
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

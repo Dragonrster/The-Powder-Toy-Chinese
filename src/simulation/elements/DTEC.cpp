@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_DTEC()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Detector, creates a spark when something with its ctype is nearby.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_DTEC");
 
 	Properties = TYPE_SOLID;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 
@@ -29,7 +30,7 @@ void Element::Element_PTCT()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "PTC Thermistor. Conducts with PSCN and NSCN, but only when cooled below 100C.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PTCT");
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

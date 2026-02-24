@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int update(UPDATE_FUNC_ARGS);
 static int graphics(GRAPHICS_FUNC_ARGS);
@@ -31,7 +32,7 @@ void Element::Element_GRVT()
 	Weight = -1;
 
 	HeatConduct = 61;
-	Description = "Gravitons. Create Newtonian Gravity.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_GRVT");
 
 	Properties = TYPE_ENERGY|PROP_LIFE_DEC|PROP_LIFE_KILL_DEC;
 

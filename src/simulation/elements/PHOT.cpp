@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "FIRE.h"
 #include "FILT.h"
 
@@ -34,7 +35,7 @@ void Element::Element_PHOT()
 
 	DefaultProperties.temp = R_TEMP + 900.0f + 273.15f;
 	HeatConduct = 251;
-	Description = "Photons. Refract through glass, and different elements change its color. Can ignite flammable materials.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_PHOT");
 
 	Properties = TYPE_ENERGY | PROP_PHOTPASS | PROP_LIFE_DEC | PROP_LIFE_KILL_DEC;
 

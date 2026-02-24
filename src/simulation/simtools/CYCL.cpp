@@ -1,5 +1,6 @@
 #include "simulation/ToolCommon.h"
 #include "simulation/Air.h"
+#include "common/Localization.h"
 
 #include <cmath>
 
@@ -10,7 +11,7 @@ void SimTool::Tool_CYCL()
 	Identifier = "DEFAULT_TOOL_CYCL";
 	Name = "CYCL";
 	Colour = 0x132f5b_rgb;
-	Description = "Cyclone, produces swirling air currents";
+	Description = Localization::Ref().Tr("sim.tool.DEFAULT_TOOL_CYCL");
 	Perform = &perform;
 }
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 void Element::Element_VOID()
 {
@@ -27,7 +28,7 @@ void Element::Element_VOID()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = "Hole, will drain away any particles.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_VOID");
 
 	Properties = TYPE_SOLID;
 

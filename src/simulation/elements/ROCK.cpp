@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 static int graphics(GRAPHICS_FUNC_ARGS);
 static void create(ELEMENT_CREATE_FUNC_ARGS);
@@ -30,7 +31,7 @@ void Element::Element_ROCK()
 	Weight = 100;
 
 	HeatConduct = 200;
-	Description = "Solid, melts into various elements.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_ROCK");
 
 	Properties = TYPE_SOLID | PROP_HOT_GLOW;
 

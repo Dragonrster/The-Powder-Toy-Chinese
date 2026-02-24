@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 
 #include "graphics/Pixel.h"
 
@@ -34,7 +35,7 @@ void Element::Element_LIGH()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = "Lightning. Change the brush size to set the size of the lightning.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_LIGH");
 
 	Properties = TYPE_SOLID;
 

@@ -1,4 +1,5 @@
 #include "simulation/ElementCommon.h"
+#include "common/Localization.h"
 #include "Probability.h"
 #include "EMP.h"
 
@@ -31,7 +32,7 @@ void Element::Element_EMP()
 	Weight = 100;
 
 	HeatConduct = 121;
-	Description = "Electromagnetic pulse. Breaks activated electronics.";
+	Description = Localization::Ref().Tr("sim.elem.DEFAULT_PT_EMP");
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 
