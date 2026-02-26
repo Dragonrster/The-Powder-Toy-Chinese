@@ -121,6 +121,8 @@ class BDFReader:
                     skip -= 1
                     continue
                 items = re.findall(item_re, line)
+                if not items:
+                    continue
                 if startchar and items[0] == 'ENDCHAR':
                     if len(bitmap) != char_bbx[1]:
                         raise ReadBDFError(line_number, "invalid bitmap data")

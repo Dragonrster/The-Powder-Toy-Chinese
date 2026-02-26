@@ -17,8 +17,8 @@ LocalBrowserView::LocalBrowserView():
 	lastChanged(0),
 	pageCount(0)
 {
-	nextButton = new ui::Button(ui::Point(WINDOWW-62, WINDOWH-18), ui::Point(60, 16), String(ByteString("下一页").FromUtf8()) + 0xE015);
-	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(60, 16), 0xE016 + String(ByteString("上一页").FromUtf8()));
+	nextButton = new ui::Button(ui::Point(WINDOWW-62, WINDOWH-18), ui::Point(60, 16), String(ByteString("下一页 ").FromUtf8()) + 0xE015);
+	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(60, 16), 0xE016 + String(ByteString(" 上一页").FromUtf8()));
 	undeleteButton = new ui::Button(ui::Point(WINDOWW-122, WINDOWH-18), ui::Point(60, 16), ByteString("刷新").FromUtf8());
 	AddComponent(nextButton);
 	AddComponent(previousButton);
@@ -27,7 +27,7 @@ LocalBrowserView::LocalBrowserView():
 	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), "");
 	pageTextbox->SetActionCallback({ [this] { textChanged(); } });
 	pageTextbox->SetInputType(ui::Textbox::Number);
-	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), "Page"); //page [TEXTBOX] of y
+	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), "第"); //page [TEXTBOX] of y
 	pageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	pageCountLabel = new ui::Label(ui::Point(WINDOWW/2+6, WINDOWH-18), ui::Point(50, 16), "");
 	pageCountLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -49,7 +49,7 @@ LocalBrowserView::LocalBrowserView():
 	removeSelected->Visible = false;
 	removeSelected->SetActionCallback({ [this] { c->RemoveSelected(); } });
 
-	renameSelected = new ui::Button(ui::Point(((WINDOWW - 100) / 2 + 52), WINDOWH - 18), ui::Point(100, 16), "Rename");
+	renameSelected = new ui::Button(ui::Point(((WINDOWW - 100) / 2 + 52), WINDOWH - 18), ui::Point(100, 16), "重命名");
 	renameSelected->Visible = false;
 	renameSelected->SetActionCallback({ [this] { c->RenameSelected(); } });
 
@@ -87,7 +87,7 @@ void LocalBrowserView::NotifyPageChanged(LocalBrowserModel * sender)
 	}
 	else
 	{
-		String pageInfo = String::Build("of ", pageCount);
+		String pageInfo = String::Build("共 ", pageCount);
 		pageCountLabel->SetText(pageInfo);
 		int width = Graphics::TextSize(pageInfo).X - 1;
 

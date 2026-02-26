@@ -65,14 +65,14 @@ GOLWindow::GOLWindow(GameModel &gameModel_, int toolSelection, int rule, RGB col
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 
-	nameField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), "", "[name]");
+	nameField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), "", "[名称]");
 	nameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	nameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	nameField->SetLimit(7);
 	AddComponent(nameField);
 	FocusComponent(nameField);
 
-	ruleField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), "", "[rule]");
+	ruleField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), "", "[规则]");
 	ruleField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	ruleField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(ruleField);

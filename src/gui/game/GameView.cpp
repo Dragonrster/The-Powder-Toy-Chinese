@@ -30,6 +30,7 @@
 #include "simulation/SaveRenderer.h"
 #include "simulation/SimulationData.h"
 #include "simulation/Simulation.h"
+#include "simulation/elements/PLNT.h"
 
 #include "gui/dialogues/ConfirmPrompt.h"
 #include "gui/dialogues/ErrorMessage.h"
@@ -1350,7 +1351,7 @@ void GameView::BeginStampSelection()
 	selectMode = SelectStamp;
 	selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 	isMouseDown = false;
-	buttonTip = ByteString("\x0F\xEF\xEF\020单击并拖动以指定要创建Stamp的区域(右键单击=取消)").FromUtf8();
+	buttonTip = ByteString("\x0F\xEF\xEF\020单击并拖动以指定要创建图章的区域(右键单击=取消)").FromUtf8();
 	buttonTipShow = 120;
 }
 
@@ -1688,7 +1689,7 @@ void GameView::OnFileDrop(ByteString filename)
 {
 	if (!(filename.EndsWith(".cps") || filename.EndsWith(".stm")))
 	{
-		new ErrorMessage( ByteString("加载沙盘错误").FromUtf8(), ByteString("删除的文件不是TPT沙盘文件(.cps或.stm格式)").FromUtf8());
+		new ErrorMessage( ByteString("沙盘加载错误").FromUtf8(), ByteString("删除的文件不是TPT沙盘文件(.cps或.stm格式)").FromUtf8());
 		return;
 	}
 
@@ -1697,7 +1698,7 @@ void GameView::OnFileDrop(ByteString filename)
 		auto saveFile = Client::Ref().GetStamp(filename);
 		if (!saveFile || !saveFile->GetGameSave())
 		{
-			new ErrorMessage(ByteString("加载沙盘错误").FromUtf8(), ByteString("无法加载已删除的沙盘文件: ").FromUtf8() + saveFile->GetError());
+			new ErrorMessage(ByteString("沙盘加载错误").FromUtf8(), ByteString("无法加载已删除的沙盘文件: ").FromUtf8() + saveFile->GetError());
 			return;
 		}
 		c->LoadStamp(saveFile->TakeGameSave());
@@ -1709,7 +1710,7 @@ void GameView::OnFileDrop(ByteString filename)
 			return;
 		if (saveFile->GetError().length())
 		{
-			new ErrorMessage("Error loading save", "Dropped save file could not be loaded: " + saveFile->GetError());
+			new ErrorMessage("沙盘加载错误", "无法加载已删除的沙盘文件: " + saveFile->GetError());
 			return;
 		}
 		c->LoadSaveFile(std::move(saveFile));
@@ -1765,13 +1766,13 @@ void GameView::OnTick()
 		switch (si.second)
 		{
 		case sign::Type::Save:
-			tooltip << "Go to save ID:" << str.Substr(3, si.first - 3);
+			tooltip << "前往沙盘ID:" << str.Substr(3, si.first - 3);
 			break;
 		case sign::Type::Thread:
-			tooltip << "Open forum thread " << str.Substr(3, si.first - 3) << " in browser";
+			tooltip << "在浏览器中打开 " << str.Substr(3, si.first - 3) << " 论坛帖子";
 			break;
 		case sign::Type::Search:
-			tooltip << "Search for " << str.Substr(3, si.first - 3);
+			tooltip << "搜索 " << str.Substr(3, si.first - 3);
 			break;
 		default: break;
 		}
@@ -2382,6 +2383,25 @@ void GameView::OnDraw()
 						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
 					else
 						sampleInfo << " (unknown mode)";
+				}
+				else if (type == PT_SEED || (type == PT_PLNT && ctype))
+				{
+					sampleInfo << c->ElementResolve(type, ctype);
+
+					auto water = (ctype >> PLNT_LIFE) & 0xFF;
+					auto colour = (ctype >> PLNT_COLOUR) & 0x3F;
+					auto dir = (ctype >> PLNT_DIR) & 7;
+					auto active = ctype & 1;
+
+					static const std::array<String, 8> directions = {"N", "NW", "W", "SW", "S", "SE", "E", "NE"};
+					static const std::array<std::array<String, 4>, 3> colours = {{
+						{{"cc", "cC", "Cc", "CC"}}, {{"mm", "mM", "Mm", "MM"}}, {{"yy", "yY", "Yy", "YY"}} }};
+					auto cyan = (colour >> 4) & 3;
+					auto magenta = (colour >> 2) & 3;
+					auto yellow = colour & 3;
+
+					sampleInfo << " (" << water << " " <<
+						colours[0][cyan] << colours[1][magenta] << colours[2][yellow] << " " << directions[dir] << " " << active << ")";
 				}
 				else
 				{

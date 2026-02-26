@@ -57,7 +57,7 @@ inline ByteString IntroText()
 		"使用Ctrl+Z 撤销\n"
 		"\n\bo按住'Z'键打开放大镜,使用鼠标滚轮调整倍数,鼠标左键固定放大区域,固定后可直接在放大区域绘制\n"
 		"按下空格键以暂停,按下'F'可以帧进\n"
-		"按下'S'键选择区域保存到剪贴板,按下'L'键加载最近保存的对象,按下'K'键浏览剪贴板\n"//Use 'S' to save parts of the window as 'stamps'. 'L' loads the most recent stamp, 'K' shows a library of stamps you saved
+		"按下'S'键选择图章保存到图章库,按下'L'键加载最近保存的图章,按下'K'键浏览图章库\n"//Use 'S' to save parts of the window as 'stamps'. 'L' loads the most recent stamp, 'K' shows a library of stamps you saved
 		"按下'P'键截图,截图将被保存到游戏目录下\n"
 		"按下'H'打开/关闭HUD.按下'D'在HUD打开/关闭调试模式.\n"
 		"\n"
@@ -70,8 +70,8 @@ inline ByteString IntroText()
 		"\n";
 	if constexpr (BETA)
 	{
-		sb << "\brThis is a BETA, you cannot save things publicly, nor open local saves and stamps made with it in older versions.\n"
-		      "\brIf you are planning on publishing any saves, use the release version.\n";
+		sb << "\br这是一个 BETA 版本,您无法公开保存任何内容,也无法打开较旧版本中使用它创建的本地保存和贴图.\n"
+		      "\br如果您计划发布任何保存,请使用发布版本.\n";
 	}
 	else
 	{

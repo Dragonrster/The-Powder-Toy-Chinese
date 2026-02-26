@@ -96,6 +96,18 @@ void OptionsModel::SetTemperatureScale(TempScale temperatureScale)
 	notifySettingsChanged();
 }
 
+int OptionsModel::GetLanguage()  
+{  
+    return GlobalPrefs::Ref().Get("Language", 0);
+}  
+  
+void OptionsModel::SetLanguage(int language)  
+{  
+    GlobalPrefs::Ref().Set("Language", language);  
+    // 此处可添加运行时语言切换逻辑（如重新加载 UI 字符串）  
+    notifySettingsChanged();  
+}
+
 int OptionsModel::GetThreadedRendering()
 {
 	return gModel->GetThreadedRendering();
