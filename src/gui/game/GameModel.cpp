@@ -39,6 +39,7 @@
 #include "gui/game/tool/SignTool.h"
 #include "gui/game/tool/WallTool.h"
 #include "gui/interface/Engine.h"
+#include "common/Localization.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include <iostream>
 #include <algorithm>
@@ -590,7 +591,7 @@ void GameModel::Tick()
 		}
 		catch (const http::RequestError &ex)
 		{
-			new ErrorMessage("Error while voting", ByteString(ex.what()).FromUtf8());
+			new ErrorMessage(Localization::Ref().Tr("gametools.error_voting"), ByteString(ex.what()).FromUtf8());
 		}
 		currentSave.execVoteRequest.reset();
 	}
@@ -1052,9 +1053,9 @@ void GameModel::SetDecoration(bool decorationState)
 		notifyDecorationChanged();
 		UpdateQuickOptions();
 		if (decorationState)
-			SetInfoTip("Decorations Layer: On");
+			SetInfoTip(Localization::Ref().Tr("gameview.info.decorations_on"));
 		else
-			SetInfoTip("Decorations Layer: Off");
+			SetInfoTip(Localization::Ref().Tr("gameview.info.decorations_off"));
 	}
 }
 
@@ -1068,9 +1069,9 @@ void GameModel::SetAHeatEnable(bool aHeat)
 	sim->aheat_enable = aHeat;
 	UpdateQuickOptions();
 	if (aHeat)
-		SetInfoTip("Ambient Heat: On");
+		SetInfoTip(Localization::Ref().Tr("gameview.info.ambient_heat_on"));
 	else
-		SetInfoTip("Ambient Heat: Off");
+		SetInfoTip(Localization::Ref().Tr("gameview.info.ambient_heat_off"));
 }
 
 bool GameModel::GetAHeatEnable()
@@ -1088,11 +1089,11 @@ void GameModel::SetNewtonianGravity(bool newtonainGravity)
 	sim->EnableNewtonianGravity(newtonainGravity);
     if (newtonainGravity)
     {
-        SetInfoTip("Newtonian Gravity: On");
+        SetInfoTip(Localization::Ref().Tr("gameview.info.newtonian_gravity_on"));
     }
     else
     {
-        SetInfoTip("Newtonian Gravity: Off");
+        SetInfoTip(Localization::Ref().Tr("gameview.info.newtonian_gravity_off"));
     }
     UpdateQuickOptions();
 }
@@ -1106,9 +1107,9 @@ void GameModel::ShowGravityGrid(bool showGrid)
 {
 	rendererSettings.gravityFieldEnabled = showGrid;
 	if (showGrid)
-		SetInfoTip("Gravity Grid: On");
+		SetInfoTip(Localization::Ref().Tr("gameview.info.gravity_grid_on"));
 	else
-		SetInfoTip("Gravity Grid: Off");
+		SetInfoTip(Localization::Ref().Tr("gameview.info.gravity_grid_off"));
 }
 
 bool GameModel::GetGravityGrid()
@@ -1788,13 +1789,13 @@ void GameModel::InitTools()
 	}
 	for (int i = 0; i < NGOL; ++i)
 	{
-		auto tool = std::make_unique<ElementTool>(PMAP(i, PT_LIFE), builtinGol[i].name, builtinGol[i].description, builtinGol[i].colour, "DEFAULT_PT_LIFE_" + builtinGol[i].name.ToAscii());
+		auto tool = std::make_unique<ElementTool>(PMAP(i, PT_LIFE), Localization::Ref().Tr(builtinGol[i].nameKey.ToUtf8().c_str()), Localization::Ref().Tr(builtinGol[i].descriptionKey.ToUtf8().c_str()), builtinGol[i].colour, "DEFAULT_PT_LIFE_" + builtinGol[i].id);
 		tool->MenuSection = SC_LIFE;
 		AllocTool(std::move(tool));
 	}
 	for (int i = 0; i < UI_WALLCOUNT; ++i)
 	{
-		auto tool = std::make_unique<WallTool>(i, sd.wtypes[i].descs, sd.wtypes[i].colour, sd.wtypes[i].identifier, sd.wtypes[i].textureGen);
+		auto tool = std::make_unique<WallTool>(i, Localization::Ref().Tr(sd.wtypes[i].descs.ToUtf8().c_str()), sd.wtypes[i].colour, sd.wtypes[i].identifier, sd.wtypes[i].textureGen);
 		tool->MenuSection = SC_WALL;
 		AllocTool(std::move(tool));
 	}
@@ -1802,13 +1803,13 @@ void GameModel::InitTools()
 	{
 		AllocTool(std::make_unique<SimTool>(tool));
 	}
-	AllocTool(std::make_unique<DecorationTool>(view, DECO_ADD     , "ADD" , "Colour blending: Add."                         , 0x000000_rgb, "DEFAULT_DECOR_ADD" ));
-	AllocTool(std::make_unique<DecorationTool>(view, DECO_SUBTRACT, "SUB" , "Colour blending: Subtract."                    , 0x000000_rgb, "DEFAULT_DECOR_SUB" ));
-	AllocTool(std::make_unique<DecorationTool>(view, DECO_MULTIPLY, "MUL" , "Colour blending: Multiply."                    , 0x000000_rgb, "DEFAULT_DECOR_MUL" ));
-	AllocTool(std::make_unique<DecorationTool>(view, DECO_DIVIDE  , "DIV" , "Colour blending: Divide."                      , 0x000000_rgb, "DEFAULT_DECOR_DIV" ));
-	AllocTool(std::make_unique<DecorationTool>(view, DECO_SMUDGE  , "SMDG", "Smudge tool, blends surrounding deco together.", 0x000000_rgb, "DEFAULT_DECOR_SMDG"));
-	AllocTool(std::make_unique<DecorationTool>(view, DECO_CLEAR   , "CLR" , "Erase any set decoration."                     , 0x000000_rgb, "DEFAULT_DECOR_CLR" ));
-	AllocTool(std::make_unique<DecorationTool>(view, DECO_DRAW    , "SET" , "Draw decoration (No blending)."                , 0x000000_rgb, "DEFAULT_DECOR_SET" ));
+	AllocTool(std::make_unique<DecorationTool>(view, DECO_ADD     , Localization::Ref().Tr("deco.add_short"), Localization::Ref().Tr("deco.add_desc")                         , 0x000000_rgb, "DEFAULT_DECOR_ADD" ));
+	AllocTool(std::make_unique<DecorationTool>(view, DECO_SUBTRACT, Localization::Ref().Tr("deco.sub_short"), Localization::Ref().Tr("deco.sub_desc")                    , 0x000000_rgb, "DEFAULT_DECOR_SUB" ));
+	AllocTool(std::make_unique<DecorationTool>(view, DECO_MULTIPLY, Localization::Ref().Tr("deco.mul_short"), Localization::Ref().Tr("deco.mul_desc")                    , 0x000000_rgb, "DEFAULT_DECOR_MUL" ));
+	AllocTool(std::make_unique<DecorationTool>(view, DECO_DIVIDE  , Localization::Ref().Tr("deco.div_short"), Localization::Ref().Tr("deco.div_desc")                      , 0x000000_rgb, "DEFAULT_DECOR_DIV" ));
+	AllocTool(std::make_unique<DecorationTool>(view, DECO_SMUDGE  , Localization::Ref().Tr("deco.smdg_short"), Localization::Ref().Tr("deco.smdg_desc"), 0x000000_rgb, "DEFAULT_DECOR_SMDG"));
+	AllocTool(std::make_unique<DecorationTool>(view, DECO_CLEAR   , Localization::Ref().Tr("deco.clr_short"), Localization::Ref().Tr("deco.clr_desc")                     , 0x000000_rgb, "DEFAULT_DECOR_CLR" ));
+	AllocTool(std::make_unique<DecorationTool>(view, DECO_DRAW    , Localization::Ref().Tr("deco.set_short"), Localization::Ref().Tr("deco.set_desc")                , 0x000000_rgb, "DEFAULT_DECOR_SET" ));
 	AllocTool(std::make_unique<PropertyTool>(*this));
 	AllocTool(std::make_unique<SignTool>(*this));
 	AllocTool(std::make_unique<SampleTool>(*this));
@@ -1827,7 +1828,7 @@ void GameModel::BuildMenus()
 	menuList.clear();
 	for (auto &section : sd.msections)
 	{
-		menuList.push_back(std::make_unique<Menu>(section.icon, section.name, section.doshow));
+		menuList.push_back(std::make_unique<Menu>(section.icon, Localization::Ref().Tr(section.name.ToUtf8().c_str()), section.doshow));
 	}
 
 	for (auto &tool : tools)

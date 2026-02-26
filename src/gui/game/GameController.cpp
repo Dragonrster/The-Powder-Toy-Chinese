@@ -19,6 +19,7 @@
 #include "prefs/GlobalPrefs.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
+#include "common/Localization.h"
 #include "common/platform/Platform.h"
 #include "debug/DebugInfo.h"
 #include "debug/DebugLines.h"
@@ -253,20 +254,20 @@ void GameController::Install()
 {
 	if constexpr (CAN_INSTALL)
 	{
-		new ConfirmPrompt("Install " + String(APPNAME), "Do you wish to install " + String(APPNAME) + " on this computer?\nThis allows you to open save files and saves directly from the website.", { [] {
+		new ConfirmPrompt(Localization::Ref().Tr("install.confirm_title_prefix") + String(APPNAME), Localization::Ref().Tr("install.confirm_body_prefix") + String(APPNAME) + Localization::Ref().Tr("install.confirm_body_suffix"), { [] {
 			if (Platform::Install())
 			{
-				new InformationMessage("Success", "Installation completed", false);
+				new InformationMessage(Localization::Ref().Tr("install.success_title"), Localization::Ref().Tr("install.success_message"), false);
 			}
 			else
 			{
-				new ErrorMessage("Could not install", "The installation did not complete due to an error");
+				new ErrorMessage(Localization::Ref().Tr("install.error_could_not_title"), Localization::Ref().Tr("install.error_could_not_message"));
 			}
 		} });
 	}
 	else
 	{
-		new InformationMessage("No installation necessary", "You don't need to install " + String(APPNAME) + " on this platform", false);
+		new InformationMessage(Localization::Ref().Tr("install.not_needed_title"), Localization::Ref().Tr("install.not_needed_message_prefix") + String(APPNAME) + Localization::Ref().Tr("install.not_needed_message_suffix"), false);
 	}
 }
 
@@ -467,12 +468,12 @@ ByteString GameController::StampRegion(ui::Point point1, ui::Point point2, bool 
 		newSave->paused = gameModel->GetPaused();
 		ByteString stampName = Client::Ref().AddStamp(std::move(newSave));
 		if (stampName.length() == 0)
-			new ErrorMessage("Could not create stamp", "Error serializing save file");
+			new ErrorMessage(Localization::Ref().Tr("gamecontroller.stamp_error_title"), Localization::Ref().Tr("gamecontroller.stamp_error_serialize"));
 		return stampName;
 	}
 	else
 	{
-		new ErrorMessage("Could not create stamp", "Error generating save file");
+		new ErrorMessage(Localization::Ref().Tr("gamecontroller.stamp_error_title"), Localization::Ref().Tr("gamecontroller.stamp_error_generate"));
 		return "";
 	}
 }
@@ -873,7 +874,7 @@ void GameController::LoadRenderPreset(int presetNum)
 {
 	auto &settings = gameModel->GetRendererSettings();
 	RenderPreset preset = Renderer::renderModePresets[presetNum];
-	gameModel->SetInfoTip(preset.Name);
+	gameModel->SetInfoTip(Localization::Ref().Tr(preset.Name.ToUtf8().c_str()));
 	settings.renderMode = preset.renderMode;
 	settings.displayMode = preset.displayMode;
 	settings.colorMode = preset.colorMode;
@@ -1205,7 +1206,7 @@ void GameController::OpenSearch(String searchText)
 				}
 				catch(GameModelException & ex)
 				{
-					new ErrorMessage("Cannot open save", ByteString(ex.what()).FromUtf8());
+					new ErrorMessage(Localization::Ref().Tr("gamecontroller.cannot_open_save"), ByteString(ex.what()).FromUtf8());
 				}
 			}
 		});
@@ -1220,7 +1221,7 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 	auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), RES.OriginRect());
 	if(!gameSave)
 	{
-		new ErrorMessage("Error", "Unable to build save.");
+		new ErrorMessage(Localization::Ref().Tr("common.error"), Localization::Ref().Tr("gamecontroller.unable_build_save"));
 	}
 	else
 	{
@@ -1257,9 +1258,9 @@ void GameController::OpenLocalSaveWindow(bool asCurrent)
 			tempSave->SetGameSave(std::move(gameSave));
 			gameModel->SetSaveFile(std::move(tempSave), gameView->ShiftBehaviour());
 			if (saveData.size() == 0)
-				new ErrorMessage("Error", "Unable to serialize game data.");
+				new ErrorMessage(Localization::Ref().Tr("common.error"), Localization::Ref().Tr("gamecontroller.unable_serialize"));
 			else if (!Platform::WriteFile(saveData, gameModel->GetSaveFile()->GetName()))
-				new ErrorMessage("Error", "Unable to write save file.");
+				new ErrorMessage(Localization::Ref().Tr("common.error"), Localization::Ref().Tr("gamecontroller.unable_write_save"));
 			else
 				gameModel->SetInfoTip("Saved Successfully");
 		}
@@ -1288,7 +1289,7 @@ void GameController::OpenSaveDone()
 		}
 		catch(GameModelException & ex)
 		{
-			new ErrorMessage("Cannot open save", ByteString(ex.what()).FromUtf8());
+			new ErrorMessage(Localization::Ref().Tr("gamecontroller.cannot_open_save"), ByteString(ex.what()).FromUtf8());
 		}
 	}
 }
@@ -1371,7 +1372,7 @@ void GameController::OpenTags()
 	}
 	else
 	{
-		new ErrorMessage("Error", "No save open");
+		new ErrorMessage(Localization::Ref().Tr("common.error"), Localization::Ref().Tr("gamecontroller.no_save_open"));
 	}
 }
 
@@ -1382,7 +1383,7 @@ void GameController::OpenStamps()
 		if (file)
 		{
 			if (file->GetError().length())
-				new ErrorMessage("Error loading stamp", file->GetError());
+				new ErrorMessage(Localization::Ref().Tr("gametools.error_loading_stamp"), file->GetError());
 			else if (localBrowser->GetMoveToFront())
 				Client::Ref().MoveStampToFront(file->GetDisplayName().ToUtf8());
 			LoadStamp(file->TakeGameSave());
@@ -1430,7 +1431,7 @@ void GameController::OpenSaveWindow()
 		auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), RES.OriginRect());
 		if(!gameSave)
 		{
-			new ErrorMessage("Error", "Unable to build save.");
+			new ErrorMessage(Localization::Ref().Tr("common.error"), Localization::Ref().Tr("gamecontroller.unable_build_save"));
 		}
 		else
 		{
@@ -1460,7 +1461,7 @@ void GameController::OpenSaveWindow()
 	}
 	else
 	{
-		new ErrorMessage("Error", "You need to login to upload saves.");
+		new ErrorMessage(Localization::Ref().Tr("common.error"), Localization::Ref().Tr("gamecontroller.login_to_upload"));
 	}
 }
 
@@ -1473,7 +1474,7 @@ void GameController::SaveAsCurrent()
 		auto gameSave = sim->Save(gameModel->GetIncludePressure() != gameView->ShiftBehaviour(), RES.OriginRect());
 		if(!gameSave)
 		{
-			new ErrorMessage("Error", "Unable to build save.");
+			new ErrorMessage(Localization::Ref().Tr("common.error"), Localization::Ref().Tr("gamecontroller.unable_build_save"));
 		}
 		else
 		{
@@ -1499,7 +1500,7 @@ void GameController::SaveAsCurrent()
 	}
 	else
 	{
-		new ErrorMessage("Error", "You need to login to upload saves.");
+		new ErrorMessage(Localization::Ref().Tr("common.error"), Localization::Ref().Tr("gamecontroller.login_to_upload"));
 	}
 }
 
@@ -1568,7 +1569,7 @@ String GameController::WallName(int type)
 {
 	auto &sd = SimulationData::CRef();
 	if(type >= 0 && type < UI_WALLCOUNT)
-		return sd.wtypes[type].name;
+		return Localization::Ref().Tr(sd.wtypes[type].name.ToUtf8().c_str());
 	else
 		return String();
 }
@@ -1675,7 +1676,7 @@ void GameController::NotifyUpdateAvailable(Client * sender)
 			if (info.changeLog.length())
 				updateMessage << "\n\nChangelog:\n" << info.changeLog;
 
-			new ConfirmPrompt("Run Updater", updateMessage.Build(), { [this, info] { c->RunUpdater(info); } });
+			new ConfirmPrompt(Localization::Ref().Tr("gamecontroller.run_updater"), updateMessage.Build(), { [this, info] { c->RunUpdater(info); } });
 		}
 	};
 

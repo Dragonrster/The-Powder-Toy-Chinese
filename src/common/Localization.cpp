@@ -2,8 +2,19 @@
 #include <cctype>
 #include <cstring>
 #include <span>
-#include "lang_zh_CN_json.h"
+// 顺序与 LoadLanguage(index) 一致：en, zh-CN, zh-TW, de, es, fr, it, ja, ko, pt, ru, lzh
 #include "lang_en_US_json.h"
+#include "lang_zh_CN_json.h"
+#include "lang_zh_TW_json.h"
+#include "lang_de_DE_json.h"
+#include "lang_es_ES_json.h"
+#include "lang_fr_FR_json.h"
+#include "lang_it_IT_json.h"
+#include "lang_ja_JP_json.h"
+#include "lang_ko_KR_json.h"
+#include "lang_pt_BR_json.h"
+#include "lang_ru_RU_json.h"
+#include "lang_lzh_json.h"
 
 static void ParseSimpleJsonKV(std::span<const char> text,
                               std::map<std::string, String> &out);
@@ -167,19 +178,23 @@ void Localization::LoadLanguage(int index)
 	LoadFallbackEnglish();
 	Clear();
 
-	// 0: 简体中文, 1: 英文；直接使用编译期嵌入的资源
+	// 0: English, 1: 中文, 2: 繁體中文, 3: Deutsch, 4: Español, 5: Français, 6: Italiano, 7: 日本語, 8: 한국어, 9: Português, 10: Русский, 11: 文言
 	std::span<const char> data;
 	switch (index)
 	{
-	case 0:
-		data = lang_en_US_json.AsCharSpan();
-		break;
-	case 1:
-		data = lang_zh_CN_json.AsCharSpan();
-		break;
-	default:
-		data = lang_en_US_json.AsCharSpan();
-		break;
+	case 0:  data = lang_en_US_json.AsCharSpan(); break;
+	case 1:  data = lang_zh_CN_json.AsCharSpan(); break;
+	case 2:  data = lang_zh_TW_json.AsCharSpan(); break;
+	case 3:  data = lang_de_DE_json.AsCharSpan(); break;
+	case 4:  data = lang_es_ES_json.AsCharSpan(); break;
+	case 5:  data = lang_fr_FR_json.AsCharSpan(); break;
+	case 6:  data = lang_it_IT_json.AsCharSpan(); break;
+	case 7:  data = lang_ja_JP_json.AsCharSpan(); break;
+	case 8:  data = lang_ko_KR_json.AsCharSpan(); break;
+	case 9:  data = lang_pt_BR_json.AsCharSpan(); break;
+	case 10: data = lang_ru_RU_json.AsCharSpan(); break;
+	case 11: data = lang_lzh_json.AsCharSpan(); break;
+	default: data = lang_en_US_json.AsCharSpan(); break;
 	}
 
 	ParseSimpleJsonKV(data, entries);

@@ -1,6 +1,7 @@
 #pragma once
 #include "simulation/AccessProperty.h"
 #include "Tool.h"
+#include "common/Localization.h"
 #include <optional>
 
 class GameModel;
@@ -25,7 +26,7 @@ private:
 
 public:
 	PropertyTool(GameModel &newGameModel):
-		Tool(0, "PROP", "Property Drawing Tool. Use to alter the properties of elements in the field.",
+		Tool(0, "PROP", Localization::Ref().Tr("tool.property.desc"),
 			0xFEA900_rgb, "DEFAULT_UI_PROPERTY", NULL
 		), gameModel(newGameModel)
 	{}

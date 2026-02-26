@@ -5,6 +5,7 @@
 #include "client/SaveInfo.h"
 #include "client/http/AddTagRequest.h"
 #include "client/http/RemoveTagRequest.h"
+#include "common/Localization.h"
 #include "gui/dialogues/ErrorMessage.h"
 
 void TagsModel::SetSave(SaveInfo *newSave /* non-owning */)
@@ -32,7 +33,7 @@ void TagsModel::Tick()
 		}
 		catch (const http::RequestError &ex)
 		{
-			new ErrorMessage("Could not add tag", ByteString(ex.what()).FromUtf8());
+			new ErrorMessage(Localization::Ref().Tr("tags.error_add_tag"), ByteString(ex.what()).FromUtf8());
 		}
 		addTagRequest.reset();
 	}
@@ -45,7 +46,7 @@ void TagsModel::Tick()
 		}
 		catch (const http::RequestError &ex)
 		{
-			new ErrorMessage("Could not remove tag", ByteString(ex.what()).FromUtf8());
+			new ErrorMessage(Localization::Ref().Tr("tags.error_remove_tag"), ByteString(ex.what()).FromUtf8());
 		}
 		removeTagRequest.reset();
 	}

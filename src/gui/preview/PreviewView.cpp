@@ -2,6 +2,7 @@
 
 #include "simulation/SaveRenderer.h"
 
+#include "common/Localization.h"
 #include "client/Client.h"
 #include "client/SaveInfo.h"
 #include "client/GameSave.h"
@@ -57,7 +58,7 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 
 	auto user = Client::Ref().GetAuthUser();
 
-	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), "Fav");
+	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), Localization::Ref().Tr("preview.fav"));
 	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	favButton->SetTogglable(true);
@@ -70,12 +71,12 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	favButton->Enabled = bool(user);
 	AddComponent(favButton);
 
-	reportButton = new ui::Button(ui::Point(100, Size.Y-19), ui::Point(51, 19), "Report");
+	reportButton = new ui::Button(ui::Point(100, Size.Y-19), ui::Point(51, 19), Localization::Ref().Tr("preview.report"));
 	reportButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	reportButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	reportButton->SetIcon(IconReport);
 	reportButton->SetActionCallback({ [this] {
-		new TextPrompt("Report Save", "Things to consider when reporting:\n\bw1)\bg When reporting stolen saves, please include the ID of the original save.\n\bw2)\bg Do not ask for saves to be removed from front page unless they break the rules.\n\bw3)\bg You may report saves for comments or tags too (including your own saves)", "", "[reason]", true, { [this](String const &resultText) {
+		new TextPrompt(Localization::Ref().Tr("preview.report_title"), Localization::Ref().Tr("preview.report_message"), "", Localization::Ref().Tr("preview.report_placeholder"), true, { [this](String const &resultText) {
 			if (reportSaveRequest)
 			{
 				return;
@@ -87,21 +88,21 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	reportButton->Enabled = bool(user);
 	AddComponent(reportButton);
 
-	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), "Open");
+	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), Localization::Ref().Tr("preview.open"));
 	openButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	openButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	openButton->SetIcon(IconOpen);
 	openButton->SetActionCallback({ [this] { c->DoOpen(); } });
 	AddComponent(openButton);
 
-	browserOpenButton = new ui::Button(ui::Point((XRES/2)-107, Size.Y-19), ui::Point(108, 19), "Open in browser");
+	browserOpenButton = new ui::Button(ui::Point((XRES/2)-107, Size.Y-19), ui::Point(108, 19), Localization::Ref().Tr("preview.open_in_browser"));
 	browserOpenButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	browserOpenButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	browserOpenButton->SetIcon(IconOpen);
 	browserOpenButton->SetActionCallback({ [this] { c->OpenInBrowser(); } });
 	AddComponent(browserOpenButton);
 
-	loadErrorButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), "Error loading save");
+	loadErrorButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), Localization::Ref().Tr("gametools.error_loading_save"));
 	loadErrorButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	loadErrorButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	loadErrorButton->SetIcon(IconDelete);
@@ -109,7 +110,7 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	loadErrorButton->Visible = false;
 	AddComponent(loadErrorButton);
 
-	missingElementsButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), "Missing custom elements");
+	missingElementsButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), Localization::Ref().Tr("preview.missing_elements_button"));
 	missingElementsButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	missingElementsButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	missingElementsButton->SetIcon(IconReport);
@@ -160,7 +161,7 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	viewsLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(viewsLabel);
 
-	pageInfo = new ui::Label(ui::Point((XRES/2) + 85, Size.Y+1), ui::Point(70, 16), "Page 1 of 1");
+	pageInfo = new ui::Label(ui::Point((XRES/2) + 85, Size.Y+1), ui::Point(70, 16), String::Build(Localization::Ref().Tr("preview.page_prefix"), 1, Localization::Ref().Tr("preview.page_of"), 1));
 	pageInfo->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	AddComponent(pageInfo);
 
@@ -182,14 +183,15 @@ void PreviewView::AttachController(PreviewController * controller)
 {
 	c = controller;
 
-	int textWidth = Graphics::TextSize("Click the box below to copy the save ID").X - 1;
-	saveIDLabel = new ui::Label(ui::Point((Size.X-textWidth-20)/2, Size.Y+5), ui::Point(textWidth+20, 16), "Click the box below to copy the save ID");
+	String copyHint = Localization::Ref().Tr("dialog.click_to_copy");
+	int textWidth = Graphics::TextSize(copyHint).X - 1;
+	saveIDLabel = new ui::Label(ui::Point((Size.X-textWidth-20)/2, Size.Y+5), ui::Point(textWidth+20, 16), copyHint);
 	saveIDLabel->SetTextColour(ui::Colour(150, 150, 150));
 	saveIDLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	AddComponent(saveIDLabel);
 
 	textWidth = Graphics::TextSize(String::Build(c->SaveID())).X - 1;
-	saveIDLabel2 = new ui::Label(ui::Point((Size.X-textWidth-20)/2-37, Size.Y+22), ui::Point(40, 16), "Save ID:");
+	saveIDLabel2 = new ui::Label(ui::Point((Size.X-textWidth-20)/2-37, Size.Y+22), ui::Point(40, 16), Localization::Ref().Tr("preview.save_id_label"));
 	AddComponent(saveIDLabel2);
 
 	saveIDButton = new ui::CopyTextButton(ui::Point((Size.X-textWidth-10)/2, Size.Y+20), ui::Point(textWidth+10, 18), String::Build(c->SaveID()), saveIDLabel);
@@ -253,7 +255,7 @@ void PreviewView::CheckComment()
 	String text = addCommentBox->GetText().ToLower();
 	if (addCommentRequest)
 	{
-		commentWarningLabel->SetText("Submitting comment...");
+		commentWarningLabel->SetText(Localization::Ref().Tr("preview.comment_submitting"));
 		commentHelpText = true;
 	}
 	else if (!userIsAuthor && (text.Contains("stolen") || text.Contains("copied")))
@@ -261,15 +263,15 @@ void PreviewView::CheckComment()
 		if (!commentHelpText)
 		{
 			if (interfaceRng()%2)
-				commentWarningLabel->SetText("Stolen? Report the save instead");
+				commentWarningLabel->SetText(Localization::Ref().Tr("preview.comment_stolen_report"));
 			else
-				commentWarningLabel->SetText("Please report stolen saves");
+				commentWarningLabel->SetText(Localization::Ref().Tr("preview.comment_stolen_please"));
 			commentHelpText = true;
 		}
 	}
 	else if (userIsAuthor && text.Contains("vote"))
 	{
-		commentWarningLabel->SetText("Do not ask for votes");
+		commentWarningLabel->SetText(Localization::Ref().Tr("preview.comment_no_votes"));
 		commentHelpText = true;
 	}
 	else if (CheckSwearing(text))
@@ -277,9 +279,9 @@ void PreviewView::CheckComment()
 		if (!commentHelpText)
 		{
 			if (interfaceRng()%2)
-				commentWarningLabel->SetText("Please do not swear");
+				commentWarningLabel->SetText(Localization::Ref().Tr("preview.comment_no_swear"));
 			else
-				commentWarningLabel->SetText("Bad language may be deleted");
+				commentWarningLabel->SetText(Localization::Ref().Tr("preview.comment_bad_language"));
 			commentHelpText = true;
 		}
 	}
@@ -310,7 +312,10 @@ void PreviewView::DoDraw()
 	{
 		g->BlendFilledRect(RectSized(Position + Size / 2 - Vec2{ 101, 26 }, { 202, 52 }), 0x000000_rgb .WithAlpha(210));
 		g->BlendRect(RectSized(Position + Size / 2 - Vec2{ 100, 25 }, Vec2{ 200, 50 }), 0xFFFFFF_rgb .WithAlpha(180));
-		g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize("Loading save...").X - 1)/2), (Size.Y/2)-5}, "Loading save...", style::Colour::InformationTitle.NoAlpha().WithAlpha(255));
+		{
+			String loadingText = Localization::Ref().Tr("preview.loading_save");
+			g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize(loadingText).X - 1)/2), (Size.Y/2)-5}, loadingText, style::Colour::InformationTitle.NoAlpha().WithAlpha(255));
+		}
 	}
 	if (!c->GetFromUrl())
 	{
@@ -401,11 +406,11 @@ void PreviewView::OnTick()
 		{
 			reportSaveRequest->Finish();
 			c->Exit();
-			new InformationMessage("Information", "Report submitted", false);
+			new InformationMessage(Localization::Ref().Tr("preview.report_submitted_title"), Localization::Ref().Tr("preview.report_submitted_message"), false);
 		}
 		catch (const http::RequestError &ex)
 		{
-			new ErrorMessage("Error", "Unable to file report: " + ByteString(ex.what()).FromUtf8());
+			new ErrorMessage(Localization::Ref().Tr("preview.error_report_title"), Localization::Ref().Tr("preview.error_report_prefix") + ByteString(ex.what()).FromUtf8());
 		}
 		reportSaveRequest.reset();
 	}
@@ -419,7 +424,7 @@ void PreviewView::OnTick()
 		}
 		catch (const http::RequestError &ex)
 		{
-			new ErrorMessage("Error submitting comment", ByteString(ex.what()).FromUtf8());
+			new ErrorMessage(Localization::Ref().Tr("preview.error_comment_title"), ByteString(ex.what()).FromUtf8());
 		}
 		isSubmittingComment = false;
 		CheckCommentSubmitEnabled();
@@ -471,32 +476,32 @@ void PreviewView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ct
 
 void PreviewView::ShowLoadError()
 {
-	new ErrorMessage("Error loading save", doErrorMessage, {});
+	new ErrorMessage(Localization::Ref().Tr("gametools.error_loading_save"), doErrorMessage, {});
 }
 
 void PreviewView::ShowMissingCustomElements()
 {
 	StringBuilder sb;
-	sb << "This save uses custom elements that are not currently available. Make sure that you use the mod and/or have all the scripts the save requires to fully load.";
+	sb << Localization::Ref().Tr("preview.missing_elements_intro");
 	auto remainingIds = missingElements.ids;
 	if (missingElements.identifiers.size())
 	{
-		sb << "\n\nA list of identifiers of missing custom elements follows, which may help you determine how to fix this problem.\n";
+		sb << Localization::Ref().Tr("preview.missing_elements_identifiers_header");
 		for (auto &[ identifier, id ] : missingElements.identifiers)
 		{
 			sb << "\n - " << identifier.FromUtf8();
-			remainingIds.erase(id); // remove ids from the missing id set that are already covered by unknown identifiers
+			remainingIds.erase(id);
 		}
 	}
 	if (remainingIds.size())
 	{
-		sb << "\n\nA list of element IDs of missing custom elements with no identifier associated follows. This can only be fixed by the author of the save.\n";
+		sb << Localization::Ref().Tr("preview.missing_elements_ids_header");
 		for (auto id : remainingIds)
 		{
 			sb << "\n - " << id;
 		}
 	}
-	new InformationMessage("Missing custom elements", sb.Build(), true);
+	new InformationMessage(Localization::Ref().Tr("preview.missing_elements_title"), sb.Build(), true);
 }
 
 void PreviewView::UpdateLoadStatus()
@@ -524,9 +529,9 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		saveNameLabel->SetText(save->name);
 		String dateType;
 		if (save->updatedDate == save->createdDate)
-			dateType = "Created:";
+			dateType = Localization::Ref().Tr("preview.created");
 		else
-			dateType = "Updated:";
+			dateType = Localization::Ref().Tr("preview.updated");
 		if (showAvatars)
 		{
 			avatarButton->SetUsername(save->userName);
@@ -534,14 +539,14 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		}
 		else
 		{
-			authorDateLabel->SetText("\bgAuthor:\bw " + save->userName.FromUtf8() + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate).FromAscii());
+			authorDateLabel->SetText("\bg" + Localization::Ref().Tr("preview.author") + "\bw " + save->userName.FromUtf8() + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate).FromAscii());
 		}
 		auto user = Client::Ref().GetAuthUser();
 		if (user && save->userName == user->Username)
 			userIsAuthor = true;
 		else
 			userIsAuthor = false;
-		viewsLabel->SetText(String::Build("\bgViews:\bw ", save->Views));
+		viewsLabel->SetText(String::Build("\bg", Localization::Ref().Tr("preview.views"), "\bw ", save->Views));
 		saveDescriptionLabel->SetText(save->Description);
 		if(save->Favourite)
 		{
@@ -599,7 +604,7 @@ void PreviewView::submitComment()
 		}
 		else if (comment.length() < 4)
 		{
-			new ErrorMessage("Error", "Comment is too short");
+			new ErrorMessage(Localization::Ref().Tr("common.error"), Localization::Ref().Tr("preview.error_comment_too_short"));
 		}
 		else
 		{
@@ -638,7 +643,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	}
 	if(sender->GetCommentBoxEnabled())
 	{
-		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", "Add Comment");
+		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", Localization::Ref().Tr("preview.add_comment_placeholder"));
 		commentBoxPositionX.SetTarget(float(addCommentBox->Position.X));
 		commentBoxPositionX.SetValue(float(addCommentBox->Position.X));
 		commentBoxPositionY.SetTarget(float(addCommentBox->Position.Y));
@@ -655,11 +660,11 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 		addCommentBox->SetMultiline(true);
 		addCommentBox->SetLimit(1000);
 		AddComponent(addCommentBox);
-		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), "Submit");
+		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), Localization::Ref().Tr("preview.submit"));
 		submitCommentButton->SetActionCallback({ [this] { submitComment(); } });
 		AddComponent(submitCommentButton);
 
-		commentWarningLabel = new ui::Label(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 16), "If you see this it is a bug");
+		commentWarningLabel = new ui::Label(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 16), Localization::Ref().Tr("preview.comment_warning_bug"));
 		commentWarningLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		commentWarningLabel->SetTextColour(ui::Colour(255, 0, 0));
 		commentWarningLabel->Visible = false;
@@ -667,7 +672,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	}
 	else
 	{
-		submitCommentButton = new ui::Button(ui::Point(XRES/2, Size.Y-19), ui::Point(Size.X-(XRES/2), 19), "Login to comment");
+		submitCommentButton = new ui::Button(ui::Point(XRES/2, Size.Y-19), ui::Point(Size.X-(XRES/2), 19), Localization::Ref().Tr("preview.login_to_comment"));
 		submitCommentButton->SetActionCallback({ [this] { c->ShowLogin(); } });
 		AddComponent(submitCommentButton);
 	}
@@ -682,7 +687,7 @@ void PreviewView::SaveLoadingError(String errorMessage)
 
 void PreviewView::NotifyCommentsPageChanged(PreviewModel * sender)
 {
-	pageInfo->SetText(String::Build("Page ", sender->GetCommentsPageNum(), " of ", sender->GetCommentsPageCount()));
+	pageInfo->SetText(String::Build(Localization::Ref().Tr("preview.page_prefix"), sender->GetCommentsPageNum(), Localization::Ref().Tr("preview.page_of"), sender->GetCommentsPageCount()));
 }
 
 void PreviewView::NotifyCommentsChanged(PreviewModel * sender)

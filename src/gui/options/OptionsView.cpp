@@ -252,9 +252,20 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		addSeparator();
 		// 语言标签文字本地化
 		String langLabel = Localization::Ref().Tr("options.language");
+		// 与 Localization::LoadLanguage(index) 一致,按 ISO 639-1 排序
 		language = addDropDown(langLabel, {
-			{ "English", 0 },
-			{ "中文", 1 },
+			{ "English",    0 },
+			{ "简体中文",   1 },
+			{ "繁體中文",   2 },
+			{ "Deutsch",    3 },
+			{ "Español",    4 },
+			{ "Français",   5 },
+			{ "Italiano",   6 },
+			{ "日本語",      7 },
+			{ "한국어",      8 },
+			{ "Português",  9 },
+			{ "Русский",   10 },
+			{ "文言",      11 },
 		}, [this] {
 			c->SetLanguage(language->GetOption().second);
 		});

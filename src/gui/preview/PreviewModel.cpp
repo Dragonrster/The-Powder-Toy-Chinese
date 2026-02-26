@@ -8,6 +8,7 @@
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "client/SaveInfo.h"
+#include "common/Localization.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "PreviewView.h"
 #include "Config.h"
@@ -147,12 +148,12 @@ void PreviewModel::OnSaveReady()
 	{
 		auto gameSave = std::make_unique<GameSave>(*saveData);
 		if (gameSave->fromNewerVersion)
-			new ErrorMessage("This save is from a newer version", String::Build("Please update TPT in game or at ", SERVER));
+			new ErrorMessage(Localization::Ref().Tr("preview.error_newer_version_title"), String::Build(Localization::Ref().Tr("preview.error_newer_version_message"), SERVER));
 		saveInfo->SetGameSave(std::move(gameSave));
 	}
 	catch(ParseException &e)
 	{
-		new ErrorMessage("Error", ByteString(e.what()).FromUtf8());
+		new ErrorMessage(Localization::Ref().Tr("common.error"), ByteString(e.what()).FromUtf8());
 		canOpen = false;
 	}
 	notifySaveChanged();
@@ -243,11 +244,11 @@ void PreviewModel::Update()
 		{
 			if (favouriteSaveRequest->Favourite())
 			{
-				new ErrorMessage("Error", "Could not favourite the save: " + ByteString(ex.what()).FromUtf8());
+				new ErrorMessage(Localization::Ref().Tr("common.error"), Localization::Ref().Tr("preview.error_favourite_prefix") + ByteString(ex.what()).FromUtf8());
 			}
 			else
 			{
-				new ErrorMessage("Error", "Could not unfavourite the save: " + ByteString(ex.what()).FromUtf8());
+				new ErrorMessage(Localization::Ref().Tr("common.error"), Localization::Ref().Tr("preview.error_unfavourite_prefix") + ByteString(ex.what()).FromUtf8());
 			}
 		}
 		favouriteSaveRequest.reset();

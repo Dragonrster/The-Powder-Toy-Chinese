@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <png.h>
+#include "common/Localization.h"
 #include "common/platform/Platform.h"
 #include "FontReader.h"
 #include "Format.h"
@@ -197,12 +198,12 @@ void Graphics::draw_icon(int x, int y, Icon icon, unsigned char alpha, bool inve
 		if(invert)
 		{
 			BlendChar({ x-11, y+1 }, 0xE04B, 0x006400_rgb .WithAlpha(alpha));
-			BlendText({ x+2, y+1 }, "Vote", 0x006400_rgb .WithAlpha(alpha));
+			BlendText({ x+2, y+1 }, Localization::Ref().Tr("gameview.vote"), 0x006400_rgb .WithAlpha(alpha));
 		}
 		else
 		{
 			BlendChar({ x-11, y+1 }, 0xE04B, 0x00BB12_rgb .WithAlpha(alpha));
-			BlendText({ x+2, y+1 }, "Vote", 0x00BB12_rgb .WithAlpha(alpha));
+			BlendText({ x+2, y+1 }, Localization::Ref().Tr("gameview.vote"), 0x00BB12_rgb .WithAlpha(alpha));
 		}
 		break;
 	case IconVoteDown:

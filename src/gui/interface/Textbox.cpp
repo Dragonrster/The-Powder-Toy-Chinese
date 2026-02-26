@@ -1,6 +1,7 @@
 #include "Textbox.h"
 #include "Format.h"
 #include "PowderToySDL.h"
+#include "common/Localization.h"
 #include "common/platform/Platform.h"
 #include "graphics/FontReader.h"
 #include "graphics/Graphics.h"
@@ -41,9 +42,9 @@ void Textbox::SetHidden(bool hidden)
 	menu->RemoveItem(0);
 	menu->RemoveItem(1);
 	menu->RemoveItem(2);
-	menu->AddItem(ContextMenuItem("Cut", 1, !hidden));
-	menu->AddItem(ContextMenuItem("Copy", 0, !hidden));
-	menu->AddItem(ContextMenuItem("Paste", 2, true));
+	menu->AddItem(ContextMenuItem(Localization::Ref().Tr("ui.context.cut"), 1, !hidden));
+	menu->AddItem(ContextMenuItem(Localization::Ref().Tr("ui.context.copy"), 0, !hidden));
+	menu->AddItem(ContextMenuItem(Localization::Ref().Tr("ui.context.paste"), 2, true));
 
 	masked = hidden;
 }

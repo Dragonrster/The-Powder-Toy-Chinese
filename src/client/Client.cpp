@@ -10,6 +10,7 @@
 #include "common/platform/Platform.h"
 #include "common/String.h"
 #include "graphics/Graphics.h"
+#include "common/Localization.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "prefs/Prefs.h"
 #include "lua/CommandInterface.h"
@@ -321,13 +322,13 @@ void Client::RenameStamp(ByteString stampID, ByteString newName)
 
 	if (Platform::FileExists(newPath))
 	{
-		new ErrorMessage("Error renaming stamp", "A stamp with this name already exists.");
+		new ErrorMessage(Localization::Ref().Tr("client.error_renaming_stamp"), Localization::Ref().Tr("client.error_stamp_exists"));
 		return;
 	}
 
 	if (!Platform::RenameFile(oldPath, newPath, false))
 	{
-		new ErrorMessage("Error renaming stamp", "Could not rename the stamp.");
+		new ErrorMessage(Localization::Ref().Tr("client.error_renaming_stamp"), Localization::Ref().Tr("client.error_stamp_rename_failed"));
 		return;
 	}
 

@@ -1,5 +1,6 @@
 #include "FileBrowserActivity.h"
 
+#include "common/Localization.h"
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
 #include "common/platform/Platform.h"
@@ -76,13 +77,13 @@ FileBrowserActivity::FileBrowserActivity(ByteString directory, OnSelected onSele
 	totalFiles(0)
 {
 
-	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 18), "Save Browser");
+	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 18), Localization::Ref().Tr("filebrowser.title"));
 	titleLabel->SetTextColour(style::Colour::WarningTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 
-	ui::Textbox * textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), "", "[search]");
+	ui::Textbox * textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), "", Localization::Ref().Tr("filebrowser.search_placeholder"));
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->SetActionCallback({ [this, textField] { DoSearch(textField->GetText().ToUtf8()); } });
@@ -96,7 +97,7 @@ FileBrowserActivity::FileBrowserActivity(ByteString directory, OnSelected onSele
 	progressBar = new ui::ProgressBar(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17));
 	AddComponent(progressBar);
 
-	infoText = new ui::Label(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17), "No saves found");
+	infoText = new ui::Label(ui::Point((Size.X-200)/2, 45+(Size.Y-66)/2), ui::Point(200, 17), Localization::Ref().Tr("filebrowser.no_saves_found"));
 	AddComponent(infoText);
 
 	filesX = 4;
@@ -141,8 +142,8 @@ void FileBrowserActivity::SelectSave(int index)
 
 void FileBrowserActivity::DeleteSave(int index)
 {
-	String deleteMessage = "Are you sure you want to delete " + files[index]->GetDisplayName() + ".cps?";
-	new ConfirmPrompt("Delete Save", deleteMessage, { [this, index]() {
+	String deleteMessage = Localization::Ref().Tr("filebrowser.confirm_delete_prefix") + files[index]->GetDisplayName() + Localization::Ref().Tr("filebrowser.confirm_delete_suffix");
+	new ConfirmPrompt(Localization::Ref().Tr("filebrowser.confirm_delete_title"), deleteMessage, { [this, index]() {
 		auto &file = files[index];
 		Platform::RemoveFile(file->GetName());
 		loadDirectory(directory, "");
@@ -151,7 +152,7 @@ void FileBrowserActivity::DeleteSave(int index)
 
 void FileBrowserActivity::RenameSave(int index)
 {
-	new TextPrompt("Rename", "Change save name", files[index]->GetDisplayName(), "", 0, { [this, index](const String &input) {
+	new TextPrompt(Localization::Ref().Tr("filebrowser.rename_title"), Localization::Ref().Tr("filebrowser.rename_message"), files[index]->GetDisplayName(), "", 0, { [this, index](const String &input) {
 		auto &file = files[index];
 		auto newName = input.ToUtf8();
 		if (newName.length())
@@ -159,7 +160,7 @@ void FileBrowserActivity::RenameSave(int index)
 			newName = ByteString::Build(directory, PATH_SEP_CHAR, newName, ".cps");
 			if (!Platform::RenameFile(file->GetName(), newName, false))
 			{
-				new ErrorMessage("Error", "Could not rename file");
+				new ErrorMessage(Localization::Ref().Tr("filebrowser.error_title"), Localization::Ref().Tr("filebrowser.error_could_not_rename"));
 			}
 			else
 			{
@@ -168,7 +169,7 @@ void FileBrowserActivity::RenameSave(int index)
 		}
 		else
 		{
-			new ErrorMessage("Error", "No save name given");
+			new ErrorMessage(Localization::Ref().Tr("filebrowser.error_title"), Localization::Ref().Tr("filebrowser.error_no_name"));
 		}
 	} });
 }
@@ -198,7 +199,7 @@ void FileBrowserActivity::loadDirectory(ByteString directory, ByteString search)
 	itemList->Visible = false;
 	progressBar->Visible = true;
 	progressBar->SetProgress(-1);
-	progressBar->SetStatus("Loading files");
+	progressBar->SetStatus(Localization::Ref().Tr("filebrowser.loading_files"));
 	loadFiles = new LoadFilesTask(directory, search);
 	loadFiles->AddTaskListener(this);
 	loadFiles->Start();
@@ -290,7 +291,7 @@ void FileBrowserActivity::OnTick()
 				[this, i] { DeleteSave(i); }
 			});
 
-			progressBar->SetStatus("Rendering thumbnails");
+			progressBar->SetStatus(Localization::Ref().Tr("filebrowser.rendering_thumbnails"));
 			progressBar->SetProgress(totalFiles ? (totalFiles - files.size()) * 100 / totalFiles : 0);
 			componentsQueue.push_back(saveButton);
 			fileX++;

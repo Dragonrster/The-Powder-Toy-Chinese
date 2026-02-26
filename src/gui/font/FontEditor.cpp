@@ -1,5 +1,6 @@
 #include "FontEditor.h"
 #include "bzip2/bz2wrap.h"
+#include "common/Localization.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Engine.h"
 #include "gui/interface/Point.h"
@@ -296,7 +297,7 @@ FontEditor::FontEditor(ByteString _dataFile):
 	grow->SetActionCallback({ [this] { GrowChar(); } });
 	AddComponent(grow);
 
-	ui::Button *add = new ui::Button(ui::Point(currentX, baseline), ui::Point(36, 17), "Add");
+	ui::Button *add = new ui::Button(ui::Point(currentX, baseline), ui::Point(36, 17), Localization::Ref().Tr("fonteditor.add"));
 	currentX += 37;
 	add->SetActionCallback({ [this] {
 		if (fontWidths.find(currentChar) == fontWidths.end())
@@ -308,7 +309,7 @@ FontEditor::FontEditor(ByteString _dataFile):
 	} });
 	AddComponent(add);
 
-	ui::Button *remove = new ui::Button(ui::Point(currentX, baseline), ui::Point(36, 17), "Remove");
+	ui::Button *remove = new ui::Button(ui::Point(currentX, baseline), ui::Point(36, 17), Localization::Ref().Tr("fonteditor.remove"));
 	currentX += 37;
 	remove->SetActionCallback({ [this] {
 		if (fontWidths.find(currentChar) != fontWidths.end())
@@ -320,7 +321,7 @@ FontEditor::FontEditor(ByteString _dataFile):
 	} });
 	AddComponent(remove);
 	
-	ui::Button *showGrid = new ui::Button(ui::Point(currentX, baseline), ui::Point(32, 17), "Grid");
+	ui::Button *showGrid = new ui::Button(ui::Point(currentX, baseline), ui::Point(32, 17), Localization::Ref().Tr("fonteditor.grid"));
 	currentX += 33;
 	showGrid->SetTogglable(true);
 	showGrid->SetToggleState(grid);
@@ -329,7 +330,7 @@ FontEditor::FontEditor(ByteString _dataFile):
 	} });
 	AddComponent(showGrid);
 	
-	ui::Button *showRulers = new ui::Button(ui::Point(currentX, baseline), ui::Point(32, 17), "Rulers");
+	ui::Button *showRulers = new ui::Button(ui::Point(currentX, baseline), ui::Point(32, 17), Localization::Ref().Tr("fonteditor.rulers"));
 	currentX += 33;
 	showRulers->SetTogglable(true);
 	showRulers->SetToggleState(rulers);
@@ -355,12 +356,12 @@ FontEditor::FontEditor(ByteString _dataFile):
 	baseline += 18;
 	currentX = 1;
 	
-	ui::Button *render = new ui::Button(ui::Point(currentX, baseline), ui::Point(50, 17), "Render");
+	ui::Button *render = new ui::Button(ui::Point(currentX, baseline), ui::Point(50, 17), Localization::Ref().Tr("fonteditor.render"));
 	currentX += 51;
 	render->SetActionCallback({ [this] { Render(); } });
 	AddComponent(render);
 	
-	savedButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(50, 17), "Save");
+	savedButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(50, 17), Localization::Ref().Tr("fonteditor.save"));
 	currentX += 51;
 	savedButton->SetTogglable(true);
 	savedButton->SetToggleState(true);
@@ -503,7 +504,7 @@ void FontEditor::OnDraw()
 	}
 	else
 	{
-		g->BlendText({ 8, 8 }, "No character", 0xFF0000_rgb .WithAlpha(255));
+		g->BlendText({ 8, 8 }, Localization::Ref().Tr("fonteditor.no_character"), 0xFF0000_rgb .WithAlpha(255));
 	}
 }
 

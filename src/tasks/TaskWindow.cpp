@@ -5,6 +5,7 @@
 #include "gui/interface/Label.h"
 #include "gui/interface/ProgressBar.h"
 #include "gui/interface/Engine.h"
+#include "common/Localization.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/Style.h"
 
@@ -49,7 +50,7 @@ void TaskWindow::NotifyStatus(Task * task)
 
 void TaskWindow::NotifyError(Task * task)
 {
-	new ErrorMessage("Error", task->GetError());
+	new ErrorMessage(Localization::Ref().Tr("common.error"), task->GetError());
 	done = true;
 }
 
@@ -72,7 +73,7 @@ void TaskWindow::NotifyProgress(Task * task)
 	if(progress>-1)
 		progressStatus = String::Build(progress, "%");
 	else
-		progressStatus = "Please wait...";
+		progressStatus = Localization::Ref().Tr("task.please_wait");
 	progressBar->SetProgress(progress);
 	progressBar->SetStatus(progressStatus);
 }

@@ -3,6 +3,7 @@
 #include "LocalBrowserModel.h"
 #include "LocalBrowserView.h"
 
+#include "common/Localization.h"
 #include "client/Client.h"
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
@@ -46,7 +47,7 @@ void LocalBrowserController::RemoveSelected()
 	if(browserModel->GetSelected().size()>1)
 		desc << "s";
 	desc << "?";
-	new ConfirmPrompt("Delete stamps", desc.Build(), { [this] { removeSelectedC(); } });
+	new ConfirmPrompt(Localization::Ref().Tr("localbrowser.confirm_delete_stamps"), desc.Build(), { [this] { removeSelectedC(); } });
 }
 
 void LocalBrowserController::removeSelectedC()
@@ -61,7 +62,7 @@ void LocalBrowserController::removeSelectedC()
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
-				notifyStatus(String::Build("Deleting stamp [", saves[i].FromUtf8(), "] ..."));
+				notifyStatus(String::Build(Localization::Ref().Tr("localbrowser.status_deleting_stamp"), saves[i].FromUtf8(), Localization::Ref().Tr("localbrowser.status_deleting_stamp_suffix")));
 				Client::Ref().DeleteStamp(saves[i]);
 				notifyProgress((i + 1) * 100 / saves.size());
 			}
@@ -74,17 +75,17 @@ void LocalBrowserController::removeSelectedC()
 	};
 
 	std::vector<ByteString> selected = browserModel->GetSelected();
-	new TaskWindow("Removing stamps", new RemoveSavesTask(this, selected));
+	new TaskWindow(Localization::Ref().Tr("localbrowser.task_removing_stamps"), new RemoveSavesTask(this, selected));
 }
 
 void LocalBrowserController::RenameSelected()
 {
 	ByteString save = browserModel->GetSelected()[0];
 
-	new TextPrompt("Rename stamp", "Enter a new name for the stamp:", "", "[new name]", false, { [this, save](const String &newName) {
+	new TextPrompt(Localization::Ref().Tr("localbrowser.rename_stamp_title"), Localization::Ref().Tr("localbrowser.rename_stamp_message"), "", Localization::Ref().Tr("localbrowser.rename_stamp_placeholder"), false, { [this, save](const String &newName) {
 		if (newName.length() == 0)
 		{
-			new ErrorMessage("Error renaming stamp", "You have to specify the filename.");
+			new ErrorMessage(Localization::Ref().Tr("localbrowser.error_renaming_title"), Localization::Ref().Tr("localbrowser.error_renaming_message"));
 			return;
 		}
 

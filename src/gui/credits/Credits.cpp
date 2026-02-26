@@ -5,6 +5,7 @@
 #include "credits_json.h"
 #include "gui/Style.h"
 
+#include "common/Localization.h"
 #include "common/platform/Platform.h"
 #include "gui/interface/AvatarButton.h"
 #include "gui/interface/Button.h"
@@ -81,8 +82,7 @@ Credits::Credits():
 	};
 
 
-	addHeader("The Powder Toy is an open source project, developed by members of the community.\n"
-			"We'd like to thank everyone who contributed to our \bt{a:https://github.com/The-Powder-Toy/The-Powder-Toy|GitHub repo}\x0E:", false);
+	addHeader(Localization::Ref().Tr("credits.intro"), false);
 
 	auto GitHub = root["GitHub"];
 	int grayscale = 255;
@@ -96,7 +96,7 @@ Credits::Credits():
 	}
 
 
-	addHeader("Staff - volunteers that run the community and keep the site running");
+	addHeader(Localization::Ref().Tr("credits.staff"));
 
 	auto Moderators = root["Moderators"];
 	for (auto &item : Moderators)
@@ -112,7 +112,7 @@ Credits::Credits():
 	}
 
 
-	addHeader("Former Staff", false);
+	addHeader(Localization::Ref().Tr("credits.former_staff"), false);
 
 	for (auto &item : Moderators)
 	{
@@ -127,8 +127,7 @@ Credits::Credits():
 	}
 
 
-	addHeader("The following users have been credited in the intro text from the start.\n"
-			"Their contributions to the early beginnings of The Powder Toy were invaluable in shaping it into what it is today.");
+	addHeader(Localization::Ref().Tr("credits.orig"));
 
 	auto OrigCredits = root["OrigCredits"];
 	for (auto &item : OrigCredits)
@@ -143,7 +142,7 @@ Credits::Credits():
 
 	scrollPanel->InnerSize = ui::Point(scrollPanel->Size.X, nextY);
 
-	auto *closeButton = new ui::Button({ 0, Size.Y - 12 }, { Size.X, 12 }, "Close");
+	auto *closeButton = new ui::Button({ 0, Size.Y - 12 }, { Size.X, 12 }, Localization::Ref().Tr("dialog.close"));
 	closeButton->SetActionCallback({
 	[this] {
 		CloseActiveWindow();

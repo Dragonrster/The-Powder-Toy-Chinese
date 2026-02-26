@@ -1,5 +1,6 @@
 #pragma once
 #include "Tool.h"
+#include "common/Localization.h"
 
 class GameModel;
 
@@ -8,7 +9,7 @@ class GOLTool: public Tool
 	GameModel &gameModel;
 public:
 	GOLTool(GameModel &gameModel):
-		Tool(0, "CUST", "Add a new custom GOL type. (Use ctrl+shift+rightclick to remove them)",
+		Tool(0, "CUST", Localization::Ref().Tr("tool.gol.desc"),
 			0xFEA900_rgb, "DEFAULT_UI_ADDLIFE", NULL
 		),
 		gameModel(gameModel)

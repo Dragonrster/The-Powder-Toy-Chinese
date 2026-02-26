@@ -3,6 +3,7 @@
 #include "Point.h"
 #include "PowderToySDL.h"
 #include "ContextMenu.h"
+#include "common/Localization.h"
 #include "graphics/Graphics.h"
 #include "graphics/FontReader.h"
 #include <SDL.h>
@@ -24,7 +25,7 @@ Label::Label(Point position, Point size, String labelText):
 	}
 
 	menu = new ContextMenu(this);
-	menu->AddItem(ContextMenuItem("Copy", 0, true));
+	menu->AddItem(ContextMenuItem(Localization::Ref().Tr("ui.context.copy"), 0, true));
 }
 
 Label::~Label()

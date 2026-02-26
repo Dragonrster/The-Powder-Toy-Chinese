@@ -174,7 +174,7 @@ option(
 option(
 	'app_name',
 	type: 'string',
-	value: 'The Powder Toy',
+	value: 'The Powder Toy i18n',
 	description: 'App name, used for desktop integration and the window title, change if you work on a mod'
 )
 option(

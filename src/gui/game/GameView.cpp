@@ -1,5 +1,6 @@
 #include "GameView.h"
 
+#include "common/Localization.h"
 #include "Brush.h"
 #include "tool/DecorationTool.h"
 #include "tool/PropertyTool.h"
@@ -226,7 +227,7 @@ GameView::GameView():
 	scrollBar->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(scrollBar);
 
-	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", "Find & open a simulation. Hold Ctrl to load offline saves.");  //Open
+	searchButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", Localization::Ref().Tr("gametools.tooltip.find_open"));
 	searchButton->SetIcon(IconOpen);
 	currentX+=18;
 	searchButton->SetTogglable(false);
@@ -238,14 +239,14 @@ GameView::GameView():
 	} });
 	AddComponent(searchButton);
 
-	reloadButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", "Reload the simulation");
+	reloadButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(17, 15), "", Localization::Ref().Tr("gametools.tooltip.reload"));
 	reloadButton->SetIcon(IconReload);
 	reloadButton->Appearance.Margin.Left+=2;
 	currentX+=18;
 	reloadButton->SetActionCallback({ [this] { c->ReloadSim(); }, [this] { c->OpenSavePreview(); } });
 	AddComponent(reloadButton);
 
-	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), "[untitled simulation]", "", "", 19);
+	saveSimulationButton = new SplitButton(ui::Point(currentX, Size.Y-16), ui::Point(150, 15), Localization::Ref().Tr("gameview.untitled_simulation"), "", "", 19);
 	saveSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	saveSimulationButton->SetIcon(IconSave);
 	currentX+=151;
@@ -282,20 +283,20 @@ GameView::GameView():
 
 	ResetVoteButtons();
 
-	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(WINDOWW - 402, 15), "[no tags set]", "Add simulation tags");
+	tagSimulationButton = new ui::Button(ui::Point(currentX, Size.Y-16), ui::Point(WINDOWW - 402, 15), Localization::Ref().Tr("gametools.no_tags_set"), Localization::Ref().Tr("gametools.tooltip.add_tags"));
 	tagSimulationButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	tagSimulationButton->SetIcon(IconTag);
 	//currentX+=252;
 	tagSimulationButton->SetActionCallback({ [this] { c->OpenTags(); } });
 	AddComponent(tagSimulationButton);
 
-	clearSimButton = new ui::Button(ui::Point(Size.X-159, Size.Y-16), ui::Point(17, 15), "", "Erase everything");
+	clearSimButton = new ui::Button(ui::Point(Size.X-159, Size.Y-16), ui::Point(17, 15), "", Localization::Ref().Tr("gametools.tooltip.erase"));
 	clearSimButton->SetIcon(IconNew);
 	clearSimButton->Appearance.Margin.Left+=2;
 	clearSimButton->SetActionCallback({ [this] { c->ClearSim(); } });
 	AddComponent(clearSimButton);
 
-	loginButton = new SplitButton(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), "[sign in]", "Sign into simulation server", "Edit Profile", 19);
+	loginButton = new SplitButton(ui::Point(Size.X-141, Size.Y-16), ui::Point(92, 15), Localization::Ref().Tr("gameview.sign_in"), Localization::Ref().Tr("gameview.sign_in_tooltip"), Localization::Ref().Tr("gameview.edit_profile"), 19);
 	loginButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	loginButton->SetIcon(IconLogin);
 	loginButton->SetSplitActionCallback({
@@ -304,30 +305,30 @@ GameView::GameView():
 	});
 	AddComponent(loginButton);
 
-	simulationOptionButton = new ui::Button(ui::Point(Size.X-48, Size.Y-16), ui::Point(15, 15), "", "Settings");
+	simulationOptionButton = new ui::Button(ui::Point(Size.X-48, Size.Y-16), ui::Point(15, 15), "", Localization::Ref().Tr("gametools.tooltip.settings"));
 	simulationOptionButton->SetIcon(IconSimulationSettings);
 	simulationOptionButton->Appearance.Margin.Left+=2;
 	simulationOptionButton->SetActionCallback({ [this] { c->OpenOptions(); } });
 	AddComponent(simulationOptionButton);
 
-	displayModeButton = new ui::Button(ui::Point(Size.X-32, Size.Y-16), ui::Point(15, 15), "", "Renderer options");
+	displayModeButton = new ui::Button(ui::Point(Size.X-32, Size.Y-16), ui::Point(15, 15), "", Localization::Ref().Tr("gametools.tooltip.renderer"));
 	displayModeButton->SetIcon(IconRenderSettings);
 	displayModeButton->Appearance.Margin.Left+=2;
 	displayModeButton->SetActionCallback({ [this] { c->OpenRenderOptions(); } });
 	AddComponent(displayModeButton);
 
-	pauseButton = new ui::Button(ui::Point(Size.X-16, Size.Y-16), ui::Point(15, 15), "", "Pause/Resume the simulation");  //Pause
+	pauseButton = new ui::Button(ui::Point(Size.X-16, Size.Y-16), ui::Point(15, 15), "", Localization::Ref().Tr("gametools.tooltip.pause"));
 	pauseButton->SetIcon(IconPause);
 	pauseButton->SetTogglable(true);
 	pauseButton->SetActionCallback({ [this] { c->SetPaused(pauseButton->GetToggleState()); } });
 	AddComponent(pauseButton);
 
-	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), 0xE065, "Search for elements");
+	ui::Button * tempButton = new ui::Button(ui::Point(WINDOWW-16, WINDOWH-32), ui::Point(15, 15), 0xE065, Localization::Ref().Tr("gametools.tooltip.search_elements"));
 	tempButton->Appearance.Margin = ui::Border(0, 2, 3, 2);
 	tempButton->SetActionCallback({ [this] { c->OpenElementSearch(); } });
 	AddComponent(tempButton);
 
-	colourPicker = new ui::Button(ui::Point((XRES/2)-8, YRES+1), ui::Point(16, 16), "", "Pick Colour");
+	colourPicker = new ui::Button(ui::Point((XRES/2)-8, YRES+1), ui::Point(16, 16), "", Localization::Ref().Tr("gametools.tooltip.pick_colour"));
 	colourPicker->SetActionCallback({ [this] { c->OpenColourPicker(); } });
 }
 
@@ -602,7 +603,7 @@ void GameView::NotifyActiveMenuToolListChanged(GameModel * sender)
 					}
 					else if (identifier.BeginsWith("DEFAULT_PT_LIFECUST_"))
 					{
-						new ConfirmPrompt("Remove custom GOL type", "Are you sure you want to remove " + identifier.Substr(20).FromUtf8() + "?", { [this, identifier]() {
+						new ConfirmPrompt(Localization::Ref().Tr("gametools.gol.confirm_remove_title"), Localization::Ref().Tr("gametools.gol.confirm_remove_prefix") + identifier.Substr(20).FromUtf8() + Localization::Ref().Tr("gametools.gol.confirm_remove_suffix"), { [this, identifier]() {
 							c->RemoveCustomGol(identifier);
 						} });
 					}
@@ -693,7 +694,7 @@ void GameView::NotifyColourPresetsChanged(GameModel * sender)
 	int i = 0;
 	for(std::vector<ui::Colour>::iterator iter = colours.begin(), end = colours.end(); iter != end; ++iter)
 	{
-		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", "", "Decoration Presets.");
+		ToolButton * tempButton = new ToolButton(ui::Point(currentX, YRES+1), ui::Point(30, 18), "", "", Localization::Ref().Tr("gameview.decoration_presets"));
 		tempButton->Appearance.BackgroundInactive = *iter;
 		tempButton->SetActionCallback({ [this, i, tempButton] {
 			c->SetActiveColourPreset(i);
@@ -749,15 +750,15 @@ void GameView::NotifyUserChanged(GameModel * sender)
 	auto user = sender->GetUser();
 	if (!user)
 	{
-		loginButton->SetText("[sign in]");
+		loginButton->SetText(Localization::Ref().Tr("gameview.sign_in"));
 		loginButton->SetShowSplit(false);
-		loginButton->SetRightToolTip("Sign in to simulation server");
+		loginButton->SetRightToolTip(Localization::Ref().Tr("gameview.sign_in_tooltip"));
 	}
 	else
 	{
 		loginButton->SetText(user->Username.FromUtf8());
 		loginButton->SetShowSplit(true);
-		loginButton->SetRightToolTip("Edit profile");
+		loginButton->SetRightToolTip(Localization::Ref().Tr("gameview.edit_profile"));
 	}
 	// saveSimulationButtonEnabled = sender->GetUser().ID;
 	saveSimulationButtonEnabled = true;
@@ -784,8 +785,8 @@ void GameView::NotifyInfoTipChanged(GameModel * sender)
 
 void GameView::ResetVoteButtons()
 {
-	upVoteButton->SetToolTip("Like this save");
-	downVoteButton->SetToolTip("Dislike this save");
+	upVoteButton->SetToolTip(Localization::Ref().Tr("gameview.tooltip.like_save"));
+	downVoteButton->SetToolTip(Localization::Ref().Tr("gameview.tooltip.dislike_save"));
 	upVoteButton->Appearance.BackgroundPulse = false;
 	downVoteButton->Appearance.BackgroundPulse = false;
 }
@@ -856,13 +857,13 @@ void GameView::NotifySaveChanged(GameModel * sender)
 
 		upVoteButton->SetActionCallback({ [this, upVoteButtonColor, upvoted] {
 			upVoteButtonColor(true);
-			upVoteButton->SetToolTip("Saving vote...");
+			upVoteButton->SetToolTip(Localization::Ref().Tr("gameview.saving_vote"));
 			upVoteButton->Appearance.BackgroundPulse = true;
 			c->Vote(upvoted ? 0 : 1);
 		} });
 		downVoteButton->SetActionCallback({ [this, downVoteButtonColor, downvoted] {
 			downVoteButtonColor(true);
-			downVoteButton->SetToolTip("Saving vote...");
+			downVoteButton->SetToolTip(Localization::Ref().Tr("gameview.saving_vote"));
 			downVoteButton->Appearance.BackgroundPulse = true;
 			c->Vote(downvoted ? 0 : -1);
 		} });
@@ -884,12 +885,12 @@ void GameView::NotifySaveChanged(GameModel * sender)
 			}
 			else
 			{
-				tagSimulationButton->SetText("[no tags set]");
+				tagSimulationButton->SetText(Localization::Ref().Tr("gametools.no_tags_set"));
 			}
 		}
 		else
 		{
-			tagSimulationButton->SetText("[no tags set]");
+			tagSimulationButton->SetText(Localization::Ref().Tr("gametools.no_tags_set"));
 		}
 		currentSaveType = 1;
 		int saveID = sender->GetSave()->GetID();
@@ -911,13 +912,13 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 		downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100);
 		tagSimulationButton->Enabled = false;
-		tagSimulationButton->SetText("[no tags set]");
+		tagSimulationButton->SetText(Localization::Ref().Tr("gametools.no_tags_set"));
 		currentSaveType = 2;
 	}
 	else
 	{
 		saveSimulationButton->SetShowSplit(false);
-		saveSimulationButton->SetText("[untitled simulation]");
+		saveSimulationButton->SetText(Localization::Ref().Tr("gameview.untitled_simulation"));
 		reloadButton->Enabled = false;
 		upVoteButton->Enabled = false;
 		upVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
@@ -926,7 +927,7 @@ void GameView::NotifySaveChanged(GameModel * sender)
 		downVoteButton->Appearance.BackgroundDisabled = (ui::Colour(0, 0, 0));
 		downVoteButton->Appearance.BorderDisabled = ui::Colour(100, 100, 100),
 		tagSimulationButton->Enabled = false;
-		tagSimulationButton->SetText("[no tags set]");
+		tagSimulationButton->SetText(Localization::Ref().Tr("gametools.no_tags_set"));
 		currentSaveType = 0;
 	}
 	saveSimulationButton->Enabled = (saveSimulationButtonEnabled && saveReuploadAllowed) || ctrlBehaviour;
@@ -1351,7 +1352,7 @@ void GameView::BeginStampSelection()
 	selectMode = SelectStamp;
 	selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 	isMouseDown = false;
-	buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to create a stamp (right click = cancel)";
+	buttonTip = ByteString("\x0F\xEF\xEF\020").FromAscii() + Localization::Ref().Tr("gameview.stamp_drag_tip");
 	buttonTipShow = 120;
 }
 
@@ -1554,7 +1555,7 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			selectMode = SelectCopy;
 			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 			isMouseDown = false;
-			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy (right click = cancel)";
+			buttonTip = ByteString("\x0F\xEF\xEF\020").FromAscii() + Localization::Ref().Tr("gameview.copy_drag_tip");
 			buttonTipShow = 120;
 		}
 		break;
@@ -1564,7 +1565,7 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 			selectMode = SelectCut;
 			selectPoint1 = selectPoint2 = ui::Point(-1, -1);
 			isMouseDown = false;
-			buttonTip = "\x0F\xEF\xEF\020Click-and-drag to specify an area to copy then cut (right click = cancel)";
+			buttonTip = ByteString("\x0F\xEF\xEF\020").FromAscii() + Localization::Ref().Tr("gameview.cut_drag_tip");
 			buttonTipShow = 120;
 		}
 		break;
@@ -1689,7 +1690,7 @@ void GameView::OnFileDrop(ByteString filename)
 {
 	if (!(filename.EndsWith(".cps") || filename.EndsWith(".stm")))
 	{
-		new ErrorMessage("Error loading save", "Dropped file is not a TPT save file (.cps or .stm format)");
+		new ErrorMessage(Localization::Ref().Tr("gametools.error_loading_save"), Localization::Ref().Tr("gametools.error_drop_not_save"));
 		return;
 	}
 
@@ -1699,7 +1700,7 @@ void GameView::OnFileDrop(ByteString filename)
 		auto saveFile = Client::Ref().GetStamp(filename);
 		if (!saveFile || !saveFile->GetGameSave())
 		{
-			new ErrorMessage("Error loading stamp", "Dropped stamp could not be loaded: " + saveFile->GetError());
+			new ErrorMessage(Localization::Ref().Tr("gametools.error_loading_stamp"), Localization::Ref().Tr("gametools.error_drop_stamp_prefix") + saveFile->GetError());
 			return;
 		}
 		c->LoadStamp(saveFile->TakeGameSave());
@@ -1711,7 +1712,7 @@ void GameView::OnFileDrop(ByteString filename)
 			return;
 		if (saveFile->GetError().length())
 		{
-			new ErrorMessage("Error loading save", "Dropped save file could not be loaded: " + saveFile->GetError());
+			new ErrorMessage(Localization::Ref().Tr("gametools.error_loading_save"), Localization::Ref().Tr("gametools.error_drop_save_prefix") + saveFile->GetError());
 			return;
 		}
 		c->LoadSaveFile(std::move(saveFile));
@@ -1767,13 +1768,13 @@ void GameView::OnTick()
 		switch (si.second)
 		{
 		case sign::Type::Save:
-			tooltip << "Go to save ID:" << str.Substr(3, si.first - 3);
+			tooltip << Localization::Ref().Tr("gameview.tooltip.go_to_save_id") << str.Substr(3, si.first - 3);
 			break;
 		case sign::Type::Thread:
-			tooltip << "Open forum thread " << str.Substr(3, si.first - 3) << " in browser";
+			tooltip << Localization::Ref().Tr("gameview.tooltip.open_forum_thread_prefix") << str.Substr(3, si.first - 3) << Localization::Ref().Tr("gameview.tooltip.open_forum_thread_suffix");
 			break;
 		case sign::Type::Search:
-			tooltip << "Search for " << str.Substr(3, si.first - 3);
+			tooltip << Localization::Ref().Tr("gameview.tooltip.search_for") << str.Substr(3, si.first - 3);
 			break;
 		default: break;
 		}
@@ -2056,7 +2057,7 @@ void GameView::enableCtrlBehaviour()
 		searchButton->Appearance.BackgroundInactive = searchButton->Appearance.BackgroundHover = ui::Colour(255, 255, 255);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(0, 0, 0);
 
-		searchButton->SetToolTip("Open a simulation from your hard drive.");
+		searchButton->SetToolTip(Localization::Ref().Tr("gameview.tooltip.find_open_hard_drive"));
 		if (currentSaveType == 2)
 			saveSimulationButton->SetShowSplit(true);
 	}
@@ -2080,7 +2081,7 @@ void GameView::disableCtrlBehaviour()
 		searchButton->Appearance.BackgroundInactive = ui::Colour(0, 0, 0);
 		searchButton->Appearance.BackgroundHover = ui::Colour(20, 20, 20);
 		searchButton->Appearance.TextInactive = searchButton->Appearance.TextHover = ui::Colour(255, 255, 255);
-		searchButton->SetToolTip("Find & open a simulation. Hold Ctrl to load offline saves.");
+		searchButton->SetToolTip(Localization::Ref().Tr("gametools.tooltip.find_open"));
 		if (currentSaveType == 2)
 			saveSimulationButton->SetShowSplit(false);
 	}
@@ -2121,13 +2122,13 @@ void GameView::UpdateToolStrength()
 void GameView::SetSaveButtonTooltips()
 {
 	if (!Client::Ref().GetAuthUser())
-		saveSimulationButton->SetToolTips("Overwrite the open simulation on your hard drive.", "Save the simulation to your hard drive. Login to save online.");
+		saveSimulationButton->SetToolTips(Localization::Ref().Tr("gameview.save_tooltip_overwrite"), Localization::Ref().Tr("gameview.save_tooltip_save_hdd_login"));
 	else if (ctrlBehaviour)
-		saveSimulationButton->SetToolTips("Overwrite the open simulation on your hard drive.", "Save the simulation to your hard drive.");
+		saveSimulationButton->SetToolTips(Localization::Ref().Tr("gameview.save_tooltip_overwrite"), Localization::Ref().Tr("gameview.save_tooltip_save_hdd"));
 	else if (saveSimulationButton->GetShowSplit())
-		saveSimulationButton->SetToolTips("Re-upload the current simulation", "Modify simulation properties");
+		saveSimulationButton->SetToolTips(Localization::Ref().Tr("gameview.save_tooltip_reupload"), Localization::Ref().Tr("gameview.save_tooltip_modify_props"));
 	else
-		saveSimulationButton->SetToolTips("Re-upload the current simulation", "Upload a new simulation. Hold Ctrl to save offline.");
+		saveSimulationButton->SetToolTips(Localization::Ref().Tr("gameview.save_tooltip_reupload"), Localization::Ref().Tr("gameview.save_tooltip_upload_new"));
 }
 
 void GameView::RenderSimulation(const RenderableSimulation &sim, bool handleEvents)
@@ -2359,17 +2360,17 @@ void GameView::OnDraw()
 			{
 				if (type == PT_LAVA && c->IsValidElement(ctype))
 				{
-					sampleInfo << "Molten " << c->ElementResolve(ctype, 0);
+					sampleInfo << Localization::Ref().Tr("sim.molten_prefix") << c->ElementResolve(ctype, 0);
 				}
 				else if ((type == PT_PIPE || type == PT_PPIP) && c->IsValidElement(ctype))
 				{
 					if (ctype == PT_LAVA && c->IsValidElement(sample.particle.tmp4))
 					{
-						sampleInfo << c->ElementResolve(type, 0) << " with molten " << c->ElementResolve(sample.particle.tmp4, -1);
+						sampleInfo << c->ElementResolve(type, 0) << Localization::Ref().Tr("sim.with_molten") << c->ElementResolve(sample.particle.tmp4, -1);
 					}
 					else
 					{
-						sampleInfo << c->ElementResolve(type, 0) << " with " << c->ElementResolve(ctype, sample.particle.tmp4);
+						sampleInfo << c->ElementResolve(type, 0) << Localization::Ref().Tr("gameview.sample.with") << c->ElementResolve(ctype, sample.particle.tmp4);
 					}
 				}
 				else if (type == PT_LIFE)
@@ -2379,11 +2380,24 @@ void GameView::OnDraw()
 				else if (type == PT_FILT)
 				{
 					sampleInfo << c->ElementResolve(type, ctype);
-					String filtModes[] = {"set colour", "AND", "OR", "subtract colour", "red shift", "blue shift", "no effect", "XOR", "NOT", "old QRTZ scattering", "variable red shift", "variable blue shift"};
+					String filtModes[] = {
+						Localization::Ref().Tr("gameview.filt.set_colour"),
+						Localization::Ref().Tr("gameview.filt.and"),
+						Localization::Ref().Tr("gameview.filt.or"),
+						Localization::Ref().Tr("gameview.filt.subtract_colour"),
+						Localization::Ref().Tr("gameview.filt.red_shift"),
+						Localization::Ref().Tr("gameview.filt.blue_shift"),
+						Localization::Ref().Tr("gameview.filt.no_effect"),
+						Localization::Ref().Tr("gameview.filt.xor"),
+						Localization::Ref().Tr("gameview.filt.not"),
+						Localization::Ref().Tr("gameview.filt.old_qrtz"),
+						Localization::Ref().Tr("gameview.filt.var_red_shift"),
+						Localization::Ref().Tr("gameview.filt.var_blue_shift")
+					};
 					if (sample.particle.tmp>=0 && sample.particle.tmp<=11)
 						sampleInfo << " (" << filtModes[sample.particle.tmp] << ")";
 					else
-						sampleInfo << " (unknown mode)";
+						sampleInfo << " (" << Localization::Ref().Tr("gameview.filt.unknown_mode") << ")";
 				}
 				else if (type == PT_SEED || (type == PT_PLNT && ctype))
 				{
@@ -2421,9 +2435,9 @@ void GameView::OnDraw()
 					else if (ctype)
 						sampleInfo << " (" << ctype << ")";
 				}
-				sampleInfo << ", Temp: ";
+				sampleInfo << Localization::Ref().Tr("gameview.sample.temp");
 				format::RenderTemperature(sampleInfo, sample.particle.temp, c->GetTemperatureScale());
-				sampleInfo << ", Life: " << sample.particle.life;
+				sampleInfo << Localization::Ref().Tr("gameview.sample.life") << sample.particle.life;
 				if (sample.particle.type != PT_RFRG && sample.particle.type != PT_RFGL && sample.particle.type != PT_LIFE)
 				{
 					if (sample.particle.type == PT_CONV)
@@ -2432,12 +2446,12 @@ void GameView::OnDraw()
 							TYP(sample.particle.tmp),
 							ID(sample.particle.tmp));
 						if (elemName == "")
-							sampleInfo << ", Tmp: " << sample.particle.tmp;
+							sampleInfo << Localization::Ref().Tr("gameview.sample.tmp") << sample.particle.tmp;
 						else
-							sampleInfo << ", Tmp: " << elemName;
+							sampleInfo << Localization::Ref().Tr("gameview.sample.tmp") << elemName;
 					}
 					else
-						sampleInfo << ", Tmp: " << sample.particle.tmp;
+						sampleInfo << Localization::Ref().Tr("gameview.sample.tmp") << sample.particle.tmp;
 				}
 
 				// only elements that use .tmp2 show it in the debug HUD
@@ -2445,30 +2459,30 @@ void GameView::OnDraw()
 						|| type == PT_VIBR || type == PT_VIRS || type == PT_WARP || type == PT_LCRY || type == PT_CBNW || type == PT_TSNS
 						|| type == PT_DTEC || type == PT_LSNS || type == PT_PSTN || type == PT_LDTC || type == PT_VSNS || type == PT_LITH
 						|| type == PT_CONV || type == PT_ETRD)
-					sampleInfo << ", Tmp2: " << sample.particle.tmp2;
+					sampleInfo << Localization::Ref().Tr("gameview.sample.tmp2") << sample.particle.tmp2;
 
-				sampleInfo << ", Pressure: " << sample.AirPressure;
+				sampleInfo << Localization::Ref().Tr("gameview.sample.pressure") << sample.AirPressure;
 			}
 			else
 			{
 				sampleInfo << c->BasicParticleInfo(sample.particle);
-				sampleInfo << ", Temp: ";
+				sampleInfo << Localization::Ref().Tr("gameview.sample.temp");
 				format::RenderTemperature(sampleInfo, sample.particle.temp, c->GetTemperatureScale());
-				sampleInfo << ", Pressure: " << sample.AirPressure;
+				sampleInfo << Localization::Ref().Tr("gameview.sample.pressure") << sample.AirPressure;
 			}
 		}
 		else if (sample.WallType)
 		{
 			sampleInfo << c->WallName(sample.WallType);
-			sampleInfo << ", Pressure: " << sample.AirPressure;
+			sampleInfo << Localization::Ref().Tr("gameview.sample.pressure") << sample.AirPressure;
 		}
 		else if (sample.isMouseInSim)
 		{
-			sampleInfo << "Empty, Pressure: " << sample.AirPressure;
+			sampleInfo << Localization::Ref().Tr("gameview.sample.empty_pressure") << sample.AirPressure;
 		}
 		else
 		{
-			sampleInfo << "Empty";
+			sampleInfo << Localization::Ref().Tr("sim.empty");
 		}
 
 		int textWidth = Graphics::TextSize(sampleInfo.Build()).X - 1;
@@ -2518,16 +2532,16 @@ void GameView::OnDraw()
 			if (type)
 				sampleInfo << "#" << sample.ParticleID << ", ";
 
-			sampleInfo << "X:" << sample.PositionX << " Y:" << sample.PositionY;
+			sampleInfo << Localization::Ref().Tr("gameview.debug.x") << sample.PositionX << Localization::Ref().Tr("gameview.debug.y") << sample.PositionY;
 
 			auto gravtot = std::abs(sample.GravityVelocityX) +
 			               std::abs(sample.GravityVelocityY);
 			if (gravtot)
-				sampleInfo << ", GX: " << sample.GravityVelocityX << " GY: " << sample.GravityVelocityY;
+				sampleInfo << Localization::Ref().Tr("gameview.debug.gx") << sample.GravityVelocityX << Localization::Ref().Tr("gameview.debug.gy") << sample.GravityVelocityY;
 
 			if (c->GetAHeatEnable())
 			{
-				sampleInfo << ", AHeat: ";
+				sampleInfo << Localization::Ref().Tr("gameview.debug.aheat");
 				format::RenderTemperature(sampleInfo, sample.AirTemperature, c->GetTemperatureScale());
 			}
 
@@ -2541,39 +2555,39 @@ void GameView::OnDraw()
 	{
 		//FPS and some version info
 		StringBuilder fpsInfo;
-		fpsInfo << Format::Precision(2) << "FPS: " << ui::Engine::Ref().GetFps();
+		fpsInfo << Format::Precision(2) << Localization::Ref().Tr("gameview.fps.label") << ui::Engine::Ref().GetFps();
 
 		if (showDebug)
 		{
 			if (rendererSettings->findingElement)
-				fpsInfo << " Parts: " << rendererStats.foundParticles << "/" << sample.NumParts;
+				fpsInfo << Localization::Ref().Tr("gameview.fps.parts") << rendererStats.foundParticles << "/" << sample.NumParts;
 			else
-				fpsInfo << " Parts: " << sample.NumParts;
+				fpsInfo << Localization::Ref().Tr("gameview.fps.parts") << sample.NumParts;
 		}
 		if ((std::holds_alternative<HdispLimitAuto>(rendererSettings->wantHdispLimitMin) ||
 		     std::holds_alternative<HdispLimitAuto>(rendererSettings->wantHdispLimitMax)) && rendererStats.hdispLimitValid)
 		{
-			fpsInfo << " [TEMP L:";
+			fpsInfo << Localization::Ref().Tr("gameview.fps.temp_l");
 			format::RenderTemperature(fpsInfo, rendererStats.hdispLimitMin, c->GetTemperatureScale());
-			fpsInfo << " H:";
+			fpsInfo << Localization::Ref().Tr("gameview.fps.temp_h");
 			format::RenderTemperature(fpsInfo, rendererStats.hdispLimitMax, c->GetTemperatureScale());
 			fpsInfo << "]";
 		}
 		if (c->GetReplaceModeFlags()&REPLACE_MODE)
-			fpsInfo << " [REPLACE MODE]";
+			fpsInfo << Localization::Ref().Tr("gameview.fps.replace_mode");
 		if (c->GetReplaceModeFlags()&SPECIFIC_DELETE)
-			fpsInfo << " [SPECIFIC DELETE]";
+			fpsInfo << Localization::Ref().Tr("gameview.fps.specific_delete");
 		if (rendererSettings->gridSize)
-			fpsInfo << " [GRID: " << rendererSettings->gridSize << "]";
+			fpsInfo << Localization::Ref().Tr("gameview.fps.grid_prefix") << rendererSettings->gridSize << Localization::Ref().Tr("gameview.fps.grid_suffix");
 		if (rendererSettings->findingElement)
-			fpsInfo << " [FIND]";
+			fpsInfo << Localization::Ref().Tr("gameview.fps.find");
 		if (c->GetDebugFlags() & DEBUG_SIMHUD)
 		{
-			fpsInfo << "\nSimulation";
-			fpsInfo << "\n  FPS cap: ";
+			fpsInfo << Localization::Ref().Tr("gameview.fps.simulation");
+			fpsInfo << Localization::Ref().Tr("gameview.fps.fps_cap");
 			if (std::holds_alternative<FpsLimitNone>(simFpsLimit))
 			{
-				fpsInfo << "none";
+				fpsInfo << Localization::Ref().Tr("gameview.fps.none");
 			}
 			else
 			{
@@ -2582,51 +2596,51 @@ void GameView::OnDraw()
 		}
 		if (c->GetDebugFlags() & DEBUG_RENHUD)
 		{
-			fpsInfo << "\nRendering";
-			fpsInfo << "\n  Draw cap: ";
+			fpsInfo << Localization::Ref().Tr("gameview.fps.rendering");
+			fpsInfo << Localization::Ref().Tr("gameview.fps.draw_cap");
 			auto drawLimit = ui::Engine::Ref().GetDrawingFrequencyLimit();
 			if (std::holds_alternative<DrawLimitDisplay>(drawLimit))
 			{
-				fpsInfo << "display";
+				fpsInfo << Localization::Ref().Tr("gameview.fps.display");
 			}
 			else if (std::holds_alternative<DrawLimitNone>(drawLimit))
 			{
-				fpsInfo << "none";
+				fpsInfo << Localization::Ref().Tr("gameview.fps.none");
 			}
 			else
 			{
 				fpsInfo << std::get<DrawLimitExplicit>(drawLimit).value;
 			}
-			fpsInfo << ", effective: ";
+			fpsInfo << Localization::Ref().Tr("gameview.fps.effective");
 			if (auto drawCap = ui::Engine::Ref().GetEffectiveDrawCap())
 			{
 				fpsInfo << *drawCap;
 			}
 			else
 			{
-				fpsInfo << "none";
+				fpsInfo << Localization::Ref().Tr("gameview.fps.none");
 			}
-			fpsInfo << "\n  SRT: ";
+			fpsInfo << Localization::Ref().Tr("gameview.fps.srt");
 			if (!c->GetThreadedRendering())
 			{
-				fpsInfo << "disabled";
+				fpsInfo << Localization::Ref().Tr("gameview.fps.disabled");
 			}
 			else if (threadedRenderingAllowed)
 			{
-				fpsInfo << "enabled";
+				fpsInfo << Localization::Ref().Tr("gameview.fps.enabled");
 			}
 			else
 			{
-				fpsInfo << "hindered";
+				fpsInfo << Localization::Ref().Tr("gameview.fps.hindered");
 			}
-			fpsInfo << "\n  Refresh rate: ";
+			fpsInfo << Localization::Ref().Tr("gameview.fps.refresh_rate");
 			auto refreshRate = ui::Engine::Ref().GetRefreshRate();
 			fpsInfo << std::visit([](auto &refreshRate) {
 				return refreshRate.value;
 			}, refreshRate);
 			if (std::holds_alternative<RefreshRateDefault>(refreshRate))
 			{
-				fpsInfo << " (default)";
+				fpsInfo << Localization::Ref().Tr("gameview.fps.default_suffix");
 			}
 		}
 

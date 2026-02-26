@@ -14,7 +14,7 @@
  	// 设置当前语言索引（与 GlobalPrefs::Ref().Get("Language") 对应）
  	void SetLanguageIndex(int index);
  
-	// 获取翻译：先查当前语言，再查 en-US；若仍无且提供 fallback 则返回 fallback
+	// 获取翻译：先查当前语言,再查 en-US；若仍无且提供 fallback 则返回 fallback
 	String Tr(const char *key, const char *fallback = nullptr) const;
 
  private:
@@ -25,6 +25,6 @@
 
  	int currentIndex{-1};
  	std::map<std::string, String> entries;
- 	std::map<std::string, String> fallbackEn;  // en-US，key 缺省时使用
+ 	std::map<std::string, String> fallbackEn;  // en-US,key 缺省时使用
  };
 

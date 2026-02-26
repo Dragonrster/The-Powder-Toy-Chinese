@@ -4,6 +4,7 @@
 #include "compat_lua.h"
 #include "Format.h"
 #include "Config.h"
+#include "common/Localization.h"
 #include "gui/dialogues/ErrorMessage.h"
 #include "gui/dialogues/InformationMessage.h"
 #include "gui/game/GameController.h"
@@ -31,13 +32,13 @@ static int installScriptManager(lua_State *L)
 	lsi->AssertInterfaceEvent();
 	if (lsi->scriptManagerDownload)
 	{
-		new ErrorMessage("Script download", "A script download is already pending");
+		new ErrorMessage(Localization::Ref().Tr("script.download_title"), Localization::Ref().Tr("script.download_pending"));
 		return 0;
 	}
 	lsi->gameController->HideConsole();
 	if (ui::Engine::Ref().GetWindow() != lsi->gameController->GetView())
 	{
-		new ErrorMessage("Script download", "You must run this function from the console");
+		new ErrorMessage(Localization::Ref().Tr("script.download_title"), Localization::Ref().Tr("script.download_console"));
 		return 0;
 	}
 	lsi->scriptManagerDownload = std::make_unique<http::Request>(format::Url{ "https://starcatcher.us/scripts/main.lua", {{ "get", "1" }} }.ToByteString());
@@ -74,15 +75,15 @@ void LuaMisc::Tick(lua_State *L)
 		auto complete = [](Status status) {
 			if (std::get_if<Status::Ok>(&status.value))
 			{
-				new InformationMessage("Install script manager", "Script manager successfully installed", false);
+				new InformationMessage(Localization::Ref().Tr("script.install_manager_title"), Localization::Ref().Tr("script.install_manager_success"), false);
 			}
 			if (auto *requestFailed = std::get_if<Status::GetFailed>(&status.value))
 			{
-				new ErrorMessage("Install script manager", "Failed to get script manager: " + requestFailed->error);
+				new ErrorMessage(Localization::Ref().Tr("script.install_manager_title"), Localization::Ref().Tr("script.install_manager_get_failed") + requestFailed->error);
 			}
 			if (auto *runFailed = std::get_if<Status::RunFailed>(&status.value))
 			{
-				new ErrorMessage("Install script manager", "Failed to run script manager: " + runFailed->error);
+				new ErrorMessage(Localization::Ref().Tr("script.install_manager_title"), Localization::Ref().Tr("script.install_manager_run_failed") + runFailed->error);
 			}
 		};
 		try

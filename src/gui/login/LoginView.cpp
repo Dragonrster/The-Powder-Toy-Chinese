@@ -94,7 +94,7 @@ void LoginView::NotifyStatusChanged(LoginModel * sender)
 	auto user = Client::Ref().GetAuthUser();
 	if (!statusText.size() && !user && notWorking)
 	{
-		statusText = String::Build("Don't have an account? {a:", SERVER, "/Register.html", "|\btRegister here\x0E}.");
+		statusText = String::Build(Localization::Ref().Tr("login.no_account_prefix"), "{a:", SERVER, "/Register.html", "|\bt", Localization::Ref().Tr("login.register_here"), "\x0E}.");
 	}
 	infoLabel->Visible = statusText.size();
 	infoLabel->SetText(statusText);

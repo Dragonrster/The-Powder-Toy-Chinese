@@ -1,5 +1,6 @@
 #pragma once
 #include "Tool.h"
+#include "common/Localization.h"
 
 class GameModel;
 
@@ -11,7 +12,7 @@ class SignTool: public Tool
 
 public:
 	SignTool(GameModel &model):
-		Tool(0, "SIGN", "Sign. Displays text. Click on a sign to edit it or anywhere else to place a new one.",
+		Tool(0, Localization::Ref().Tr("tool.sign.short"), Localization::Ref().Tr("tool.sign.desc"),
 			0x000000_rgb, "DEFAULT_UI_SIGN", SignTool::GetIcon
 		),
 		gameModel(model)

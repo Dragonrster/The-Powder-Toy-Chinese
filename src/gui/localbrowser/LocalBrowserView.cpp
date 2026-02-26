@@ -1,6 +1,7 @@
 #include "LocalBrowserView.h"
 #include "LocalBrowserController.h"
 #include "LocalBrowserModel.h"
+#include "common/Localization.h"
 #include "gui/interface/Button.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Label.h"
@@ -19,7 +20,7 @@ LocalBrowserView::LocalBrowserView():
 {
 	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), String("Next ") + 0xE015);
 	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), 0xE016 + String(" Prev"));
-	undeleteButton = new ui::Button(ui::Point(WINDOWW-122, WINDOWH-18), ui::Point(60, 16), "Rescan");
+	undeleteButton = new ui::Button(ui::Point(WINDOWW-122, WINDOWH-18), ui::Point(60, 16), Localization::Ref().Tr("localbrowser.rescan"));
 	AddComponent(nextButton);
 	AddComponent(previousButton);
 	AddComponent(undeleteButton);
@@ -27,7 +28,7 @@ LocalBrowserView::LocalBrowserView():
 	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), "");
 	pageTextbox->SetActionCallback({ [this] { textChanged(); } });
 	pageTextbox->SetInputType(ui::Textbox::Number);
-	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), "Page"); //page [TEXTBOX] of y
+	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), Localization::Ref().Tr("search.page"));
 	pageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	pageCountLabel = new ui::Label(ui::Point(WINDOWW/2+6, WINDOWH-18), ui::Point(50, 16), "");
 	pageCountLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -45,11 +46,11 @@ LocalBrowserView::LocalBrowserView():
 
 	undeleteButton->SetActionCallback({ [this] { c->RescanStamps(); } });
 
-	removeSelected = new ui::Button(ui::Point(((WINDOWW-100)/2), WINDOWH-18), ui::Point(100, 16), "Delete");
+	removeSelected = new ui::Button(ui::Point(((WINDOWW-100)/2), WINDOWH-18), ui::Point(100, 16), Localization::Ref().Tr("localbrowser.delete"));
 	removeSelected->Visible = false;
 	removeSelected->SetActionCallback({ [this] { c->RemoveSelected(); } });
 
-	renameSelected = new ui::Button(ui::Point(((WINDOWW - 100) / 2 + 52), WINDOWH - 18), ui::Point(100, 16), "Rename");
+	renameSelected = new ui::Button(ui::Point(((WINDOWW - 100) / 2 + 52), WINDOWH - 18), ui::Point(100, 16), Localization::Ref().Tr("localbrowser.rename"));
 	renameSelected->Visible = false;
 	renameSelected->SetActionCallback({ [this] { c->RenameSelected(); } });
 
@@ -87,7 +88,7 @@ void LocalBrowserView::NotifyPageChanged(LocalBrowserModel * sender)
 	}
 	else
 	{
-		String pageInfo = String::Build("of ", pageCount);
+		String pageInfo = String::Build(Localization::Ref().Tr("search.page_of"), pageCount);
 		pageCountLabel->SetText(pageInfo);
 		int width = Graphics::TextSize(pageInfo).X - 1;
 

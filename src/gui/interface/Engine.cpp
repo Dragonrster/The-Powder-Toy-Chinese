@@ -2,6 +2,7 @@
 #include "Config.h"
 #include "PowderToySDL.h"
 #include "Window.h"
+#include "common/Localization.h"
 #include "common/platform/Platform.h"
 #include "graphics/Graphics.h"
 #include "gui/dialogues/ConfirmPrompt.h"
@@ -59,7 +60,7 @@ void Engine::ConfirmExit()
 	if (!confirmingExit)
 	{
 		confirmingExit = true;
-		new ConfirmPrompt("You are about to quit", "Are you sure you want to exit the game?", { [] {
+		new ConfirmPrompt(Localization::Ref().Tr("engine.confirm_quit_title"), Localization::Ref().Tr("engine.confirm_quit_message"), { [] {
 			ui::Engine::Ref().Exit();
 		}, [this] {
 			confirmingExit = false;

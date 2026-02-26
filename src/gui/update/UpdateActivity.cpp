@@ -1,6 +1,7 @@
 #include "UpdateActivity.h"
 #include "client/http/Request.h"
 #include "prefs/GlobalPrefs.h"
+#include "common/Localization.h"
 #include "common/platform/Platform.h"
 #include "tasks/Task.h"
 #include "tasks/TaskWindow.h"
@@ -35,7 +36,7 @@ private:
 
 		auto request = std::make_unique<http::Request>(updateName);
 		request->Start();
-		notifyStatus("Downloading update");
+		notifyStatus(Localization::Ref().Tr("update.downloading"));
 		notifyProgress(-1);
 		while(!request->CheckDone())
 		{
@@ -71,7 +72,7 @@ private:
 			return niceNotifyError("Server did not return any data");
 		}
 
-		notifyStatus("Unpacking update");
+		notifyStatus(Localization::Ref().Tr("update.unpacking"));
 		notifyProgress(-1);
 
 		unsigned int uncompressedLength;
@@ -99,7 +100,7 @@ private:
 			return niceNotifyError(String::Build("Unable to decompress update: ", dstate));
 		}
 
-		notifyStatus("Applying update");
+		notifyStatus(Localization::Ref().Tr("update.applying"));
 		notifyProgress(-1);
 
 		prefs.Set("version.update", true);
@@ -141,14 +142,14 @@ void UpdateActivity::NotifyError(Task * sender)
 	StringBuilder sb;
 	if constexpr (USE_UPDATESERVER)
 	{
-		sb << "Please go online to manually download a newer version.\n";
+		sb << Localization::Ref().Tr("update.autoupdate_failed_manual");
 	}
 	else
 	{
-		sb << "Please visit the website to download a newer version.\n";
+		sb << Localization::Ref().Tr("update.autoupdate_failed_visit");
 	}
-	sb << "Error: " << sender->GetError();
-	new ConfirmPrompt("Autoupdate failed", sb.Build(), { [this] {
+	sb << Localization::Ref().Tr("update.autoupdate_failed_error_prefix") << sender->GetError();
+	new ConfirmPrompt(Localization::Ref().Tr("update.autoupdate_failed_title"), sb.Build(), { [this] {
 		if constexpr (!USE_UPDATESERVER)
 		{
 			Platform::OpenURI(ByteString::Build(SERVER, "/Download.html"));

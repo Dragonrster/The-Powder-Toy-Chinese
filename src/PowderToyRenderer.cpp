@@ -1,6 +1,7 @@
 #include "graphics/Graphics.h"
 #include "graphics/VideoBuffer.h"
 #include "graphics/Renderer.h"
+#include "common/Localization.h"
 #include "common/String.h"
 #include "common/tpt-rand.h"
 #include "Format.h"
@@ -63,9 +64,10 @@ int main(int argc, char *argv[])
 	else
 	{
 		ren->Clear();
-		int w = Graphics::TextSize("Save file invalid").X + 15, x = (XRES-w)/2, y = (YRES-24)/2;
+		String invalidMsg = Localization::Ref().Tr("main.save_file_invalid");
+		int w = Graphics::TextSize(invalidMsg).X + 15, x = (XRES-w)/2, y = (YRES-24)/2;
 		ren->DrawRect(RectSized(Vec2{ x, y }, Vec2{ w, 24 }), 0xC0C0C0_rgb);
-		ren->BlendText({ x+8, y+8 }, "Save file invalid", 0xC0C0F0_rgb .WithAlpha(255));
+		ren->BlendText({ x+8, y+8 }, invalidMsg, 0xC0C0F0_rgb .WithAlpha(255));
 	}
 
 	auto &video = ren->GetVideo();

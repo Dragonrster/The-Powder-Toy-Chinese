@@ -1,5 +1,6 @@
 #include "ErrorMessage.h"
 
+#include "common/Localization.h"
 #include "gui/Style.h"
 
 #include "gui/interface/Button.h"
@@ -29,7 +30,7 @@ ErrorMessage::ErrorMessage(String title, String message, DismissCallback callbac
 	Size.Y += messageLabel->Size.Y+12;
 	Position.Y = (GetGraphics()->Size().Y - Size.Y)/2;
 
-	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "Dismiss");
+	ui::Button * okayButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), Localization::Ref().Tr("dialog.dismiss"));
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);

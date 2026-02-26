@@ -4,17 +4,18 @@
 #include "client/Client.h"
 #include "client/http/LoginRequest.h"
 #include "client/http/LogoutRequest.h"
+#include "common/Localization.h"
 
 void LoginModel::Login(ByteString username, ByteString password)
 {
 	if (username.Contains("@"))
 	{
-		statusText = String::Build("Use your Powder Toy account to log in, not your email. If you don't have a Powder Toy account, you can create one at ", SERVER, "/Register.html");
+		statusText = String::Build(Localization::Ref().Tr("login.use_account_not_email"), SERVER, Localization::Ref().Tr("login.use_account_not_email_suffix"));
 		loginStatus = loginIdle;
 		notifyStatusChanged();
 		return;
 	}
-	statusText = "Logging in...";
+	statusText = Localization::Ref().Tr("login.logging_in");
 	loginStatus = loginWorking;
 	notifyStatusChanged();
 	loginRequest = std::make_unique<http::LoginRequest>(username, password);
@@ -23,7 +24,7 @@ void LoginModel::Login(ByteString username, ByteString password)
 
 void LoginModel::Logout()
 {
-	statusText = "Logging out...";
+	statusText = Localization::Ref().Tr("login.logging_out");
 	loginStatus = loginWorking;
 	notifyStatusChanged();
 	logoutRequest = std::make_unique<http::LogoutRequest>();
@@ -54,7 +55,7 @@ void LoginModel::Tick()
 			{
 				client.AddServerNotification(item);
 			}
-			statusText = "Logged in";
+			statusText = Localization::Ref().Tr("login.logged_in");
 			loginStatus = loginSucceeded;
 		}
 		catch (const http::RequestError &ex)
@@ -72,7 +73,7 @@ void LoginModel::Tick()
 			logoutRequest->Finish();
 			auto &client = Client::Ref();
 			client.SetAuthUser(std::nullopt);
-			statusText = "Logged out";
+			statusText = Localization::Ref().Tr("login.logged_out");
 		}
 		catch (const http::RequestError &ex)
 		{

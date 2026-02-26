@@ -3,6 +3,7 @@
 #include "client/GameSave.h"
 #include "client/SaveFile.h"
 #include "client/SaveInfo.h"
+#include "common/Localization.h"
 #include "common/RasterGeometry.h"
 #include "Format.h"
 #include "gui/game/GameController.h"
@@ -1616,7 +1617,7 @@ static int listDefaultGol(lua_State *L)
 	for (auto &gol : SimulationData::builtinGol)
 	{
 		lua_newtable(L);
-		tpt_lua_pushString(L, gol.name);
+		tpt_lua_pushString(L, Localization::Ref().Tr(gol.nameKey.ToUtf8().c_str()));
 		lua_setfield(L, -2, "name");
 		tpt_lua_pushString(L, SerialiseGOLRule(gol.ruleset));
 		lua_setfield(L, -2, "rulestr");

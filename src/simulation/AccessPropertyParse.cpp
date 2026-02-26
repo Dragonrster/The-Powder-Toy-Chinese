@@ -64,7 +64,7 @@ AccessProperty AccessProperty::Parse(int prop, String value)
 						{
 							for (int i = 0; i < int(builtinGol.size()); ++i)
 							{
-								if (builtinGol[i].name == value)
+								if (builtinGol[i].id == value.ToUtf8())
 								{
 									v = PMAP(i, PT_LIFE);
 									break;

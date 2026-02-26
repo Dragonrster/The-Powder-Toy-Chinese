@@ -1,5 +1,6 @@
 #include "ConfirmPrompt.h"
 
+#include "common/Localization.h"
 #include "gui/Style.h"
 
 #include "gui/interface/Button.h"
@@ -15,6 +16,8 @@ ConfirmPrompt::ConfirmPrompt(String title, String message, ResultCallback callba
 	ui::Window(ui::Point(-1, -1), ui::Point(250, 50)),
 	callback(callback_)
 {
+	if (buttonText.empty())
+		buttonText = Localization::Ref().Tr("gui.default_confirm_button");
 	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), title);
 	titleLabel->SetTextColour(style::Colour::WarningTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
@@ -38,7 +41,7 @@ ConfirmPrompt::ConfirmPrompt(String title, String message, ResultCallback callba
 	Size.Y += messagePanel->Size.Y+12;
 	Position.Y = (GetGraphics()->Size().Y - Size.Y)/2;
 
-	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), "Cancel");
+	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), Localization::Ref().Tr("dialog.cancel"));
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);

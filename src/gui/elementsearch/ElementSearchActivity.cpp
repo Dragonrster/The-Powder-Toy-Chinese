@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <SDL.h>
 
+#include "common/Localization.h"
 #include "gui/interface/Textbox.h"
 #include "gui/interface/ScrollPanel.h"
 #include "gui/interface/Label.h"
@@ -29,7 +30,7 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	isToolTipFadingIn(false),
 	exit(false)
 {
-	ui::Label * title = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), "Element Search");
+	ui::Label * title = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), Localization::Ref().Tr("elementsearch.title"));
 	title->SetTextColour(style::Colour::InformationTitle);
 	title->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(title);
@@ -40,9 +41,9 @@ ElementSearchActivity::ElementSearchActivity(GameController * gameController, st
 	AddComponent(searchField);
 	FocusComponent(searchField);
 
-	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point((Size.X/2)+1, 15), "Close");
+	ui::Button * closeButton = new ui::Button(ui::Point(0, Size.Y-15), ui::Point((Size.X/2)+1, 15), Localization::Ref().Tr("elementsearch.close"));
 	closeButton->SetActionCallback({ [this] { exit = true; } });
-	ui::Button * okButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), "OK");
+	ui::Button * okButton = new ui::Button(ui::Point(Size.X/2, Size.Y-15), ui::Point(Size.X/2, 15), Localization::Ref().Tr("dialog.ok"));
 	okButton->SetActionCallback({ [this] {
 		if (GetFirstResult())
 			SetActiveTool(0, GetFirstResult());

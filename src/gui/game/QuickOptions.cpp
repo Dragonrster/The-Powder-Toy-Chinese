@@ -2,11 +2,11 @@
 
 #include "GameModel.h"
 #include "GameController.h"
-
+#include "common/Localization.h"
 #include "simulation/Simulation.h"
 
 SandEffectOption::SandEffectOption(GameModel * m):
-QuickOption("P", "Sand effect", m, Toggle)
+QuickOption("P", Localization::Ref().Tr("quick.sand_effect"), m, Toggle)
 {
 
 }
@@ -22,7 +22,7 @@ void SandEffectOption::perform()
 
 
 DrawGravOption::DrawGravOption(GameModel * m):
-QuickOption("G", "Draw gravity field \bg(ctrl+g)", m, Toggle)
+QuickOption("G", Localization::Ref().Tr("quick.draw_gravity"), m, Toggle)
 {
 
 }
@@ -38,7 +38,7 @@ void DrawGravOption::perform()
 
 
 DecorationsOption::DecorationsOption(GameModel * m):
-QuickOption("D", "Draw decorations \bg(ctrl+b)", m, Toggle)
+QuickOption("D", Localization::Ref().Tr("quick.draw_decorations"), m, Toggle)
 {
 
 }
@@ -54,7 +54,7 @@ void DecorationsOption::perform()
 
 
 NGravityOption::NGravityOption(GameModel * m):
-QuickOption("N", "Newtonian Gravity \bg(n)", m, Toggle)
+QuickOption("N", Localization::Ref().Tr("quick.newtonian_gravity"), m, Toggle)
 {
 
 }
@@ -70,7 +70,7 @@ void NGravityOption::perform()
 
 
 AHeatOption::AHeatOption(GameModel * m):
-QuickOption("A", "Ambient heat \bg(u)", m, Toggle)
+QuickOption("A", Localization::Ref().Tr("quick.ambient_heat"), m, Toggle)
 {
 
 }
@@ -86,7 +86,7 @@ void AHeatOption::perform()
 
 
 ConsoleShowOption::ConsoleShowOption(GameModel * m, GameController * c_):
-QuickOption("C", "Show Console \bg(~)", m, Toggle)
+QuickOption("C", Localization::Ref().Tr("quick.show_console"), m, Toggle)
 {
 	c = c_;
 }

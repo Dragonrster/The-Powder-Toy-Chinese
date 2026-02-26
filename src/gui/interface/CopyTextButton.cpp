@@ -3,7 +3,7 @@
 #include "Colour.h"
 #include "gui/Style.h"
 #include "Label.h"
-
+#include "common/Localization.h"
 #include "PowderToySDL.h"
 
 namespace ui
@@ -25,7 +25,7 @@ namespace ui
 		ui::Button::OnMouseClick(x, y, button);
 		ClipboardPush(ButtonText.ToUtf8());
 
-		copyTextLabel->SetText("Copied!");
+		copyTextLabel->SetText(Localization::Ref().Tr("ui.copied"));
 
 		Appearance.TextInactive = ui::Colour(180, 230, 180);
 		Appearance.TextHover = ui::Colour(180, 230, 180);

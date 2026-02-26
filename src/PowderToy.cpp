@@ -87,10 +87,10 @@ void LargeScreenDialog()
 {
 	StringBuilder message;
 	auto scale = ui::Engine::Ref().windowFrameOps.scale;
-	message << "Switching to " << scale << "x size mode since your screen was determined to be large enough: ";
-	message << desktopWidth << "x" << desktopHeight << " detected, " << WINDOWW * scale << "x" << WINDOWH * scale << " required";
-	message << "\nTo undo this, hit Cancel. You can change this in settings at any time.";
-	new ConfirmPrompt("Large screen detected", message.Build(), { nullptr, []() {
+	message << Localization::Ref().Tr("main.large_screen_switch") << scale << Localization::Ref().Tr("main.large_screen_mode");
+	message << desktopWidth << "x" << desktopHeight << Localization::Ref().Tr("main.large_screen_detected") << WINDOWW * scale << "x" << WINDOWH * scale << Localization::Ref().Tr("main.large_screen_required");
+	message << Localization::Ref().Tr("main.large_screen_undo");
+	new ConfirmPrompt(Localization::Ref().Tr("main.large_screen_title"), message.Build(), { nullptr, []() {
 		GlobalPrefs::Ref().Set("Scale", 1);
 		ui::Engine::Ref().windowFrameOps.scale = 1;
 	} });
@@ -504,7 +504,7 @@ int Main(int argc, char *argv[])
 				std::vector<char> gameSaveData;
 				if (!Platform::ReadFile(gameSaveData, openArg.value()))
 				{
-					new ErrorMessage("Error", "Could not read file");
+					new ErrorMessage(Localization::Ref().Tr("common.error"), Localization::Ref().Tr("main.error_could_not_read_file"));
 				}
 				else
 				{
@@ -517,12 +517,12 @@ int Main(int argc, char *argv[])
 			}
 			catch (std::exception & e)
 			{
-				new ErrorMessage("Error", "Could not open save file:\n" + ByteString(e.what()).FromUtf8()) ;
+				new ErrorMessage(Localization::Ref().Tr("common.error"), Localization::Ref().Tr("main.error_could_not_open_save_prefix") + ByteString(e.what()).FromUtf8()) ;
 			}
 		}
 		else
 		{
-			new ErrorMessage("Error", "Could not open file");
+			new ErrorMessage(Localization::Ref().Tr("common.error"), Localization::Ref().Tr("main.error_could_not_open_file"));
 		}
 	}
 
@@ -531,7 +531,7 @@ int Main(int argc, char *argv[])
 	{
 		engine.g->Clear();
 		engine.g->DrawRect(RectSized(engine.g->Size() / 2 - Vec2(100, 25), Vec2(200, 50)), 0xB4B4B4_rgb);
-		String loadingText = "Loading save...";
+		String loadingText = Localization::Ref().Tr("main.loading_save");
 		engine.g->BlendText(engine.g->Size() / 2 - Vec2((Graphics::TextSize(loadingText).X - 1) / 2, 5), loadingText, style::Colour::InformationTitle);
 
 		blit(engine.g->Data());
@@ -565,7 +565,7 @@ int Main(int argc, char *argv[])
 		}
 		catch (std::exception & e)
 		{
-			new ErrorMessage("Error", ByteString(e.what()).FromUtf8());
+			new ErrorMessage(Localization::Ref().Tr("common.error"), ByteString(e.what()).FromUtf8());
 			Platform::MarkPresentable();
 		}
 	}
