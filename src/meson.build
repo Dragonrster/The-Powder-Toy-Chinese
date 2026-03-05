@@ -247,3 +247,19 @@ configure_file(
 	output: 'Config.h',
 	configuration: conf_data
 )
+
+# 语言文件（按 ISO 639-1 排序）：en, zh-CN, zh-TW, de, es, fr, it, ja, ko, pt, ru, lzh
+embedded_files += [
+	[ 'lang_en_US_json', files('lang/en-US.json') ],
+	[ 'lang_zh_CN_json', files('lang/zh-CN.json') ],
+	[ 'lang_zh_TW_json', files('lang/zh-TW.json') ],
+	[ 'lang_de_DE_json', files('lang/de-DE.json') ],
+	[ 'lang_es_ES_json', files('lang/es-ES.json') ],
+	[ 'lang_fr_FR_json', files('lang/fr-FR.json') ],
+	[ 'lang_it_IT_json', files('lang/it-IT.json') ],
+	[ 'lang_ja_JP_json', files('lang/ja-JP.json') ],
+	[ 'lang_ko_KR_json', files('lang/ko-KR.json') ],
+	[ 'lang_pt_BR_json', files('lang/pt-BR.json') ],
+	[ 'lang_ru_RU_json', files('lang/ru-RU.json') ],
+	[ 'lang_lzh_json', files('lang/lzh.json') ],
+]
