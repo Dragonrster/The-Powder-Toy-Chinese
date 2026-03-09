@@ -317,7 +317,7 @@ if [[ $BSH_HOST_PLATFORM == linux ]] && [[ $BSH_HOST_ARCH != aarch64 ]]; then
 	c_link_args+=\'-no-pie\',
 fi
 if [[ $SEPARATE_DEBUG == yes ]] && [[ $BSH_HOST_PLATFORM == emscripten ]]; then
-	c_link_args+=\'-gseparate-dwarf="$APP_EXE.dbg.wasm"\',
+	c_link_args+=\'-gseparate-dwarf="$DEBUG_ASSET_PATH"\',
 fi
 stable_or_beta=no
 if [[ $RELEASE_TYPE == beta ]]; then
@@ -554,7 +554,7 @@ if [[ $BSH_HOST_PLATFORM == darwin ]]; then
 	fi
 elif [[ $PACKAGE_MODE == emscripten ]]; then
 	cp resources/serve-wasm.py .
-	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.wasm $APP_EXE.wasm.map $APP_EXE.dbg.wasm serve-wasm.py
+	tar cvf $ASSET_PATH $APP_EXE.js $APP_EXE.wasm $APP_EXE.wasm.map serve-wasm.py
 elif [[ $PACKAGE_MODE == appimage ]]; then
 	# so far this can only happen with $BSH_HOST_PLATFORM-$BSH_HOST_LIBC == linux-gnu, but this may change later
 	case $BSH_HOST_ARCH in
