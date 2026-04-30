@@ -458,7 +458,7 @@ void OptionsView::UpdateAmbientAirTempPreview(float airTemp, bool isValid)
 {
 	if (isValid)
 	{
-		ambientAirTempPreview->Appearance.BackgroundInactive = RGB::Unpack(HeatToColour(airTemp, MIN_TEMP, MAX_TEMP)).WithAlpha(0xFF);
+		ambientAirTempPreview->Appearance.BackgroundInactive = HeatToColour(airTemp, MIN_TEMP, MAX_TEMP).WithAlpha(0xFF);
 		ambientAirTempPreview->SetText("");
 	}
 	else
