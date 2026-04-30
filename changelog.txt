@@ -1,23 +1,16 @@
 # This file is used by the starcatcher.us update server to pull changelogs for mod releases
 # Erase and replace the changelog for every release, do not just append changes to the end
 # Lines starting with # and empty lines are ignored
-
-i18n: Multi-language support and Chinese localization
-
-New:
+v99.5.394 - i18n: Multi-language support and Chinese localization
 - Introduced multi-language framework (Localization) with JSON key-value translations
 - Supports 12 languages: en-US, zh-CN, zh-TW, de-DE, es-ES, fr-FR, it-IT, ja-JP, ko-KR, pt-BR, ru-RU, lzh
 - Element descriptions, wall descriptions, tool descriptions, and menu sections now localized in Chinese
 - Full Chinese localization for search, login, save, options, and other UI panels
 - Added Chinese translations for decoration tool short names (Add/Subtract/Multiply/Divide/Smudge/Clear/Draw)
 - Chinese names and descriptions for GOL types (Game of Life variants)
-
-Localization improvements:
 - Wall descriptions synced from community zh_CN branch translations
 - Menu section names updated (Electronics, Powered Materials, Force Materials, Radioactive, Special)
 - Login status text corrections
 - Dialog button text consistency fixes
-
-Fixes:
 - Resolved merge conflicts in PropertyTool.h and GOLTool.h that caused compilation errors
 - Fixed RGB::Unpack type mismatch in OptionsView.cpp
