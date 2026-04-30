@@ -4,17 +4,15 @@
 #include "simulation/Simulation.h"
 #include "simulation/ElementClasses.h"
 #include "simulation/elements/PIPE.h"
-#include "common/tpt-compat.h"
 #include "common/Bson.h"
 #include "graphics/Renderer.h"
 #include "Config.h"
-#include <iostream>
-#include <cmath>
+#include <algorithm>
 #include <climits>
+#include <cmath>
+#include <iostream>
 #include <memory>
 #include <set>
-#include <cmath>
-#include <algorithm>
 #include <stack>
 
 constexpr auto currentVersion = UPSTREAM_VERSION.displayVersion;
@@ -78,6 +76,15 @@ void GameSave::MapPalette()
 		ignoreMissingErrors[PT_SNOW] = true;
 		ignoreMissingErrors[PT_RSST] = true;
 		ignoreMissingErrors[PT_RSSS] = true;
+	}
+	if (version <= Version(99, 5))
+	{
+		ignoreMissingErrors[PT_PLSM] = true;
+		ignoreMissingErrors[PT_EXOT] = true;
+		ignoreMissingErrors[PT_FWRK] = true;
+		ignoreMissingErrors[PT_WTRV] = true;
+		ignoreMissingErrors[PT_FIRE] = true;
+		ignoreMissingErrors[PT_BRMT] = true;
 	}
 
 	auto &sd = SimulationData::CRef();
@@ -618,6 +625,9 @@ void GameSave::readOPS(const std::vector<char> &data)
 	copyIfFloat(b, "customGravityY", customGravityY);
 	copyIfInt32(b, "airMode", airMode);
 	copyIfFloat(b, "ambientAirTemp", ambientAirTemp);
+	copyIfFloat(b, "edgePressure", edgePressure);
+	copyIfFloat(b, "edgeVelocityX", edgeVelocityX);
+	copyIfFloat(b, "edgeVelocityY", edgeVelocityY);
 	copyIfFloat(b, "vorticityCoeff", vorticityCoeff);
 
 	// Before 99.0 the default is "legacy", from 99.0 the default is "Boussinesq"
@@ -2492,6 +2502,21 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	{
 		b["ambientAirTemp"] = double(ambientAirTemp);
 		RESTRICTVERSION(96, 0);
+	}
+	if (std::fabs(edgePressure) > 0.0001f)
+	{
+		b["edgePressure"] = double(edgePressure);
+		RESTRICTVERSION(100, 0);
+	}
+	if (std::fabs(edgeVelocityX) > 0.0001f)
+	{
+		b["edgeVelocityX"] = double(edgeVelocityX);
+		RESTRICTVERSION(100, 0);
+	}
+	if (std::fabs(edgeVelocityY) > 0.0001f)
+	{
+		b["edgeVelocityY"] = double(edgeVelocityY);
+		RESTRICTVERSION(100, 0);
 	}
 	if (vorticityCoeff > 0.0001f && vorticityCoeff < 1.0f)
 	{

@@ -23,6 +23,7 @@
 
 constexpr int CHANNELS = int(MAX_TEMP - 73) / 100 + 2;
 
+class FrameTime;
 class Snapshot;
 class Brush;
 struct SimulationSample;
@@ -210,6 +211,7 @@ public:
 	//int InCurrentBrush(int i, int j, int rx, int ry);
 	//int get_brush_flags();
 	int create_part(int p, int x, int y, int t, int v = -1);
+	int createPartTempVel(int i, int x, int y, int t);
 	void delete_part(int x, int y);
 	void get_sign_pos(int i, int *x0, int *y0, int *w, int *h);
 	int is_wire(int x, int y);
@@ -267,6 +269,8 @@ public:
 	~Simulation();
 
 	void EnableNewtonianGravity(bool enable);
+
+	FrameTime *frameTime = nullptr;
 
 private:
 	CoordStack& getCoordStackSingleton();

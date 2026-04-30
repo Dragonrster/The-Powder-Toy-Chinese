@@ -33,6 +33,7 @@ void Element::Element_FWRK()
 	Description = ByteString("传统烟花,用中子或热量(200C)爆炸,比烟花(FIRW)升的更高,但火焰苍白").FromUtf8();
 
 	Properties = TYPE_PART|PROP_LIFE_DEC;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -92,6 +93,7 @@ static int update(UPDATE_FUNC_ARGS)
 		unsigned col = (r<<16) | (g<<8) | b;
 		for (n=0; n<40; n++)
 		{
+			//@ FWRK -> EMBR
 			int np = sim->create_part(-3, x, y, PT_EMBR);
 			if (np>-1)
 			{

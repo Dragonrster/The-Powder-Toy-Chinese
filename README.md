@@ -4,12 +4,12 @@
 
 
 
-The Powder Toy - February 2025
+The Powder Toy - April 2026
 ==========================
 
 从[Powder Toy 网站](https://powdertoy.co.uk/Download.html) 获取最新版本
 
-从[汉化 Github](https://github.com/Dragonrster/The-Powder-Toy-Chinese) 获取最新汉化版本
+从[汉化 Github](https://github.com/Dragonrster/The-Powder-Toy-Chinese) 获取最新汉化版本 We're also on [Steam](https://store.steampowered.com/app/1148350/The_Powder_Toy/).
 
 要使用保存等在线功能，您需要 [注册一个帐户](https://powdertoy.co.uk/Register.html)，也可以访问 [官方 TPT 论坛](https://powdertoy.co.uk/Discussions/Categories/Index.html)
 

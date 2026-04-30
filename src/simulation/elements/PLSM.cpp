@@ -35,6 +35,7 @@ void Element::Element_PLSM()
 	Description = ByteString("等离子体,炽热的气体").FromUtf8();
 
 	Properties = TYPE_GAS|PROP_LIFE_DEC|PROP_LIFE_KILL;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;

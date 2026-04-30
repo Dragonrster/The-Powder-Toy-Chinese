@@ -5,6 +5,7 @@
 #include "graphics/RendererSettings.h"
 #include "simulation/CustomGOLData.h"
 #include "simulation/SimulationSettings.h"
+#include "simulation/FrameTime.h"
 #include <vector>
 #include <deque>
 #include <memory>
@@ -107,6 +108,9 @@ private:
 
 	int edgeMode;
 	float ambientAirTemp;
+	float edgePressure;
+	float edgeVelocityX;
+	float edgeVelocityY;
 	float vorticityCoeff;
 	int convectionMode;
 	int decoSpace;
@@ -167,6 +171,12 @@ public:
 	}
 	void SetAmbientAirTemperature(float ambientAirTemp);
 	float GetAmbientAirTemperature();
+	void SetEdgePressure(float edgePressure);
+	float GetEdgePressure();
+	void SetEdgeVelocityX(float edgeVelocityX);
+	float GetEdgeVelocityX();
+	void SetEdgeVelocityY(float edgeVelocityY);
+	float GetEdgeVelocityY();
 	void SetVorticityCoeff(float vorticityCoeff);
 	float GetVorticityCoeff();
 	void SetConvectionMode(int convMode);
@@ -338,4 +348,6 @@ public:
 	{
 		return !paused || queuedFrames;
 	}
+
+	std::unique_ptr<FrameTime> frameTime;
 };
