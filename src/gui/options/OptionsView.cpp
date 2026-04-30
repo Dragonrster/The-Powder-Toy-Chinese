@@ -163,6 +163,30 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		scrollPanel->AddChild(separator);
 		currentY += 11;
 	};
+	auto addTextboxWithPreview = [this, &currentY](String info, bool addPreview, std::function<void (String value, bool defocus)> updateFunc) {
+		auto *textbox = new ui::Textbox(ui::Point(Size.X-95, currentY), ui::Point(80, 16));
+		textbox->SetActionCallback({ [textbox, updateFunc] {
+			updateFunc(textbox->GetText(), false);
+		} });
+		textbox->SetDefocusCallback({ [textbox, updateFunc] {
+			updateFunc(textbox->GetText(), true);
+		} });
+		textbox->SetLimit(9);
+		scrollPanel->AddChild(textbox);
+		ui::Button *preview{};
+		if (addPreview)
+		{
+			textbox->Size.X -= 20;
+			preview = new ui::Button(ui::Point(Size.X-31, currentY), ui::Point(16, 16), "", "Preview");
+			scrollPanel->AddChild(preview);
+		}
+		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-105, 16), info);
+		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+		scrollPanel->AddChild(label);
+		currentY += 20;
+		return std::make_pair(textbox, preview);
+	};
 
 	heatSimulation = addCheckbox(0, ByteString("热模拟 \bg34.0版本后加入").FromUtf8(), ByteString("\bg 关闭此选项可能导致一些奇怪的问题").FromUtf8(), [this] {
 		c->SetHeatSimulation(heatSimulation->GetChecked());

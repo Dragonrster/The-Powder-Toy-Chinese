@@ -29,7 +29,7 @@ void Element::Element_SHLD4()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = ByteString("自修复膜 lvl 4.").FromUtf8();
+	Description = ByteString("自修复膜 Lv.4,通电时会自动生长出保护膜").FromUtf8();
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 
