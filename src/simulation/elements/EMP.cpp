@@ -120,6 +120,7 @@ void Element_EMP_Trigger(Simulation *sim, int triggerCount)
 			{
 				is_elec = true;
 				temp_center.apply(sim, parts[r]);
+				//@ EMP + PSCN/NSCN/PTCT/NTCT/INST/SWCH/WIRE -> EMP + BREC/NTCT
 				if (sim->rng.uniform01() < prob_changeCenter)
 				{
 					if (sim->rng.chance(2, 5))
@@ -147,6 +148,7 @@ void Element_EMP_Trigger(Simulation *sim, int triggerCount)
 								temp_metal.apply(sim, parts[n]);
 								if (sim->rng.uniform01() < prob_breakMETL)
 								{
+									//@ EMP + METL -> EMP + BMTL/BRMT
 									sim->part_change_type(n, rx+nx, ry+ny, PT_BMTL);
 									if (sim->rng.uniform01() < prob_breakMETLMore)
 									{
@@ -156,6 +158,7 @@ void Element_EMP_Trigger(Simulation *sim, int triggerCount)
 								}
 								break;
 							case PT_BMTL:
+								//@ EMP + BMTL -> EMP + BRMT
 								temp_metal.apply(sim, parts[n]);
 								if (sim->rng.uniform01() < prob_breakBMTL)
 								{
@@ -169,6 +172,7 @@ void Element_EMP_Trigger(Simulation *sim, int triggerCount)
 									// Randomize channel
 									parts[n].temp = float(sim->rng.between(0, int(MAX_TEMP)-1));
 								}
+								//@ EMP + WIFI -> EMP + BREC
 								if (sim->rng.uniform01() < prob_breakWIFI)
 								{
 									sim->create_part(n, rx+nx, ry+ny, PT_BREC);
@@ -182,11 +186,13 @@ void Element_EMP_Trigger(Simulation *sim, int triggerCount)
 						switch (ntype)
 						{
 						case PT_SWCH:
+							//@ EMP + SWCH -> EMP + BREC
 							if (sim->rng.uniform01() < prob_breakSWCH)
 								sim->part_change_type(n, rx+nx, ry+ny, PT_BREC);
 							temp_SWCH.apply(sim, parts[n]);
 							break;
 						case PT_ARAY:
+							//@ EMP + ARAY -> EMP + BREC
 							if (sim->rng.uniform01() < prob_breakARAY)
 							{
 								sim->create_part(n, rx+nx, ry+ny, PT_BREC);

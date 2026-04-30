@@ -69,6 +69,7 @@ static int update(UPDATE_FUNC_ARGS)
 				{
 					if (rt == PT_PLEX || rt == PT_NITR || rt == PT_GUNP || rt == PT_RBDM || rt == PT_LRBD)
 					{
+						//@ ACID + PLEX/NITR/GUNP/RBDM/LRBD -> 2xFIRE
 						sim->part_change_type(i,x,y,PT_FIRE);
 						sim->part_change_type(ID(r),x+rx,y+ry,PT_FIRE);
 						parts[i].life = 4;
@@ -78,6 +79,7 @@ static int update(UPDATE_FUNC_ARGS)
 					{
 						if (sim->rng.chance(1, 250))
 						{
+							//@ ACID + WTRV -> CAUS
 							sim->part_change_type(i, x, y, PT_CAUS);
 							parts[i].life = sim->rng.between(25, 74);
 							sim->kill_part(ID(r));
@@ -96,6 +98,7 @@ static int update(UPDATE_FUNC_ARGS)
 							switch (rt)
 							{
 							case PT_LITH:
+								//@ ACID + LITH -> ACID + H2
 								sim->part_change_type(ID(r), x + rx, y + ry, PT_H2);
 								break;
 

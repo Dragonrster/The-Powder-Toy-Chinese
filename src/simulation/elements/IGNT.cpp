@@ -41,7 +41,7 @@ void Element::Element_IGNT()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 673.0f;
-	HighTemperatureTransition = PT_FIRE;
+	HighTemperatureTransition = PT_FIRE; //@ IGNT -> FIRE
 
 	DefaultProperties.life = 3;
 
@@ -74,6 +74,7 @@ static int update(UPDATE_FUNC_ARGS)
 	{
 		if (sim->rng.chance(2, 3))
 		{
+			//@ IGNT -> IGNT + EMBR
 			int nb = sim->create_part(-1, x + sim->rng.between(-1, 1), y + sim->rng.between(-1, 1), PT_EMBR);
 			if (nb!=-1) {
 				parts[nb].tmp = 0;
@@ -85,6 +86,7 @@ static int update(UPDATE_FUNC_ARGS)
 		}
 		else
 		{
+			//@ IGNT -> IGNT + FIRE
 			sim->create_part(-1, x + sim->rng.between(-1, 1), y + sim->rng.between(-1, 1), PT_FIRE);
 		}
 		parts[i].life--;

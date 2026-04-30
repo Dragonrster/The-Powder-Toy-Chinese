@@ -40,5 +40,5 @@ void Element::Element_PSCN()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1687.0f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ PSCN -> LAVA(PSCN)
 }

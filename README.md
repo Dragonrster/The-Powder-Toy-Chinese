@@ -1,16 +1,13 @@
-<<<<<<< HEAD
-=======
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Dragonrster/The-Powder-Toy-Chinese/total)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/Dragonrster/The-Powder-Toy-Chinese)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Dragonrster/The-Powder-Toy-Chinese)
 
 
 
->>>>>>> 7b25d384 (Update README.md)
-The Powder Toy - February 2025
+The Powder Toy - April 2026
 ==========================
 
-Get the latest version [from the Powder Toy website](https://powdertoy.co.uk/Download.html).
+Get the latest version [from the Powder Toy website](https://powdertoy.co.uk/Download.html). We're also on [Steam](https://store.steampowered.com/app/1148350/The_Powder_Toy/).
 
 To use online features such as saving, you need to [register an account](https://powdertoy.co.uk/Register.html).
 You can also visit [the official TPT forum](https://powdertoy.co.uk/Discussions/Categories/Index.html).

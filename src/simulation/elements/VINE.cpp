@@ -43,7 +43,7 @@ void Element::Element_VINE()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 573.0f;
-	HighTemperatureTransition = PT_FIRE;
+	HighTemperatureTransition = PT_FIRE; //@ VINE -> FIRE
 
 	DefaultProperties.tmp = 1;
 
@@ -61,6 +61,7 @@ static int update(UPDATE_FUNC_ARGS)
 	if (rx || ry)
 	{
 		auto r = pmap[y+ry][x+rx];
+		//@ VINE -> PLNT
 		if (!(rndstore % 15))
 			sim->part_change_type(i, x, y, PT_PLNT);
 		else if (!r)

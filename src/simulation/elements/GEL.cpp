@@ -85,6 +85,7 @@ static int update(UPDATE_FUNC_ARGS)
 					if (parts[i].tmp<100 && sim->rng.chance(20, absorbChanceDenom))
 					{
 						parts[i].tmp++;
+						//@ GEL + PSTE -> GEL + CLST
 						sim->create_part(ID(r), x+rx, y+ry, PT_CLST);
 					}
 					break;
@@ -92,6 +93,7 @@ static int update(UPDATE_FUNC_ARGS)
 					if (parts[i].tmp<100 && sim->rng.chance(50, absorbChanceDenom))
 					{
 						parts[i].tmp++;
+						//@ GEL + SLTW -> GEL + SALT
 						if (sim->rng.chance(3, 4))
 							sim->kill_part(ID(r));
 						else
@@ -102,6 +104,7 @@ static int update(UPDATE_FUNC_ARGS)
 					if (parts[i].tmp < 100 && sim->rng.chance(100, absorbChanceDenom))
 					{
 						parts[i].tmp++;
+						//@ GEL + CBNW -> GEL + CO2
 						sim->part_change_type(ID(r), x+rx, y+ry, PT_CO2);
 					}
 					break;

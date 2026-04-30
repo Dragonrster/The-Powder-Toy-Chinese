@@ -40,5 +40,5 @@ void Element::Element_DRIC()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 195.65f;
-	HighTemperatureTransition = PT_CO2;
+	HighTemperatureTransition = PT_CO2; //@ DRIC -> CO2
 }

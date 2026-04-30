@@ -60,6 +60,7 @@ static int update(UPDATE_FUNC_ARGS)
 					continue;
 				if (TYP(r)==PT_SPRK)
 				{
+					//@ RIME -> FOG
 					sim->part_change_type(i,x,y,PT_FOG);
 					parts[i].life = sim->rng.between(60, 119);
 				}
@@ -70,6 +71,7 @@ static int update(UPDATE_FUNC_ARGS)
 				}
 				else if (TYP(r)==PT_FOG&&parts[ID(r)].life>0)
 				{
+					//@ RIME + FOG -> 2xFOG
 					sim->part_change_type(i,x,y,PT_FOG);
 					parts[i].life = parts[ID(r)].life;
 				}

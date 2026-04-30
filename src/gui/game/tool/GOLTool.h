@@ -10,7 +10,7 @@ class GOLTool: public Tool
 public:
 	GOLTool(GameModel &gameModel):
 		Tool(0, "CUST", Localization::Ref().Tr("tool.gol.desc"),
-			0xFEA900_rgb, "DEFAULT_UI_ADDLIFE", NULL
+			0xFEA900_rgb, "DEFAULT_UI_ADDLIFE", nullptr
 		),
 		gameModel(gameModel)
 	{

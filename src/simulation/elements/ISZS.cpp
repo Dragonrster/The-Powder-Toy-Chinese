@@ -42,7 +42,7 @@ void Element::Element_ISZS()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 300.0f;
-	HighTemperatureTransition = PT_ISOZ;
+	HighTemperatureTransition = PT_ISOZ; //@ ISZS -> ISOZ
 
 	Update = &update;
 }
@@ -52,9 +52,10 @@ static int update(UPDATE_FUNC_ARGS)
 	float rr, rrr;
 	if (sim->rng.chance(1, 200) && sim->rng.chance(int(-4.0f * sim->pv[y/CELL][x/CELL]), 1000))
 	{
+		//@ ISZS -> PHOT
 		sim->create_part(i, x, y, PT_PHOT);
 		rr = sim->rng.between(128, 355) / 127.0f;
-		rrr = sim->rng.between(0, 359) * TPT_PI_FLT / 180.0f;
+		rrr = sim->rng.between(0, 359) * std::numbers::pi_v<float> / 180.0f;
 		parts[i].vx = rr*cosf(rrr);
 		parts[i].vy = rr*sinf(rrr);
 	}

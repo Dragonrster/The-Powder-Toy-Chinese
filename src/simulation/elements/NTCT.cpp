@@ -40,7 +40,7 @@ void Element::Element_NTCT()
 	LowTemperature = ITL;
 	LowTemperatureTransition = NT;
 	HighTemperature = 1687.0f;
-	HighTemperatureTransition = PT_LAVA;
+	HighTemperatureTransition = PT_LAVA; //@ NTCT -> LAVA(NTCT)
 
 	Update = &Element_NTCT_update;
 }
