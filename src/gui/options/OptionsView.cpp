@@ -158,10 +158,10 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		scrollPanel->AddChild(label);
 		currentY += 20;
 	}
-	convectionMode = addDropDown("Air heat convection mode", {
-		{ "None", AIRC_NONE },
-		{ "Legacy", AIRC_LEGACY },
-		{ "Boussinesq", AIRC_BOUSSINESQ },
+	convectionMode = addDropDown(Localization::Ref().Tr("options.convection_mode"), {
+		{ Localization::Ref().Tr("options.convection.none"), AIRC_NONE },
+		{ Localization::Ref().Tr("options.convection.legacy"), AIRC_LEGACY },
+		{ Localization::Ref().Tr("options.convection.boussinesq"), AIRC_BOUSSINESQ },
 	}, [this] {
 		c->SetConvectionMode(convectionMode->GetOption().second);
 	});
