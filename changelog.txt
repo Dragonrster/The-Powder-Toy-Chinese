@@ -14,3 +14,6 @@ v1.0.3 - i18n: Multi-language support and Chinese localization
 - Dialog button text consistency fixes
 - Resolved merge conflicts in PropertyTool.h and GOLTool.h that caused compilation errors
 - Fixed RGB::Unpack type mismatch in OptionsView.cpp
+- Added Air heat convection mode option with Chinese translations
+- Synced intro text and settings translations with community zh_CN branch
+- Disabled LTO for 32-bit MinGW builds to fix CI compilation
