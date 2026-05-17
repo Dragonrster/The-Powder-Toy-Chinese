@@ -54,6 +54,7 @@ public:
 	AnyType tptS_reset(std::deque<String> * words);
 	AnyType tptS_bubble(std::deque<String> * words);
 	AnyType tptS_quit(std::deque<String> * words);
+	AnyType tptS_img2save(std::deque<String> * words);
 	ValueType testType(String word);
 
 	void SetToolIndex(ByteString identifier, std::optional<int> index);

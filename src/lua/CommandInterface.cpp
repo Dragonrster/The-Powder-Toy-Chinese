@@ -1,4 +1,5 @@
 #include "CommandInterface.h"
+#include "Img2SaveConverter.h"
 #include "Misc.h"
 #include "gui/game/GameModel.h"
 #include "simulation/Particle.h"
@@ -10,6 +11,9 @@
 #include "gui/game/GameModel.h"
 #include "gui/interface/Engine.h"
 #include "common/Assert.h"
+#include "common/platform/Platform.h"
+#include "Config.h"
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>
@@ -100,7 +104,8 @@ static const std::vector<Function> functions = {
 	{ U"load"  , &CommandInterface::tptS_load   },
 	{ U"reset" , &CommandInterface::tptS_reset  },
 	{ U"bubble", &CommandInterface::tptS_bubble },
-	{ U"quit"  , &CommandInterface::tptS_quit   },
+	{ U"quit"     , &CommandInterface::tptS_quit     },
+	{ U"img2save" , &CommandInterface::tptS_img2save },
 };
 
 ValueType CommandInterface::testType(String word)
@@ -633,6 +638,51 @@ AnyType CommandInterface::tptS_reset(std::deque<String> * words)
 	{
 		throw GeneralException("Unknown reset command");
 	}
+
+	return NumberType(0);
+}
+
+AnyType CommandInterface::tptS_img2save(std::deque<String> * words)
+{
+	StringType imagePathArg = eval(words);
+	String imagePath = imagePathArg.Value();
+
+	String outputName;
+	if (words->size() > 0)
+	{
+		StringType outputNameArg = eval(words);
+		outputName = outputNameArg.Value();
+	}
+
+	std::vector<char> fileData;
+	if (!Platform::ReadFile(fileData, imagePath.ToUtf8()))
+		throw GeneralException(String::Build("Cannot read image file: ", imagePath));
+
+	String error;
+	auto gameSave = Img2SaveConverter::Convert(fileData, error);
+	if (!gameSave)
+		throw GeneralException(String::Build("Conversion failed: ", error));
+
+	if (!outputName.length())
+	{
+		auto lastDot   = imagePath.rfind('.');
+		auto lastSlash = std::max(imagePath.rfind('/'), imagePath.rfind('\\'));
+		auto nameStart = lastSlash == String::npos ? 0 : lastSlash + 1;
+		auto nameLen   = (lastDot != String::npos && lastDot >= nameStart) ? (lastDot - nameStart) : String::npos;
+		outputName = imagePath.Substr(nameStart, nameLen);
+	}
+
+	Platform::MakeDirectory(ByteString(LOCAL_SAVE_DIR));
+	auto [fakeFromNewerVersion, saveData] = gameSave->Serialise();
+	if (saveData.empty())
+		throw GeneralException("Failed to serialize save data");
+
+	ByteString filename = ByteString::Build(LOCAL_SAVE_DIR, PATH_SEP_CHAR, outputName.ToUtf8(), ".cps");
+	if (!Platform::WriteFile(saveData, filename))
+		throw GeneralException(String::Build("Failed to write save file: ", outputName, ".cps"));
+
+	Log(LogNotice, String::Build("Image converted to save: ", outputName, ".cps (",
+		gameSave->particlesCount, " particles)"));
 
 	return NumberType(0);
 }
