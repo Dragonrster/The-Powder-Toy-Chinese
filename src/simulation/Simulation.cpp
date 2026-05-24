@@ -33,6 +33,7 @@
 #include "common/tpt-rand.h"
 #include "game/Brush.h"
 #include "game/Menus.h" // for active_menu setting on save load, try to remove this later
+#include "common/Translations.h"
 #include "game/Save.h"
 #include "game/Sign.h"
 #include "graphics/Renderer.h"

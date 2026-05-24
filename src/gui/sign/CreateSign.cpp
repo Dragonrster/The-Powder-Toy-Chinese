@@ -1,4 +1,5 @@
 #include "CreateSign.h"
+#include "common/Translations.h"
 #include "interface/Label.h"
 #include "interface/Button.h"
 #include "interface/Textbox.h"
@@ -9,9 +10,9 @@ CreateSign::CreateSign(int signID, Point pos):
 	theSign(Sign("", pos.X, pos.Y, Sign::Middle))
 {
 	if (signID == -1)
-		newSignLabel = new Label(Point(5, 3), Point(Label::AUTOSIZE, Label::AUTOSIZE), "New sign:");
+		newSignLabel = new Label(Point(5, 3), Point(Label::AUTOSIZE, Label::AUTOSIZE), TrUI("New sign:"));
 	else
-		newSignLabel = new Label(Point(5, 3), Point(Label::AUTOSIZE, Label::AUTOSIZE), "Edit sign:");
+		newSignLabel = new Label(Point(5, 3), Point(Label::AUTOSIZE, Label::AUTOSIZE), TrUI("Edit sign:"));
 	newSignLabel->SetColor(COLRGB(140, 140, 255));
 	this->AddComponent(newSignLabel);
 
@@ -22,7 +23,7 @@ CreateSign::CreateSign(int signID, Point pos):
 	FocusComponent(signTextbox);
 #endif
 
-	pointerLabel = new Label(signTextbox->Below(Point(0, 4)), Point(Label::AUTOSIZE, Label::AUTOSIZE), "Pointer:");
+	pointerLabel = new Label(signTextbox->Below(Point(0, 4)), Point(Label::AUTOSIZE, Label::AUTOSIZE), TrUI("Pointer:"));
 	this->AddComponent(pointerLabel);
 
 	leftJuButton = new Button(pointerLabel->Right(Point(3, 0)), Point(Button::AUTOSIZE, Button::AUTOSIZE), "\xA0 Left");
@@ -41,7 +42,7 @@ CreateSign::CreateSign(int signID, Point pos):
 	noneJuButton->SetCallback([&](int mb) { this->SetJustification(Sign::NoJustification); });
 	this->AddComponent(noneJuButton);
 
-	moveButton = new Button(leftJuButton->Below(Point(0, 4)), leftJuButton->GetSize(), "Move");
+	moveButton = new Button(leftJuButton->Below(Point(0, 4)), leftJuButton->GetSize(), TrUI("Move"));
 	moveButton->SetCallback([&](int mb) { this->MoveSign(); });
 	moveButton->SetCloseButton(true);
 	this->AddComponent(moveButton);
@@ -51,7 +52,7 @@ CreateSign::CreateSign(int signID, Point pos):
 	deleteButton->SetCloseButton(true);
 	this->AddComponent(deleteButton);
 
-	okButton = new Button(Point(0, this->size.Y-15), Point(this->size.X+1, 15), "OK");
+	okButton = new Button(Point(0, this->size.Y-15), Point(this->size.X+1, 15), TrUI("OK"));
 	okButton->SetCallback([&](int mb) { this->SaveSign(); });
 	okButton->SetCloseButton(true);
 	this->AddComponent(okButton);

@@ -1,5 +1,6 @@
 #include "ConfirmPrompt.h"
 #include "common/Point.h"
+#include "common/Translations.h"
 #include "interface/Label.h"
 #include "interface/Button.h"
 

@@ -148,7 +148,31 @@ std::string Format::CleanString(std::string dirtyString, bool ascii, bool color,
 			{
 				break;
 			}
-			else if (numeric && (dirtyString[i] < '0' || dirtyString[i] > '9'))
+			// Allow UTF-8 multi-byte sequences through ASCII filter
+			if (ascii && (dirtyString[i] & 0x80))
+			{
+				int len = 0;
+				unsigned char c = (unsigned char)dirtyString[i];
+				if      ((c & 0xE0) == 0xC0) len = 1;
+				else if ((c & 0xF0) == 0xE0) len = 2;
+				else if ((c & 0xF8) == 0xF0) len = 3;
+				if (len > 0)
+				{
+					bool valid = true;
+					for (int j = 1; j <= len && (i + j) < (int)dirtyString.size(); j++)
+						if (((unsigned char)dirtyString[i + j] & 0xC0) != 0x80)
+							{ valid = false; break; }
+					if (valid)
+					{
+						i += len;
+						break;
+					}
+				}
+				dirtyString.erase(i, 1);
+				i--;
+				break;
+			}
+			if (numeric && (dirtyString[i] < '0' || dirtyString[i] > '9'))
 			{
 				dirtyString.erase(i, 1);
 				i--;
@@ -172,31 +196,35 @@ std::string Format::CleanString(const char * dirtyData, bool ascii, bool color, 
 
 char Format::ConvertFontIcon(const std::string &s, size_t pos)
 {
-	if (pos + 2 < s.length() && (s[pos + 1] == '\x80' || s[pos + 1] == '\x81') && s[pos + 2] >= '\x80' && s[pos + 2] < '\xC0')
+	if (pos + 2 < s.length())
 	{
-		char c = s[pos + 2];
-		if (s[pos + 1] == '\x80')
+		int b1 = (unsigned char)s[pos + 1];
+		int b2 = (unsigned char)s[pos + 2];
+		if ((b1 == 0x80 || b1 == 0x81) && b2 >= 0x80 && b2 < 0xC0)
 		{
-			// Delete icon is deliberately swapped in my mod
-			if (c == (char)0x85)
-				return 0x86;
-			else if (c == (char)0x86)
-				return 0x85;
-			return c;
-		}
-		else
-		{
-			c += 0x40;
-			// Some of the later icons aren't ordered the same as vanilla does
-			if (c >= (char)0xE2 && c < (char)0xE6)
-				c++;
-			else if (c == (char)0xE7)
-				return 0xE2;
-			else if (c == (char)0xEA)
-				return 0xF0;
-			else if (c >= (char)0xE6)
-				return 0;
-			return c;
+			if (b1 == 0x80)
+			{
+				// Delete icon is deliberately swapped in my mod
+				if (b2 == 0x85)
+					return (char)0x86;
+				else if (b2 == 0x86)
+					return (char)0x85;
+				return (char)b2;
+			}
+			else
+			{
+				int c = b2 + 0x40;
+				// Some of the later icons aren't ordered the same as vanilla does
+				if (c >= 0xE2 && c < 0xE6)
+					c++;
+				else if (c == 0xE7)
+					return (char)0xE2;
+				else if (c == 0xEA)
+					return (char)0xF0;
+				else if (c >= 0xE6)
+					return 0;
+				return (char)c;
+			}
 		}
 	}
 

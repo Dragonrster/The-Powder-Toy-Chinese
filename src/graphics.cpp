@@ -26,6 +26,7 @@
 #include "powder.h"
 #define INCLUDE_SHADERS
 #include "graphics.h"
+#include "graphics/FTText.h"
 #include "powdergraphics.h"
 #define INCLUDE_FONTDATA
 #include "font.h"
@@ -548,6 +549,8 @@ void drawpixel(pixel *vid, int x, int y, int r, int g, int b, int a)
 
 int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 {
+	if (c < 0 || c >= 0x80)
+		return x;
 	int bn = 0, ba = 0;
 	unsigned char *rp = font_data + font_ptrs[c];
 	signed char w = *(rp++);
@@ -580,6 +583,8 @@ int drawchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 
 int addchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 {
+	if (c < 0 || c >= 0x80)
+		return x;
 	int bn = 0, ba = 0;
 	unsigned char *rp = font_data + font_ptrs[c];
 	signed char w = *(rp++);
@@ -614,6 +619,9 @@ int addchar(pixel *vid, int x, int y, int c, int r, int g, int b, int a)
 
 int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a, bool noColor)
 {
+	if (FT_IsReady() && FT_HasUnicode(s))
+		return FT_DrawText(vid, x, y, FT_ConvertIcons(std::string(s)).c_str(), r, g, b, a, noColor);
+
 	int sx = x;
 	bool highlight = false, underline = false;
 	int oR = r, oG = g, oB = b;
@@ -718,7 +726,7 @@ int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a
 			}
 			if (highlight)
 			{
-				fillrect(vid, x-1, y-3, font_data[font_ptrs[(unsigned char)c]]+1, FONT_H+3, 0, 0, 255, 127);
+				fillrect(vid, x-1, y-3, font_data[font_ptrs[' ']]+1, FONT_H+3, 0, 0, 255, 127);
 			}
 			int newX = drawchar(vid, x, y, (unsigned char)c, r, g, b, a);
 			if (underline)
@@ -733,6 +741,9 @@ int drawtext(pixel *vid, int x, int y, const char *s, int r, int g, int b, int a
 
 int drawhighlight(pixel *vid, int x, int y, const char *s)
 {
+	if (FT_IsReady() && FT_HasUnicode(s))
+		return FT_DrawText(vid, x, y, FT_ConvertIcons(std::string(s)).c_str(), 255, 255, 255, 255, true);
+
 	int sx = x;
 	for (; *s; s++)
 	{
@@ -759,7 +770,9 @@ int drawhighlight(pixel *vid, int x, int y, const char *s)
 		}
 		else
 		{
-			int width = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+			unsigned char uc = *(unsigned char *)s;
+			if (uc >= 0x80) continue;
+			int width = font_data[font_ptrs[uc]];
 			fillrect(vid, x-1, y-3, width+1, FONT_H+3, 0, 0, 255, 127);
 			x += width;
 		}
@@ -780,6 +793,9 @@ int drawtext_outline(pixel *vid, int x, int y, const char *s, int r, int g, int 
 }
 int drawtextwrap(pixel *vid, int x, int y, int w, int h, const char *s, int r, int g, int b, int a)
 {
+	if (FT_IsReady() && FT_HasUnicode(s))
+		return FT_DrawText(vid, x, y, FT_ConvertIcons(std::string(s)).c_str(), r, g, b, a);
+
 	int sx = x;
 	int rh = 12;
 	int cw = x;
@@ -788,6 +804,8 @@ int drawtextwrap(pixel *vid, int x, int y, int w, int h, const char *s, int r, i
 	int invert = 0;
 	int oR = r, oG = g, oB = b;
 	bool underline = false;
+	if (FT_IsReady() && FT_HasUnicode(s))
+		return FT_DrawText(vid, x, y, FT_ConvertIcons(std::string(s)).c_str(), r, g, b, a);
 	while (*s)
 	{
 		wordlen = strcspn(s," .,!?\n");
@@ -963,7 +981,9 @@ int drawhighlightwrap(pixel *vid, int x, int y, int w, int h, const char *s, int
 			}
 			else
 			{
-				int width = font_data[font_ptrs[(int)(*(unsigned char *)s)]];
+				unsigned char uc = *(unsigned char *)s;
+				if (uc >= 0x80) { num++; continue; }
+				int width = font_data[font_ptrs[uc]];
 				if (x-cw>=w)
 				{
 					x = sx;
@@ -1101,12 +1121,17 @@ void drawdots(pixel *vid, int x, int y, int h, int r, int g, int b, int a)
 
 int charwidth(unsigned char c)
 {
+	if (c >= 0x80)
+		return 0;
 	short font_ptr = font_ptrs[static_cast<int>(c)];
 	return (font_data[font_ptr+1]&0x40) ? 0 : font_data[font_ptr];
 }
 
 int textwidth(const char *s)
 {
+	if (FT_IsReady() && FT_HasUnicode(s))
+		return FT_TextWidth(FT_ConvertIcons(std::string(s)).c_str());
+
 	int x = 0, maxX = 0;
 	for (; *s; s++)
 		if (*s == '\n')
@@ -1138,6 +1163,9 @@ int textwidth(const char *s)
 
 int drawtextmax(pixel *vid, int x, int y, int w, const char *s, int r, int g, int b, int a)
 {
+	if (FT_IsReady() && FT_HasUnicode(s))
+		return FT_DrawText(vid, x, y, FT_ConvertIcons(std::string(s)).c_str(), r, g, b, a);
+
 	int i;
 	w += x-5;
 	for (; *s; s++)
@@ -1275,6 +1303,18 @@ int textwidthx(char *s, int w)
 }
 void textsize(char * s, int *width, int *height)
 {
+	if (FT_IsReady() && FT_HasUnicode(s))
+	{
+		int w = FT_TextWidth(FT_ConvertIcons(std::string(s)).c_str());
+		int h = FT_TextHeight();
+		// Count newlines
+		for (const char *p = s; *p; p++)
+			if (*p == '\n') h += FT_TextHeight() + 2;
+		*width = w;
+		*height = h;
+		return;
+	}
+
 	int cHeight = FONT_H, cWidth = 0, lWidth = 0;
 	if(!strlen(s))
 	{
@@ -1312,6 +1352,9 @@ void textsize(char * s, int *width, int *height)
 }
 int textposxy(char *s, int width, int w, int h)
 {
+	if (FT_IsReady() && FT_HasUnicode(s))
+		return strlen(s); // fallback: return full length to show all
+
 	int x=0,y=0,n=0,cw, wordlen, charspace;
 	while (*s)
 	{
@@ -1367,6 +1410,14 @@ int textposxy(char *s, int width, int w, int h)
 }
 int textwrapheight(char *s, int width)
 {
+	if (FT_IsReady() && FT_HasUnicode(s))
+	{
+		int tw = FT_TextWidth(FT_ConvertIcons(std::string(s)).c_str());
+		int th = FT_TextHeight() + 2;
+		int lines = (tw > 0 && width > 0) ? (tw / width + 1) : 1;
+		return th * lines;
+	}
+
 	int x=0, height=FONT_H+2, cw = 0;
 	int wordlen;
 	int charspace;

@@ -1,0 +1,1001 @@
+{
+  "_meta": {
+    "language": "zh_CN",
+    "language_name": "简体中文"
+  },
+  "elements": {
+    "DEFAULT_PT_ACEL": {
+      "name": "加速器",
+      "description": "加速器，加速附近的粒子。"
+    },
+    "DEFAULT_PT_ACID": {
+      "name": "强酸",
+      "description": "溶解几乎所有物质。"
+    },
+    "DEFAULT_PT_AMTR": {
+      "name": "反物质",
+      "description": "反物质，摧毁大多数粒子。"
+    },
+    "DEFAULT_PT_ANAR": {
+      "name": "反空气",
+      "description": "反空气。非常轻的反重力尘埃。燃烧产生低温而非高温。"
+    },
+    "DEFAULT_PT_ANIM": {
+      "name": "液晶动画",
+      "description": "动画液晶。可显示多帧，在装饰编辑器中使用左右方向键。"
+    },
+    "DEFAULT_PT_ARAY": {
+      "name": "射线发射器",
+      "description": "射线发射器。射线碰撞时生成点。"
+    },
+    "DEFAULT_PT_BANG": {
+      "name": "TNT",
+      "description": "TNT，一次性全部爆炸。"
+    },
+    "DEFAULT_PT_BASE": {
+      "name": "碱液",
+      "description": "腐蚀性液体。锈蚀导电固体，中和强酸。"
+    },
+    "DEFAULT_PT_BCLN": {
+      "name": "可破坏克隆",
+      "description": "可破坏的克隆体。"
+    },
+    "DEFAULT_PT_BCOL": {
+      "name": "碎煤",
+      "description": "碎煤。重粒子，缓慢燃烧。"
+    },
+    "DEFAULT_PT_BGLA": {
+      "name": "碎玻璃",
+      "description": "碎玻璃，玻璃受压破碎形成的重粒子。可熔化。"
+    },
+    "DEFAULT_PT_BHOL": {
+      "name": "真空",
+      "description": "真空，吸入其他粒子并升温。"
+    },
+    "DEFAULT_PT_BIZR": {
+      "name": "奇异物质",
+      "description": "奇异物质……违反正常的物态变化。用其装饰颜色涂染其他元素。"
+    },
+    "DEFAULT_PT_BIZRG": {
+      "name": "奇异气体",
+      "description": "奇异气体。"
+    },
+    "DEFAULT_PT_BIZRS": {
+      "name": "奇异固体",
+      "description": "奇异固体。"
+    },
+    "DEFAULT_PT_BMTL": {
+      "name": "可破坏金属",
+      "description": "可破坏金属。常见导电建筑材料，可熔化，受压会破碎。"
+    },
+    "DEFAULT_PT_BOMB": {
+      "name": "炸弹",
+      "description": "炸弹。接触物体时爆炸并摧毁周围所有粒子。"
+    },
+    "DEFAULT_PT_BOYL": {
+      "name": "波义尔气体",
+      "description": "波义尔气体，可变压力气体。受热膨胀。"
+    },
+    "DEFAULT_PT_BRAY": {
+      "name": "射线点",
+      "description": "射线点。射线碰撞时生成点。"
+    },
+    "DEFAULT_PT_BRCK": {
+      "name": "砖块",
+      "description": "砖块，可破坏的建筑材料。"
+    },
+    "DEFAULT_PT_BREL": {
+      "name": "破损电子元件",
+      "description": "破损电子元件。EMP爆炸形成，在受压下持续通电时会转化为奇异物质。"
+    },
+    "DEFAULT_PT_BRMT": {
+      "name": "锈铁",
+      "description": "锈铁。铁生锈或金属受压破碎时形成。"
+    },
+    "DEFAULT_PT_BTRY": {
+      "name": "电池",
+      "description": "电池。产生无限电力。"
+    },
+    "DEFAULT_PT_BUTN": {
+      "name": "按钮",
+      "description": "按钮。开启时可通过点击产生电火花。"
+    },
+    "DEFAULT_PT_BVBR": {
+      "name": "碎振金",
+      "description": "破碎的振金。"
+    },
+    "DEFAULT_PT_C5": {
+      "name": "C-5",
+      "description": "冷爆炸物，遇冷引爆。"
+    },
+    "DEFAULT_PT_CAUS": {
+      "name": "腐蚀气体",
+      "description": "腐蚀气体，作用类似强酸。"
+    },
+    "DEFAULT_PT_CBNW": {
+      "name": "苏打水",
+      "description": "苏打水。缓慢释放二氧化碳。"
+    },
+    "DEFAULT_PT_CLNE": {
+      "name": "克隆",
+      "description": "克隆。复制接触到的任何粒子。"
+    },
+    "DEFAULT_PT_CLST": {
+      "name": "粘土粉尘",
+      "description": "粘土粉尘。与水混合生成糊状物。"
+    },
+    "DEFAULT_PT_CNCT": {
+      "name": "混凝土",
+      "description": "混凝土。可在自身或岩石上堆叠，受压崩塌。"
+    },
+    "DEFAULT_PT_CO2": {
+      "name": "二氧化碳",
+      "description": "二氧化碳。重气体，向下沉降。碳酸化水，冷却时变为干冰。"
+    },
+    "DEFAULT_PT_COAL": {
+      "name": "煤",
+      "description": "煤，燃烧非常缓慢。受热变红。"
+    },
+    "DEFAULT_PT_CONV": {
+      "name": "转换器",
+      "description": "转换器。将一切转换为其首次接触的物质。"
+    },
+    "DEFAULT_PT_CRAY": {
+      "name": "粒子射线发射器",
+      "description": "粒子射线发射器。发射由ctype设定的粒子束，范围由tmp设定。"
+    },
+    "DEFAULT_PT_CRMC": {
+      "name": "陶瓷",
+      "description": "陶瓷。受压时变得更坚固。"
+    },
+    "DEFAULT_PT_DCEL": {
+      "name": "减速器",
+      "description": "减速器，减缓附近粒子的运动。"
+    },
+    "DEFAULT_PT_DESL": {
+      "name": "柴油",
+      "description": "液态柴油。在高压高温下爆炸。"
+    },
+    "DEFAULT_PT_DEST": {
+      "name": "毁灭炸弹",
+      "description": "更具破坏力的炸弹，几乎可摧毁一切。"
+    },
+    "DEFAULT_PT_DEUT": {
+      "name": "重水",
+      "description": "重水。冷却时浓度升高，遇中子或质子爆炸。"
+    },
+    "DEFAULT_PT_DLAY": {
+      "name": "延迟导体",
+      "description": "以温度相关延迟导电。（配合HEAT/COOL使用）"
+    },
+    "DEFAULT_PT_DMG": {
+      "name": "破坏粒子",
+      "description": "产生破坏性压力，粉碎接触到的任何元素。"
+    },
+    "DEFAULT_PT_DMND": {
+      "name": "钻石",
+      "description": "钻石。不可破坏。"
+    },
+    "DEFAULT_PT_DRAY": {
+      "name": "复制射线",
+      "description": "复制射线。在面前复制一行粒子。"
+    },
+    "DEFAULT_PT_DRIC": {
+      "name": "干冰",
+      "description": "干冰，二氧化碳冷却后形成。"
+    },
+    "DEFAULT_PT_DSTW": {
+      "name": "蒸馏水",
+      "description": "蒸馏水，不导电。"
+    },
+    "DEFAULT_PT_DTEC": {
+      "name": "检测器",
+      "description": "检测器，附近存在ctype设定的物质时产生火花。"
+    },
+    "DEFAULT_PT_DUST": {
+      "name": "粉尘",
+      "description": "极轻的粉尘。可燃。"
+    },
+    "DEFAULT_PT_DYST": {
+      "name": "死酵母",
+      "description": "死酵母。"
+    },
+    "DEFAULT_PT_ELEC": {
+      "name": "电子",
+      "description": "电子。触发电子元件，与中子和水反应。"
+    },
+    "DEFAULT_PT_EMBR": {
+      "name": "火星",
+      "description": "火星。爆炸形成。"
+    },
+    "DEFAULT_PT_EMP": {
+      "name": "电磁脉冲",
+      "description": "电磁脉冲。破坏已激活的电子元件。"
+    },
+    "DEFAULT_PT_EQVE": {
+      "name": "等速实验",
+      "description": "一个失败的共享速度实验。"
+    },
+    "DEFAULT_PT_ETRD": {
+      "name": "电极",
+      "description": "电极。通电时产生等离子电弧。（谨慎使用）"
+    },
+    "DEFAULT_PT_EXOT": {
+      "name": "奇异物质",
+      "description": "奇异物质。接触过量电子时爆炸。还有许多其他奇特反应。"
+    },
+    "DEFAULT_PT_EXPL": {
+      "name": "爆炸",
+      "description": "爆炸，使接触的一切爆炸。"
+    },
+    "DEFAULT_PT_FIRE": {
+      "name": "火焰",
+      "description": "点燃可燃物质。加热空气。"
+    },
+    "DEFAULT_PT_FIRW": {
+      "name": "焰火",
+      "description": "焰火。爆炸后产生不同颜色的火焰。"
+    },
+    "DEFAULT_PT_FILT": {
+      "name": "过滤器",
+      "description": "过滤器。按ctype过滤粒子。"
+    },
+    "DEFAULT_PT_FOG": {
+      "name": "雾",
+      "description": "雾，轻气体。"
+    },
+    "DEFAULT_PT_FRAY": {
+      "name": "力射线发射器",
+      "description": "力射线发射器。发射力射线，推动物体。"
+    },
+    "DEFAULT_PT_FRME": {
+      "name": "框架",
+      "description": "框架，可被破坏。用于创建可破坏结构。"
+    },
+    "DEFAULT_PT_FRWK": {
+      "name": "原版烟花",
+      "description": "原版烟花。燃烧时产生彩色爆炸。"
+    },
+    "DEFAULT_PT_FRZW": {
+      "name": "冰水",
+      "description": "冰水。低温水，缓慢结冰。"
+    },
+    "DEFAULT_PT_FRZZ": {
+      "name": "冷冻液",
+      "description": "冷冻液，极低温液体，冻结接触的一切。"
+    },
+    "DEFAULT_PT_FSEP": {
+      "name": "保险丝",
+      "description": "保险丝。燃烧缓慢，可传导火花。"
+    },
+    "DEFAULT_PT_FUSE": {
+      "name": "引信",
+      "description": "引信。点燃后缓慢燃烧至爆炸物。"
+    },
+    "DEFAULT_PT_FWRK": {
+      "name": "烟花",
+      "description": "烟花。点燃后飞向天空并爆炸。"
+    },
+    "DEFAULT_PT_GAS": {
+      "name": "天然气",
+      "description": "天然气。可燃气体，扩散开来。"
+    },
+    "DEFAULT_PT_GBMB": {
+      "name": "重力炸弹",
+      "description": "重力炸弹。爆炸时制造暂时性超强重力。"
+    },
+    "DEFAULT_PT_GEL": {
+      "name": "凝胶",
+      "description": "凝胶。吸收水分后膨胀，可导热。"
+    },
+    "DEFAULT_PT_GLAS": {
+      "name": "玻璃",
+      "description": "玻璃。固体，受压破碎。可熔化。"
+    },
+    "DEFAULT_PT_GLOW": {
+      "name": "荧光粉",
+      "description": "荧光粉。通电时发光。"
+    },
+    "DEFAULT_PT_GOLD": {
+      "name": "金",
+      "description": "金。固体，抗腐蚀，高导电性。"
+    },
+    "DEFAULT_PT_GOO": {
+      "name": "粘液",
+      "description": "粘液。可变形固体。受压消散。"
+    },
+    "DEFAULT_PT_GPMP": {
+      "name": "气泵",
+      "description": "气泵。产生气压推动粒子。"
+    },
+    "DEFAULT_PT_GRAV": {
+      "name": "重力源",
+      "description": "重力源。产生万有引力吸引周围的粒子。"
+    },
+    "DEFAULT_PT_GRVT": {
+      "name": "砾石",
+      "description": "砾石。重粒子，会下沉。"
+    },
+    "DEFAULT_PT_GUNP": {
+      "name": "火药",
+      "description": "火药。轻粒子，可燃，爆炸。"
+    },
+    "DEFAULT_PT_H2": {
+      "name": "氢气",
+      "description": "氢气。轻气体，高度可燃。"
+    },
+    "DEFAULT_PT_HEAC": {
+      "name": "升温器",
+      "description": "升温器。加热附近的粒子。"
+    },
+    "DEFAULT_PT_HFLM": {
+      "name": "氢火焰",
+      "description": "氢火焰。高温火焰。"
+    },
+    "DEFAULT_PT_HSWC": {
+      "name": "热水",
+      "description": "热水。高温水。缓慢冷却。"
+    },
+    "DEFAULT_PT_ICEI": {
+      "name": "冰",
+      "description": "冰。固体，可熔化。受压破碎。"
+    },
+    "DEFAULT_PT_IGNT": {
+      "name": "点火器",
+      "description": "点火器。通电时产生火焰。"
+    },
+    "DEFAULT_PT_INDI": {
+      "name": "铟",
+      "description": "铟。导体，可熔化。"
+    },
+    "DEFAULT_PT_INSL": {
+      "name": "绝缘体",
+      "description": "绝缘体。不导电，导热性能差。"
+    },
+    "DEFAULT_PT_INST": {
+      "name": "瞬时导线",
+      "description": "瞬时导线。瞬时传导电力，然后自我销毁。"
+    },
+    "DEFAULT_PT_INVS": {
+      "name": "隐形物质",
+      "description": "隐形物质。不可见，但可以与其他元素交互。"
+    },
+    "DEFAULT_PT_IRON": {
+      "name": "铁",
+      "description": "铁。导体，遇水锈蚀。可熔化。"
+    },
+    "DEFAULT_PT_ISOZ": {
+      "name": "同位素Z",
+      "description": "同位素Z。放射性，衰变时释放中子。"
+    },
+    "DEFAULT_PT_ISZS": {
+      "name": "同位素Z固体",
+      "description": "同位素Z固体。放射性较低的形式。"
+    },
+    "DEFAULT_PT_JCB1": {
+      "name": "JCB1",
+      "description": "看Youtube上的The Powder Toy视频了解更多。"
+    },
+    "DEFAULT_PT_JCB2": {
+      "name": "JCB2",
+      "description": "看Youtube上的The Powder Toy视频了解更多。"
+    },
+    "DEFAULT_PT_JCB3": {
+      "name": "JCB3",
+      "description": "看Youtube上的The Powder Toy视频了解更多。"
+    },
+    "DEFAULT_PT_JCB4": {
+      "name": "JCB4",
+      "description": "看Youtube上的The Powder Toy视频了解更多。"
+    },
+    "DEFAULT_PT_JCB5": {
+      "name": "JCB5",
+      "description": "看Youtube上的The Powder Toy视频了解更多。"
+    },
+    "DEFAULT_PT_JCB6": {
+      "name": "JCB6",
+      "description": "看Youtube上的The Powder Toy视频了解更多。"
+    },
+    "DEFAULT_PT_JCB7": {
+      "name": "JCB7",
+      "description": "看Youtube上的The Powder Toy视频了解更多。"
+    },
+    "DEFAULT_PT_JCB8": {
+      "name": "JCB8",
+      "description": "看Youtube上的The Powder Toy视频了解更多。"
+    },
+    "DEFAULT_PT_LIGH": {
+      "name": "闪电",
+      "description": "闪电。导电时产生电弧。极高温。"
+    },
+    "DEFAULT_PT_LNTG": {
+      "name": "液氮",
+      "description": "液氮。极低温液体，冻结接触的一切。"
+    },
+    "DEFAULT_PT_LO2": {
+      "name": "液氧",
+      "description": "液氧。极低温液体，强氧化剂。"
+    },
+    "DEFAULT_PT_LCRY": {
+      "name": "液晶",
+      "description": "液晶。通电时改变颜色。"
+    },
+    "DEFAULT_PT_MERC": {
+      "name": "水银",
+      "description": "水银。液体金属，导电，密度大。"
+    },
+    "DEFAULT_PT_METL": {
+      "name": "金属",
+      "description": "金属，基本导体。可熔化。"
+    },
+    "DEFAULT_PT_MORT": {
+      "name": "砂浆",
+      "description": "砂浆。与水混合生成混凝土。"
+    },
+    "DEFAULT_PT_MOVS": {
+      "name": "活动固体",
+      "description": "活动固体。可移动的固体，类似可控粘土。"
+    },
+    "DEFAULT_PT_NEUT": {
+      "name": "中子",
+      "description": "中子。轰击材料，引发核反应。"
+    },
+    "DEFAULT_PT_NITR": {
+      "name": "硝化甘油",
+      "description": "硝化甘油。极不稳定的液体，触碰或受压即爆炸。"
+    },
+    "DEFAULT_PT_NONE": {
+      "name": "无",
+      "description": "空。什么都不做。"
+    },
+    "DEFAULT_PT_NSCN": {
+      "name": "N型硅",
+      "description": "N型硅。半导体，只传导来自PSCN的电流。"
+    },
+    "DEFAULT_PT_NWHL": {
+      "name": "虫洞",
+      "description": "虫洞。将粒子传送到另一端的虫洞。"
+    },
+    "DEFAULT_PT_OIL": {
+      "name": "油",
+      "description": "油。液体，可燃。"
+    },
+    "DEFAULT_PT_PCLN": {
+      "name": "永久克隆",
+      "description": "永久克隆。不可破坏的克隆体。"
+    },
+    "DEFAULT_PT_PHOT": {
+      "name": "光子",
+      "description": "光子。在空间中沿直线传播，遇到物质时散射。"
+    },
+    "DEFAULT_PT_PIPE": {
+      "name": "管道",
+      "description": "管道。传输粒子。BRAY模式下传输射线。"
+    },
+    "DEFAULT_PT_PLNT": {
+      "name": "植物",
+      "description": "植物。吸收水分生长。可燃。"
+    },
+    "DEFAULT_PT_PLSM": {
+      "name": "等离子体",
+      "description": "等离子体。极高温度的气体。"
+    },
+    "DEFAULT_PT_PLUT": {
+      "name": "钚",
+      "description": "钚。放射性。衰变时释放中子。"
+    },
+    "DEFAULT_PT_POLO": {
+      "name": "钋",
+      "description": "钋。高放射性。衰变时释放中子。"
+    },
+    "DEFAULT_PT_POLC": {
+      "name": "钋晶体",
+      "description": "钋晶体。放射性固体。"
+    },
+    "DEFAULT_PT_PLEX": {
+      "name": "C-4",
+      "description": "C-4塑料炸药。需要高温或冲击引爆。"
+    },
+    "DEFAULT_PT_PPIP": {
+      "name": "压力泵",
+      "description": "压力泵。产生压力但不改变粒子位置。"
+    },
+    "DEFAULT_PT_PROT": {
+      "name": "质子",
+      "description": "质子。轰击材料，引发核反应。"
+    },
+    "DEFAULT_PT_PSCN": {
+      "name": "P型硅",
+      "description": "P型硅。半导体，导电并激活电子元件。"
+    },
+    "DEFAULT_PT_PSNS": {
+      "name": "压力传感器",
+      "description": "压力传感器。受压过大时产生火花。"
+    },
+    "DEFAULT_PT_PSTS": {
+      "name": "贴纸",
+      "description": "贴纸。透明的装饰性固体。"
+    },
+    "DEFAULT_PT_QRTZ": {
+      "name": "石英",
+      "description": "石英。固体，受压产生电流。可熔化。"
+    },
+    "DEFAULT_PT_RBDM": {
+      "name": "红宝石",
+      "description": "红宝石。硬质固体，可导热。"
+    },
+    "DEFAULT_PT_RCKT": {
+      "name": "火箭",
+      "description": "火箭。燃烧时产生推力，向反方向推进。"
+    },
+    "DEFAULT_PT_RFGL": {
+      "name": "光纤玻璃",
+      "description": "光纤玻璃。透明固体。"
+    },
+    "DEFAULT_PT_ROCK": {
+      "name": "岩石",
+      "description": "岩石。固体，可熔化。受压不动。"
+    },
+    "DEFAULT_PT_SALT": {
+      "name": "盐",
+      "description": "盐。溶于水。"
+    },
+    "DEFAULT_PT_SAND": {
+      "name": "沙子",
+      "description": "沙子，重粒子。熔化成玻璃。"
+    },
+    "DEFAULT_PT_SHLD1": {
+      "name": "护盾1",
+      "description": "护盾1。阻挡大多数粒子。"
+    },
+    "DEFAULT_PT_SHLD2": {
+      "name": "护盾2",
+      "description": "护盾2。阻挡大多数粒子。不同于护盾1。"
+    },
+    "DEFAULT_PT_SHLD3": {
+      "name": "护盾3",
+      "description": "护盾3。阻挡大多数粒子。不同于护盾1和2。"
+    },
+    "DEFAULT_PT_SHLD4": {
+      "name": "护盾4",
+      "description": "护盾4。阻挡大多数粒子。不同于护盾1、2和3。"
+    },
+    "DEFAULT_PT_SING": {
+      "name": "奇点",
+      "description": "奇点。产生极强重力，吸入粒子并压缩。"
+    },
+    "DEFAULT_PT_SLCN": {
+      "name": "硅",
+      "description": "硅。半导体。仅遇金属导电。"
+    },
+    "DEFAULT_PT_SLTW": {
+      "name": "盐水",
+      "description": "盐水。含盐的水，导电。"
+    },
+    "DEFAULT_PT_SMKE": {
+      "name": "烟",
+      "description": "烟。轻粒子，向上飘升后消散。"
+    },
+    "DEFAULT_PT_SNOW": {
+      "name": "雪",
+      "description": "雪。轻固体。遇热融化为水。"
+    },
+    "DEFAULT_PT_SOAP": {
+      "name": "肥皂",
+      "description": "肥皂。产生泡沫。"
+    },
+    "DEFAULT_PT_SPAWN": {
+      "name": "生成器",
+      "description": "生成器。无限产生设定类型的粒子。"
+    },
+    "DEFAULT_PT_STKM": {
+      "name": "火柴人",
+      "description": "火柴人。特殊的可操控粒子。"
+    },
+    "DEFAULT_PT_STKM2": {
+      "name": "火柴人2",
+      "description": "第二个火柴人。双人模式。"
+    },
+    "DEFAULT_PT_SPRK": {
+      "name": "电火花",
+      "description": "电火花。导电体的通电状态。"
+    },
+    "DEFAULT_PT_STEAM": {
+      "name": "水蒸气",
+      "description": "水蒸气。水加热后形成的气体。"
+    },
+    "DEFAULT_PT_STNE": {
+      "name": "石头",
+      "description": "石头。重粒子，可熔化。"
+    },
+    "DEFAULT_PT_STOR": {
+      "name": "存储器",
+      "description": "存储器。捕获并存储单个粒子。PSCN充电时释放，也可传递给管道。"
+    },
+    "DEFAULT_PT_SWCH": {
+      "name": "开关",
+      "description": "开关。仅开启时导电。（PSCN开启，NSCN关闭）"
+    },
+    "DEFAULT_PT_TESC": {
+      "name": "特斯拉线圈",
+      "description": "特斯拉线圈。通电时产生远距离电弧。"
+    },
+    "DEFAULT_PT_THDR": {
+      "name": "雷电",
+      "description": "雷电。非常强的电弧，产生高温和压力。"
+    },
+    "DEFAULT_PT_THRM": {
+      "name": "温度计",
+      "description": "温度计。根据温度产生不同颜色的火花。"
+    },
+    "DEFAULT_PT_TIN": {
+      "name": "锡",
+      "description": "锡。低熔点金属，固体，导电。"
+    },
+    "DEFAULT_PT_TNT": {
+      "name": "TNT",
+      "description": "TNT。三硝基甲苯。爆炸物。"
+    },
+    "DEFAULT_PT_TTAN": {
+      "name": "钛",
+      "description": "钛。极坚固的金属，抗压抗高温。"
+    },
+    "DEFAULT_PT_TUNG": {
+      "name": "钨",
+      "description": "钨。极高熔点金属，导电。"
+    },
+    "DEFAULT_PT_URAN": {
+      "name": "铀",
+      "description": "铀。放射性。在高压或中子轰击下核裂变。"
+    },
+    "DEFAULT_PT_VINE": {
+      "name": "藤蔓",
+      "description": "藤蔓。向上生长，可燃。"
+    },
+    "DEFAULT_PT_VIRS": {
+      "name": "病毒",
+      "description": "病毒。感染其他粒子并传播。"
+    },
+    "DEFAULT_PT_VOID": {
+      "name": "虚空",
+      "description": "虚空。吸入并销毁所有接触的粒子。"
+    },
+    "DEFAULT_PT_VRGL": {
+      "name": "病毒气体",
+      "description": "病毒气体。气体形式的病毒。"
+    },
+    "DEFAULT_PT_VRSG": {
+      "name": "病毒气体",
+      "description": "病毒气体。病毒感染气体的形式。"
+    },
+    "DEFAULT_PT_VIBR": {
+      "name": "振金",
+      "description": "振金。通电时振动，产生压力。"
+    },
+    "DEFAULT_PT_WARP": {
+      "name": "曲速",
+      "description": "曲速。将粒子传送到屏幕上的另一位置。"
+    },
+    "DEFAULT_PT_WATR": {
+      "name": "水",
+      "description": "水。液体。导电，结冰，灭火。"
+    },
+    "DEFAULT_PT_WAX": {
+      "name": "蜡",
+      "description": "蜡。固体，遇热熔化，可燃。"
+    },
+    "DEFAULT_PT_WHOL": {
+      "name": "排气口",
+      "description": "排气口。产生气压向外推动。"
+    },
+    "DEFAULT_PT_WIFI": {
+      "name": "WiFi",
+      "description": "WiFi。无线传导电力。"
+    },
+    "DEFAULT_PT_WIRE": {
+      "name": "导线",
+      "description": "导线。传导电力。可熔化。"
+    },
+    "DEFAULT_PT_WOOD": {
+      "name": "木头",
+      "description": "木头。固体，可燃。"
+    },
+    "DEFAULT_PT_YEST": {
+      "name": "酵母",
+      "description": "酵母。遇水生长，受热死亡。"
+    }
+  },
+  "walls": {
+    "DEFAULT_WL_ERASE": {
+      "name": "橡皮擦",
+      "description": "擦除墙壁。"
+    },
+    "DEFAULT_WL_CNDTW": {
+      "name": "导电墙",
+      "description": "阻挡一切。可导电。"
+    },
+    "DEFAULT_WL_EWALL": {
+      "name": "电子墙",
+      "description": "电子墙。通电时变透明。"
+    },
+    "DEFAULT_WL_DTECT": {
+      "name": "检测墙",
+      "description": "检测墙。内部有粒子时产生电力。"
+    },
+    "DEFAULT_WL_STRM": {
+      "name": "流线",
+      "description": "流线。创建跟随空气流动的线条。"
+    },
+    "DEFAULT_WL_FAN": {
+      "name": "风扇",
+      "description": "风扇。加速空气流动。Android上无法设置风扇加速度。"
+    },
+    "DEFAULT_WL_LIQD": {
+      "name": "液体墙",
+      "description": "允许液体通过，阻挡其他粒子。可导电。"
+    },
+    "DEFAULT_WL_ABSRB": {
+      "name": "吸收墙",
+      "description": "吸收粒子但允许气流通过。"
+    },
+    "DEFAULT_WL_WALL": {
+      "name": "墙壁",
+      "description": "基础墙，阻挡一切。"
+    },
+    "DEFAULT_WL_AIR": {
+      "name": "空气墙",
+      "description": "允许空气通过，但阻挡所有粒子。"
+    },
+    "DEFAULT_WL_POWDR": {
+      "name": "粉末墙",
+      "description": "允许粉末通过，阻挡其他粒子。"
+    },
+    "DEFAULT_WL_CNDTR": {
+      "name": "导体墙",
+      "description": "导体墙。允许所有粒子通过并传导电力。"
+    },
+    "DEFAULT_WL_EHOLE": {
+      "name": "电子黑洞",
+      "description": "电子黑洞。吸收粒子，通电时释放。"
+    },
+    "DEFAULT_WL_GAS": {
+      "name": "气体墙",
+      "description": "允许气体通过，阻挡其他粒子。"
+    },
+    "DEFAULT_WL_GRVTY": {
+      "name": "重力墙",
+      "description": "重力墙。在此墙画的框内牛顿重力不生效。"
+    },
+    "DEFAULT_WL_ENRGY": {
+      "name": "能量墙",
+      "description": "允许能量粒子通过，阻挡其他粒子。"
+    },
+    "DEFAULT_WL_NOAIR": {
+      "name": "阻气墙",
+      "description": "允许所有粒子通过，但阻挡空气。"
+    },
+    "DEFAULT_WL_ERASEA": {
+      "name": "全部擦除",
+      "description": "擦除墙壁、粒子和标识。"
+    },
+    "DEFAULT_WL_STASIS": {
+      "name": "停滞墙",
+      "description": "将内部粒子冻结在原位，直到通电。"
+    }
+  },
+  "menus": {
+    "SC_WALL": "墙壁",
+    "SC_ELEC": "电子元件",
+    "SC_POWERED": "通电材料",
+    "SC_SENSOR": "传感器",
+    "SC_FORCE": "力产生",
+    "SC_EXPLOSIVE": "爆炸物",
+    "SC_GAS": "气体",
+    "SC_LIQUID": "液体",
+    "SC_POWDERS": "粉末",
+    "SC_SOLIDS": "固体",
+    "SC_NUCLEAR": "放射性",
+    "SC_SPECIAL": "特殊",
+    "SC_LIFE": "生命游戏",
+    "SC_TOOL": "工具",
+    "SC_FAV": "收藏与最近",
+    "SC_DECO": "装饰",
+    "SC_FAV2": "收藏2",
+    "SC_HUD": "HUD",
+    "SC_OTHER": "其他",
+    "SC_SEARCH": "搜索"
+  },
+  "quickmenu": {
+    "Show tabs \\bg(t)": "显示标签 \\bg(t)",
+    "Draw gravity grid \\bg(ctrl+g)": "绘制重力网格 \\bg(ctrl+g)",
+    "Show decorations \\bg(ctrl+b)": "显示装饰 \\bg(ctrl+b)",
+    "Newtonian gravity \\bg(n)": "牛顿重力 \\bg(n)",
+    "Sand effect": "沙子效果",
+    "Show Console \\bg(~)": "显示控制台 \\bg(~)"
+  },
+  "intro_text": "\\bl\\bUThe Powder Toy\\bU - Version 97.0.352 - https://powdertoy.co.uk\\n\\nAndroid 版本 1.0 build 128\\n\\n\\bg触摸并拖动右侧菜单以显示各分类。\\n对于可滚动的菜单，可以在菜单内拖动。\\n使用音量键调整粒子工具大小。\\n点击左下角的「查找并打开模拟」按钮打开在线存档。\\n使用右下角的暂停按钮暂停和恢复游戏。\\n\\n\\bo右侧按钮的功能依次为：\\n\\bo   切换橡皮擦工具（按住清屏）\\n\\bo   打开控制台（按住显示屏幕键盘）\\n\\bo   切换牛顿重力，或在装饰菜单中切换装饰显示（按住打开模拟设置）\\n\\bo   放置或移除缩放窗口\\n\\bo   保存图章（按住加载图章）\\n\\n\\bo放置图章时，可以执行以下操作：\\n\\bo   将图章拖动到任意位置。\\n\\bo   点按图章而不移动来放置。\\n\\bo   触摸图章外的任意位置将其移动一个像素。\\n\\bo   先点按边缘，然后画圈旋转图章。\\n\\n贡献者：\\bgStanislaw K Skowronek（设计原版 Powder Toy），\\n\\bgSimon Robertshaw, Skresanov Savely, Pilihp64, Catelite, Victoria Hoyle, Nathan Cousins, jacksonmj,\\n\\bgFelix Wallin, Lieuwe Mosch, Anthony Boot, Me4502, MaksProg, jacob1, mniip, LBPHacker\\n\\n\\bg要使用在线功能（如保存），请在以下网址注册：\\brhttps://powdertoy.co.uk/Register.html\\n\\n\\bt97.0.352 ANDROID LUACONSOLE",
+  "ui": {
+    "Open Save": "打开存档",
+    "Save": "保存",
+    "Cancel": "取消",
+    "OK": "确定",
+    "Close": "关闭",
+    "Delete": "删除",
+    "Change": "修改",
+    "Edit": "编辑",
+    "Options": "设置",
+    "Settings": "设置",
+    "Search": "搜索",
+    "Dismiss": "关闭",
+    "Enable Editing": "启用编辑",
+    "Edit profile online": "在线编辑资料",
+    "Open Profile Online": "在线打开资料",
+    "Sign In": "登录",
+    "Sign Out": "退出登录",
+    "Server login": "服务器登录",
+    "Please wait": "请稍候",
+    "Downloading update...": "正在下载更新...",
+    "Rename stamp": "重命名图章",
+    "Rescan stamps?": "重新扫描图章？",
+    "Element Search": "元素搜索",
+    "Matches:": "匹配：",
+    "Click the box below to copy the save ID": "点击下方框复制存档ID",
+    "Copied!": "已复制！",
+    "Confirm": "确认",
+    "Error": "错误",
+    "Information": "信息",
+    "Warning": "警告",
+    "New sign:": "新建标识：",
+    "Edit sign:": "编辑标识：",
+    "Allow resizing window": "允许调整窗口大小",
+    "These options make TPT appear extremely blurry": "这些设置会使TPT显示极为模糊",
+    "Simple": "简单",
+    "Adv.": "高级",
+    "Edit Property:": "编辑属性：",
+    "Heat simulation": "热模拟",
+    "Newtonian Gravity": "牛顿重力",
+    "Yes": "是",
+    "No": "否",
+    "Add tab \\bg(ctrl+n)": "添加标签 \\bg(ctrl+n)",
+    "Untitled Simulation (current)": "未命名模拟（当前）",
+    "On": "开启",
+    "Off": "关闭",
+    "None": "无",
+    "Legacy": "旧版",
+    "Boussinesq": "Boussinesq",
+    "Vertical": "垂直",
+    "Radial": "径向",
+    "Custom": "自定义",
+    "Void": "虚空",
+    "Solid": "固体",
+    "Loop": "循环",
+    "sRGB": "sRGB",
+    "Linear": "线性",
+    "Gamma 1.8": "Gamma 1.8",
+    "Gamma 2.2": "Gamma 2.2",
+    "Kelvin": "开尔文",
+    "Celsius": "摄氏度",
+    "Fahrenheit": "华氏度",
+    "Nearest": "最近邻",
+    "Best": "最佳",
+    "Pressure Off": "关闭气压",
+    "Velocity Off": "关闭速度",
+    "No Update": "不更新",
+    "Air Simulation Mode:": "空气模拟模式：",
+    "Ambient Air Temperature:": "环境空气温度：",
+    "Ambient Air Pressure:": "环境空气压力：",
+    "Ambient Air Velocity:": "环境空气速度：",
+    "Vorticity Confinement:": "涡量约束：",
+    "Air heat convection mode:": "空气热对流模式：",
+    "Gravity Simulation Mode:": "重力模拟模式：",
+    "Edge Mode:": "边界模式：",
+    "Smudge Tool Color Space:": "涂抹工具色彩空间：",
+    "Temperature Scale:": "温度单位：",
+    "Ambient heat simulation": "环境热模拟",
+    "Water Equalization": "水压平衡",
+    "Decorations": "装饰显示",
+    "Update Check": "检查更新",
+    "Include Pressure": "包含气压",
+    "Perfect Circle Brush": "完美圆形笔刷",
+    "Sticky categories": "粘性分类",
+    "Momentum Scrolling": "惯性滚动",
+    "Fast Quit": "快速退出",
+    "Global Quit": "全局退出",
+    "Resizable Window": "可调整窗口",
+    "Force Integer Scaling": "强制整数缩放",
+    "Fullscreen": "全屏",
+    "Change Resolution": "更改分辨率",
+    "Key Under Esc Exits Console": "Esc下键退出控制台",
+    "Load incompatible saves": "加载不兼容存档",
+    "Pixel sampling mode:": "像素采样模式：",
+    "Causes unexpected behavior when disabled": "禁用时可能导致意外行为",
+    "Heat transfers through empty space": "热量通过空区域传递",
+    "Simulate local gravity fields": "模拟局部重力场",
+    "Show deco color on elements": "在元素上显示装饰颜色",
+    "Water equalizes in a U-shaped pipe (lags game)": "水在U形管中平衡（会使游戏变慢）",
+    "Better circle brush, without incorrect points on edges": "更好的圆形笔刷，边缘没有错误点",
+    "Include pressure in saves and stamps": "存档和印章中包含气压数据",
+    "Check for updates at https://starcatcher.us/TPT": "在 https://starcatcher.us/TPT 检查更新",
+    "Window scale factor for larger screens": "大屏幕的窗口缩放因子",
+    "Less Blurry": "减少模糊",
+    "Fill the entire screen": "填充整个屏幕",
+    "Old fullscreen": "旧版全屏",
+    "Acceleration instead of step scroll": "加速滚动而非步进滚动",
+    "Switch between menusections by clicking": "点击切换菜单分类",
+    "Uncheck this if that key is 0 on your keyboard": "如果该键在你的键盘上是0则取消勾选",
+    "Developers may ask for this when trying to fix problems": "开发者解决问题时可能会需要此文件",
+    "Saves from the future may load completely garbled": "未来版本的存档可能加载完全错乱",
+    "Ctrl+q works everywhere": "Ctrl+q 在任何地方都能退出",
+    "Move": "移动",
+    "Quit": "退出",
+    "Erase": "清除",
+    "Install": "安装",
+    "Update": "更新",
+    "Pointer:": "指针：",
+    "Age:": "年龄：",
+    "Location:": "位置：",
+    "Website:": "网站：",
+    "Saves:": "存档：",
+    "Count:": "数量：",
+    "Average Score:": "平均分数：",
+    "Highest Score:": "最高分数：",
+    "Biography:": "个人简介：",
+    "You are about to quit": "你即将退出",
+    "Are you sure you want to quit?": "你确定要退出吗？",
+    "Are you sure you want to exit the game?": "你确定要退出游戏吗？",
+    "Please enter a username and password": "请输入用户名和密码",
+    "Successfully logged in": "登录成功",
+    "Successfully logged out": "登出成功",
+    "Couldn't read login response": "无法读取登录响应",
+    "Large screen detected": "检测到大屏幕",
+    "Install Powder Toy": "安装 The Powder Toy",
+    "You are about to install The Powder Toy": "你即将安装 The Powder Toy",
+    "Install Success": "安装成功",
+    "Powder Toy has been installed!": "The Powder Toy 已安装！",
+    "Save authorship info": "存档作者信息",
+    "Update success": "更新成功",
+    "You have successfully updated Jacob1's Mod!": "你已成功更新 Jacob1's Mod！",
+    "Migration complete": "迁移完成",
+    "Do Migration?": "是否迁移？",
+    "This will migrate all stamps, saves, and scripts from": "这将迁移所有印章、存档和脚本从",
+    "to the shared data directory at": "到共享数据目录",
+    "Files that already exist will not be overwritten.": "已存在的文件不会被覆盖。",
+    "Reset Decoration Layer": "重置装饰层",
+    "Do you really want to erase everything?": "你真的要清除所有内容吗？",
+    "Search Help": "搜索帮助",
+    "Missing custom elements": "缺少自定义元素",
+    "Remove custom GOL type": "移除自定义生命游戏类型",
+    "Do you want to remove ": "你想要移除 ",
+    "Are you sure you want to remove ": "你确定要移除 ",
+    "Manual Heat Display": "手动温度显示",
+    "Enter a Minimum Temperature in Celcius": "输入最低温度（摄氏度）",
+    "Enter a Maximum Temperature in Celcius": "输入最高温度（摄氏度）",
+    "Enter number of decimal places": "输入小数位数",
+    "# of Decimal places must be between 0 and 10": "小数位数必须在0到10之间",
+    "Lua console not enabled": "Lua控制台未启用",
+    "Error loading save": "加载存档失败",
+    "Error loading save: ": "加载存档失败：",
+    "Error creating save: ": "创建存档失败：",
+    "Error building save: ": "构建存档失败：",
+    "Error reloading save": "重新加载存档失败",
+    "Error parsing data from server": "解析服务器数据失败",
+    "Server returned error": "服务器返回错误",
+    "Error, could not open data directory": "错误，无法打开数据目录",
+    "Could not create tab: ": "无法创建标签页：",
+    "Unable to open save file: ": "无法打开存档文件：",
+    "Update failed - try downloading a new version.": "更新失败 - 请尝试下载新版本。",
+    "Install failed - You may not have permission or you may be on a platform that does not support installation": "安装失败 - 你可能没有权限，或者所在平台不支持安装",
+    "Dropped file is not a TPT save file. Must have a .cps or .stm extension": "拖放的文件不是TPT存档文件。必须具有 .cps 或 .stm 扩展名",
+    "Invalid floating point number": "无效的浮点数",
+    "Invalid number": "无效的数字",
+    "Invalid element name": "无效的元素名称",
+    "Invalid update format": "无效的更新格式",
+    "Server did not return data": "服务器未返回数据",
+    "Decompression failure: ": "解压失败：",
+    "Open Data Folder": "打开数据文件夹",
+    "Migrate to shared data directory": "迁移到共享数据目录",
+    "Save errors and other messages to a file": "将错误和其他消息保存到文件",
+    "Custom Gravity": "自定义重力",
+    "Ambient air velocity": "环境空气速度"
+  }
+}

@@ -1,6 +1,7 @@
 #include <sstream>
 #include "json/json.h"
 #include "ProfileViewer.h"
+#include "common/Translations.h"
 #include "interface/Engine.h"
 #include "interface/Label.h"
 #include "interface/Textbox.h"
@@ -48,7 +49,7 @@ ProfileViewer::ProfileViewer(std::string profileName):
 		avatarUploadButton->SetCallback([&](int mb) { this->UploadAvatar(); });
 		scrollArea->AddComponent(avatarUploadButton);
 
-		enableEditingButton = new Button(Point(0, size.Y-16), Point(this->size.X/2+1, 16), "Enable Editing");
+		enableEditingButton = new Button(Point(0, size.Y-16), Point(this->size.X/2+1, 16), TrUI("Enable Editing"));
 		enableEditingButton->SetCallback([&](int mb) { this->EnableEditing(); });
 		enableEditingButton->SetEnabled(false);
 		this->AddComponent(enableEditingButton);
@@ -60,9 +61,9 @@ ProfileViewer::ProfileViewer(std::string profileName):
 	}
 
 	if (ownProfile)
-		openProfileButton = new Button(Point(size.X/2, size.Y-16), Point(this->size.X/2, 16), "Open Profile Online");
+		openProfileButton = new Button(Point(size.X/2, size.Y-16), Point(this->size.X/2, 16), TrUI("Open Profile Online"));
 	else
-		openProfileButton = new Button(Point(0, size.Y-16), Point(this->size.X, 16), "Open Profile Online");
+		openProfileButton = new Button(Point(0, size.Y-16), Point(this->size.X, 16), TrUI("Open Profile Online"));
 	openProfileButton->SetCallback([&](int mb) { this->OpenProfile(); });
 	this->AddComponent(openProfileButton);
 }
@@ -142,14 +143,14 @@ void ProfileViewer::OnTick(uint32_t ticks)
 			catch (std::exception &e)
 			{
 				// TODO: make a new version of error_ui because this is bad
-				biographyLabel = new Label(Point(7, 133), Point(scrollArea->GetUsableWidth() - 7, Label::AUTOSIZE), "\brError parsing data from server", true);
+				biographyLabel = new Label(Point(7, 133), Point(scrollArea->GetUsableWidth() - 7, Label::AUTOSIZE), TrUI("Error parsing data from server"), true);
 				scrollArea->AddComponent(biographyLabel);
 			}
 		}
 		else
 		{
 			// TODO: make a new version of error_ui because this is bad
-			biographyLabel = new Label(Point(7, 133), Point(scrollArea->GetUsableWidth() - 7, Label::AUTOSIZE), "\brServer returned error", true);
+			biographyLabel = new Label(Point(7, 133), Point(scrollArea->GetUsableWidth() - 7, Label::AUTOSIZE), TrUI("Server returned error"), true);
 			scrollArea->AddComponent(biographyLabel);
 		}
 
@@ -196,10 +197,10 @@ void ProfileViewer::EnableEditing()
 	dynamic_cast<Textbox*>(biographyLabel)->SetType(Textbox::MULTILINE);
 
 	enableEditingButton->SetCallback([&](int mb) { this->SaveProfile(); });
-	enableEditingButton->SetText("Save");
+	enableEditingButton->SetText(TrUI("Save"));
 
 	openProfileButton->SetCallback([&](int mb) { this->OpenProfileEdit(); });
-	openProfileButton->SetText("Edit profile online");
+	openProfileButton->SetText(TrUI("Edit profile online"));
 }
 
 void ProfileViewer::SaveProfile()
@@ -245,12 +246,12 @@ void ProfileViewer::OnDrawAfterSubwindows(gfx::VideoBuffer *buf)
 {
 	if (avatar)
 		buf->DrawImage(avatar, 210, 10-scrollArea->GetScrollPosition(), 40, 40);
-	buf->DrawString(10, 24-scrollArea->GetScrollPosition(), "Age:", 175, 175, 175, 255);
-	buf->DrawString(10, 38-scrollArea->GetScrollPosition(), "Location:", 175, 175, 175, 255);
-	buf->DrawString(10, 52-scrollArea->GetScrollPosition(), "Website:", 175, 175, 175, 255);
-	buf->DrawString(10, 66-scrollArea->GetScrollPosition(), "Saves:", 175, 175, 175, 255);
-	buf->DrawString(15, 80-scrollArea->GetScrollPosition(), "Count:", 175, 175, 175, 255);
-	buf->DrawString(15, 94-scrollArea->GetScrollPosition(), "Average Score:", 175, 175, 175, 255);
-	buf->DrawString(15, 108-scrollArea->GetScrollPosition(), "Highest Score:", 175, 175, 175, 255);
-	buf->DrawString(10, 122-scrollArea->GetScrollPosition(), "Biography:", 175, 175, 175, 255);
+	buf->DrawString(10, 24-scrollArea->GetScrollPosition(), TrUI("Age:"), 175, 175, 175, 255);
+	buf->DrawString(10, 38-scrollArea->GetScrollPosition(), TrUI("Location:"), 175, 175, 175, 255);
+	buf->DrawString(10, 52-scrollArea->GetScrollPosition(), TrUI("Website:"), 175, 175, 175, 255);
+	buf->DrawString(10, 66-scrollArea->GetScrollPosition(), TrUI("Saves:"), 175, 175, 175, 255);
+	buf->DrawString(15, 80-scrollArea->GetScrollPosition(), TrUI("Count:"), 175, 175, 175, 255);
+	buf->DrawString(15, 94-scrollArea->GetScrollPosition(), TrUI("Average Score:"), 175, 175, 175, 255);
+	buf->DrawString(15, 108-scrollArea->GetScrollPosition(), TrUI("Highest Score:"), 175, 175, 175, 255);
+	buf->DrawString(10, 122-scrollArea->GetScrollPosition(), TrUI("Biography:"), 175, 175, 175, 255);
 }

@@ -50,6 +50,7 @@
 #include "font.h"
 #include "graphics.h"
 #include "interface.h"
+#include "common/Translations.h"
 #include "hud.h"
 #include "images.h"
 #include "luaconsole.h"
@@ -1495,7 +1496,8 @@ char *input_ui(pixel *vid_buf, const char *title, const char *prompt, const char
 		ui_edit_draw(vid_buf, &ed);
 		ui_edit_process(mx, my, b, bq, &ed);
 
-		drawtext(vid_buf, x0+5, y0+ysize-11, "OK", 255, 255, 255, 255);
+		std::string _tr_4213 = TrUI("OK");
+				drawtext(vid_buf, x0+5, y0+ysize-11, _tr_4213.c_str(), 255, 255, 255, 255);
 		drawrect(vid_buf, x0, y0+ysize-16, xsize, 16, 192, 192, 192, 255);
 
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
@@ -1543,7 +1545,8 @@ void info_ui(pixel *vid_buf, std::string top, std::string txt)
 		drawrect(vid_buf, x0, y0, 240, 60, 192, 192, 192, 255);
 		drawtext(vid_buf, x0+8, y0+8, top.c_str(), 160, 160, 255, 255);
 		drawtext(vid_buf, x0+8, y0+26, txt.c_str(), 255, 255, 255, 255);
-		drawtext(vid_buf, x0+5, y0+49, "OK", 255, 255, 255, 255);
+		std::string _tr_4213 = TrUI("OK");
+				drawtext(vid_buf, x0+5, y0+49, _tr_4213.c_str(), 255, 255, 255, 255);
 		drawrect(vid_buf, x0, y0+44, 240, 16, 192, 192, 192, 255);
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
 
@@ -1631,7 +1634,8 @@ void copytext_ui(pixel *vid_buf, const char *top, const char *txt, const char *c
 		ui_copytext_draw(vid_buf, &ed);
 		ui_copytext_process(mx, my, b, bq, &ed);
 
-		drawtext(vid_buf, x0+5, y0+ysize-11, "OK", 255, 255, 255, 255);
+		std::string _tr_4213 = TrUI("OK");
+				drawtext(vid_buf, x0+5, y0+ysize-11, _tr_4213.c_str(), 255, 255, 255, 255);
 		drawrect(vid_buf, x0, y0+ysize-16, xsize, 16, 192, 192, 192, 255);
 
 		sdl_blit(0, 0, (XRES+BARSIZE), YRES+MENUSIZE, vid_buf, (XRES+BARSIZE));
@@ -1909,7 +1913,8 @@ int stamp_ui(pixel *vid_buf, int *reorder)
 			}
 			sdl_wheel = 0;
 		}
-		if (b && !bq && mx >= XRES-65 && mx <= XRES-25 && my >= YRES+MENUSIZE-18 && my < YRES+MENUSIZE-2 && confirm_ui(vid_buf, "Rescan stamps?", "Rescanning stamps will find all stamps in your stamps/ directory and overwrite stamps.json and stamps.def", "OK"))
+		std::string _tr_rescan_ok = TrUI("OK");
+		if (b && !bq && mx >= XRES-65 && mx <= XRES-25 && my >= YRES+MENUSIZE-18 && my < YRES+MENUSIZE-2 && confirm_ui(vid_buf, "Rescan stamps?", "Rescanning stamps will find all stamps in your stamps/ directory and overwrite stamps.json and stamps.def", _tr_rescan_ok.c_str()))
 		{
 			info_box(vid_buf, "Rescanning ...");
 			Stamps::Ref().Rescan();
@@ -2222,11 +2227,13 @@ int save_name_ui(pixel *vid_buf)
 		ui_edit_process(mx, my, b, bq, &ed2);
 		ui_checkbox_process(mx, my, b, bq, &cbPublish);
 		ui_checkbox_process(mx, my, b, bq, &cbPaused);
+#ifndef NOMOD
 		if (!can_publish)
 		{
 			cbPublish.checked = false;
 			cbPublish.focus = false;
 		}
+#endif
 
 		if ((b && !bq && mx>=x0 && mx<x0+242 && my>=y0+94+YRES/4 && my<y0+110+YRES/4) || sdl_key==SDLK_RETURN)
 		{
@@ -2733,7 +2740,7 @@ void menu_select_element(int b, Tool* over)
 #ifdef LUACONSOLE
 				ReadLuaCode();
 #else
-				auto *errorMsg = new ErrorPrompt("Lua console not enabled");
+				auto *errorMsg = new ErrorPrompt(TrUI("Lua console not enabled"));
 				Engine::Ref().ShowWindow(errorMsg);
 #endif
 			else if (toolID == FAV_CUSTOMHUD)
@@ -2790,7 +2797,7 @@ void menu_select_element(int b, Tool* over)
 				sprintf(hud_curr,"%i",currentHud[toolID-HUD_REALSTART]);
 				if (hud_menu[toolID].name.find("#") != hud_menu[toolID].name.npos)
 				{
-					auto *prompt = new TextPrompt(hud_menu[toolID].name, "Enter number of decimal places", hud_curr, "");
+					auto *prompt = new TextPrompt(hud_menu[toolID].name, TrUI("Enter number of decimal places"), hud_curr, "");
 					prompt->SetCallback({ [toolID](std::optional<std::string> text) {
 						if (text)
 						{
@@ -2801,7 +2808,7 @@ void menu_select_element(int b, Tool* over)
 							}
 							else
 							{
-								auto *errorMsg = new ErrorPrompt("# of Decimal places must be between 0 and 10");
+								auto *errorMsg = new ErrorPrompt(TrUI("# of Decimal places must be between 0 and 10"));
 								Engine::Ref().ShowWindow(errorMsg);
 							}
 						}
@@ -2849,7 +2856,7 @@ void menu_select_element(int b, Tool* over)
 			{
 				auto *cgol = static_cast<LIFE_ElementDataContainer&>(*globalSim->elementData[PT_LIFE]).GetCustomGOLByRule(toolID);
 				int cgolRule = cgol->rule;
-				auto *confirmPrompt = new ConfirmPrompt("Remove custom GOL type", "Do you want to remove " + cgol->nameString + "?");
+				auto *confirmPrompt = new ConfirmPrompt(TrUI("Remove custom GOL type"), TrUI("Do you want to remove ") + cgol->nameString + "?");
 				confirmPrompt->SetCallback({ [cgolRule](bool b) {
 					if (b)
 					{
@@ -2880,13 +2887,13 @@ void menu_select_element(int b, Tool* over)
 			if (toolID == FAV_HEAT)
 			{
 				heatmode = 2;
-				auto *lowestPrompt = new TextPrompt("Manual Heat Display", "Enter a Minimum Temperature in Celcius", "", "");
+				auto *lowestPrompt = new TextPrompt(TrUI("Manual Heat Display"), TrUI("Enter a Minimum Temperature in Celcius"), "", "");
 				lowestPrompt->SetCallback({ [](std::optional<std::string> lowestText) {
 					if (lowestText) {
 						int deseriedLowestTemp = Format::StringToNumber<int>(*lowestText) + 273;
 
 						// Beautiful nesting
-						auto *highestPrompt = new TextPrompt("Manual Heat Display", "Enter a Maximum Temperature in Celcius", "", "");
+						auto *highestPrompt = new TextPrompt(TrUI("Manual Heat Display"), TrUI("Enter a Maximum Temperature in Celcius"), "", "");
 						Engine::Ref().ShowWindow(highestPrompt);
 						highestPrompt->SetCallback({ [deseriedLowestTemp](std::optional<std::string> highestText) {
 							if (highestText) {
@@ -2927,7 +2934,7 @@ void menu_select_element(int b, Tool* over)
 				auto *cgol = static_cast<LIFE_ElementDataContainer&>(*globalSim->elementData[PT_LIFE]).GetCustomGOLByRule(toolID);
 				int cgolRule = cgol->rule;
 
-				auto prompt = new ConfirmPrompt("Remove custom GOL type", "Are you sure you want to remove " + cgol->nameString + "?");
+				auto prompt = new ConfirmPrompt(TrUI("Remove custom GOL type"), TrUI("Are you sure you want to remove ") + cgol->nameString + "?");
 				prompt->SetCallback({ [cgolRule](bool confirmed) {
 					if (confirmed)
 					{
@@ -2986,7 +2993,8 @@ void QuickoptionsMenu(pixel *vid_buf, int b, int bq, int x, int y)
 				}
 				if(x >= (XRES+BARSIZE)-16 && x <= (XRES+BARSIZE)-2 && y >= (i*16)+1 && y <= (i*16)+15)
 				{
-					UpdateToolTip(quickmenu[i].name, Point(menuStartPosition-5-textwidth(quickmenu[i].name), (i*16)+6), QTIP, -1);
+					std::string qmName = Translations::Ref().Lookup("quickmenu", quickmenu[i].name);
+					UpdateToolTip(qmName, Point(menuStartPosition-5-textwidth(qmName.c_str()), (i*16)+6), QTIP, -1);
 
 					if (b == 1 && !bq)
 					{
@@ -3036,9 +3044,9 @@ void QuickoptionsMenu(pixel *vid_buf, int b, int bq, int x, int y)
 			{
 				std::string toolTip;
 				if (i == 0)
-					toolTip = quickmenu[i].name;
+					toolTip = Translations::Ref().Lookup("quickmenu", quickmenu[i].name);
 				else if (i == num_tabs + 1)
-					toolTip = "Add tab \bg(ctrl+n)";
+					toolTip = Translations::Ref().Tr("Add tab \\bg(ctrl+n)");
 				else if (tab_num == i)
 				{
 					if (strlen(svf_name))
@@ -3046,7 +3054,7 @@ void QuickoptionsMenu(pixel *vid_buf, int b, int bq, int x, int y)
 					else if (strlen(svf_filename))
 						toolTip = svf_filename;
 					else
-						toolTip = "Untitled Simulation (current)";
+						toolTip = Translations::Ref().Tr("Untitled Simulation (current)");
 				}
 				else
 					toolTip = tabNames[i-1];
@@ -4351,7 +4359,7 @@ void show_search_help()
 		"Use \bt@tags\bw to limit search to just save tags, for example \bg~@tags resistcup @title printer | @description spider before:2024-06\bw\n"
 		"Parenthesis can be used to further complicate your searches. For example: \bg~(@user MG99 @description complete) | (@user goglesq @tags tutorial)\bw"
 		;
-	auto *prompt = new InfoPrompt("Search Help", info, "OK", true);
+	auto *prompt = new InfoPrompt(TrUI("Search Help"), info, TrUI("OK"), true);
 	Engine::Ref().ShowWindow(prompt);
 	MainLoop(true);
 }
@@ -6341,7 +6349,7 @@ void decoration_editor(pixel *vid_buf, int b, int bq, int mx, int my)
 		//clear button
 		if (b && !bq && mx >= window_offset_x+230 && my >= 2+255+6 && mx <= window_offset_x + 230+26 && my <= 2+255+5+13)
 		{
-			auto prompt = new ConfirmPrompt("Reset Decoration Layer", "Do you really want to erase everything?", "Erase");
+			auto prompt = new ConfirmPrompt(TrUI("Reset Decoration Layer"), TrUI("Do you really want to erase everything?"), TrUI("Erase"));
 			prompt->SetCallback({ [](bool confirmed) {
 				if (confirmed)
 					for (int i = 0; i < NPART; i++)
@@ -7009,6 +7017,6 @@ void MissingElementsPrompt(SaveLoadData saveLoadData)
 			}
 		}
 
-		Engine::Ref().ShowWindow(new InfoPrompt("Missing custom elements", ss.str()));
+		Engine::Ref().ShowWindow(new InfoPrompt(TrUI("Missing custom elements"), ss.str()));
 	}
 }

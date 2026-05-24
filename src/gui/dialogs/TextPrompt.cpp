@@ -1,5 +1,6 @@
 #include "TextPrompt.h"
 #include "common/Point.h"
+#include "common/Translations.h"
 #include "interface/Label.h"
 #include "interface/Button.h"
 #include "interface/Textbox.h"
@@ -26,7 +27,7 @@ TextPrompt::TextPrompt(std::string title, std::string prompt, std::string text, 
 
 	this->Resize(Point(CENTERED, CENTERED), Point(250, promptLabel->GetSize().Y + inputTextbox->GetSize().Y + 24 + buttonHeight));
 
-	Button *okButton = new Button(Point(0, this->size.Y - buttonHeight), Point(this->size.X, buttonHeight), "OK");
+	Button *okButton = new Button(Point(0, this->size.Y - buttonHeight), Point(this->size.X, buttonHeight), TrUI("OK"));
 	okButton->SetTextColor(COLRGB(140, 140, 255));
 	okButton->SetConfirmButton(true);
 	this->AddComponent(okButton);

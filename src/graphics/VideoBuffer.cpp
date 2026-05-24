@@ -5,6 +5,7 @@
 #include "font.h"
 #include "common/Format.h"
 #include "common/tpt-minmax.h"
+#include "graphics/FTText.h"
 
 namespace gfx
 {
@@ -358,6 +359,8 @@ void VideoBuffer::FillCircle(int x, int y, int rx, int ry, int r, int g, int b, 
 
 int VideoBuffer::DrawChar(int x, int y, unsigned char c, int r, int g, int b, int a, bool modifiedColor)
 {
+	if (c >= 0x80)
+		return 0;
 	int bn = 0, ba = 0;
 	unsigned char *rp = font_data + font_ptrs[c];
 	signed char w = *(rp++);
@@ -404,6 +407,9 @@ int VideoBuffer::DrawString(int x, int y, const std::string &s, int r, int g, in
 {
 	if (a == 0)
 		return x;
+	if (FT_IsReady() && FT_HasUnicode(s.c_str()))
+		return FT_DrawText(vid, x, y, FT_ConvertIcons(s).c_str(), r, g, b, a);
+
 	int startX = x;
 	bool highlight = false, underline = false, modifiedColor = false, didNewline = false;
 	int oldR = r, oldG = g, oldB = b;
@@ -517,7 +523,7 @@ int VideoBuffer::DrawString(int x, int y, const std::string &s, int r, int g, in
 			}
 			else if (highlight)
 			{
-				FillRect(oldX, y-2, font_data[font_ptrs[(unsigned char)c]], FONT_H+2, 0, 0, 255, 127);
+				FillRect(oldX, y-2, font_data[font_ptrs[' ']], FONT_H+2, 0, 0, 255, 127);
 			}
 			if (underline)
 			{
@@ -537,6 +543,8 @@ int VideoBuffer::DrawString(int x, int y, const std::string & s, ARGBColour colo
 // static method that returns the width of a character
 signed char VideoBuffer::CharSize(unsigned char c)
 {
+	if (c >= 0x80)
+		return 0;
 	short font_ptr = font_ptrs[static_cast<int>(c)];
 	if (font_data[font_ptr+1]&0x40)
 		return std::max((signed char)font_data[font_ptr], CharSize(c+1));
@@ -546,6 +554,15 @@ signed char VideoBuffer::CharSize(unsigned char c)
 // static method that returns the width and height of a string
 Point VideoBuffer::TextSize(std::string s)
 {
+	if (FT_IsReady() && FT_HasUnicode(s.c_str()))
+	{
+		int w = FT_TextWidth(s.c_str());
+		int h = FT_TextHeight();
+		for (size_t i = 0; i < s.length(); i++)
+			if (s[i] == '\n') h += FT_TextHeight() + 2;
+		return Point(w, h);
+	}
+
 	int x = 0;
 	int width = 0;
 	int height = FONT_H;

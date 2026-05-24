@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 #include <iostream>
 #include <math.h>
 #include "EventLoopSDL.h"
@@ -67,6 +68,7 @@
 #include "IntroText.h"
 #include "md5.h"
 #include "update.h"
+#include "common/Translations.h"
 #include "legacy_console.h"
 #include "luaconsole.h"
 #include "luascriptinterface.h"
@@ -95,6 +97,7 @@
 // new interface stuff
 #include "graphics/Renderer.h"
 #include "graphics/VideoBuffer.h"
+#include "graphics/FTText.h"
 #include "interface/Engine.h"
 #include "gui/dialogs/ErrorPrompt.h"
 #include "gui/dialogs/InfoPrompt.h"
@@ -259,7 +262,7 @@ void tab_save(int num)
 	}
 	catch (BuildException & e)
 	{
-		ErrorPrompt * error = new ErrorPrompt("Could not create tab: " + std::string(e.what()));
+		ErrorPrompt * error = new ErrorPrompt(TrUI("Could not create tab: ") + std::string(e.what()));
 		Engine::Ref().ShowWindow(error);
 		delete tab;
 		return;
@@ -323,7 +326,7 @@ int tab_load(int tabNum, bool del, bool showException)
 		catch (ParseException & e)
 		{
 			if (showException)
-				Engine::Ref().ShowWindow(new InfoPrompt("Error loading save", e.what()));
+				Engine::Ref().ShowWindow(new InfoPrompt(TrUI("Error loading save"), e.what()));
 			else
 				std::cout << "Error loading tab: " << e.what() << std::endl;
 		}
@@ -647,6 +650,37 @@ int main(int argc, char *argv[])
 #endif
 	currentBrush = new Brush(Point(5, 5), CIRCLE_BRUSH);
 
+#ifdef ANDROID
+	{
+		const char *home = getenv("HOME");
+		if (home)
+		{
+			std::string fontPath = std::string(home) + "/fontcjk.ttf";
+			if (!FT_Init(fontPath.c_str(), 16))
+				printf("FT_Init failed for %s\n", fontPath.c_str());
+		}
+	}
+#elif defined(LIN)
+	if (!FT_Init("fontcjk.ttf", 16) && !FT_Init("/usr/share/fonts/windows10/simhei.ttf", 16))
+		printf("FT_Init failed, Chinese text rendering disabled\n");
+#else
+	FT_Init("fontcjk.ttf", 16);
+#endif
+
+	// Load translations (TPT_LANG env var overrides default zh_CN)
+	{
+		const char *langEnv = getenv("TPT_LANG");
+		std::string langFile = langEnv ? (std::string(langEnv) + ".json") : "zh_CN.json";
+		if (Translations::Ref().LoadLanguageFile(langFile))
+		{
+			Translations::Ref().ApplyElementOverrides(globalSim);
+			Translations::Ref().ApplyWallOverrides();
+			Translations::Ref().ApplyMenuOverrides();
+			// Rebuild tool objects so ElementTool picks up translated Name/Description
+			FillMenus();
+		}
+	}
+
 #ifdef LUACONSOLE
 	luacon_open();
 #endif
@@ -757,7 +791,7 @@ int main(int argc, char *argv[])
 #endif
 				puts("Got ptsave:id");
 				saveURIOpen = tempSaveID;
-				UpdateToolTip(introText, Point(16, 20), INTROTIP, 0);
+				UpdateToolTip(Translations::Ref().GetIntroText(introText), Point(16, 20), INTROTIP, 0);
 			}
 			break;
 		}
@@ -876,7 +910,7 @@ int main(int argc, char *argv[])
 
 	Stamps::Ref().Init();
 
-	UpdateToolTip(introText, Point(16, 20), INTROTIP, 10235);
+	UpdateToolTip(Translations::Ref().GetIntroText(introText), Point(16, 20), INTROTIP, 10235);
 
 	Engine::Ref().ShowWindow(the_game);
 #if !defined(DEBUG) && !defined(_DEBUG)
@@ -1052,7 +1086,7 @@ int main_loop_temp(int b, int bq, int sdl_key, int scan, int x, int y, bool shif
 		{
 			//Clear all settings and simulation data
 			NewSim();
-			UpdateToolTip(introText, Point(16, 20), INTROTIP, 0);
+			UpdateToolTip(Translations::Ref().GetIntroText(introText), Point(16, 20), INTROTIP, 0);
 
 			try
 			{
@@ -1062,7 +1096,7 @@ int main_loop_temp(int b, int bq, int sdl_key, int scan, int x, int y, bool shif
 			}
 			catch (ParseException & e)
 			{
-				Engine::Ref().ShowWindow(new ErrorPrompt("Unable to open save file: " + std::string(e.what())));
+				Engine::Ref().ShowWindow(new ErrorPrompt(TrUI("Unable to open save file: ") + std::string(e.what())));
 			}
 			delete saveDataOpen;
 			saveDataOpen = NULL;
@@ -1181,9 +1215,9 @@ int main_loop_temp(int b, int bq, int sdl_key, int scan, int x, int y, bool shif
 		{
 			info_box(vid_buf, "Finalizing update...");
 			if (update_finish())
-				Engine::Ref().ShowWindow(new ErrorPrompt("Update failed - try downloading a new version."));
+				Engine::Ref().ShowWindow(new ErrorPrompt(TrUI("Update failed - try downloading a new version.")));
 			else
-				Engine::Ref().ShowWindow(new InfoPrompt("Update success", "You have successfully updated Jacob1's Mod!"));
+				Engine::Ref().ShowWindow(new InfoPrompt(TrUI("Update success"), TrUI("You have successfully updated Jacob1's Mod!")));
 			update_flag = 0;
 		}
 
@@ -1219,7 +1253,7 @@ int main_loop_temp(int b, int bq, int sdl_key, int scan, int x, int y, bool shif
 		//there is a click
 		else if (b)
 		{
-			UpdateToolTip(introText, Point(16, 20), INTROTIP, 255);
+			UpdateToolTip(Translations::Ref().GetIntroText(introText), Point(16, 20), INTROTIP, 255);
 
 			/*if (tmpMouseInZoom != mouseInZoom && !lm)
 				b = lb = 0;
@@ -1454,6 +1488,7 @@ void main_end_hack()
 #ifdef LUACONSOLE
 	luacon_close();
 #endif
+	FT_Shutdown();
 #ifndef NOHTTP
 	RequestManager::Ref().Shutdown();
 #endif

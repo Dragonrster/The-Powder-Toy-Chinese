@@ -57,7 +57,7 @@ struct wallType
 };
 typedef struct wallType wallType;
 
-const wallType wallTypes[] =
+inline wallType wallTypes[] =
 {
 	{"ERASE",           "DEFAULT_WL_ERASE", COLPACK(0x808080), COLPACK(0x000000), -1, "Erases walls."},
 	{"CONDUCTIVE WALL", "DEFAULT_WL_CNDTW", COLPACK(0xC0C0C0), COLPACK(0x101010), 0,  "Blocks everything. Conductive."},

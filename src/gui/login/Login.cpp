@@ -1,6 +1,7 @@
 #include "Login.h"
 #include "interface.h"
 #include "misc.h"
+#include "common/Translations.h"
 #include "game/Request.h"
 #include "interface/Button.h"
 #include "interface/Icons.h"
@@ -21,7 +22,7 @@ Login::Login(LoginCallback callback):
 #endif
 	std::string originalUsername = svf_login ? svf_user : "";
 
-	Label *titleLabel = new Label(Point(5, 3), Point(Label::AUTOSIZE, Label::AUTOSIZE), "Server login");
+	Label *titleLabel = new Label(Point(5, 3), Point(Label::AUTOSIZE, Label::AUTOSIZE), TrUI("Server login"));
 	titleLabel->SetColor(COLRGB(140, 140, 255));
 	this->AddComponent(titleLabel);
 
@@ -42,7 +43,7 @@ Login::Login(LoginCallback callback):
 	});
 	this->AddComponent(passwordTextbox);
 
-	signInButton = new Button(Point(0, this->size.Y - 15), Point(this->size.X / 2 + 1, buttonHeight), "Sign In");
+	signInButton = new Button(Point(0, this->size.Y - 15), Point(this->size.X / 2 + 1, buttonHeight), TrUI("Sign In"));
 	UpdateSignInButton(originalUsername);
 	signInButton->SetCallback([&](int mb) {
 		isLogin ? DoLogin() : DoLogout();
@@ -51,7 +52,7 @@ Login::Login(LoginCallback callback):
 	});
 	this->AddComponent(signInButton);
 
-	closeButton = new Button(Point(this->size.X / 2, this->size.Y - 15), Point(this->size.X / 2 + 1, buttonHeight), "Close");
+	closeButton = new Button(Point(this->size.X / 2, this->size.Y - 15), Point(this->size.X / 2 + 1, buttonHeight), TrUI("Close"));
 	closeButton->SetCloseButton(true);
 	this->AddComponent(closeButton);
 
@@ -69,7 +70,7 @@ void Login::UpdateSignInButton(std::string originalUsername)
 	if (closeTimer)
 		return;
 	isLogin = !svf_login || originalUsername != usernameTextbox->GetText();
-	signInButton->SetText(isLogin ? "Sign In" : "Sign Out");
+	signInButton->SetText(isLogin ? TrUI("Sign In") : TrUI("Sign Out"));
 	signInButton->SetEnabled(!isLogin || (!usernameTextbox->GetText().empty() && !passwordTextbox->GetText().empty()));
 }
 
@@ -82,12 +83,12 @@ void Login::DoLogin()
 
 	if (user.empty() || pass.empty())
 	{
-		SetMessage("Please enter a username and password");
+		SetMessage(TrUI("Please enter a username and password"));
 		return;
 	}
 	if (user.find('@') != user.npos)
 	{
-		SetMessage("Use your Powder Toy account to login, not your email. If you don't have a Powder Toy account, you can create one on \bt{a:https://powdertoy.co.uk/Register.html|the website}");
+		SetMessage(TrUI("Use your Powder Toy account to login, not your email. If you don't have a Powder Toy account, you can create one on \bt{a:https://powdertoy.co.uk/Register.html|the website}"));
 		return;
 	}
 
@@ -140,12 +141,12 @@ void Login::DoLogin()
 		svf_login = 1;
 		save_presets();
 
-		SetMessage("Successfully logged in");
+		SetMessage(TrUI("Successfully logged in"));
 		autoClose = true;
 	}
 	else
 	{
-		SetMessage("Couldn't read login response");
+		SetMessage(TrUI("Couldn't read login response"));
 	}
 }
 
@@ -162,7 +163,7 @@ void Login::DoLogout()
 	if (!error.empty())
 		SetMessage(error);
 	else
-		SetMessage("Successfully logged out");
+		SetMessage(TrUI("Successfully logged out"));
 	autoClose = true;
 }
 

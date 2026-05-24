@@ -7,6 +7,7 @@
 #include "common/Format.h"
 #include "common/tpt-math.h"
 #include "graphics/VideoBuffer.h"
+#include "font.h"
 #include "interface/Engine.h"
 
 // TODO: Put label in ui namespace and remove this
@@ -216,9 +217,28 @@ void Label::UpdateDisplayText(bool updateCursor, bool firstClick)
 				}
 			}
 			default:
+			{
 				bool hasCharacter = posX != 0;
-				//normal character, add to the current width and check if it's too long
-				posX += gfx::VideoBuffer::CharSize(c);
+				int charWidth = 0;
+				unsigned char uc = static_cast<unsigned char>(c);
+				if (uc >= 0x80)
+				{
+					int seqLen = 0;
+					if ((uc & 0xE0) == 0xC0)      seqLen = 2;
+					else if ((uc & 0xF0) == 0xE0) seqLen = 3;
+					else if ((uc & 0xF8) == 0xF0) seqLen = 4;
+					if (seqLen > 0)
+					{
+						i += seqLen - 1;
+						wordlen -= seqLen - 1;
+						charWidth = FONT_H;
+					}
+				}
+				else
+				{
+					charWidth = gfx::VideoBuffer::CharSize(c);
+				}
+				posX += charWidth;
 				if (hasCharacter && !autosizeX && posX+4 >= size.X && !noCutoff)
 				{
 					if (multiline)
@@ -255,6 +275,7 @@ void Label::UpdateDisplayText(bool updateCursor, bool firstClick)
 				if (!updatedCursor)
 					updatedCursor = CheckPlaceCursor(updateCursor, i+(posX==0), posX, posY);
 				break;
+			}
 			}
 		}
 	}

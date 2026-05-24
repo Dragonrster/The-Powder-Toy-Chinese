@@ -725,7 +725,7 @@ int simulation_partExists(lua_State* l)
 template<class Accessor>
 struct LuaBlockMapHelper
 {
-	using ItemType = std::remove_reference_t<std::invoke_result_t<Accessor, Point>>;
+	using ItemType = typename std::remove_reference<decltype(std::declval<Accessor>()(std::declval<Point>()))>::type;
 };
 
 template<bool Clamp, class Accessor, class ItemType = typename LuaBlockMapHelper<Accessor>::ItemType>

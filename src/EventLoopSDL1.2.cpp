@@ -1,4 +1,5 @@
 #ifdef SDL1_2
+#include "common/Translations.h"
 #include <climits>
 #include <list>
 
@@ -137,11 +138,14 @@ int EventProcess(SDL_Event event, ui::Window * eventHandler)
 			// Two separate quit dialogs ... remove some day
 			if (inOldInterface)
 			{
-				wasConfirmed = confirm_ui(vid_buf, "You are about to quit", "Are you sure you want to quit?", "Quit");
+				std::string _tr_quit_title = TrUI("You are about to quit");
+				std::string _tr_quit_msg = TrUI("Are you sure you want to quit?");
+				std::string _tr_quit_btn = TrUI("Quit");
+				wasConfirmed = confirm_ui(vid_buf, _tr_quit_title.c_str(), _tr_quit_msg.c_str(), _tr_quit_btn.c_str());
 			}
 			else
 			{
-				auto prompt = new ConfirmPrompt("You are about to quit", "Are you sure you want to quit?", "Quit");
+				auto prompt = new ConfirmPrompt(TrUI("You are about to quit"), TrUI("Are you sure you want to quit?"), TrUI("Quit"));
 				prompt->SetCallback({ [&](bool confirmed) {
 					wasConfirmed = confirmed;
 				} });

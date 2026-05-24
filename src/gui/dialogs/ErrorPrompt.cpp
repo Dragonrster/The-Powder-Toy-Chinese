@@ -1,5 +1,6 @@
 #include "ErrorPrompt.h"
 #include "common/Point.h"
+#include "common/Translations.h"
 #include "interface/Label.h"
 #include "interface/Button.h"
 
@@ -11,7 +12,7 @@ ErrorPrompt::ErrorPrompt(std::string message, std::string dismiss):
 #else
 	int buttonHeight = 25;
 #endif
-	Label *titleLabel = new Label(Point(5, 3), Point(Label::AUTOSIZE, Label::AUTOSIZE), "Error");
+	Label *titleLabel = new Label(Point(5, 3), Point(Label::AUTOSIZE, Label::AUTOSIZE), TrUI("Error"));
 	titleLabel->SetColor(COLRGB(255, 64, 32));
 	this->AddComponent(titleLabel);
 

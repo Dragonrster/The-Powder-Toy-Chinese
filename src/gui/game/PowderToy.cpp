@@ -22,6 +22,7 @@
 #include "common/Format.h"
 #include "common/Matrix.h"
 #include "common/Platform.h"
+#include "common/Translations.h"
 #include "game/Authors.h"
 #include "game/Brush.h"
 #include "game/Request.h"
@@ -379,7 +380,7 @@ void PowderToy::DoSaveBtn(unsigned char b)
 		catch (BuildException & e)
 		{
 			clear_save_info();
-			Engine::Ref().ShowWindow(new ErrorPrompt("Error creating save: " + std::string(e.what())));
+			Engine::Ref().ShowWindow(new ErrorPrompt(TrUI("Error creating save: ") + std::string(e.what())));
 		}
 	}
 	// Online save
@@ -427,7 +428,7 @@ void PowderToy::DoSaveBtn(unsigned char b)
 		catch (BuildException & e)
 		{
 			clear_save_info();
-			Engine::Ref().ShowWindow(new ErrorPrompt("Error creating save: " + std::string(e.what())));
+			Engine::Ref().ShowWindow(new ErrorPrompt(TrUI("Error creating save: ") + std::string(e.what())));
 		}
 	}
 	delete save;
@@ -663,7 +664,7 @@ void PowderToy::ConfirmUpdate(std::string changelog, std::string file)
 	std::string title = "\bwDo you want to update Jacob1's Mod?";
 #endif
 
-	auto prompt = new ConfirmPrompt(title, changelog, "\btUpdate");
+	auto prompt = new ConfirmPrompt(title, changelog, "\bt" + TrUI("Update"));
 	prompt->SetCallback({ [file](bool confirmed) {
 		if (confirmed)
 		{
@@ -676,7 +677,7 @@ void PowderToy::ConfirmUpdate(std::string changelog, std::string file)
 					Engine::Ref().Shutdown();
 				else
 				{
-					ErrorPrompt *error = new ErrorPrompt("Update failed - try downloading a new version.");
+					ErrorPrompt *error = new ErrorPrompt(TrUI("Update failed - try downloading a new version."));
 					Engine::Ref().ShowWindow(error);
 				}
 			});
@@ -878,7 +879,7 @@ void PowderToy::ReloadSave()
 	}
 	catch (ParseException & e)
 	{
-		Engine::Ref().ShowWindow(new InfoPrompt("Error reloading save", e.what()));
+		Engine::Ref().ShowWindow(new InfoPrompt(TrUI("Error reloading save"), e.what()));
 	}
 }
 
@@ -1241,7 +1242,7 @@ void PowderToy::OnTick(uint32_t ticks)
 		message << screenWidth << "x" << screenHeight << " detected, " << VIDXRES * scale << "x" << VIDYRES * scale << " required";
 		message << "\nTo undo this, hit Cancel. You can change this in settings at any time.";
 
-		auto prompt = new ConfirmPrompt("Large screen detected", message.str());
+		auto prompt = new ConfirmPrompt(TrUI("Large screen detected"), message.str());
 		prompt->SetCallback({ [](bool confirmed) {
 			if (!confirmed)
 				Engine::Ref().SetScale(1);
@@ -1729,7 +1730,7 @@ void PowderToy::OnMouseUp(int x, int y, unsigned char button)
 		}
 		catch (ParseException & e)
 		{
-			Engine::Ref().ShowWindow(new InfoPrompt("Error loading save", e.what()));
+			Engine::Ref().ShowWindow(new InfoPrompt(TrUI("Error loading save"), e.what()));
 		}
 
 		ResetStampState();
@@ -1783,7 +1784,7 @@ void PowderToy::OnMouseUp(int x, int y, unsigned char button)
 				{
 					delete clipboardData;
 					clipboardData = NULL;
-					Engine::Ref().ShowWindow(new ErrorPrompt("Error building save: " + std::string(e.what())));
+					Engine::Ref().ShowWindow(new ErrorPrompt(TrUI("Error building save: ") + std::string(e.what())));
 				}
 				break;
 			}
@@ -1807,7 +1808,7 @@ void PowderToy::OnMouseUp(int x, int y, unsigned char button)
 				{
 					delete clipboardData;
 					clipboardData = NULL;
-					Engine::Ref().ShowWindow(new ErrorPrompt("Error building save: " + std::string(e.what())));
+					Engine::Ref().ShowWindow(new ErrorPrompt(TrUI("Error building save: ") + std::string(e.what())));
 					break;
 				}
 				SnapshotHistory::TakeSnapshot(sim);
@@ -1964,7 +1965,7 @@ bool PowderToy::BeforeKeyPress(int key, int scan, bool repeat, bool shift, bool 
 
 void PowderToy::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, bool alt)
 {
-	UpdateToolTip(introText, Point(16, 20), INTROTIP, 255);
+	UpdateToolTip(Translations::Ref().GetIntroText(introText), Point(16, 20), INTROTIP, 255);
 	if (deco_disablestuff)
 		return;
 
@@ -2019,7 +2020,7 @@ void PowderToy::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl
 			break;
 		}
 
-		auto prompt = new ConfirmPrompt("You are about to quit", "Are you sure you want to exit the game?", "Quit");
+		auto prompt = new ConfirmPrompt(TrUI("You are about to quit"), TrUI("Are you sure you want to exit the game?"), TrUI("Quit"));
 		prompt->SetCallback({ [this](bool confirmed) {
 			if (confirmed)
 			{
@@ -2204,18 +2205,18 @@ void PowderToy::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl
 		}
 		else
 		{
-			auto prompt = new ConfirmPrompt("Install Powder Toy", "You are about to install The Powder Toy", "Install");
+			auto prompt = new ConfirmPrompt(TrUI("Install Powder Toy"), TrUI("You are about to install The Powder Toy"), TrUI("Install"));
 			prompt->SetCallback({ [](bool wasConfirmed) {
 				if (wasConfirmed)
 				{
 					if (Platform::RegisterExtension())
 					{
-						InfoPrompt *info = new InfoPrompt("Install Success", "Powder Toy has been installed!");
+						InfoPrompt *info = new InfoPrompt(TrUI("Install Success"), TrUI("Powder Toy has been installed!"));
 						Engine::Ref().ShowWindow(info);
 					}
 					else
 					{
-						ErrorPrompt *error = new ErrorPrompt("Install failed - You may not have permission or you may be on a platform that does not support installation");
+						ErrorPrompt *error = new ErrorPrompt(TrUI("Install failed - You may not have permission or you may be on a platform that does not support installation"));
 						Engine::Ref().ShowWindow(error);
 					}
 				}
@@ -2263,7 +2264,7 @@ void PowderToy::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl
 		if (ctrlHeld && (svf_mod || svf_admin))
 		{
 			std::string authorString = authors.toStyledString();
-			InfoPrompt *info = new InfoPrompt("Save authorship info", authorString);
+			InfoPrompt *info = new InfoPrompt(TrUI("Save authorship info"), authorString);
 			Engine::Ref().ShowWindow(info);
 		}
 		break;
@@ -2361,9 +2362,9 @@ void PowderToy::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl
 		}
 	case SDL_SCANCODE_F1:
 		if (!GetToolTipAlpha(INTROTIP))
-			UpdateToolTip(introText, Point(16, 20), INTROTIP, 10235);
+			UpdateToolTip(Translations::Ref().GetIntroText(introText), Point(16, 20), INTROTIP, 10235);
 		else
-			UpdateToolTip(introText, Point(16, 20), INTROTIP, 0);
+			UpdateToolTip(Translations::Ref().GetIntroText(introText), Point(16, 20), INTROTIP, 0);
 		break;
 	case SDL_SCANCODE_K:
 	case SDL_SCANCODE_L:
@@ -2757,7 +2758,7 @@ void PowderToy::OnFileDrop(const char *filename)
 	int len = strlen(filename);
 	if (len < 4 || (strcmp(filename + (len - 4), ".cps") && strcmp(filename + (len - 4), ".stm")))
 	{
-		Engine::Ref().ShowWindow(new ErrorPrompt("Dropped file is not a TPT save file. Must have a .cps or .stm extension"));
+		Engine::Ref().ShowWindow(new ErrorPrompt(TrUI("Dropped file is not a TPT save file. Must have a .cps or .stm extension")));
 		return;
 	}
 
@@ -2772,10 +2773,10 @@ void PowderToy::OnFileDrop(const char *filename)
 	}
 	catch (ParseException &e)
 	{
-		Engine::Ref().ShowWindow(new ErrorPrompt("Error loading save: " + std::string(e.what())));
+		Engine::Ref().ShowWindow(new ErrorPrompt(TrUI("Error loading save: ") + std::string(e.what())));
 	}
 
 	delete save;
 
-	UpdateToolTip(introText, Point(16, 20), INTROTIP, 255);
+	UpdateToolTip(Translations::Ref().GetIntroText(introText), Point(16, 20), INTROTIP, 255);
 }

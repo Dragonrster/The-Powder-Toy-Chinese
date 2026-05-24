@@ -1,0 +1,982 @@
+{
+  "_meta": {
+    "language": "en",
+    "language_name": "English"
+  },
+  "elements": {
+    "DEFAULT_PT_ACEL": {
+      "name": "ACEL",
+      "description": "Accelerator, speeds up nearby elements."
+    },
+    "DEFAULT_PT_ACID": {
+      "name": "ACID",
+      "description": "Dissolves almost everything."
+    },
+    "DEFAULT_PT_AMTR": {
+      "name": "AMTR",
+      "description": "Anti-Matter, destroys a majority of particles."
+    },
+    "DEFAULT_PT_ANAR": {
+      "name": "ANAR",
+      "description": "Anti-air. Very light gravity-defying dust. Burns cold instead of hot."
+    },
+    "DEFAULT_PT_ANIM": {
+      "name": "ANIM",
+      "description": "Animated Liquid Crystal. Can show multiple frames, use left/right in the deco editor."
+    },
+    "DEFAULT_PT_ARAY": {
+      "name": "ARAY",
+      "description": "Ray Emitter. Rays create points when they collide."
+    },
+    "DEFAULT_PT_BANG": {
+      "name": "TNT",
+      "description": "TNT, explodes all at once."
+    },
+    "DEFAULT_PT_BASE": {
+      "name": "BASE",
+      "description": "Corrosive liquid. Rusts conductive solids, neutralizes acid."
+    },
+    "DEFAULT_PT_BCLN": {
+      "name": "BCLN",
+      "description": "Breakable Clone."
+    },
+    "DEFAULT_PT_BCOL": {
+      "name": "BCOL",
+      "description": "Broken Coal. Heavy particles, burns slowly."
+    },
+    "DEFAULT_PT_BGLA": {
+      "name": "BGLA",
+      "description": "Broken Glass, heavy particles formed when glass breaks under pressure. Meltable. Bagels."
+    },
+    "DEFAULT_PT_BHOL": {
+      "name": "VACU",
+      "description": "Vacuum, sucks in other particles and heats up."
+    },
+    "DEFAULT_PT_BIZR": {
+      "name": "BIZR",
+      "description": "Bizarre... contradicts the normal state changes. Paints other elements with its deco color."
+    },
+    "DEFAULT_PT_BIZRG": {
+      "name": "BIZG",
+      "description": "Bizarre gas."
+    },
+    "DEFAULT_PT_BIZRS": {
+      "name": "BIZS",
+      "description": "Bizarre solid."
+    },
+    "DEFAULT_PT_BMTL": {
+      "name": "BMTL",
+      "description": "Breakable metal. Common conductive building material, can melt and break under pressure."
+    },
+    "DEFAULT_PT_BOMB": {
+      "name": "BOMB",
+      "description": "Bomb. Explodes and destroys all surrounding particles when it touches something."
+    },
+    "DEFAULT_PT_BOYL": {
+      "name": "BOYL",
+      "description": "Boyle, variable pressure gas. Expands when heated."
+    },
+    "DEFAULT_PT_BRAY": {
+      "name": "BRAY",
+      "description": "Ray Point. Rays create points when they collide."
+    },
+    "DEFAULT_PT_BRCK": {
+      "name": "BRCK",
+      "description": "Brick, breakable building material."
+    },
+    "DEFAULT_PT_BREC": {
+      "name": "BREL",
+      "description": "Broken electronics. Formed from EMP blasts, and when constantly sparked while under pressure, turns to EXOT."
+    },
+    "DEFAULT_PT_BRMT": {
+      "name": "BRMT",
+      "description": "Broken metal. Created when iron rusts or when metals break from pressure."
+    },
+    "DEFAULT_PT_BTRY": {
+      "name": "BTRY",
+      "description": "Battery. Generates infinite electricity."
+    },
+    "DEFAULT_PT_BUTN": {
+      "name": "BUTN",
+      "description": "Button. Can be sparked just by clicking on it, but only when turned on."
+    },
+    "DEFAULT_PT_BVBR": {
+      "name": "BVBR",
+      "description": "Broken vibranium."
+    },
+    "DEFAULT_PT_C5": {
+      "name": "C-5",
+      "description": "Cold explosive, set off by anything cold."
+    },
+    "DEFAULT_PT_CAUS": {
+      "name": "CAUS",
+      "description": "Caustic Gas, acts like ACID."
+    },
+    "DEFAULT_PT_CBNW": {
+      "name": "BUBW",
+      "description": "Carbonated water. Slowly releases CO2."
+    },
+    "DEFAULT_PT_CLNE": {
+      "name": "CLNE",
+      "description": "Clone. Duplicates any particles it touches."
+    },
+    "DEFAULT_PT_CLST": {
+      "name": "CLST",
+      "description": "Clay dust. Produces paste when mixed with water."
+    },
+    "DEFAULT_PT_CNCT": {
+      "name": "CNCT",
+      "description": "Concrete. Can stack on itself or ROCK, collapses with pressure."
+    },
+    "DEFAULT_PT_CO2": {
+      "name": "CO2",
+      "description": "Carbon Dioxide. Heavy gas, drifts downwards. Carbonates water and turns to dry ice when cold."
+    },
+    "DEFAULT_PT_COAL": {
+      "name": "COAL",
+      "description": "Coal, Burns very slowly. Gets red when hot."
+    },
+    "DEFAULT_PT_CONV": {
+      "name": "CONV",
+      "description": "Converter. Converts everything into whatever it first touches."
+    },
+    "DEFAULT_PT_CRAY": {
+      "name": "CRAY",
+      "description": "Particle Ray Emitter. Creates a beam of particles set by its ctype, with a range set by tmp."
+    },
+    "DEFAULT_PT_CRMC": {
+      "name": "CRMC",
+      "description": "Ceramic. Gets stronger under pressure."
+    },
+    "DEFAULT_PT_DCEL": {
+      "name": "DCEL",
+      "description": "Decelerator, slows down nearby elements."
+    },
+    "DEFAULT_PT_DESL": {
+      "name": "DESL",
+      "description": "Liquid diesel. Explodes under high pressure and temperatures."
+    },
+    "DEFAULT_PT_DEST": {
+      "name": "DEST",
+      "description": "More destructive Bomb, can break through virtually anything."
+    },
+    "DEFAULT_PT_DEUT": {
+      "name": "DEUT",
+      "description": "Deuterium oxide. Gets more concentrated when cold, explodes with neutrons or protons."
+    },
+    "DEFAULT_PT_DLAY": {
+      "name": "DLAY",
+      "description": "Conducts with temperature-dependent delay. (use HEAT/COOL)."
+    },
+    "DEFAULT_PT_DMG": {
+      "name": "DMG",
+      "description": "Generates damaging pressure and breaks any elements it hits."
+    },
+    "DEFAULT_PT_DMND": {
+      "name": "DMND",
+      "description": "Diamond. Indestructible."
+    },
+    "DEFAULT_PT_DRAY": {
+      "name": "DRAY",
+      "description": "Duplicator ray. Replicates a line of particles in front of it."
+    },
+    "DEFAULT_PT_DRIC": {
+      "name": "DRIC",
+      "description": "Dry Ice, formed when CO2 is cooled."
+    },
+    "DEFAULT_PT_DSTW": {
+      "name": "DSTW",
+      "description": "Distilled water, does not conduct electricity."
+    },
+    "DEFAULT_PT_DTEC": {
+      "name": "DTEC",
+      "description": "Detector, creates a spark when something with its ctype is nearby."
+    },
+    "DEFAULT_PT_DUST": {
+      "name": "DUST",
+      "description": "Very light dust. Flammable."
+    },
+    "DEFAULT_PT_DYST": {
+      "name": "DYST",
+      "description": "Dead Yeast."
+    },
+    "DEFAULT_PT_ELEC": {
+      "name": "ELEC",
+      "description": "Electrons. Sparks electronics, reacts with NEUT and WATR."
+    },
+    "DEFAULT_PT_EMBR": {
+      "name": "EMBR",
+      "description": "Sparks. Formed by explosions."
+    },
+    "DEFAULT_PT_EMP": {
+      "name": "EMP",
+      "description": "Electromagnetic pulse. Breaks activated electronics."
+    },
+    "DEFAULT_PT_EQUALVEL": {
+      "name": "EQVE",
+      "description": "A failed shared velocity test."
+    },
+    "DEFAULT_PT_ETRD": {
+      "name": "ETRD",
+      "description": "Electrode. Creates plasma arcs with electricity. (Use sparingly)"
+    },
+    "DEFAULT_PT_EXOT": {
+      "name": "EXOT",
+      "description": "Exotic matter. Explodes with excess exposure to electrons. Has many other odd reactions."
+    },
+    "DEFAULT_PT_EXPL": {
+      "name": "EXPL",
+      "description": "Explosion, causes everything it touches to explode."
+    },
+    "DEFAULT_PT_FIGH": {
+      "name": "FIGH",
+      "description": "Fighter. Tries to kill stickmen. You must first give it an element to kill him with."
+    },
+    "DEFAULT_PT_FILT": {
+      "name": "FILT",
+      "description": "Filter. Changes color of PHOT and BIZR. Color depends on temperature."
+    },
+    "DEFAULT_PT_FIRE": {
+      "name": "FIRE",
+      "description": "Ignites flammable materials. Heats air."
+    },
+    "DEFAULT_PT_FIRW": {
+      "name": "FIRW",
+      "description": "Fireworks! Colorful, set off by fire."
+    },
+    "DEFAULT_PT_FOG": {
+      "name": "FOG",
+      "description": "Fog, created when an electric current is passed through RIME."
+    },
+    "DEFAULT_PT_FRAY": {
+      "name": "FRAY",
+      "description": "Force Emitter. Pushes or pulls objects based on it's temperature. Use like ARAY."
+    },
+    "DEFAULT_PT_FRME": {
+      "name": "FRME",
+      "description": "Frame, can be used with pistons to push many particles."
+    },
+    "DEFAULT_PT_FRZW": {
+      "name": "FRZW",
+      "description": "Freeze water. Hybrid liquid formed when Freeze powder melts."
+    },
+    "DEFAULT_PT_FRZZ": {
+      "name": "FRZZ",
+      "description": "Freeze powder. When melted, forms ice that always cools. Spreads with regular water."
+    },
+    "DEFAULT_PT_FSEP": {
+      "name": "FSEP",
+      "description": "Fuse Powder. Burns slowly like FUSE."
+    },
+    "DEFAULT_PT_FUSE": {
+      "name": "FUSE",
+      "description": "Burns slowly. Ignites at very high temperatures or when sparked."
+    },
+    "DEFAULT_PT_FWRK": {
+      "name": "FWRK",
+      "description": "Original version of fireworks, activated by heat/neutrons."
+    },
+    "DEFAULT_PT_GAS": {
+      "name": "GAS",
+      "description": "Diffuses quickly and is flammable. Liquefies into OIL under pressure."
+    },
+    "DEFAULT_PT_GBMB": {
+      "name": "GBMB",
+      "description": "Gravity bomb. Sticks to the first object it touches then produces a strong gravity push."
+    },
+    "DEFAULT_PT_GEL": {
+      "name": "GEL",
+      "description": "A liquid with variable viscosity and heat conductivity. Absorbs water."
+    },
+    "DEFAULT_PT_GLAS": {
+      "name": "GLAS",
+      "description": "Glass. Meltable. Shatters under pressure, and refracts photons."
+    },
+    "DEFAULT_PT_GLOW": {
+      "name": "GLOW",
+      "description": "Glow, Glows under pressure."
+    },
+    "DEFAULT_PT_GOLD": {
+      "name": "GOLD",
+      "description": "Corrosion resistant metal, will reverse corrosion of iron. Excellent conductor."
+    },
+    "DEFAULT_PT_GOO": {
+      "name": "GOO",
+      "description": "Deforms and disappears under pressure."
+    },
+    "DEFAULT_PT_GPMP": {
+      "name": "GPMP",
+      "description": "Gravity pump. Changes gravity to its temp when activated. (use HEAT/COOL)"
+    },
+    "DEFAULT_PT_GRAV": {
+      "name": "GRAV",
+      "description": "Very light dust. Changes colour based on velocity."
+    },
+    "DEFAULT_PT_GRVT": {
+      "name": "GRVT",
+      "description": "Gravitons. Create Newtonian Gravity."
+    },
+    "DEFAULT_PT_GUNP": {
+      "name": "GUN",
+      "description": "Gunpowder. Light dust, explodes on contact with fire or spark."
+    },
+    "DEFAULT_PT_H2": {
+      "name": "HYGN",
+      "description": "Hydrogen. Combusts with OXYG to make WATR. Undergoes fusion at high temperature and pressure."
+    },
+    "DEFAULT_PT_HEAC": {
+      "name": "HEAC",
+      "description": "Rapid heat conductor."
+    },
+    "DEFAULT_PT_HFLM": {
+      "name": "CFLM",
+      "description": "Sub-zero flame."
+    },
+    "DEFAULT_PT_HSWC": {
+      "name": "HSWC",
+      "description": "Heat switch. Conducts heat only when activated."
+    },
+    "DEFAULT_PT_ICEI": {
+      "name": "ICE",
+      "description": "Crushes under pressure. Cools down air."
+    },
+    "DEFAULT_PT_IGNT": {
+      "name": "IGNC",
+      "description": "Ignition cord. Burns slowly with fire and sparks."
+    },
+    "DEFAULT_PT_INDI": {
+      "name": "INDI",
+      "description": "Indestructible Insulator."
+    },
+    "DEFAULT_PT_INSL": {
+      "name": "INSL",
+      "description": "Insulator. Blocks heat, electricity, and radiation."
+    },
+    "DEFAULT_PT_INST": {
+      "name": "INST",
+      "description": "Instantly conducts, PSCN to charge, NSCN to take."
+    },
+    "DEFAULT_PT_INVIS": {
+      "name": "INVS",
+      "description": "Invisible under pressure, allowing particles through."
+    },
+    "DEFAULT_PT_INWR": {
+      "name": "INWR",
+      "description": "Insulated wire. Only conducts to PSCN, NSCN, WIFI, and SWCH."
+    },
+    "DEFAULT_PT_IRON": {
+      "name": "IRON",
+      "description": "Rusts with salt, can be used for electrolysis of WATR."
+    },
+    "DEFAULT_PT_ISOZ": {
+      "name": "ISOZ",
+      "description": "Isotope-Z. Radioactive liquid. Decays into photons when touching PHOT or under negative pressure."
+    },
+    "DEFAULT_PT_ISZS": {
+      "name": "ISZS",
+      "description": "Solid form of ISOZ, slowly decays into PHOT."
+    },
+    "DEFAULT_PT_LAVA": {
+      "name": "LAVA",
+      "description": "Molten lava. Ignites flammable materials. Generated when metals and other materials melt, solidifies when cold."
+    },
+    "DEFAULT_PT_LCRY": {
+      "name": "LCRY",
+      "description": "Liquid Crystal. Changes colour when charged. (PSCN Charges, NSCN Discharges)"
+    },
+    "DEFAULT_PT_LDTC": {
+      "name": "LDTC",
+      "description": "Linear detector. Scans in 8 directions for particles with its ctype and creates a spark on the opposite side."
+    },
+    "DEFAULT_PT_LIFE": {
+      "name": "LIFE",
+      "description": "Game Of Life: Begin 3/Stay 23"
+    },
+    "DEFAULT_PT_LIGH": {
+      "name": "LIGH",
+      "description": "More realistic lightning. Set pen size to set the size of the lightning."
+    },
+    "DEFAULT_PT_LITH": {
+      "name": "LITH",
+      "description": "Lithium. Reactive element that explodes on contact with water."
+    },
+    "DEFAULT_PT_LNTG": {
+      "name": "LN2",
+      "description": "Liquid Nitrogen. Very cold, disappears whenever it touches anything warmer."
+    },
+    "DEFAULT_PT_LO2": {
+      "name": "LOXY",
+      "description": "Liquid Oxygen. Very cold. Reacts with fire."
+    },
+    "DEFAULT_PT_LOLZ": {
+      "name": "LOLZ",
+      "description": "Lolz"
+    },
+    "DEFAULT_PT_LOVE": {
+      "name": "LOVE",
+      "description": "Love..."
+    },
+    "DEFAULT_PT_LRBD": {
+      "name": "LRBD",
+      "description": "Liquid Rubidium."
+    },
+    "DEFAULT_PT_LSNS": {
+      "name": "LSNS",
+      "description": "Life sensor, creates a spark when there's a nearby particle with a life higher than its temperature."
+    },
+    "DEFAULT_PT_MERC": {
+      "name": "MERC",
+      "description": "Mercury. Volume changes with temperature, Conductive."
+    },
+    "DEFAULT_PT_METL": {
+      "name": "METL",
+      "description": "Metal, the basic conductor. Meltable."
+    },
+    "DEFAULT_PT_MORT": {
+      "name": "MORT",
+      "description": "Steam Train."
+    },
+    "DEFAULT_PT_MOVS": {
+      "name": "BALL",
+      "description": "Moving solid. Acts like a bouncy ball."
+    },
+    "DEFAULT_PT_MWAX": {
+      "name": "MWAX",
+      "description": "Liquid Wax. Hardens into WAX at 45 degrees."
+    },
+    "DEFAULT_PT_NBHL": {
+      "name": "BHOL",
+      "description": "Black hole, sucks in particles using gravity. (Requires Newtonian gravity)"
+    },
+    "DEFAULT_PT_NBLE": {
+      "name": "NBLE",
+      "description": "Noble Gas. Ionizes into plasma when sparked. Diffuses."
+    },
+    "DEFAULT_PT_NEUT": {
+      "name": "NEUT",
+      "description": "Neutrons. Interact with matter in odd ways."
+    },
+    "DEFAULT_PT_NICE": {
+      "name": "NICE",
+      "description": "Nitrogen Ice. Very cold, will melt into LN2 when heated only slightly."
+    },
+    "DEFAULT_PT_NITR": {
+      "name": "NITR",
+      "description": "Nitroglycerin. Pressure sensitive explosive. Mix with CLST to make TNT."
+    },
+    "DEFAULT_PT_NONE": {
+      "name": "NONE",
+      "description": "Erases particles."
+    },
+    "DEFAULT_PT_NSCN": {
+      "name": "NSCN",
+      "description": "N-Type Silicon, Will not transfer current to P-Type Silicon. Disables powered materials."
+    },
+    "DEFAULT_PT_NTCT": {
+      "name": "NTCT",
+      "description": "NTC Thermistor. Conducts with PSCN and NSCN, but only when heated above 100C."
+    },
+    "DEFAULT_PT_NWHL": {
+      "name": "WHOL",
+      "description": "White hole, pushes away other particles with gravity. (Requires Newtonian gravity)"
+    },
+    "DEFAULT_PT_O2": {
+      "name": "OXYG",
+      "description": "Oxygen gas. Ignites easily."
+    },
+    "DEFAULT_PT_OIL": {
+      "name": "OIL",
+      "description": "Flammable, turns into GAS at low pressure or high temperature."
+    },
+    "DEFAULT_PT_PBCN": {
+      "name": "PBCN",
+      "description": "Powered breakable clone."
+    },
+    "DEFAULT_PT_PCLN": {
+      "name": "PCLN",
+      "description": "Powered clone. When activated, duplicates any particles it touches."
+    },
+    "DEFAULT_PT_PHOT": {
+      "name": "PHOT",
+      "description": "Photons. Refract through glass, and different elements change its color. Can ignite flammable materials."
+    },
+    "DEFAULT_PT_PINV": {
+      "name": "PINV",
+      "description": "Powered invisible,invisible to particles while activated."
+    },
+    "DEFAULT_PT_PIPE": {
+      "name": "PIPE",
+      "description": "PIPE, moves particles around. Once the BRCK generates, erase some for the exit. Then the PIPE generates and is usable."
+    },
+    "DEFAULT_PT_PLEX": {
+      "name": "C-4",
+      "description": "Solid pressure sensitive explosive."
+    },
+    "DEFAULT_PT_PLNT": {
+      "name": "PLNT",
+      "description": "Plant, drinks water and grows."
+    },
+    "DEFAULT_PT_PLSM": {
+      "name": "PLSM",
+      "description": "Plasma, extremely hot."
+    },
+    "DEFAULT_PT_PLUT": {
+      "name": "PLUT",
+      "description": "Plutonium. Heavy, fissile particles. Generates neutrons under pressure."
+    },
+    "DEFAULT_PT_POLO": {
+      "name": "POLO",
+      "description": "Polonium, highly radioactive. Decays into NEUT and heats up."
+    },
+    "DEFAULT_PT_PPIP": {
+      "name": "PPIP",
+      "description": "Powered version of pipe"
+    },
+    "DEFAULT_PT_PPTI": {
+      "name": "PPTI",
+      "description": "Powered Portal IN, can be turned on/off."
+    },
+    "DEFAULT_PT_PPTO": {
+      "name": "PPTO",
+      "description": "Powered Portal OUT, can be turned on/off."
+    },
+    "DEFAULT_PT_PQRT": {
+      "name": "PQRT",
+      "description": "Powdered quartz, broken form of QRTZ."
+    },
+    "DEFAULT_PT_PROT": {
+      "name": "PROT",
+      "description": "Protons. Transfer heat to materials, and remove sparks."
+    },
+    "DEFAULT_PT_PRTI": {
+      "name": "PRTI",
+      "description": "Portal IN. Particles go in here. Also has temperature dependent channels. (same as WIFI)"
+    },
+    "DEFAULT_PT_PRTO": {
+      "name": "PRTO",
+      "description": "Portal OUT. Particles come out here. Also has temperature dependent channels. (same as WIFI)"
+    },
+    "DEFAULT_PT_PSCN": {
+      "name": "PSCN",
+      "description": "P-Type Silicon, Will transfer current to any conductor. Enables powered materials."
+    },
+    "DEFAULT_PT_PSNS": {
+      "name": "PSNS",
+      "description": "Pressure sensor, creates a spark when the pressure is greater than its temperature."
+    },
+    "DEFAULT_PT_PSTE": {
+      "name": "PSTE",
+      "description": "Colloid, Hardens under pressure."
+    },
+    "DEFAULT_PT_PSTN": {
+      "name": "PSTN",
+      "description": "Piston, pushes particles. PSCN extends, NSCN retracts."
+    },
+    "DEFAULT_PT_PSTS": {
+      "name": "PSTS",
+      "description": "Solid form of PSTE."
+    },
+    "DEFAULT_PT_PTCT": {
+      "name": "PTCT",
+      "description": "PTC Thermistor. Conducts with PSCN and NSCN, but only when cooled below 100C."
+    },
+    "DEFAULT_PT_PTNM": {
+      "name": "PTNM",
+      "description": "Platinum. Catalyzes certain reactions."
+    },
+    "DEFAULT_PT_PUMP": {
+      "name": "PUMP",
+      "description": "Pressure pump. Changes pressure to its temp when activated. (use HEAT/COOL)."
+    },
+    "DEFAULT_PT_PVOD": {
+      "name": "PVOD",
+      "description": "Powered VOID. When activated, destroys entering particles."
+    },
+    "DEFAULT_PT_PWHT": {
+      "name": "PWHT",
+      "description": "Powered Heater. Flood fill heats particles to its temp. Use only one."
+    },
+    "DEFAULT_PT_QRTZ": {
+      "name": "QRTZ",
+      "description": "Quartz, breakable mineral. Conducts but becomes brittle when cold. Scatters photons."
+    },
+    "DEFAULT_PT_RAZR": {
+      "name": "RAZR",
+      "description": "Heavy silver particles, displaces everything."
+    },
+    "DEFAULT_PT_RBDM": {
+      "name": "RBDM",
+      "description": "Rubidium. Explosive, especially on contact with water. Low melting point."
+    },
+    "DEFAULT_PT_RFGL": {
+      "name": "RFGL",
+      "description": "Liquid refrigerant."
+    },
+    "DEFAULT_PT_RFRG": {
+      "name": "RFRG",
+      "description": "Refrigerant. Heats up and liquefies under pressure."
+    },
+    "DEFAULT_PT_RIME": {
+      "name": "RIME",
+      "description": "Solid, created when steam cools rapidly and goes through deposition, skipping the liquid phase."
+    },
+    "DEFAULT_PT_ROCK": {
+      "name": "ROCK",
+      "description": "Solid, melts into various elements."
+    },
+    "DEFAULT_PT_RPEL": {
+      "name": "RPEL",
+      "description": "Repels or attracts particles based on its temperature."
+    },
+    "DEFAULT_PT_RSSS": {
+      "name": "RSSS",
+      "description": "Solidified resist. Blocks pressure and insulates electricity. Liquefies on contact with neutrons."
+    },
+    "DEFAULT_PT_RSST": {
+      "name": "RSST",
+      "description": "Resist. Solidifies on contact with photons, is destroyed by electrons and spark."
+    },
+    "DEFAULT_PT_SALT": {
+      "name": "SALT",
+      "description": "Salt, dissolves in water."
+    },
+    "DEFAULT_PT_SAND": {
+      "name": "SAND",
+      "description": "Sand, Heavy particles. Melts into glass."
+    },
+    "DEFAULT_PT_SAWD": {
+      "name": "SAWD",
+      "description": "Sawdust. Floats on water."
+    },
+    "DEFAULT_PT_SEED": {
+      "name": "SEED",
+      "description": "Seeds. Put on sand and add water to grow a tree."
+    },
+    "DEFAULT_PT_SHLD1": {
+      "name": "SHLD",
+      "description": "Shield. Grows around spark, broken by pressure."
+    },
+    "DEFAULT_PT_SHLD2": {
+      "name": "SHD2",
+      "description": "Shield lvl 2."
+    },
+    "DEFAULT_PT_SHLD3": {
+      "name": "SHD3",
+      "description": "Shield lvl 3."
+    },
+    "DEFAULT_PT_SHLD4": {
+      "name": "SHD4",
+      "description": "Shield lvl 4."
+    },
+    "DEFAULT_PT_SING": {
+      "name": "SING",
+      "description": "Singularity. Creates huge amounts of negative pressure and destroys everything."
+    },
+    "DEFAULT_PT_SLCN": {
+      "name": "SLCN",
+      "description": "Powdered Silicon. A key ingredient in producing multiple materials."
+    },
+    "DEFAULT_PT_SLTW": {
+      "name": "SLTW",
+      "description": "Saltwater, conducts electricity, difficult to freeze."
+    },
+    "DEFAULT_PT_SMKE": {
+      "name": "SMKE",
+      "description": "Smoke, created by fire."
+    },
+    "DEFAULT_PT_SNOW": {
+      "name": "SNOW",
+      "description": "Light particles. Created when ICE breaks under pressure."
+    },
+    "DEFAULT_PT_SOAP": {
+      "name": "SOAP",
+      "description": "Soap. Creates bubbles, washes off deco color, and cures virus."
+    },
+    "DEFAULT_PT_SPAWN": {
+      "name": "SPWN",
+      "description": "STKM spawn point."
+    },
+    "DEFAULT_PT_SPAWN2": {
+      "name": "SPWN2",
+      "description": "STK2 spawn point."
+    },
+    "DEFAULT_PT_SPNG": {
+      "name": "SPNG",
+      "description": "Sponge, absorbs water. Is a moving solid."
+    },
+    "DEFAULT_PT_SPRK": {
+      "name": "SPRK",
+      "description": "Electricity. The basis of all electronics in TPT, travels along conductive elements."
+    },
+    "DEFAULT_PT_STKM": {
+      "name": "STKM",
+      "description": "Stickman. Don't kill him! Control with the arrow keys."
+    },
+    "DEFAULT_PT_STKM2": {
+      "name": "STK2",
+      "description": "second stickman. Don't kill him! Control with wasd."
+    },
+    "DEFAULT_PT_STNE": {
+      "name": "STNE",
+      "description": "Stone. Heavy particles, meltable."
+    },
+    "DEFAULT_PT_STOR": {
+      "name": "STOR",
+      "description": "Storage. Captures and stores a single particle. Releases when charged with PSCN, also passes to PIPE."
+    },
+    "DEFAULT_PT_SWCH": {
+      "name": "SWCH",
+      "description": "Switch. Only conducts when switched on. (PSCN switches on, NSCN switches off)"
+    },
+    "DEFAULT_PT_TESC": {
+      "name": "TESC",
+      "description": "Tesla coil! Creates lightning when sparked."
+    },
+    "DEFAULT_PT_THDR": {
+      "name": "THDR",
+      "description": "Lightning! Very hot, inflicts damage upon most materials, and transfers current to metals."
+    },
+    "DEFAULT_PT_THRM": {
+      "name": "THRM",
+      "description": "Thermite. Burns into extremely hot molten metal."
+    },
+    "DEFAULT_PT_TRON": {
+      "name": "TRON",
+      "description": "Smart particles, Travels in straight lines and avoids obstacles. Grows with time."
+    },
+    "DEFAULT_PT_TSNS": {
+      "name": "TSNS",
+      "description": "Temperature sensor, creates a spark when there's a nearby particle with a greater temperature."
+    },
+    "DEFAULT_PT_TTAN": {
+      "name": "TTAN",
+      "description": "Titanium. Higher melting temperature than most other metals, blocks all air pressure."
+    },
+    "DEFAULT_PT_TUNG": {
+      "name": "TUNG",
+      "description": "Tungsten. Brittle metal with a very high melting point."
+    },
+    "DEFAULT_PT_URAN": {
+      "name": "URAN",
+      "description": "Uranium. Heavy particles. Generates heat under pressure."
+    },
+    "DEFAULT_PT_VIBR": {
+      "name": "VIBR",
+      "description": "Vibranium. Stores energy and releases it in violent explosions."
+    },
+    "DEFAULT_PT_VINE": {
+      "name": "VINE",
+      "description": "Vine, can grow along WOOD."
+    },
+    "DEFAULT_PT_VIRS": {
+      "name": "VIRS",
+      "description": "Virus. Turns everything it touches into virus."
+    },
+    "DEFAULT_PT_VOID": {
+      "name": "VOID",
+      "description": "Hole, will drain away any particles."
+    },
+    "DEFAULT_PT_VRSG": {
+      "name": "VRSG",
+      "description": "Gas Virus. Turns everything it touches into virus."
+    },
+    "DEFAULT_PT_VRSS": {
+      "name": "VRSS",
+      "description": "Solid Virus. Turns everything it touches into virus."
+    },
+    "DEFAULT_PT_VSNS": {
+      "name": "VSNS",
+      "description": "Velocity sensor, creates a spark when there's a nearby particle with velocity higher than its temperature."
+    },
+    "DEFAULT_PT_WARP": {
+      "name": "WARP",
+      "description": "Displaces other elements. Completely invisible."
+    },
+    "DEFAULT_PT_WATR": {
+      "name": "WATR",
+      "description": "Water. Conducts electricity, freezes, and extinguishes fires."
+    },
+    "DEFAULT_PT_WAX": {
+      "name": "WAX",
+      "description": "Flammable, melts at moderately high temperatures."
+    },
+    "DEFAULT_PT_WHOL": {
+      "name": "VENT",
+      "description": "Air vent, creates pressure and pushes other particles away."
+    },
+    "DEFAULT_PT_WIFI": {
+      "name": "WIFI",
+      "description": "Wireless transmitter, transfers spark to any other wifi on the same temperature channel."
+    },
+    "DEFAULT_PT_WIRE": {
+      "name": "WWLD",
+      "description": "WireWorld wires, conducts based on a set of GOL-like rules."
+    },
+    "DEFAULT_PT_WOOD": {
+      "name": "WOOD",
+      "description": "Wood, flammable."
+    },
+    "DEFAULT_PT_WTRV": {
+      "name": "WTRV",
+      "description": "Steam. Produced from hot water."
+    },
+    "DEFAULT_PT_YEST": {
+      "name": "YEST",
+      "description": "Yeast, grows when warm (~37C)."
+    }
+  },
+  "walls": {
+    "DEFAULT_WL_ERASE": {
+      "name": "ERASE",
+      "description": "Erases walls."
+    },
+    "DEFAULT_WL_CNDTW": {
+      "name": "CONDUCTIVE WALL",
+      "description": "Blocks everything. Conductive."
+    },
+    "DEFAULT_WL_EWALL": {
+      "name": "EWALL",
+      "description": "E-Wall. Becomes transparent when electricity is connected."
+    },
+    "DEFAULT_WL_DTECT": {
+      "name": "DETECTOR",
+      "description": "Detector. Generates electricity when a particle is inside."
+    },
+    "DEFAULT_WL_STRM": {
+      "name": "STREAMLINE",
+      "description": "Streamline. Creates a line that follows air movement."
+    },
+    "DEFAULT_WL_FAN": {
+      "name": "FAN",
+      "description": "Fan. Accelerates air. Fan acceleration cannot be set on Android."
+    },
+    "DEFAULT_WL_LIQD": {
+      "name": "LIQUID WALL",
+      "description": "Allows liquids, blocks all other particles. Conductive."
+    },
+    "DEFAULT_WL_ABSRB": {
+      "name": "ABSORB WALL",
+      "description": "Absorbs particles but lets air currents through."
+    },
+    "DEFAULT_WL_WALL": {
+      "name": "WALL",
+      "description": "Basic wall, blocks everything."
+    },
+    "DEFAULT_WL_AIR": {
+      "name": "AIRONLY WALL",
+      "description": "Allows air, but blocks all particles."
+    },
+    "DEFAULT_WL_POWDR": {
+      "name": "POWDER WALL",
+      "description": "Allows powders, blocks all other particles."
+    },
+    "DEFAULT_WL_CNDTR": {
+      "name": "CONDUCTOR",
+      "description": "Conductor. Allows all particles to pass through and conducts electricity."
+    },
+    "DEFAULT_WL_EHOLE": {
+      "name": "EHOLE",
+      "description": "E-Hole. absorbs particles, releases them when powered."
+    },
+    "DEFAULT_WL_GAS": {
+      "name": "GAS WALL",
+      "description": "Allows gases, blocks all other particles."
+    },
+    "DEFAULT_WL_GRVTY": {
+      "name": "GRAVITY WALL",
+      "description": "Gravity wall. Newtonian Gravity has no effect inside a box drawn with this."
+    },
+    "DEFAULT_WL_ENRGY": {
+      "name": "ENERGY WALL",
+      "description": "Allows energy particles, blocks all other particles."
+    },
+    "DEFAULT_WL_NOAIR": {
+      "name": "AIRBLOCK WALL",
+      "description": "Allows all particles, but blocks air."
+    },
+    "DEFAULT_WL_ERASEA": {
+      "name": "ERASEALL",
+      "description": "Erases walls, particles, and signs."
+    },
+    "DEFAULT_WL_STASIS": {
+      "name": "STASIS WALL",
+      "description": "Freezes particles inside the wall in place until powered"
+    }
+  },
+  "menus": {
+    "SC_WALL": "Walls",
+    "SC_ELEC": "Electronics",
+    "SC_POWERED": "Powered Materials",
+    "SC_SENSOR": "Sensors",
+    "SC_FORCE": "Force Creating",
+    "SC_EXPLOSIVE": "Explosives",
+    "SC_GAS": "Gases",
+    "SC_LIQUID": "Liquids",
+    "SC_POWDERS": "Powders",
+    "SC_SOLIDS": "Solids",
+    "SC_NUCLEAR": "Radioactive",
+    "SC_SPECIAL": "Special",
+    "SC_LIFE": "Game of Life",
+    "SC_TOOL": "Tools",
+    "SC_FAV": "Favorites & Recents",
+    "SC_DECO": "Deco",
+    "SC_OTHER": "Other",
+    "SC_SEARCH": "Search",
+    "SC_FAV2": "Favorite2",
+    "SC_HUD": "HUD"
+  },
+  "quickmenu": {
+    "Show tabs \\bg(t)": "Show tabs \\bg(t)",
+    "Draw gravity grid \\bg(ctrl+g)": "Draw gravity grid \\bg(ctrl+g)",
+    "Show decorations \\bg(ctrl+b)": "Show decorations \\bg(ctrl+b)",
+    "Newtonian gravity \\bg(n)": "Newtonian gravity \\bg(n)",
+    "Sand effect": "Sand effect",
+    "Show Console \\bg(~)": "Show Console \\bg(~)"
+  },
+  "intro_text": "",
+  "ui": {
+    "Open Save": "打开存档",
+    "Save": "保存",
+    "Cancel": "取消",
+    "OK": "确定",
+    "Close": "关闭",
+    "Delete": "删除",
+    "Change": "修改",
+    "Edit": "编辑",
+    "Options": "设置",
+    "Settings": "设置",
+    "Search": "搜索",
+    "Dismiss": "关闭",
+    "Enable Editing": "启用编辑",
+    "Edit profile online": "在线编辑资料",
+    "Open Profile Online": "在线打开资料",
+    "Sign In": "登录",
+    "Sign Out": "退出登录",
+    "Server login": "服务器登录",
+    "Please wait": "请稍候",
+    "Downloading update...": "正在下载更新...",
+    "Rename stamp": "重命名图章",
+    "Rescan stamps?": "重新扫描图章？",
+    "Element Search": "元素搜索",
+    "Matches:": "匹配：",
+    "Click the box below to copy the save ID": "点击下方框复制存档ID",
+    "Copied!": "已复制！",
+    "Confirm": "确认",
+    "Error": "错误",
+    "Information": "信息",
+    "Warning": "警告",
+    "New sign:": "新建标识：",
+    "Edit sign:": "编辑标识：",
+    "Allow resizing window": "允许调整窗口大小",
+    "These options make TPT appear extremely blurry": "这些设置会使TPT显示极为模糊",
+    "Simple": "简单",
+    "Adv.": "高级",
+    "Edit Property:": "编辑属性：",
+    "Heat simulation": "热模拟",
+    "Newtonian Gravity": "牛顿重力",
+    "Yes": "是",
+    "No": "否",
+    "Add tab \\bg(ctrl+n)": "添加标签 \\bg(ctrl+n)",
+    "Untitled Simulation (current)": "未命名模拟（当前）"
+  }
+}

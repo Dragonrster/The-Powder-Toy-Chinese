@@ -2,6 +2,7 @@
 #include "Menus.h"
 #include "Favorite.h"
 #include "hud.h"
+#include "common/Translations.h"
 #include "lua/LuaTool.h"
 #include "simulation/Simulation.h"
 #include "simulation/Tool.h"
