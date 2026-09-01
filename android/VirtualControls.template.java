@@ -1,4 +1,4 @@
-package uk.co.powdertoy.tpt;
+package @APPID@;
 
 import android.app.Activity;
 import android.graphics.Color;

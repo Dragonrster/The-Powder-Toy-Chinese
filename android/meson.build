@@ -8,10 +8,10 @@ powder_jar_sources = configure_file(
 	output: 'PowderActivity.java',
 	configuration: conf_data,
 )
-fs = import('fs')
-virtual_controls_source = fs.copyfile(
-	'VirtualControls.java',
-	'VirtualControls.java',
+virtual_controls_source = configure_file(
+	input: 'VirtualControls.template.java',
+	output: 'VirtualControls.java',
+	configuration: conf_data,
 )
 
 subdir('res')
