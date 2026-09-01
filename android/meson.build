@@ -1,26 +1,32 @@
+# The shared conf_data has already been consumed by configure_file calls in
+# other subdirectories and can no longer be modified, so build a local copy
+# for the keys the android templates need.
+android_conf_data = configuration_data()
+android_conf_data.merge_from(conf_data)
+
 # The PowderActivity template embeds the VirtualControls call through this
 # placeholder, so it must be set before configuring the template below.
 virtual_controls_enabled = get_option('android_virtual_controls')
 if virtual_controls_enabled
-	conf_data.set('VIRTUAL_CONTROLS', 'VirtualControls.attach(this);')
+	android_conf_data.set('VIRTUAL_CONTROLS', 'VirtualControls.attach(this);')
 	virtual_controls_source = configure_file(
 		input: 'VirtualControls.template.java',
 		output: 'VirtualControls.java',
-		configuration: conf_data,
+		configuration: android_conf_data,
 	)
 else
-	conf_data.set('VIRTUAL_CONTROLS', '')
+	android_conf_data.set('VIRTUAL_CONTROLS', '')
 endif
 
 android_manifest_xml = configure_file(
 	input: 'AndroidManifest.template.xml',
 	output: 'AndroidManifest.xml',
-	configuration: conf_data,
+	configuration: android_conf_data,
 )
 powder_jar_sources = configure_file(
 	input: 'PowderActivity.template.java',
 	output: 'PowderActivity.java',
-	configuration: conf_data,
+	configuration: android_conf_data,
 )
 
 subdir('res')
