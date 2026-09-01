@@ -208,7 +208,7 @@ void Window::DoDraw()
 
 		auto invPos = Size - (focusedComponent_->Position + focusedComponent_->Size);
 		String posText = String::Build(
-			"Position: L ", focusedComponent_->Position.X,
+			"坐标: 左 ", focusedComponent_->Position.X,
 			", R ", invPos.X,
 			", T: ", focusedComponent_->Position.Y,
 			", B: ", invPos.Y
@@ -372,7 +372,7 @@ void Window::DoKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl, b
 	if (!stop)
 		OnKeyPress(key, scan, repeat, shift, ctrl, alt);
 
-	if (key == SDLK_ESCAPE)
+	if (key == SDLK_ESCAPE || key == SDLK_AC_BACK)
 		OnTryExit(Escape);
 
 	if (key == SDLK_KP_ENTER || key == SDLK_RETURN)

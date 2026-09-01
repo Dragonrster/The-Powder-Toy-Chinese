@@ -10,7 +10,7 @@ void SimTool::Tool_WIND()
 	Identifier = "DEFAULT_TOOL_WIND";
 	Name = "WIND";
 	Colour = 0x404040_rgb;
-	Description = ByteString("风,制造气流").FromUtf8();
+	Description = "风,制造气流";
 	PerformDrawLine = &performDrawLine;
 	PerformDrag = &performDrag;
 }

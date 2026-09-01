@@ -29,7 +29,7 @@ void Element::Element_FSEP()
 	Weight = 70;
 
 	HeatConduct = 70;
-	Description = ByteString("导火索粉末,像导火索一样缓慢燃烧").FromUtf8();
+	Description = "导火索粉末,像导火索一样缓慢燃烧";
 
 	Properties = TYPE_PART;
 

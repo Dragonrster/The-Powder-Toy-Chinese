@@ -30,9 +30,10 @@ void Element::Element_RIME()
 
 	DefaultProperties.temp = -30.0f + 273.15f;
 	HeatConduct = 100;
-	Description = ByteString("霜,可以通电升华成雾").FromUtf8();
+	Description = "霜,可以通电升华成雾";
 
 	Properties = TYPE_SOLID;
+	CarriesTypeIn = 1U << FIELD_CTYPE;
 
 	LowPressure = IPL;
 	LowPressureTransition = NT;
@@ -63,10 +64,14 @@ static int update(UPDATE_FUNC_ARGS)
 					sim->part_change_type(i,x,y,PT_FOG);
 					parts[i].life = sim->rng.between(60, 119);
 				}
+				// GAS increases acidity
 				else if (TYP(r) == PT_GAS && parts[i].tmp < 10)
 				{
 					sim->kill_part(ID(r));
-					parts[i].tmp++;
+					if (parts[i].ctype == PT_DSTW)
+						parts[i].ctype = 0;
+					else
+						parts[i].tmp++;
 				}
 				else if (TYP(r)==PT_FOG&&parts[ID(r)].life>0)
 				{

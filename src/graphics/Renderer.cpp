@@ -11,6 +11,7 @@
 #include "simulation/Air.h"
 #include "simulation/gravity/Gravity.h"
 #include "simulation/orbitalparts.h"
+#include "simulation/elements/SOAP.h"
 #include <algorithm>
 #include <cmath>
 #include <numbers>
@@ -256,14 +257,26 @@ void Renderer::render_parts()
 	auto &parts = sim->parts;
 	if (gridSize)//draws the grid
 	{
-		for (ny=0; ny<YRES; ny++)
-			for (nx=0; nx<XRES; nx++)
-			{
-				if (ny%(4*gridSize) == 0)
-					BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
-				if (nx%(4*gridSize) == 0 && ny%(4*gridSize) != 0)
-					BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
-			}
+		int gs4 = gridSize*4;
+		if (gs4 > 0) // prevent a division by 0
+		{
+			for (ny=0; ny<YRES; ny++)
+				for (nx=0; nx<XRES; nx++)
+				{
+					if (gridCheckerboard)
+					{
+						if ((nx/gs4 + ny/gs4)%2)
+							BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
+					}
+					else
+					{
+						if (ny%gs4 == 0)
+							BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
+						if (nx%gs4 == 0 && ny%gs4 != 0)
+							BlendPixel({ nx, ny }, 0x646464_rgb .WithAlpha(80));
+					}
+				}
+		}
 	}
 	stats.foundParticles = 0;
 	for(i = 0; i < sim->parts.active; i++) {
@@ -503,7 +516,12 @@ void Renderer::render_parts()
 					if (t==PT_SOAP)
 					{
 						if ((parts[i].ctype&3) == 3 && parts[i].tmp >= 0 && parts[i].tmp < NPART)
-							BlendLine({ nx, ny }, { int(parts[parts[i].tmp].x+0.5f), int(parts[parts[i].tmp].y+0.5f) }, RGBA(colr, colg, colb, cola));
+						{
+							auto dx = parts[parts[i].tmp].x - nx;
+							auto dy = parts[parts[i].tmp].y - ny;
+							Element_SOAP_neighourLoop(dx, dy);
+							BlendLine({ nx, ny }, { int(nx + dx + 0.5f), int(ny + dy + 0.5f) }, RGBA(colr, colg, colb, cola));
+						}
 					}
 				}
 				if(pixel_mode & PSPEC_STICKMAN)
@@ -1323,78 +1341,84 @@ RGB HeatToColour(float temp, float hdispLimitMin, float hdispLimitMax)
 
 const std::vector<RenderPreset> Renderer::renderModePresets = {
 	{
-		ByteString("速压混合渲染模式").FromUtf8(),
+		"Alternative Velocity Display",
 		RENDER_EFFE | RENDER_BASC,
 		DISPLAY_AIRC,
 		0,
 	},
 	{
-		ByteString("气流渲染模式").FromUtf8(),
+		"Velocity Display",
 		RENDER_EFFE | RENDER_BASC,
 		DISPLAY_AIRV,
 		0,
 	},
 	{
-		ByteString("气压渲染模式").FromUtf8(),
+		"Pressure Display",
 		RENDER_EFFE | RENDER_BASC,
 		DISPLAY_AIRP,
 		0,
 	},
 	{
-		ByteString("轨迹渲染模式").FromUtf8(),
+		"Persistent Display",
 		RENDER_EFFE | RENDER_BASC,
 		DISPLAY_PERS,
 		0,
 	},
 	{
-		ByteString("火焰渲染模式").FromUtf8(),
+		"Fire Display",
 		RENDER_FIRE | RENDER_SPRK | RENDER_EFFE | RENDER_BASC,
 		0,
 		0,
 	},
 	{
-		ByteString("模糊渲染模式").FromUtf8(),
+		"Blob Display",
 		RENDER_FIRE | RENDER_SPRK | RENDER_EFFE | RENDER_BLOB,
 		0,
 		0,
 	},
 	{
-		ByteString("温度渲染模式").FromUtf8(),
+		"Heat Display",
 		RENDER_BASC,
 		DISPLAY_AIRH,
 		COLOUR_HEAT,
 	},
 	{
-		ByteString("特效渲染模式").FromUtf8(),
+		"Fancy Display",
 		RENDER_FIRE | RENDER_SPRK | RENDER_GLOW | RENDER_BLUR | RENDER_EFFE | RENDER_BASC,
 		DISPLAY_WARP,
 		0,
 	},
 	{
-		ByteString("标准渲染模式").FromUtf8(),
+		"Nothing Display",
 		RENDER_BASC,
 		0,
 		0,
 	},
 	{
-		ByteString("热传导渲染模式").FromUtf8(),
+		"Heat Gradient Display",
 		RENDER_BASC,
 		0,
 		COLOUR_GRAD,
 	},
 	{
-		ByteString("Life渲染模式").FromUtf8(),
+		"Life Gradient Display",
 		RENDER_BASC,
 		0,
 		COLOUR_LIFE,
 	},
 	{
-		ByteString("动态热渲染模式").FromUtf8(),
+		"Dynamic Heat Display",
 		RENDER_BASC,
 		DISPLAY_AIRH,
 		COLOUR_HEAT,
 		HdispLimitAuto{},
 		HdispLimitAuto{},
+	},
+	{
+		"Vorticity Display",
+		RENDER_EFFE | RENDER_BASC,
+		DISPLAY_AIRW,
+		0,
 	},
 };
 
@@ -1440,6 +1464,17 @@ void Renderer::AdjustHdispLimit()
 				visit(p * CELL, hv[p.Y][p.X]);
 			}
 		}
+
+		// min and max will shrink towards new limits slowly, to prevent rapid flashes (but they still expand immediately)
+		float maxGap = stats.hdispLimitMax - autoHdispLimitMax;
+		autoHdispLimitMax = std::max(autoHdispLimitMax, stats.hdispLimitMax - maxGap * 0.05f);
+		float minGap = autoHdispLimitMin - stats.hdispLimitMin;
+		autoHdispLimitMin = std::min(autoHdispLimitMin, stats.hdispLimitMin + minGap * 0.05f);
+
+		// Ensure a 1C gap between min and max to handle odd effects and flashing when there's miniscule temperature gaps
+		autoHdispLimitMax = std::min(MAX_TEMP, std::max(autoHdispLimitMax, autoHdispLimitMin + 1));
+		autoHdispLimitMin = std::max(MIN_TEMP, std::min(autoHdispLimitMin, autoHdispLimitMax - 1));
+
 	}
 	stats.hdispLimitMin = autoHdispLimitMin;
 	stats.hdispLimitMax = autoHdispLimitMax;

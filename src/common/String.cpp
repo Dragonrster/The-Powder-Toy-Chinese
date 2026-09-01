@@ -91,6 +91,15 @@ String ByteString::FromUtf8(bool ignoreError) const
 	std::make_unsigned<value_type>::type const *from = reinterpret_cast<std::make_unsigned<value_type>::type const *>(data());
 	for(size_t i = 0; i < size(); )
 	{
+		// TPT text embeds an RGB colour command as 0x0F followed by three raw
+		// bytes. Preserve it before UTF-8 decoding so a valid-looking RGB byte
+		// pair is not collapsed into one Unicode codepoint.
+		if(from[i] == 0x0F && i + 3 < size())
+		{
+			destination.insert(destination.end(), { from[i], from[i + 1], from[i + 2], from[i + 3] });
+			i += 4;
+			continue;
+		}
 		if(from[i] < 0x80)
 		{
 			destination.push_back(from[i]);
@@ -122,7 +131,7 @@ String ByteString::FromUtf8(bool ignoreError) const
 				if(i + 2 < size() && from[i + 2] >= 0x80 && from[i + 2] < 0xC0)
 					if(i + 3 < size() && from[i + 3] >= 0x80 && from[i + 3] < 0xC0)
 					{
-						destination.push_back((from[i] & 0x07) << 18 | (from[i + 1] & 0x3F) << 12 | (from[i + 2] & 0x3F) | (from[i + 3] & 0x3F));
+						destination.push_back((from[i] & 0x07) << 18 | (from[i + 1] & 0x3F) << 12 | (from[i + 2] & 0x3F) << 6 | (from[i + 3] & 0x3F));
 						i += 4;
 						continue;
 					}

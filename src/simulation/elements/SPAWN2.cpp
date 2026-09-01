@@ -30,7 +30,7 @@ void Element::Element_SPAWN2()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = ByteString("STKM2 出生点").FromUtf8();
+	Description = "STKM2 出生点";
 
 	Properties = TYPE_SOLID;
 

@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 	catch (ParseException &e)
 	{
 		//Render the save again later or something? I don't know
-		if (ByteString(e.what()).FromUtf8() == "Save from newer version")
+		if (ByteString(e.what()).FromUtf8() == "来自更新版本的沙盘")
 			throw e;
 	}
 

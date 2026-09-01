@@ -30,7 +30,7 @@ void Element::Element_PSNS()
 
 	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
-	Description =  ByteString("压力传感器,可以用HEAT/COOL来改变自身温度").FromUtf8();
+	Description = "压力传感器,可以用HEAT/COOL来改变自身温度";
 
 	Properties = TYPE_SOLID;
 

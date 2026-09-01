@@ -35,7 +35,7 @@ void Element::Element_SPRK()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("电脉冲,所有电子设备的基础,电脉冲不能单独放置(并不是一个真实的粒子)你需要将其放在导体上").FromUtf8();
+	Description = "电脉冲,所有电子设备的基础,电脉冲不能单独放置(并不是一个真实的粒子)你需要将其放在导体上";
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 	CarriesTypeIn = 1U << FIELD_CTYPE;
@@ -152,7 +152,7 @@ static int update(UPDATE_FUNC_ARGS)
 							parts[p].tmp2=1;
 							parts[p].tmp=int(atan2(-ry, float(rx))*360/std::numbers::pi_v<float>);
 							parts[p].dcolour = parts[i].dcolour;
-							parts[i].temp-=parts[i].tmp*2+parts[i].temp/5; // slight self-cooling
+							parts[i].temp = restrict_flt(parts[i].temp - (parts[i].tmp * 2 + parts[i].temp / 5), MIN_TEMP, MAX_TEMP); // slight self-cooling
 							if (fabs(sim->pv[y/CELL][x/CELL])!=0.0f)
 							{
 								if (fabs(sim->pv[y/CELL][x/CELL])<=0.5f)

@@ -3,7 +3,7 @@ project('the-powder-toy', 'cpp', version:
 #	                    # A.B.C is the version number shown by meson and by your local builds. note that this version
 #	                    # number is overridden by the tag you push to github, so ghactions builds will show that version
 #	                    # number instead. you can also replace 'the-powder-toy' with your mod's simplified name.
-	'99.5.396', meson_version: '>=0.64.0')
+	'100.1.400', meson_version: '>=0.64.0')
 
 if get_option('prepare')
 	# we're being run by prepare.py in a ghactions workflow only to determine the values of options; exit early
@@ -39,6 +39,8 @@ if cpp_compiler.get_id() in [ 'msvc', 'clang-cl' ]
 	host_libc = 'msvc'
 elif cpp_compiler.get_id() in [ 'gcc' ] and host_platform == 'windows'
 	host_libc = 'mingw'
+elif cpp_compiler.get_id() in [ 'clang' ] and host_platform == 'windows'
+	host_libc = 'mingwclang'
 elif host_platform in [ 'darwin' ]
 	host_libc = 'macos'
 elif host_platform in [ 'emscripten' ]
@@ -115,7 +117,14 @@ if tpt_libs_static != 'none'
 	endif
 	tpt_libs = subproject('tpt-libs-prebuilt-@0@-@1@-@2@'.format(tpt_libs_variant, tpt_libs_debug, tpt_libs_vtag))
 else
-	if get_option('workaround_elusive_bzip2')
+	workaround_elusive_bzip2 = get_option('workaround_elusive_bzip2')
+	if workaround_elusive_bzip2 == 'simple'
+		cpp_compiler.check_header('bzlib.h', required: true)
+		meson.override_dependency('bzip2', declare_dependency(
+			dependencies: cpp_compiler.find_library('bz2'),
+			version: '1.0.8-elusive',
+		))
+	elif workaround_elusive_bzip2 == 'manual'
 		bzip2_lib_name = get_option('workaround_elusive_bzip2_lib_name')
 		bzip2_include_name = get_option('workaround_elusive_bzip2_include_name')
 		bzip2_lib_dir = get_option('workaround_elusive_bzip2_lib_dir')
@@ -175,12 +184,19 @@ endif
 if lua_variant == 'none'
 	lua_dep = []
 elif lua_variant == 'lua5.1' or lua_variant == 'lua5.2'
-	lua_dep = dependency(lua_variant + '-c++', static: is_static, required: false)
-	if not lua_dep.found()
-		if not get_option('workaround_noncpp_lua')
-			error('your system @0@ is not compatible with C++, configure with -Dworkaround_noncpp_lua=true to disable this error'.format(lua_variant))
-		endif
+	workaround_noncpp_lua = get_option('workaround_noncpp_lua')
+	if workaround_noncpp_lua
 		lua_dep = dependency(lua_variant, static: is_static)
+	else
+		lua_dep = dependency(lua_variant + '-c++', static: is_static, required: false)
+		if not lua_dep.found()
+			# grabbing this dependency before displaying the error message ensures that if no lua development package is installed at all,
+			# no confusing error message will be shown that suggests that some package is installed, it's just not compatible with C++
+			lua_dep = dependency(lua_variant, static: is_static)
+			if not workaround_noncpp_lua
+				error('your system @0@ is not compatible with C++, configure with -Dworkaround_noncpp_lua=true to disable this error'.format(lua_variant))
+			endif
+		endif
 	endif
 elif lua_variant == 'luajit'
 	lua_dep = dependency('luajit', static: is_static)

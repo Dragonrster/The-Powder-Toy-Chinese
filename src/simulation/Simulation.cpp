@@ -20,7 +20,6 @@
 #include <iostream>
 #include <numbers>
 #include <set>
-#include <stack>
 
 namespace
 {
@@ -723,7 +722,7 @@ bool Simulation::flood_water(int x, int y, int i)
 			}
 			while (x2 < XRES-CELL)
 			{
-				if (elements[TYP(pmap[y][x2 + 1])].Falldown != 2 || bitmap[(y * XRES) + x1 - 1])
+				if (elements[TYP(pmap[y][x2 + 1])].Falldown != 2 || bitmap[(y * XRES) + x2 + 1])
 					break;
 				x2++;
 			}
@@ -1921,10 +1920,14 @@ int Simulation::create_part(int p, int x, int y, int t, int v)
 	{
 		int oldX = (int)(parts[p].x + 0.5f);
 		int oldY = (int)(parts[p].y + 0.5f);
-		if (pmap[oldY][oldX] && ID(pmap[oldY][oldX]) == p)
-			pmap[oldY][oldX] = 0;
-		if (photons[oldY][oldX] && ID(photons[oldY][oldX]) == p)
-			photons[oldY][oldX] = 0;
+
+		if (InBounds(oldX, oldY))
+		{
+			if (pmap[oldY][oldX] && ID(pmap[oldY][oldX]) == p)
+				pmap[oldY][oldX] = 0;
+			if (photons[oldY][oldX] && ID(photons[oldY][oldX]) == p)
+				photons[oldY][oldX] = 0;
+		}
 
 		oldType = parts[p].type;
 
@@ -2346,28 +2349,11 @@ void SimulationImpl::UpdateParticles(int start, int end)
 			if (t==PT_GAS||t==PT_NBLE)
 			{
 				if (pv[y/CELL][x/CELL]<3.5f)
-					pv[y/CELL][x/CELL] += elements[t].HotAir*(3.5f-pv[y/CELL][x/CELL]);
-				if (y+CELL<YRES && pv[y/CELL+1][x/CELL]<3.5f)
-					pv[y/CELL+1][x/CELL] += elements[t].HotAir*(3.5f-pv[y/CELL+1][x/CELL]);
-				if (x+CELL<XRES)
-				{
-					if (pv[y/CELL][x/CELL+1]<3.5f)
-						pv[y/CELL][x/CELL+1] += elements[t].HotAir*(3.5f-pv[y/CELL][x/CELL+1]);
-					if (y+CELL<YRES && pv[y/CELL+1][x/CELL+1]<3.5f)
-						pv[y/CELL+1][x/CELL+1] += elements[t].HotAir*(3.5f-pv[y/CELL+1][x/CELL+1]);
-				}
+					pv[y/CELL][x/CELL] += 4.0f*elements[t].HotAir*(3.5f-pv[y/CELL][x/CELL]);
 			}
 			else//add the hotair variable to the pressure map, like black hole, or white hole.
 			{
-				pv[y/CELL][x/CELL] += elements[t].HotAir;
-				if (y+CELL<YRES)
-					pv[y/CELL+1][x/CELL] += elements[t].HotAir;
-				if (x+CELL<XRES)
-				{
-					pv[y/CELL][x/CELL+1] += elements[t].HotAir;
-					if (y+CELL<YRES)
-						pv[y/CELL+1][x/CELL+1] += elements[t].HotAir;
-				}
+				pv[y/CELL][x/CELL] += 4.0f*elements[t].HotAir;
 			}
 		}
 
@@ -2542,6 +2528,8 @@ bool SimulationImpl::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 				// particle type change due to high temperature
 				if (elements[t].HighTemperatureTransition != ST)
 				{
+					if (t == PT_FOG)
+						parts[i].ctype = 0; // clear unnecessary ctype
 					t = elements[t].HighTemperatureTransition;
 				}
 				else if (t == PT_ICEI || t == PT_SNOW)
@@ -2609,7 +2597,8 @@ bool SimulationImpl::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 					else
 					{
 						//@ RIME -> WATR
-						t = PT_WATR;
+						t = parts[i].ctype == PT_DSTW ? PT_DSTW : PT_WATR;
+						parts[i].ctype = 0;
 					}
 				}
 				else
@@ -2688,6 +2677,8 @@ bool SimulationImpl::TransitionPhase(int i, const Neighbourhood &neighbourhood)
 			{
 				if (t==PT_ICEI || t==PT_LAVA || t==PT_SNOW)
 					parts[i].ctype = parts[i].type;
+				if (t == PT_RIME)
+					parts[i].ctype = PT_DSTW;
 				if (!(t==PT_ICEI && parts[i].ctype==PT_FRZW) && t!=PT_ACID)
 					parts[i].life = 0;
 				if (t == PT_FIRE)

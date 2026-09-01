@@ -1,0 +1,6 @@
+[wrap-file]
+directory = tpt-libs-prebuilt-aarch64-linux-gnu-static-debug-v20260821222421
+
+source_url = https://github.com/The-Powder-Toy/tpt-libs/releases/download/v20260821222421/tpt-libs-prebuilt-aarch64-linux-gnu-static-debug-v20260821222421.zip
+source_filename = tpt-libs-prebuilt-aarch64-linux-gnu-static-debug-v20260821222421.zip
+source_hash = 699148ecb815db7d1d3e9238536a32ed5ffbb51985fadec480e04ab5cd928458

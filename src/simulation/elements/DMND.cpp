@@ -27,7 +27,7 @@ void Element::Element_DMND()
 	Weight = 100;
 
 	HeatConduct = 186;
-	Description = ByteString("钻石,坚不可摧").FromUtf8();
+	Description = "钻石,坚不可摧";
 
 	Properties = TYPE_SOLID;
 

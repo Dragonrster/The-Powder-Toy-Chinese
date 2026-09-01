@@ -83,7 +83,7 @@ static int beginThrowError(lua_State *L)
 	{
 		cb->Assign(L, lua_gettop(L));
 	}
-	new ErrorMessage("Error", errorMessage, { [cb]() {
+	new ErrorMessage("错误", errorMessage, { [cb]() {
 		auto *lsi = GetLSI();
 		auto L = lsi->L;
 		cb->Push(L);
@@ -151,7 +151,7 @@ static int beginConfirm(lua_State *L)
 	GetLSI()->AssertInterfaceEvent();
 	auto title = PickIfType(L, 1, String("Title"));
 	auto message = PickIfType(L, 2, String("Message"));
-	auto buttonText = PickIfType(L, 3, String("Confirm"));
+	auto buttonText = PickIfType(L, 3, String("继续"));
 	auto cb = std::make_shared<LuaSmartRef>(); // * Bind to main lua state (might be different from L).
 	if (lua_gettop(L))
 	{

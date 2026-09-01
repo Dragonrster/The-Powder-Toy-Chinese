@@ -30,7 +30,7 @@ void Element::Element_GPMP()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = ByteString("引力泵,激活时改变其万有引力为自身温度值").FromUtf8();
+	Description = "引力泵,激活时改变其万有引力为自身温度值";
 
 	Properties = TYPE_SOLID;
 

@@ -31,7 +31,7 @@ void Element::Element_EMP()
 	Weight = 100;
 
 	HeatConduct = 121;
-	Description = ByteString("电磁脉冲武器,会随机摧毁所有正在工作(通电)的电子产品").FromUtf8();
+	Description = "电磁脉冲武器,会随机摧毁所有正在工作(通电)的电子产品";
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

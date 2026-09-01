@@ -29,7 +29,7 @@ void Element::Element_NBHL()
 	Weight = 100;
 
 	HeatConduct = 186;
-	Description = ByteString("黑洞,使用需开启牛顿万有引力,产生引力吸入物质并升温").FromUtf8();
+	Description = "黑洞,使用需开启牛顿万有引力,产生引力吸入物质并升温";
 
 	Properties = TYPE_SOLID;
 

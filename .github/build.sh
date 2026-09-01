@@ -98,9 +98,9 @@ if [[ -z ${BSH_NO_PACKAGES-} ]]; then
 			fi
 			pacman -S --noconfirm --needed mingw-w64-"$variant"-{gcc,meson}
 			if [[ $BSH_STATIC_DYNAMIC == static ]]; then
-				pacman -S --noconfirm --needed mingw-w64-"$variant"-{cmake,7zip,jq} patch
+				pacman -S --noconfirm --needed p7zip jq cmake patch
 			else
-				pacman -S --noconfirm --needed mingw-w64-"$variant"-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,fftw,jq}
+				pacman -S --noconfirm --needed jq mingw-w64-"$variant"-{pkgconf,bzip2,luajit,jsoncpp,curl,SDL2,libpng,fftw}
 			fi
 			export PKG_CONFIG=$(which pkg-config.exe)
 			if [[ $BSH_LINT == yes ]]; then
@@ -291,25 +291,6 @@ if [[ $BSH_STATIC_DYNAMIC == static ]]; then
 		c_link_args+=\'-static-libgcc\',
 		c_link_args+=\'-static-libstdc++\',
 	fi
-else
-	if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC $BSH_BUILD_PLATFORM" == "x86_64-windows-mingw windows" ]]; then
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2=true
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2_include_dir=/ucrt64/include
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2_lib_dir=/ucrt64/lib
-	fi
-	if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC $BSH_BUILD_PLATFORM" == "x86-windows-mingw windows" ]]; then
-		>&2 echo "nyi elusive bzip2"
-		exit 1
-	fi
-	if [[ $BSH_BUILD_PLATFORM == linux ]]; then
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2=true
-	fi
-	if [[ $BSH_BUILD_PLATFORM == darwin ]]; then
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2=true
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2_lib_dir=/usr/local/opt/bzip2/lib
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2_include_dir=/usr/local/opt/bzip2/include
-		meson_configure+=$'\t'-Dworkaround_elusive_bzip2_static=true
-	fi
 fi
 if [[ $BSH_HOST_PLATFORM == linux ]] && [[ $BSH_HOST_ARCH != aarch64 ]]; then
 	# certain file managers can't run PIEs https://bugzilla.gnome.org/show_bug.cgi?id=737849
@@ -356,9 +337,6 @@ if [[ $RELEASE_TYPE != dev ]]; then
 fi
 if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC" == "x86_64-windows-mingw" ]]; then
 	meson_configure+=$'\t'--cross-file=.github/mingw-ghactions.ini
-	# there is some mingw bug that only ever manifests on ghactions which makes MakeIco.exe use tons of memory and fail
-	# TODO: remove this hack once we figure out how to fix that
-	meson_configure+=$'\t'-Dwindows_icons=false
 fi
 if [[ "$BSH_HOST_ARCH-$BSH_HOST_PLATFORM-$BSH_HOST_LIBC" == "x86-windows-mingw" ]]; then
 	meson_configure+=$'\t'--cross-file=.github/mingw32-ghactions.ini

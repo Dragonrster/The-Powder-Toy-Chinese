@@ -35,7 +35,7 @@ void Element::Element_TRON()
 
 	DefaultProperties.temp = 0.0f;
 	HeatConduct = 40;
-	Description = ByteString("智能微粒,绝对零度的粒子,会智能躲避障碍随时间流逝尾巴会变长,可用于降温").FromUtf8();
+	Description = "智能微粒,绝对零度的粒子,会智能躲避障碍随时间流逝尾巴会变长,可用于降温";
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

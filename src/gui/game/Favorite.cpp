@@ -1,5 +1,6 @@
 #include "Favorite.h"
 #include "prefs/GlobalPrefs.h"
+#include <json/json.h>
 #include <algorithm>
 
 Favorite::Favorite():
@@ -39,10 +40,10 @@ void Favorite::RemoveFavorite(ByteString identifier)
 
 void Favorite::SaveFavoritesToPrefs()
 {
-	GlobalPrefs::Ref().Set("Favorites", favoritesList);
+	GlobalPrefs::Ref().Set("收藏夹(使用Ctrl+Shift+Click切换元素的收藏状态)", favoritesList);
 }
 
 void Favorite::LoadFavoritesFromPrefs()
 {
-	favoritesList = GlobalPrefs::Ref().Get("Favorites", std::vector<ByteString>{});
+	favoritesList = GlobalPrefs::Ref().Get("收藏夹(使用Ctrl+Shift+Click切换元素的收藏状态)", std::vector<ByteString>{});
 }

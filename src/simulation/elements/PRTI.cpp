@@ -34,7 +34,7 @@ void Element::Element_PRTI()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = ByteString("传送门入口,可以传送物质和电脉冲,和WIFI相似,通过改变自身温度可以产生不同频道").FromUtf8();
+	Description = "传送门入口,可以传送物质和电脉冲,和WIFI相似,通过改变自身温度可以产生不同频道";
 
 	Properties = TYPE_SOLID;
 

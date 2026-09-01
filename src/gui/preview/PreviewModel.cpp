@@ -150,7 +150,7 @@ void PreviewModel::OnSaveReady()
 	}
 	catch(ParseException &e)
 	{
-		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString(e.what()).FromUtf8());
+		new ErrorMessage("错误", ByteString(e.what()).FromUtf8());
 		canOpen = false;
 	}
 	notifySaveChanged();
@@ -241,11 +241,11 @@ void PreviewModel::Update()
 		{
 			if (favouriteSaveRequest->Favourite())
 			{
-				new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法点赞: ").FromUtf8() + ByteString(ex.what()).FromUtf8());
+				new ErrorMessage("错误", "无法点赞: " + ByteString(ex.what()).FromUtf8());
 			}
 			else
 			{
-				new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法取消点赞:").FromUtf8() + ByteString(ex.what()).FromUtf8());
+				new ErrorMessage("错误", "无法取消点赞:" + ByteString(ex.what()).FromUtf8());
 			}
 		}
 		favouriteSaveRequest.reset();

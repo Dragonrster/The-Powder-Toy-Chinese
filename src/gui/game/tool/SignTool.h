@@ -11,7 +11,7 @@ class SignTool: public Tool
 
 public:
 	SignTool(GameModel &model):
-		Tool(0, "SIGN", ByteString("标记工具,显示文本.点击一个标记进行编辑,或在其他地方放置一个新的标记").FromUtf8(),
+		Tool(0, "SIGN", "标记工具,显示文本.点击一个标记进行编辑,或在其他地方放置一个新的标记",
 			0x000000_rgb, "DEFAULT_UI_SIGN", SignTool::GetIcon
 		),
 		gameModel(model)

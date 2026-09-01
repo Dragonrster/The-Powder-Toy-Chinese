@@ -30,7 +30,7 @@ void Element::Element_LCRY()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("液晶,激活时改变颜色,用P型硅激活,N型硅关闭").FromUtf8();
+	Description = "液晶,激活时改变颜色,用P型硅激活,N型硅关闭";
 
 	Properties = TYPE_SOLID;
 

@@ -30,7 +30,7 @@ void Element::Element_HSWC()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("热开关,当激活时才可以导热").FromUtf8();
+	Description = "热开关,当激活时才可以导热";
 
 	Properties = TYPE_SOLID;
 

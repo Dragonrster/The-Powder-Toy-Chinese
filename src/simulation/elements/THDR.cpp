@@ -31,7 +31,7 @@ void Element::Element_THDR()
 
 	DefaultProperties.temp = 9000.0f + 273.15f;
 	HeatConduct = 1;
-	Description = ByteString("电光火球/球状闪电,很热的类液体物质高温(9000.00℃)带电与物质接触时产生巨大压力(256P").FromUtf8();
+	Description = "电光火球/球状闪电,很热的类液体物质高温(9000.00°C)带电与物质接触时产生巨大压力(256P";
 
 	Properties = TYPE_PART;
 

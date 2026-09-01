@@ -29,7 +29,7 @@ void Element::Element_BRCK()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("砖块,易碎的建筑材料").FromUtf8();
+	Description = "砖块,易碎的建筑材料";
 
 	Properties = TYPE_SOLID|PROP_HOT_GLOW;
 

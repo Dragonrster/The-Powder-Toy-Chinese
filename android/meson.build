@@ -8,6 +8,11 @@ powder_jar_sources = configure_file(
 	output: 'PowderActivity.java',
 	configuration: conf_data,
 )
+fs = import('fs')
+virtual_controls_source = fs.copyfile(
+	'VirtualControls.java',
+	'VirtualControls.java',
+)
 
 subdir('res')
 
@@ -32,6 +37,7 @@ powder_jar = custom_target(
 		sdl_jar,
 		is_debug ? 'debug' : 'release',
 		powder_jar_sources,
+		virtual_controls_source,
 	],
 )
 unaligned_apk = custom_target(

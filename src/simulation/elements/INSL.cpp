@@ -27,7 +27,7 @@ void Element::Element_INSL()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = ByteString("绝缘体,绝缘体,既不吸收,也不释放热量给其它元素").FromUtf8();
+	Description = "绝缘体,绝缘体,既不吸收,也不释放热量给其它元素";
 
 	Properties = TYPE_SOLID;
 

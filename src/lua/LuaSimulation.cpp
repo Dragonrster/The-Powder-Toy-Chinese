@@ -90,12 +90,13 @@ static int partCount(lua_State *L)
 static int decoSpace(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	if (lua_gettop(L) < 1)
 	{
 		lua_pushnumber(L, lsi->gameModel->GetDecoSpace());
 		return 1;
 	}
+	lsi->AssertInterfaceEvent();
 	auto index = luaL_checkint(L, 1);
 	if (index < 0 || index >= NUM_DECOSPACES)
 	{
@@ -337,7 +338,7 @@ static int partCreate(lua_State *L)
 	}
 	if (newID == -2)
 	{
-		lsi->AssertInterfaceEvent();
+		lsi->AssertToolEvent();
 	}
 	int type = lua_tointeger(L, 4);
 	int v = -1;
@@ -521,7 +522,7 @@ static int createParts(lua_State *L)
 		return 1;
 	}
 
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int uiFlags = luaL_optint(L,7,lsi->sim->replaceModeFlags);
 	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
 	if (!brush)
@@ -554,7 +555,7 @@ static int createLine(lua_State *L)
 		return 0;
 	}
 
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int c = luaL_optint(L,7,lsi->gameModel->GetActiveTool(0)->ToolID);
 	int uiFlags = luaL_optint(L,9,lsi->sim->replaceModeFlags);
 	Brush *brush = lsi->gameModel->GetBrushByID(brushID);
@@ -583,7 +584,7 @@ static int createBox(lua_State *L)
 		return 0;
 	}
 
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int c = luaL_optint(L,5,lsi->gameModel->GetActiveTool(0)->ToolID);
 	int uiFlags = luaL_optint(L,6,lsi->sim->replaceModeFlags);
 
@@ -594,7 +595,7 @@ static int createBox(lua_State *L)
 static int floodParts(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int x = luaL_optint(L,1,-1);
 	int y = luaL_optint(L,2,-1);
 	int c = luaL_optint(L,3,lsi->gameModel->GetActiveTool(0)->ToolID);
@@ -612,7 +613,7 @@ static int floodParts(lua_State *L)
 static int createWalls(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int x = luaL_optint(L,1,-1);
 	int y = luaL_optint(L,2,-1);
 	int rx = luaL_optint(L,3,0);
@@ -632,7 +633,7 @@ static int createWalls(lua_State *L)
 static int createWallLine(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int x1 = luaL_optint(L,1,-1);
 	int y1 = luaL_optint(L,2,-1);
 	int x2 = luaL_optint(L,3,-1);
@@ -653,7 +654,7 @@ static int createWallLine(lua_State *L)
 static int createWallBox(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int x1 = luaL_optint(L,1,-1);
 	int y1 = luaL_optint(L,2,-1);
 	int x2 = luaL_optint(L,3,-1);
@@ -672,7 +673,7 @@ static int createWallBox(lua_State *L)
 static int floodWalls(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int x = luaL_optint(L,1,-1);
 	int y = luaL_optint(L,2,-1);
 	int c = luaL_optint(L,3,8);
@@ -694,7 +695,7 @@ static int floodWalls(lua_State *L)
 static int toolBrush(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int x = luaL_optint(L,1,-1);
 	int y = luaL_optint(L,2,-1);
 	int rx = luaL_optint(L,3,5);
@@ -722,7 +723,7 @@ static int toolBrush(lua_State *L)
 static int toolLine(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int x1 = luaL_optint(L,1,-1);
 	int y1 = luaL_optint(L,2,-1);
 	int x2 = luaL_optint(L,3,-1);
@@ -754,7 +755,7 @@ static int toolLine(lua_State *L)
 static int toolBox(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int x1 = luaL_optint(L,1,-1);
 	int y1 = luaL_optint(L,2,-1);
 	int x2 = luaL_optint(L,3,-1);
@@ -786,7 +787,7 @@ static int toolBox(lua_State *L)
 static int decoBrush(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int x = luaL_optint(L,1,-1);
 	int y = luaL_optint(L,2,-1);
 	int rx = luaL_optint(L,3,5);
@@ -811,7 +812,7 @@ static int decoBrush(lua_State *L)
 static int decoLine(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int x1 = luaL_optint(L,1,-1);
 	int y1 = luaL_optint(L,2,-1);
 	int x2 = luaL_optint(L,3,-1);
@@ -841,7 +842,7 @@ static int decoLine(lua_State *L)
 static int decoBox(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int x1 = luaL_optint(L,1,-1);
 	int y1 = luaL_optint(L,2,-1);
 	int x2 = luaL_optint(L,3,-1);
@@ -862,7 +863,7 @@ static int decoBox(lua_State *L)
 static int decoColor(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int acount = lua_gettop(L);
 	RGBA color(0, 0, 0, 0);
 	if (acount == 0)
@@ -870,7 +871,8 @@ static int decoColor(lua_State *L)
 		lua_pushnumber(L, lsi->gameModel->GetColourSelectorColour().Pack());
 		return 1;
 	}
-	else if (acount == 1)
+	lsi->AssertInterfaceEvent();
+	if (acount == 1)
 		color = RGBA::Unpack(pixel_rgba(luaL_optnumber(L, 1, 0xFFFF0000)));
 	else
 	{
@@ -886,7 +888,7 @@ static int decoColor(lua_State *L)
 static int floodDeco(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int x = luaL_checkinteger(L, 1);
 	int y = luaL_checkinteger(L, 2);
 	int r = luaL_checkinteger(L, 3);
@@ -907,7 +909,7 @@ static int floodDeco(lua_State *L)
 static int clearSim(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	lsi->gameController->ClearSim();
 	return 0;
 }
@@ -915,7 +917,7 @@ static int clearSim(lua_State *L)
 static int clearRect(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int x = luaL_checkint(L,1);
 	int y = luaL_checkint(L,2);
 	int w = luaL_checkint(L,3)-1;
@@ -927,7 +929,7 @@ static int clearRect(lua_State *L)
 static int resetTemp(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	auto *sim = lsi->sim;
 	auto &sd = SimulationData::CRef();
 	auto &elements = sd.elements;
@@ -945,28 +947,26 @@ static int resetTemp(lua_State *L)
 static int resetPressure(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int aCount = lua_gettop(L), width = XCELLS, height = YCELLS;
-	int x1 = abs(luaL_optint(L, 1, 0));
-	int y1 = abs(luaL_optint(L, 2, 0));
+	int x1 = luaL_optint(L, 1, 0);
+	int y1 = luaL_optint(L, 2, 0);
 	if (aCount > 2)
 	{
-		width = abs(luaL_optint(L, 3, XCELLS));
-		height = abs(luaL_optint(L, 4, YCELLS));
+		width = luaL_optint(L, 3, XCELLS);
+		height = luaL_optint(L, 4, YCELLS);
 	}
 	else if (aCount)
 	{
 		width = 1;
 		height = 1;
 	}
-	if(x1 > XCELLS-1)
-		x1 = XCELLS-1;
-	if(y1 > YCELLS-1)
-		y1 = YCELLS-1;
-	if(x1+width > XCELLS-1)
-		width = XCELLS-x1;
-	if(y1+height > YCELLS-1)
-		height = YCELLS-y1;
+
+	x1 = std::clamp(x1, 0, XCELLS - 1);
+	y1 = std::clamp(y1, 0, YCELLS - 1);
+	width = std::clamp(width, 0, XCELLS - x1);
+	height = std::clamp(height, 0, YCELLS - y1);
+
 	for (int nx = x1; nx<x1+width; nx++)
 		for (int ny = y1; ny<y1+height; ny++)
 		{
@@ -1039,7 +1039,7 @@ static int loadStamp(lua_State *L)
 		lsi->sim->Load(gameSave.get(), includePressure, { quoX, quoY });
 		lua_pushinteger(L, 1);
 
-		if (gameSave->authors.GetSize())
+		if (gameSave->authors.size())
 		{
 			gameSave->authors["type"] = "luastamp";
 			client.MergeStampAuthorInfo(gameSave->authors);
@@ -1400,7 +1400,7 @@ static int brushClosure(lua_State *L)
 static int brush(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	int argCount = lua_gettop(L);
 	int positionX = luaL_checkint(L, 1);
 	int positionY = luaL_checkint(L, 2);
@@ -1462,14 +1462,14 @@ static int neighboursClosure(lua_State *L)
 	int t = lua_tointeger(L, lua_upvalueindex(5));
 	int x = lua_tointeger(L, lua_upvalueindex(6));
 	int y = lua_tointeger(L, lua_upvalueindex(7));
-	while (y <= cy + ry)
+	while (y <= cy + ry && y < YRES)
 	{
 		int px = x;
 		int py = y;
 		x += 1;
-		if (x > cx + rx)
+		if (x > cx + rx || x >= XRES)
 		{
-			x = cx - rx;
+			x = std::max(cx - rx, 0);
 			y += 1;
 		}
 		int r = lsi->sim->pmap[py][px];
@@ -1511,17 +1511,21 @@ static int neighbors(lua_State *L)
 	int rx = luaL_optint(L, 3, 2);
 	int ry = luaL_optint(L, 4, 2);
 	int t = luaL_optint(L, 5, PT_NONE);
-	if (rx < 0 || ry < 0)
+	if (cx < 0 || cy < 0 || cx >= XRES || cy >= YRES)
 	{
-		luaL_error(L, "Invalid radius");
+		return luaL_error(L, "Invalid position");
+	}
+	if (rx < 0 || ry < 0 || rx >= XRES || ry >= YRES)
+	{
+		return luaL_error(L, "Invalid radius");
 	}
 	lua_pushnumber(L, cx);
 	lua_pushnumber(L, cy);
 	lua_pushnumber(L, rx);
 	lua_pushnumber(L, ry);
 	lua_pushnumber(L, t);
-	lua_pushnumber(L, cx - rx);
-	lua_pushnumber(L, cy - ry);
+	lua_pushnumber(L, std::max(cx - rx, 0));
+	lua_pushnumber(L, std::max(cy - ry, 0));
 	lua_pushcclosure(L, neighboursClosure, 7);
 	return 1;
 }
@@ -1623,12 +1627,13 @@ static int historyForward(lua_State *L)
 static int replaceModeFlags(lua_State *L)
 {
 	auto *lsi = GetLSI();
-	lsi->AssertInterfaceEvent();
+	lsi->AssertToolEvent();
 	if (lua_gettop(L) == 0)
 	{
 		lua_pushinteger(L, lsi->gameController->GetReplaceModeFlags());
 		return 1;
 	}
+	lsi->AssertInterfaceEvent();
 	unsigned int flags = luaL_checkinteger(L, 1);
 	if (flags & ~(REPLACE_MODE | SPECIFIC_DELETE))
 		return luaL_error(L, "Invalid flags");
@@ -1706,11 +1711,11 @@ static int addCustomGol(lua_State *L)
 	unsigned int color2 = luaL_checkinteger(L, 4);
 
 	if (nameString.empty() || !ValidateGOLName(nameString))
-		return luaL_error(L, "Invalid name provided");
+		return luaL_error(L, "提供的名称无效");
 	if (rule == -1)
-		return luaL_error(L, "Invalid rule provided");
+		return luaL_error(L, "提供的规则无效");
 	if (sd.GetCustomGOLByRule(rule))
-		return luaL_error(L, "This Custom GoL rule already exists");
+		return luaL_error(L, "此规则已经存在");
 
 	if (!lsi->gameModel->AddCustomGol(ruleString, nameString, RGB::Unpack(color1), RGB::Unpack(color2)))
 		return luaL_error(L, "Duplicate name, cannot add");
@@ -1951,22 +1956,18 @@ static int resetVelocity(lua_State *L)
 {
 	auto *lsi = GetLSI();
 	lsi->AssertInterfaceEvent();
-	int nx, ny;
-	int x1, y1, width, height;
-	x1 = abs(luaL_optint(L, 1, 0));
-	y1 = abs(luaL_optint(L, 2, 0));
-	width = abs(luaL_optint(L, 3, XCELLS));
-	height = abs(luaL_optint(L, 4, YCELLS));
-	if(x1 > XCELLS-1)
-		x1 = XCELLS-1;
-	if(y1 > YCELLS-1)
-		y1 = YCELLS-1;
-	if(x1+width > XCELLS-1)
-		width = XCELLS-x1;
-	if(y1+height > YCELLS-1)
-		height = YCELLS-y1;
-	for (nx = x1; nx<x1+width; nx++)
-		for (ny = y1; ny<y1+height; ny++)
+	int x1 = luaL_optint(L, 1, 0);
+	int y1 = luaL_optint(L, 2, 0);
+	int width = luaL_optint(L, 3, XCELLS);
+	int height = luaL_optint(L, 4, YCELLS);
+
+	x1 = std::clamp(x1, 0, XCELLS - 1);
+	y1 = std::clamp(y1, 0, YCELLS - 1);
+	width = std::clamp(width, 0, XCELLS - 1 - x1);
+	height = std::clamp(height, 0, YCELLS - 1 - y1);
+
+	for (int nx = x1; nx < x1 + width; nx++)
+		for (int ny = y1; ny < y1 + height; ny++)
 		{
 			lsi->sim->vx[ny][nx] = 0;
 			lsi->sim->vy[ny][nx] = 0;

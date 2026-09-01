@@ -31,7 +31,7 @@ void Element::Element_PCLN()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("可控复制体,激活时变得和复制体一样").FromUtf8();
+	Description = "可控复制体,激活时变得和复制体一样";
 
 	Properties = TYPE_SOLID | PROP_PHOTPASS | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

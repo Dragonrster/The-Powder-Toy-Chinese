@@ -29,7 +29,7 @@ void Element::Element_PTCT()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("正温度系数热敏电阻,只有低于100℃时才导电").FromUtf8();
+	Description = "正温度系数热敏电阻,只有低于100°C时才导电";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

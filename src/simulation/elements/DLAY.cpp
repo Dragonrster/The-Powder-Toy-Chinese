@@ -31,7 +31,7 @@ void Element::Element_DLAY()
 
 	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
-	Description = ByteString("延时器,当电脉冲通过延时计时会延迟X帧,X等于延时计的温度").FromUtf8();
+	Description = "延时器,当电脉冲通过延时计时会延迟X帧,X等于延时计的温度";
 
 	Properties = TYPE_SOLID;
 
@@ -62,9 +62,12 @@ static int update(UPDATE_FUNC_ARGS)
 			if (rx || ry)
 			{
 				auto r = pmap[y+ry][x+rx];
-				auto pavg = sim->parts_avg(ID(r), i, PT_INSL);
-				if (!r || pavg==PT_INSL || pavg==PT_RSSS)
+				if (!r)
 					continue;
+				auto pavg = sim->parts_avg(ID(r), i, PT_INSL);
+				if (pavg==PT_INSL || pavg==PT_RSSS)
+					continue;
+
 				if (TYP(r)==PT_SPRK && parts[i].life==0 && parts[ID(r)].life>0 && parts[ID(r)].life<4 && parts[ID(r)].ctype==PT_PSCN)
 				{
 					parts[i].life = (int)(parts[i].temp-273.15f+0.5f);

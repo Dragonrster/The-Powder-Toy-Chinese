@@ -31,7 +31,7 @@ void Element::Element_PBCN()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("可控可破坏复制体,激活时和可破坏复制体相同").FromUtf8();
+	Description = "可控可破坏复制体,激活时和可破坏复制体相同";
 
 	Properties = TYPE_SOLID | PROP_PHOTPASS | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

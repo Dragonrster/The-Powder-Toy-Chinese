@@ -28,7 +28,7 @@ void Element::Element_RFRG()
 	Weight = 1;
 
 	HeatConduct = 3;
-	Description = ByteString("制冷剂,一种淡蓝色气体,在2P或更大压力下液化时加热,反之蒸发时冷却").FromUtf8();
+	Description = "制冷剂,一种淡蓝色气体,在2P或更大压力下液化时加热,反之蒸发时冷却";
 
 	Properties = TYPE_GAS|PROP_DEADLY;
 

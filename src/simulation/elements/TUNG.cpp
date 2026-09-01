@@ -32,7 +32,7 @@ void Element::Element_TUNG()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("钨,脆性金属具有很高的熔点,但不耐压").FromUtf8();
+	Description = "钨,脆性金属具有很高的熔点,但不耐压";
 
 	Properties = TYPE_SOLID|PROP_CONDUCTS|PROP_LIFE_DEC;
 

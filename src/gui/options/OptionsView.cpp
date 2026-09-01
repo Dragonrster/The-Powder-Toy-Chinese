@@ -93,6 +93,20 @@ public:
 	}
 };
 
+namespace
+{
+	enum FpsLimitDropdown
+	{
+		fpsLimitDropdownExact,
+		fpsLimitDropdownUncapped,
+	};
+	enum DrawLimitDropdown
+	{
+		drawLimitDropdownExact,
+		drawLimitDropdownFollowDisplay,
+	};
+};
+
 OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 {
 	auto autoWidth = [this](ui::Component *c, int extra) {
@@ -100,7 +114,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	};
 	
 	{
-		auto *label = new ui::Label(ui::Point(4, 1), ui::Point(Size.X-8, 22), ByteString("设置").FromUtf8());
+		auto *label = new ui::Label(ui::Point(4, 1), ui::Point(Size.X-8, 22), "设置");
 		label->SetTextColour(style::Colour::InformationTitle);
 		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -157,6 +171,41 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		currentY += 20;
 		return dropDown;
 	};
+	auto addButtonWithLabel = [this, &currentY, &addLabel](String buttonText, String labelText, std::function<void ()> action) {
+		auto *button = new ui::Button(ui::Point(10, currentY), ui::Point(90, 16), buttonText);
+		button->SetActionCallback({ action });
+		scrollPanel->AddChild(button);
+		auto *label = addLabel(5, labelText);
+		currentY += 13;
+		return label;
+	};
+	auto addLimitDropDown = [this, &currentY, &autoWidth](String info, std::vector<std::pair<String, int>> options, std::function<void (bool)> action) {
+		auto *dropDown = new ui::DropDown(ui::Point(Size.X - 155, currentY), ui::Point(100, 16));
+		scrollPanel->AddChild(dropDown);
+		for (auto &option : options)
+		{
+			dropDown->AddOption(option);
+		}
+		dropDown->SetActionCallback({ [action]() {
+			action(true);
+		} });
+		auto *textbox = new ui::Textbox(ui::Point(Size.X - 51, currentY), ui::Point(36, 16));
+		textbox->SetActionCallback({ [action]() {
+			action(false);
+		} });
+		textbox->SetDefocusCallback({ [action]() {
+			action(true);
+		} });
+		textbox->SetLimit(4);
+		scrollPanel->AddChild(textbox);
+		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X - 96, 16), info);
+		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+		scrollPanel->AddChild(label);
+		autoWidth(label, 105);
+		currentY += 20;
+		return std::make_pair(dropDown, textbox);
+	};
 	auto addSeparator = [this, &currentY]() {
 		currentY += 6;
 		auto *separator = new ui::Separator(ui::Point(0, currentY), ui::Point(Size.X, 1));
@@ -177,7 +226,7 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		if (addPreview)
 		{
 			textbox->Size.X -= 20;
-			preview = new ui::Button(ui::Point(Size.X-31, currentY), ui::Point(16, 16), "", "Preview");
+			preview = new ui::Button(ui::Point(Size.X-31, currentY), ui::Point(16, 16), "", "预览");
 			scrollPanel->AddChild(preview);
 		}
 		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-105, 16), info);
@@ -188,97 +237,108 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		return std::make_pair(textbox, preview);
 	};
 
-	heatSimulation = addCheckbox(0, ByteString("热模拟 \bg34.0版本后加入").FromUtf8(), ByteString("\bg 关闭此选项可能导致一些奇怪的问题").FromUtf8(), [this] {
+	heatSimulation = addCheckbox(0, "热模拟 \bg34.0版本后加入", "关闭此选项可能导致一些奇怪的问题", [this] {
 		c->SetHeatSimulation(heatSimulation->GetChecked());
 	});
-	newtonianGravity = addCheckbox(0, ByteString("牛顿引力模拟 \bg48.0版本后加入").FromUtf8(), ByteString("\bg 可能会降低游戏运行的效能").FromUtf8(), [this] {
+	newtonianGravity = addCheckbox(0, "牛顿引力模拟 \bg48.0版本后加入", "可能会降低老旧设备的运行效能", [this] {
 		c->SetNewtonianGravity(newtonianGravity->GetChecked());
 	});
-	ambientHeatSimulation = addCheckbox(0, ByteString("环境热模拟 \bg50.0版本后加入").FromUtf8(), ByteString("\bg 关闭此项可能导致一些沙盘不能正常运行").FromUtf8(), [this] {
+	ambientHeatSimulation = addCheckbox(0, "环境热模拟 \bg50.0版本后加入", "关闭此项可能导致一些沙盘不能正常运行", [this] {
 		c->SetAmbientHeatSimulation(ambientHeatSimulation->GetChecked());
 	});
-	waterEqualisation = addCheckbox(0, ByteString("连通器模拟 \bg61.0版本后加入 ").FromUtf8(), ByteString("\bg 有大量液体存在时会降低游戏运行的效能").FromUtf8(), [this] {
+	waterEqualisation = addCheckbox(0, "连通器模拟 \bg61.0版本后加入", "有大量液体存在时会降低运行效能", [this] {
 		c->SetWaterEqualisation(waterEqualisation->GetChecked());
 	});
-	airMode = addDropDown(ByteString("空气模拟模式").FromUtf8(), {
-		{ ByteString("开启").FromUtf8(), AIR_ON },
-		{ ByteString("关闭压力").FromUtf8(), AIR_PRESSUREOFF },
-		{ ByteString("关闭速度").FromUtf8(), AIR_VELOCITYOFF },
-		{ ByteString("关闭").FromUtf8(), AIR_OFF },
-		{ ByteString("更新停止").FromUtf8(), AIR_NOUPDATE },
+	airMode = addDropDown("空气模拟模式", {
+		{ "开启", AIR_ON },
+		{ "关闭压力", AIR_PRESSUREOFF },
+		{ "关闭速度", AIR_VELOCITYOFF },
+		{ "关闭", AIR_OFF },
+		{ "不更新", AIR_NOUPDATE },
 	}, [this] {
 		c->SetAirMode(airMode->GetOption().second);
 	});
-	std::tie(ambientAirTemp, ambientAirTempPreview) = addTextboxWithPreview("Ambient air temperature", true, [this](String value, bool defocus) {
+	std::tie(ambientAirTemp, ambientAirTempPreview) = addTextboxWithPreview("环境空气温度", true, [this](String value, bool defocus) {
 		UpdateAirTemp(value, defocus);
 	});
-	std::tie(edgePressure, edgePressurePreview) = addTextboxWithPreview("Ambient air pressure", true, [this](String value, bool defocus) {
+	std::tie(edgePressure, edgePressurePreview) = addTextboxWithPreview("环境空气压力", true, [this](String value, bool defocus) {
 		UpdateEdgePressure(value, defocus);
 	});
 	{
-		edgeVelocityChange = new ui::Button(ui::Point(Size.X-95, currentY), ui::Point(80, 16), "Change");
+		edgeVelocityChange = new ui::Button(ui::Point(Size.X-95, currentY), ui::Point(80, 16), "更改");
 		scrollPanel->AddChild(edgeVelocityChange);
 		edgeVelocityChange->SetActionCallback({ [this] {
-			new DirectionSelector(ui::Point(-1, -1), 0.05f, 40, edgeVelocityX, edgeVelocityY, "Ambient air velocity", [this](float x, float y) {
+			new DirectionSelector(ui::Point(-1, -1), 0.05f, 40, edgeVelocityX, edgeVelocityY, "环境空气速度", [this](float x, float y) {
 				c->SetEdgeVelocityX(x);
 				c->SetEdgeVelocityY(y);
 			});
 		} });
-		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-96, 16), "Ambient air velocity");
+		auto *label = new ui::Label(ui::Point(8, currentY), ui::Point(Size.X-96, 16), "环境空气速度");
 		label->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 		label->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 		scrollPanel->AddChild(label);
 		currentY+=20;
 	}
-	vorticityCoeff = addTextboxWithPreview("Vorticity confinement", false, [this](String value, bool defocus) {
+	vorticityCoeff = addTextboxWithPreview("涡流约束", false, [this](String value, bool defocus) {
 		UpdateVorticityCoeff(value, defocus);
 	}).first;
-	convectionMode = addDropDown("Air heat convection mode", {
-		{ "None", AIRC_NONE },
-		{ "Legacy", AIRC_LEGACY },
-		{ "Boussinesq", AIRC_BOUSSINESQ },
+	convectionMode = addDropDown("空气热对流模式", {
+		{ "关闭", AIRC_NONE },
+		{ "传统方式", AIRC_LEGACY },
+		{ "浮力对流", AIRC_BOUSSINESQ },
 	}, [this] {
 		c->SetConvectionMode(convectionMode->GetOption().second);
 	});
-	gravityMode = addDropDown("Gravity simulation mode", {
-		{ "Vertical", GRAV_VERTICAL },
-		{ "Off", GRAV_OFF },
-		{ "Radial", GRAV_RADIAL },
-		{ "Custom", GRAV_CUSTOM },
+	gravityMode = addDropDown("引力模拟模式", {
+		{ "垂直", GRAV_VERTICAL },
+		{ "关闭", GRAV_OFF },
+		{ "中心", GRAV_RADIAL },
+		{ "自定义", GRAV_CUSTOM },
 	}, [this] {
 		c->SetGravityMode(gravityMode->GetOption().second);
 		if (gravityMode->GetOption().second == 3)
 		{
-			new DirectionSelector(ui::Point(-1, -1), 0.05f, 40, customGravityX, customGravityY, "Custom Gravity", [this](float x, float y) {
+			new DirectionSelector(ui::Point(-1, -1), 0.05f, 40, customGravityX, customGravityY, "自定义引力", [this](float x, float y) {
 				c->SetCustomGravityX(x);
 				c->SetCustomGravityY(y);
 			});
 		}
 	});
-	edgeMode = addDropDown(ByteString("边界模式").FromUtf8(), {
-		{ ByteString("虚空").FromUtf8(), EDGE_VOID },
-		{ ByteString("固体").FromUtf8(), EDGE_SOLID },
-		{ ByteString("循环").FromUtf8(), EDGE_LOOP },
+	edgeMode = addDropDown("边界模式", {
+		{ "虚空", EDGE_VOID },
+		{ "固体", EDGE_SOLID },
+		{ "循环", EDGE_LOOP },
 	}, [this] {
 		c->SetEdgeMode(edgeMode->GetOption().second);
 	});
-	temperatureScale = addDropDown(ByteString("温度单位").FromUtf8(), {
-		{ ByteString("开尔文").FromUtf8(), TEMPSCALE_KELVIN },
-		{ ByteString("摄氏度").FromUtf8(), TEMPSCALE_CELSIUS },
-		{ ByteString("华氏度").FromUtf8(), TEMPSCALE_FAHRENHEIT },
+	temperatureScale = addDropDown("温度单位", {
+		{ "开尔文", TEMPSCALE_KELVIN },
+		{ "摄氏度", TEMPSCALE_CELSIUS },
+		{ "华氏度", TEMPSCALE_FAHRENHEIT },
 	}, [this] {
 		c->SetTemperatureScale(TempScale(temperatureScale->GetOption().second));
 	});
+	addSeparator();
+	std::tie(fpsLimit, fpsLimitText) = addLimitDropDown("模拟帧率上限", {
+		{ "精确", fpsLimitDropdownExact },
+		{ "不限制", fpsLimitDropdownUncapped },
+	}, [this](bool defocus) {
+		UpdateFpsLimit(defocus);
+	});
+	std::tie(drawLimit, drawLimitText) = addLimitDropDown("渲染帧率上限", {
+		{ "精确", drawLimitDropdownExact },
+		{ "跟随显示器", drawLimitDropdownFollowDisplay },
+	}, [this](bool defocus) {
+		UpdateDrawLimit(defocus);
+	});
+	addButtonWithLabel("重置", " - 将两个上限设为合理默认值", [this]{
+		c->SetFpsLimit(DefaultFpsLimit);
+		c->SetDrawLimit(DefaultDrawLimit);
+	});
+	currentY -= 6;
+	addSeparator();
 	if (FORCE_WINDOW_FRAME_OPS != forceWindowFrameOpsHandheld)
 	{
-		addSeparator();
-		language = addDropDown(ByteString("\bg语言").FromUtf8(), {  
-		{ ByteString("简体中文").FromUtf8(), 0 },  
-		{ ByteString("English").FromUtf8(), 1 },  
-		}, [this] {  
-		c->SetLanguage(language->GetOption().second);  
-		});  
-  
 		std::vector<std::pair<String, int>> options;
 		int currentScale = ui::Engine::Ref().GetScale();
 		int scaleIndex = 1;
@@ -295,62 +355,62 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		while (desktopWidth >= GetGraphics()->Size().X * scaleIndex && desktopHeight >= GetGraphics()->Size().Y * scaleIndex);
 		if (!currentScaleValid)
 		{
-			options.push_back({ ByteString("当前").FromUtf8(), currentScale });
+			options.push_back({ "当前", currentScale });
 		}
-		scale = addDropDown(ByteString("\bg缩放屏幕的窗口比例因子").FromUtf8(), options, [this] {
+		scale = addDropDown("\bg窗口缩放倍数", options, [this] {
 			c->SetScale(scale->GetOption().second);
 		});
 	}
 	if (FORCE_WINDOW_FRAME_OPS == forceWindowFrameOpsNone)
 	{
-		resizable = addCheckbox(0, ByteString("可调整大小 \bg - 允许调整大小和最大化窗口").FromUtf8(), "", [this] {
+		resizable = addCheckbox(0, "允许调整窗口大小 \bg - 可拖动边缘缩放、最大化窗口", "", [this] {
 			c->SetResizable(resizable->GetChecked());
 		});
-		fullscreen = addCheckbox(0, ByteString("全屏 \bg - 进入全屏模式").FromUtf8(), "", [this] {
+		fullscreen = addCheckbox(0, "全屏显示 \bg - 进入全屏模式", "", [this] {
 			c->SetFullscreen(fullscreen->GetChecked());
 		});
-		changeResolution = addCheckbox(1, ByteString("设置最佳屏幕分辨率").FromUtf8(), "", [this] {
+		changeResolution = addCheckbox(1, "全屏时切换到最佳分辨率", "", [this] {
 			c->SetChangeResolution(changeResolution->GetChecked());
 		});
-		forceIntegerScaling = addCheckbox(1, ByteString("强制整数倍缩放 \bg - 不再那么模糊").FromUtf8(), "", [this] {
+		forceIntegerScaling = addCheckbox(1, "整数倍缩放 \bg - 画面更清晰锐利", "", [this] {
 			c->SetForceIntegerScaling(forceIntegerScaling->GetChecked());
 		});
 	}
-	blurryScaling = addCheckbox(0, ByteString("模糊缩放 \bg - 启用此项加强在超大屏幕上效果").FromUtf8(), "", [this] {
+	blurryScaling = addCheckbox(0, "平滑缩放 \bg - 在超大屏幕上画面更柔和", "", [this] {
 		c->SetBlurryScaling(blurryScaling->GetChecked());
 	});
 	addSeparator();
 	if (ALLOW_QUIT)
 	{
-		fastquit = addCheckbox(0, ByteString("快速退出").FromUtf8(), ByteString("点击关闭按钮时总是完全退出游戏").FromUtf8(), [this] {
+		fastquit = addCheckbox(0, "快速退出", "点击关闭按钮时直接完全退出游戏", [this] {
 			c->SetFastQuit(fastquit->GetChecked());
 		});
-		globalQuit = addCheckbox(0, ByteString("全局退出快捷键").FromUtf8(), ByteString("使Ctrl+q 全局有效").FromUtf8(), [this] {
+		globalQuit = addCheckbox(0, "全局退出快捷键", "让 Ctrl+Q 在任何界面都能退出", [this] {
 			c->SetGlobalQuit(globalQuit->GetChecked());
 		});
 	}
-	showAvatars = addCheckbox(0, ByteString("显示头像").FromUtf8(), ByteString("禁用此项可减少使用的网络带宽").FromUtf8(), [this] {
+	showAvatars = addCheckbox(0, "显示用户头像", "网络较慢时可关闭以节省流量", [this] {
 		c->SetShowAvatars(showAvatars->GetChecked());
 	});
-	momentumScroll = addCheckbox(0, ByteString("加速/旧版滚动").FromUtf8(), ByteString("启用此项时将步进滚动改为加速").FromUtf8(), [this] {
+	momentumScroll = addCheckbox(0, "惯性滚动（旧版）", "用带惯性的滚动代替逐格滚动", [this] {
 		c->SetMomentumScroll(momentumScroll->GetChecked());
 	});
-	mouseClickRequired = addCheckbox(0, ByteString("置顶类别").FromUtf8(), ByteString("启用此项时将滑动切换类别改为点击").FromUtf8(), [this] {
+	mouseClickRequired = addCheckbox(0, "点击切换元素分类", "改为点击切换分类，而不是鼠标悬停自动切换", [this] {
 		c->SetMouseClickrequired(mouseClickRequired->GetChecked());
 	});
-	includePressure = addCheckbox(0, ByteString("压力数据").FromUtf8(), ByteString("沙盘,图章,复制时保存压力数据").FromUtf8(), [this] {
+	includePressure = addCheckbox(0, "包含压力数据", "保存、复制、制作图章时一并保留压力数据", [this] {
 		c->SetIncludePressure(includePressure->GetChecked());
 	});
-	perfectCircle = addCheckbox(0, ByteString("完美的圆").FromUtf8(), ByteString("由Notch创造的最完美的圆").FromUtf8(), [this] {
+	perfectCircle = addCheckbox(0, "完美圆形笔刷", "边缘更规整的圆形笔刷，不会有多余的凸点", [this] {
 		c->SetPerfectCircle(perfectCircle->GetChecked());
 	});
-	graveExitsConsole = addCheckbox(0, ByteString("Esc键下方的键用于退出控制台").FromUtf8(), ByteString("如果该键是0,请禁用此功能").FromUtf8(), [this] {
+	graveExitsConsole = addCheckbox(0, "用 Esc 下方的键退出控制台", "如果你键盘上那个键是数字 0，请关闭此项", [this] {
 		c->SetGraveExitsConsole(graveExitsConsole->GetChecked());
 	});
 	if constexpr (PLATFORM_CLIPBOARD)
 	{
 		auto indent = 0;
-		nativeClipoard = addCheckbox(indent, ByteString("使用全局剪贴板").FromUtf8(), ByteString("允许跨TPT实例进行复制和粘贴").FromUtf8(), [this] {
+		nativeClipoard = addCheckbox(indent, "使用系统剪贴板", "允许在多个 TPT 窗口之间复制粘贴", [this] {
 			c->SetNativeClipoard(nativeClipoard->GetChecked());
 		});
 		currentY -= 4; // temporarily undo the currentY += 4 at the end of addCheckbox
@@ -360,10 +420,10 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		}
 		currentY += 4; // and then undo the undo
 	}
-	threadedRendering = addCheckbox(0, ByteString("启用独立渲染线程").FromUtf8(), ByteString("使用特效时可能提升帧率").FromUtf8(), [this] {
+	threadedRendering = addCheckbox(0, "独立渲染线程", "开启特效时可能提升帧率", [this] {
 		c->SetThreadedRendering(threadedRendering->GetChecked());
 	});
-	decoSpace = addDropDown(ByteString("\bg装饰工具使用的颜色空间").FromUtf8(), {
+	decoSpace = addDropDown("\bg装饰工具的颜色空间", {
 		{ "sRGB", DECOSPACE_SRGB },
 		{ "Linear", DECOSPACE_LINEAR },
 		{ "Gamma 2.2", DECOSPACE_GAMMA22 },
@@ -375,40 +435,42 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 	currentY += 4;
 	if constexpr (ALLOW_DATA_FOLDER)
 	{
-		auto *dataFolderButton = new ui::Button(ui::Point(10, currentY), ui::Point(90, 16), ByteString("打开数据目录").FromUtf8());
+		auto *dataFolderButton = new ui::Button(ui::Point(10, currentY), ui::Point(90, 16), "打开数据目录");
 		dataFolderButton->SetActionCallback({ [] {
-			ByteString cwd = Platform::GetCwd();
+			// Android's process cwd is not the application's data directory.
+			// Use the platform-specific directory returned through JNI.
+			ByteString cwd = Platform::DefaultDdir();
 			if (!cwd.empty())
 			{
 				Platform::OpenURI(cwd);
 			}
 			else
 			{
-				std::cerr << "无法打开数据目录: Platform::GetCwd(...) 失败" << std::endl;
+				std::cerr << "无法打开数据目录: Platform::DefaultDdir(...) 失败" << std::endl;
 			}
 		} });
 		scrollPanel->AddChild(dataFolderButton);
 		if constexpr (SHARED_DATA_FOLDER)
 		{
-			auto *migrationButton = new ui::Button(ui::Point(Size.X - 178, currentY), ui::Point(163, 16), ByteString("迁移至用户共享数据目录").FromUtf8());
+			auto *migrationButton = new ui::Button(ui::Point(Size.X - 178, currentY), ui::Point(163, 16), "迁移至用户共享数据目录");
 			migrationButton->SetActionCallback({ [] {
 				ByteString from = Platform::originalCwd;
 				ByteString to = Platform::sharedCwd;
-				new ConfirmPrompt(ByteString("进行迁移?").FromUtf8(), ByteString("这将从中迁移所有图章,沙盘和脚本\n\bt").FromUtf8() + from.FromUtf8() + ByteString("\bw\n到共享数据目录\n\bt").FromUtf8() + to.FromUtf8() + "\bw\n\n" + ByteString("已经存在的文件不会被覆盖").FromUtf8(), { [from, to]() {
+				new ConfirmPrompt("进行迁移?", "这将从中迁移所有图章,沙盘和脚本\n\bt" + from.FromUtf8() + "\bw\n到共享数据目录\n\bt" + to.FromUtf8() + "\bw\n\n" + "已经存在的文件不会被覆盖", { [from, to]() {
 					String ret = Client::Ref().DoMigration(from, to);
-					new InformationMessage(ByteString("迁移完成").FromUtf8(), ret, false);
+					new InformationMessage("迁移完成", ret, false);
 				} });
 			} });
 			scrollPanel->AddChild(migrationButton);
 		}
 		currentY += 26;
 	}
-	String autoStartupRequestNote = ByteString("启动时完成").FromUtf8();
+	String autoStartupRequestNote = "启动时完成";
 	if (!IGNORE_UPDATES)
 	{
-		autoStartupRequestNote += ByteString(", 保持检查更新").FromUtf8();
+		autoStartupRequestNote += ", 保持检查更新";
 	}
-	autoStartupRequest = addCheckbox(0, ByteString("获取当天的消息和通知").FromUtf8(), autoStartupRequestNote, [this] {
+	autoStartupRequest = addCheckbox(0, "获取当天的消息和通知", autoStartupRequestNote, [this] {
 		auto checked = autoStartupRequest->GetChecked();
 		if (checked)
 		{
@@ -416,35 +478,21 @@ OptionsView::OptionsView() : ui::Window(ui::Point(-1, -1), ui::Point(320, 340))
 		}
 		c->SetAutoStartupRequest(checked);
 	});
-	auto *doStartupRequest = new ui::Button(ui::Point(10, currentY), ui::Point(90, 16), ByteString("立刻获取").FromUtf8());
-	doStartupRequest->SetActionCallback({ [] {
+	startupRequestStatus = addButtonWithLabel("立刻获取", "", []{
 		Client::Ref().BeginStartupRequest();
-	} });
-	scrollPanel->AddChild(doStartupRequest);
-	startupRequestStatus = addLabel(5, "");
+	});
 	UpdateStartupRequestStatus();
-	currentY += 13;
-	redirectStd = addCheckbox(0, ByteString("将错误等信息保存至文件").FromUtf8(), ByteString("便于开发者排查问题").FromUtf8(), [this] {
+	redirectStd = addCheckbox(0, "将错误等信息保存至文件", "便于开发者排查问题", [this] {
 		c->SetRedirectStd(redirectStd->GetChecked());
+	});
+	addSeparator();
+	addButtonWithLabel("贡献者", " - 查看谁为TPT做出了贡献", []{
+		auto *credits = new Credits();
+		ui::Engine::Ref().ShowWindow(credits);
 	});
 
 	{
-		addSeparator();
-
-		auto *creditsButton = new ui::Button(ui::Point(10, currentY), ui::Point(90, 16), "贡献者");
-		creditsButton->SetActionCallback({ [] {
-			auto *credits = new Credits();
-			ui::Engine::Ref().ShowWindow(credits);
-		} });
-		scrollPanel->AddChild(creditsButton);
-
-		addLabel(5,  ByteString(" - 查看谁为TPT做出了贡献").FromUtf8());
-		currentY += 13;
-	}
-
-
-	{
-		ui::Button *ok = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "OK");
+		ui::Button *ok = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X, 16), "确定");
 		ok->SetActionCallback({ [this] {
 			c->Exit();
 		} });
@@ -536,10 +584,11 @@ void OptionsView::UpdateStartupRequestStatus()
 	}
 }
 
-static void UpdateSettingFromString(String pres, bool isDefocus, float minVale, float maxValue, float defaultValue, auto parse, auto toTextbox, auto apply)
+template<class Value>
+static void UpdateSettingFromString(String pres, bool isDefocus, Value minVale, Value maxValue, Value defaultValue, auto parse, auto toTextbox, auto apply)
 {
 	// Parse value and determine validity
-	float value = 0;
+	Value value = Value(0);
 	bool isValid;
 	try
 	{
@@ -574,6 +623,88 @@ static void UpdateSettingFromString(String pres, bool isDefocus, float minVale, 
 
 	// If valid, apply
 	apply(value, isValid);
+}
+
+void OptionsView::UpdateFpsLimit(bool isDefocus)
+{
+	if (fpsLimit->GetOption().second == fpsLimitDropdownExact)
+	{
+		UpdateSettingFromString(fpsLimitText->GetText(), isDefocus, FpsLimitExplicit::minSane, FpsLimitExplicit::maxSane, DefaultFpsLimit.value, [](const String &s) {
+			return s.ToNumber<float>();
+		}, [this](float value) {
+			FpsLimitToInterface(FpsLimitExplicit{ value });
+		}, [this](float value, bool isValid) {
+			if (isValid)
+			{
+				c->SetFpsLimit(FpsLimitExplicit{ value });
+			}
+		});
+	}
+	else
+	{
+		fpsLimitText->Enabled = false;
+		fpsLimitText->SetText("");
+		c->SetFpsLimit(FpsLimitNone{});
+	}
+}
+
+void OptionsView::FpsLimitToInterface(SimFpsLimit limit)
+{
+	if (auto *fpsLimitExplicit = std::get_if<FpsLimitExplicit>(&limit))
+	{
+		StringBuilder sb;
+		sb << fpsLimitExplicit->value;
+		fpsLimitText->Enabled = true;
+		fpsLimitText->SetText(sb.Build());
+		fpsLimit->SetOption(fpsLimitDropdownExact);
+	}
+	else
+	{
+		fpsLimitText->Enabled = false;
+		fpsLimitText->SetText("");
+		fpsLimit->SetOption(fpsLimitDropdownUncapped);
+	}
+}
+
+void OptionsView::UpdateDrawLimit(bool isDefocus)
+{
+	if (drawLimit->GetOption().second == drawLimitDropdownExact)
+	{
+		UpdateSettingFromString(drawLimitText->GetText(), isDefocus, DrawLimitExplicit::minSane, DrawLimitExplicit::maxSane, DefaultDrawLimit.value, [](const String &s) {
+			return s.ToNumber<int>();
+		}, [this](int value) {
+			DrawLimitToInterface(DrawLimitExplicit{ value });
+		}, [this](int value, bool isValid) {
+			if (isValid)
+			{
+				c->SetDrawLimit(DrawLimitExplicit{ value });
+			}
+		});
+	}
+	else
+	{
+		drawLimitText->Enabled = false;
+		drawLimitText->SetText("");
+		c->SetDrawLimit(DrawLimitDisplay{});
+	}
+}
+
+void OptionsView::DrawLimitToInterface(DrawLimit limit)
+{
+	if (auto *drawLimitExplicit = std::get_if<DrawLimitExplicit>(&limit))
+	{
+		StringBuilder sb;
+		sb << drawLimitExplicit->value;
+		drawLimitText->Enabled = true;
+		drawLimitText->SetText(sb.Build());
+		drawLimit->SetOption(drawLimitDropdownExact);
+	}
+	else
+	{
+		drawLimitText->Enabled = false;
+		drawLimitText->SetText("");
+		drawLimit->SetOption(drawLimitDropdownFollowDisplay);
+	}
 }
 
 void OptionsView::UpdateAirTemp(String temp, bool isDefocus)
@@ -625,7 +756,6 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 	temperatureScale->SetOption(sender->GetTemperatureScale()); // has to happen before AmbientAirTempToTextBox is called
 	heatSimulation->SetChecked(sender->GetHeatSimulation());
 	ambientHeatSimulation->SetChecked(sender->GetAmbientHeatSimulation());
-	language->SetOption(sender->GetLanguage());
 	newtonianGravity->SetChecked(sender->GetNewtonianGravity());
 	waterEqualisation->SetChecked(sender->GetWaterEqualisation());
 	airMode->SetOption(sender->GetAirMode());
@@ -641,6 +771,14 @@ void OptionsView::NotifySettingsChanged(OptionsModel * sender)
 		float pres = sender->GetEdgePressure();
 		UpdateEdgePressurePreview(pres, true);
 		EdgePressureToTextBox(pres);
+	}
+	if (!fpsLimitText->IsFocused())
+	{
+		FpsLimitToInterface(sender->GetFpsLimit());
+	}
+	if (!drawLimitText->IsFocused())
+	{
+		DrawLimitToInterface(sender->GetDrawLimit());
 	}
 	// Same for vorticity
 	if (!vorticityCoeff->IsFocused())

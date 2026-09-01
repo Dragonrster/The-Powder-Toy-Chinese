@@ -217,7 +217,7 @@ int LuaScriptInterface::Autorun()
 {
 	if (!Platform::FileExists("autorun.lua"))
 	{
-		lua_pushliteral(L, "autorun.lua not found");
+		lua_pushliteral(L, "未找到 autorun.lua");
 		return 1;
 	}
 	if (luaL_loadfile(L, "autorun.lua") || tpt_lua_pcall(L, 0, 0, 0, eventTraitInterface))
@@ -225,7 +225,7 @@ int LuaScriptInterface::Autorun()
 		Log(CommandInterface::LogError, LuaGetError());
 		return 1;
 	}
-	Log(CommandInterface::LogWarning, ByteString("已加载 autorun.lua").FromUtf8());
+	Log(CommandInterface::LogWarning, "Loaded autorun.lua");
 	return 0;
 }
 
@@ -276,7 +276,7 @@ void LuaGetProperty(lua_State *L, StructProperty property, intptr_t propertyAddr
 			break;
 		}
 		case StructProperty::Colour:
-			lua_pushinteger(L, *((unsigned int*)propertyAddress));
+			lua_pushinteger(L, ((RGB*)propertyAddress)->Pack());
 			break;
 		case StructProperty::Removed:
 			lua_pushnil(L);
@@ -317,7 +317,7 @@ void LuaSetProperty(lua_State *L, StructProperty property, intptr_t propertyAddr
 			*((String*)propertyAddress) = tpt_lua_checkString(L, stackPos);
 			break;
 		case StructProperty::Colour:
-			*((unsigned int*)propertyAddress) = int32_truncate(luaL_checknumber(L, stackPos));
+			*((RGB*)propertyAddress) = RGB::Unpack(int32_truncate(luaL_checknumber(L, stackPos)));
 			break;
 		case StructProperty::Removed:
 			break;

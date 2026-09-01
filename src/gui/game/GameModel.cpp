@@ -111,6 +111,7 @@ GameModel::GameModel(GameView *newView):
 
 	rendererSettings.gravityFieldEnabled = prefs.Get("Renderer.GravityField", false);
 	rendererSettings.decorationLevel = prefs.Get("Renderer.Decorations", true) ? RendererSettings::decorationEnabled : RendererSettings::decorationDisabled;
+	rendererSettings.gridCheckerboard = prefs.Get("Renderer.GridCheckerboard", false);
 	threadedRendering = prefs.Get("Renderer.SeparateThread", true);
 
 	//Load config into simulation
@@ -224,6 +225,7 @@ GameModel::~GameModel()
 		prefs.Set("Renderer.DisplayMode", rendererSettings.displayMode);
 		prefs.Set("Renderer.RenderMode", rendererSettings.renderMode);
 		prefs.Set("Renderer.GravityField", rendererSettings.gravityFieldEnabled);
+		prefs.Set("Renderer.GridCheckerboard", rendererSettings.gridCheckerboard);
 		prefs.Set("Renderer.Decorations", GetDecoration());
 		prefs.Set("Renderer.DebugMode", rendererSettings.debugLines); //These two should always be equivalent, even though they are different things
 		prefs.Set("Simulation.NewtonianGravity", bool(sim->grav));
@@ -668,7 +670,7 @@ void GameModel::Tick()
 		}
 		catch (const http::RequestError &ex)
 		{
-			new ErrorMessage("Error while voting", ByteString(ex.what()).FromUtf8());
+			new ErrorMessage("投票时出错", ByteString(ex.what()).FromUtf8());
 		}
 		currentSave.execVoteRequest.reset();
 	}
@@ -870,7 +872,7 @@ void GameModel::SetSave(std::unique_ptr<SaveInfo> newSave, bool invertIncludePre
 		sim->Load(saveData, !invertIncludePressure, { 0, 0 });
 		// This save was created before logging existed
 		// Add in the correct info
-		if (saveData->authors.GetSize() == 0)
+		if (saveData->authors.size() == 0)
 		{
 			auto gameSave = currentSave.saveInfo->TakeGameSave();
 			gameSave->authors["type"] = "save";
@@ -879,12 +881,12 @@ void GameModel::SetSave(std::unique_ptr<SaveInfo> newSave, bool invertIncludePre
 			gameSave->authors["title"] = currentSave.saveInfo->name.ToUtf8();
 			gameSave->authors["description"] = currentSave.saveInfo->Description.ToUtf8();
 			gameSave->authors["published"] = (int)currentSave.saveInfo->Published;
-			gameSave->authors["date"] = int64_t(currentSave.saveInfo->updatedDate);
+			gameSave->authors["date"] = (Json::Value::UInt64)currentSave.saveInfo->updatedDate;
 			currentSave.saveInfo->SetGameSave(std::move(gameSave));
 		}
 		// This save was probably just created, and we didn't know the ID when creating it
 		// Update with the proper ID
-		else if (saveData->authors.Get("id", -1) == 0 || saveData->authors.Get("id", -1) == -1)
+		else if (saveData->authors.get("id", -1) == 0 || saveData->authors.get("id", -1) == -1)
 		{
 			auto gameSave = currentSave.saveInfo->TakeGameSave();
 			gameSave->authors["id"] = currentSave.saveInfo->id;
@@ -1134,9 +1136,9 @@ void GameModel::SetDecoration(bool decorationState)
 		notifyDecorationChanged();
 		UpdateQuickOptions();
 		if (decorationState)
-			SetInfoTip(ByteString("装饰图层:开启").FromUtf8());
+			SetInfoTip("装饰图层:开启");
 		else
-			SetInfoTip(ByteString("装饰图层:关闭").FromUtf8());
+			SetInfoTip("装饰图层:关闭");
 	}
 }
 
@@ -1150,9 +1152,9 @@ void GameModel::SetAHeatEnable(bool aHeat)
 	sim->aheat_enable = aHeat;
 	UpdateQuickOptions();
 	if (aHeat)
-		SetInfoTip(ByteString("环境热模拟:开启").FromUtf8());
+		SetInfoTip("环境热模拟:开启");
 	else
-		SetInfoTip(ByteString("环境热模拟:关闭").FromUtf8());
+		SetInfoTip("环境热模拟:关闭");
 }
 
 bool GameModel::GetAHeatEnable()
@@ -1170,11 +1172,11 @@ void GameModel::SetNewtonianGravity(bool newtonainGravity)
 	sim->EnableNewtonianGravity(newtonainGravity);
     if (newtonainGravity)
     {
-        SetInfoTip(ByteString("牛顿引力:开启").FromUtf8());
+        SetInfoTip("牛顿引力:开启");
     }
     else
     {
-        SetInfoTip(ByteString("牛顿引力:关闭").FromUtf8());
+        SetInfoTip("牛顿引力:关闭");
     }
     UpdateQuickOptions();
 }
@@ -1188,14 +1190,24 @@ void GameModel::ShowGravityGrid(bool showGrid)
 {
 	rendererSettings.gravityFieldEnabled = showGrid;
 	if (showGrid)
-		SetInfoTip(ByteString("引力网格:开启").FromUtf8());
+		SetInfoTip("引力网格:开启");
 	else
-		SetInfoTip(ByteString("引力网格:关闭").FromUtf8());
+		SetInfoTip("引力网格:关闭");
 }
 
 bool GameModel::GetGravityGrid()
 {
 	return rendererSettings.gravityFieldEnabled;
+}
+
+void GameModel::ShowGridCheckerboard(bool enableCheckerboard)
+{
+	rendererSettings.gridCheckerboard = enableCheckerboard;
+}
+
+bool GameModel::GetGridCheckerboard()
+{
+	return rendererSettings.gridCheckerboard;
 }
 
 void GameModel::FrameStep(int frames)
@@ -1892,13 +1904,13 @@ void GameModel::InitTools()
 	{
 		AllocTool(std::make_unique<SimTool>(tool));
 	}
-	AllocTool(std::make_unique<DecorationTool>(view, DECO_ADD     , "ADD" , ByteString("颜色混合: 相加").FromUtf8()                         , 0x000000_rgb, "DEFAULT_DECOR_ADD" ));
-	AllocTool(std::make_unique<DecorationTool>(view, DECO_SUBTRACT, "SUB" , ByteString("颜色混合: 相减").FromUtf8()                    , 0x000000_rgb, "DEFAULT_DECOR_SUB" ));
-	AllocTool(std::make_unique<DecorationTool>(view, DECO_MULTIPLY, "MUL" , ByteString("颜色混合: 相乘").FromUtf8()                    , 0x000000_rgb, "DEFAULT_DECOR_MUL" ));
-	AllocTool(std::make_unique<DecorationTool>(view, DECO_DIVIDE  , "DIV" , ByteString("颜色混合: 相除").FromUtf8()                      , 0x000000_rgb, "DEFAULT_DECOR_DIV" ));
-	AllocTool(std::make_unique<DecorationTool>(view, DECO_SMUDGE  , "SMDG", ByteString("涂抹工具,混合周围装饰").FromUtf8(), 0x000000_rgb, "DEFAULT_DECOR_SMDG"));
-	AllocTool(std::make_unique<DecorationTool>(view, DECO_CLEAR   , "CLR" , ByteString("清除工具,清除任何设置的装饰").FromUtf8()                     , 0x000000_rgb, "DEFAULT_DECOR_CLR" ));
-	AllocTool(std::make_unique<DecorationTool>(view, DECO_DRAW    , "SET" , ByteString("绘制工具,绘制装饰（无混合）").FromUtf8()                , 0x000000_rgb, "DEFAULT_DECOR_SET" ));
+	AllocTool(std::make_unique<DecorationTool>(view, DECO_ADD     , "ADD" , "颜色混合: 相加"                         , 0x000000_rgb, "DEFAULT_DECOR_ADD" ));
+	AllocTool(std::make_unique<DecorationTool>(view, DECO_SUBTRACT, "SUB" , "颜色混合: 相减"                    , 0x000000_rgb, "DEFAULT_DECOR_SUB" ));
+	AllocTool(std::make_unique<DecorationTool>(view, DECO_MULTIPLY, "MUL" , "颜色混合: 相乘"                    , 0x000000_rgb, "DEFAULT_DECOR_MUL" ));
+	AllocTool(std::make_unique<DecorationTool>(view, DECO_DIVIDE  , "DIV" , "颜色混合: 相除"                      , 0x000000_rgb, "DEFAULT_DECOR_DIV" ));
+	AllocTool(std::make_unique<DecorationTool>(view, DECO_SMUDGE  , "SMDG", "涂抹工具,混合周围装饰", 0x000000_rgb, "DEFAULT_DECOR_SMDG"));
+	AllocTool(std::make_unique<DecorationTool>(view, DECO_CLEAR   , "CLR" , "清除工具,清除任何设置的装饰"                     , 0x000000_rgb, "DEFAULT_DECOR_CLR" ));
+	AllocTool(std::make_unique<DecorationTool>(view, DECO_DRAW    , "SET" , "绘制工具,绘制装饰（无混合）"                , 0x000000_rgb, "DEFAULT_DECOR_SET" ));
 	AllocTool(std::make_unique<PropertyTool>(*this));
 	AllocTool(std::make_unique<SignTool>(*this));
 	AllocTool(std::make_unique<SampleTool>(*this));

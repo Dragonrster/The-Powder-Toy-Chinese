@@ -6,7 +6,7 @@ namespace http
 	DeleteSaveRequest::DeleteSaveRequest(int saveID) :
 		APIRequest({ ByteString::Build(SERVER, "/Browse/Delete.json"), {
 			{ "ID", ByteString::Build(saveID) },
-			{ "Mode", "Delete" },
+			{ "Mode", "删除" },
 		} }, authRequireAppendSession, true)
 	{
 	}

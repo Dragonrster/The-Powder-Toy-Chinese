@@ -27,7 +27,7 @@ void Element::Element_CNCT()
 	Weight = 55;
 
 	HeatConduct = 100;
-	Description = ByteString("混凝土,重粉末,比石粉坚固且更难熔化").FromUtf8();
+	Description = "混凝土,重粉末,比石粉坚固且更难熔化";
 
 	Properties = TYPE_PART|PROP_HOT_GLOW;
 

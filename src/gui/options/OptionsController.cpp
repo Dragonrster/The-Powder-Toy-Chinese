@@ -97,11 +97,6 @@ void OptionsController::SetTemperatureScale(TempScale temperatureScale)
 	model->SetTemperatureScale(temperatureScale);
 }
 
-void OptionsController::SetLanguage(int language)  
-{  
-    model->SetLanguage(language);  
-}
-
 void OptionsController::SetThreadedRendering(bool newThreadedRendering)
 {
 	model->SetThreadedRendering(newThreadedRendering);
@@ -200,6 +195,16 @@ void OptionsController::SetRedirectStd(bool newRedirectStd)
 void OptionsController::SetAutoStartupRequest(bool newAutoStartupRequest)
 {
 	model->SetAutoStartupRequest(newAutoStartupRequest);
+}
+
+void OptionsController::SetFpsLimit(SimFpsLimit newFpsLimit)
+{
+	model->SetFpsLimit(newFpsLimit);
+}
+
+void OptionsController::SetDrawLimit(DrawLimit newDrawLimit)
+{
+	model->SetDrawLimit(newDrawLimit);
 }
 
 void OptionsController::Exit()

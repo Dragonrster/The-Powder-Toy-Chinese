@@ -30,25 +30,23 @@ SearchView::SearchView():
 
 	Client::Ref().AddListener(this);
 
-	nextButton = new ui::Button(ui::Point(WINDOWW-62, WINDOWH-18), ui::Point(60, 16), String(ByteString("下一页 ").FromUtf8()) + 0xE015);
-	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(60, 16), 0xE016 + String(ByteString(" 上一页").FromUtf8()));
-	tagsLabel  = new ui::Label(ui::Point(270, WINDOWH-18), ui::Point(WINDOWW-540, 16), ByteString("\bo热门标签").FromUtf8());
+	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), String("下一页 ") + 0xE015);
+	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), 0xE016 + String(" 上一页"));
+	tagsLabel  = new ui::Label(ui::Point(270, WINDOWH-18), ui::Point(WINDOWW-540, 16), "\bo热门标签");
 	motdLabel  = new ui::RichLabel(ui::Point(51, WINDOWH-18), ui::Point(WINDOWW-102, 16), Client::Ref().GetMessageOfTheDay());
 
 	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), "");
 	pageTextbox->SetActionCallback({ [this] { textChanged(); } });
 	pageTextbox->SetInputType(ui::Textbox::Number);
-	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), ByteString("第").FromUtf8()); //page [TEXTBOX] of y
-	// pageLabel1 = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(70, 16), ByteString("页").FromUtf8()); 
+	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), "第"); //page [TEXTBOX] of y
 	pageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
 	pageCountLabel = new ui::Label(ui::Point(WINDOWW/2+6, WINDOWH-18), ui::Point(50, 16), "");
 	pageCountLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(pageLabel);
-	// AddComponent(pageLabel1);
 	AddComponent(pageCountLabel);
 	AddComponent(pageTextbox);
 
-	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point(WINDOWW-283, 17), "", ByteString("[搜索 按F1获取帮助]").FromUtf8());
+	searchField = new ui::Textbox(ui::Point(60, 10), ui::Point(WINDOWW-283, 17), "", "[搜索 按F1获取帮助]");
 	searchField->Appearance.icon = IconSearch;
 	searchField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	searchField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -58,16 +56,16 @@ SearchView::SearchView():
 
 	dateRange = new ui::DropDown(ui::Point(WINDOWW-185, 10), ui::Point(36, 17));
 	dateRange->SetActionCallback({ [this] { c->ChangePeriod(dateRange->GetOption().second); } });
-	dateRange->AddOption({ByteString("全部").FromUtf8(), 0});
-	dateRange->AddOption({ByteString("按日").FromUtf8(), 1});
-	dateRange->AddOption({ByteString("按周").FromUtf8(), 2});
-	dateRange->AddOption({ByteString("按月").FromUtf8(), 3});
-	dateRange->AddOption({ByteString("按年").FromUtf8(), 4});
+	dateRange->AddOption({"全部", 0});
+	dateRange->AddOption({"按日", 1});
+	dateRange->AddOption({"按周", 2});
+	dateRange->AddOption({"按月", 3});
+	dateRange->AddOption({"按年", 4});
 	dateRange->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	dateRange->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(dateRange);
 
-	sortButton = new ui::Button(ui::Point(WINDOWW-140, 10), ui::Point(61, 17), ByteString("排序").FromUtf8());
+	sortButton = new ui::Button(ui::Point(WINDOWW-140, 10), ui::Point(61, 17), "排序");
 	sortButton->SetIcon(IconVoteSort);
 	sortButton->SetTogglable(true);
 	sortButton->SetActionCallback({ [this] { c->ChangeSort(); } });
@@ -75,7 +73,7 @@ SearchView::SearchView():
 	sortButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(sortButton);
 
-	ownButton = new ui::Button(ui::Point(WINDOWW-70, 10), ui::Point(61, 17), ByteString("云端").FromUtf8());
+	ownButton = new ui::Button(ui::Point(WINDOWW-70, 10), ui::Point(61, 17), "云端");
 	ownButton->SetIcon(IconMyOwn);
 	ownButton->SetTogglable(true);
 	ownButton->SetActionCallback({ [this] { c->ShowOwn(ownButton->GetToggleState()); } });
@@ -118,27 +116,27 @@ SearchView::SearchView():
 	loadingSpinner = new ui::Spinner(ui::Point((WINDOWW/2)-12, (WINDOWH/2)+12), ui::Point(24, 24));
 	AddComponent(loadingSpinner);
 
-	ui::Label * searchPrompt = new ui::Label(ui::Point(10, 10), ui::Point(50, 16), ByteString("搜索:").FromUtf8());
+	ui::Label * searchPrompt = new ui::Label(ui::Point(10, 10), ui::Point(50, 16), "搜索:");
 	searchPrompt->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	searchPrompt->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(searchPrompt);
 
-	removeSelected = new ui::Button(ui::Point(((WINDOWW-415)/2), WINDOWH-18), ui::Point(100, 16), ByteString("删除").FromUtf8());
+	removeSelected = new ui::Button(ui::Point(((WINDOWW-415)/2), WINDOWH-18), ui::Point(100, 16), "删除");
 	removeSelected->Visible = false;
 	removeSelected->SetActionCallback({ [this] { c->RemoveSelected(); } });
 	AddComponent(removeSelected);
 
-	unpublishSelected = new ui::Button(ui::Point(((WINDOWW-415)/2)+105, WINDOWH-18), ui::Point(100, 16), ByteString("取消发布").FromUtf8());
+	unpublishSelected = new ui::Button(ui::Point(((WINDOWW-415)/2)+105, WINDOWH-18), ui::Point(100, 16), "取消发布");
 	unpublishSelected->Visible = false;
 	unpublishSelected->SetActionCallback({ [this] { c->UnpublishSelected(publishButtonShown); } });
 	AddComponent(unpublishSelected);
 
-	favouriteSelected = new ui::Button(ui::Point(((WINDOWW-415)/2)+210, WINDOWH-18), ui::Point(100, 16), ByteString("喜欢").FromUtf8());
+	favouriteSelected = new ui::Button(ui::Point(((WINDOWW-415)/2)+210, WINDOWH-18), ui::Point(100, 16), "Favourite");
 	favouriteSelected->Visible = false;
 	favouriteSelected->SetActionCallback({ [this] { c->FavouriteSelected(); } });
 	AddComponent(favouriteSelected);
 
-	clearSelection = new ui::Button(ui::Point(((WINDOWW-415)/2)+315, WINDOWH-18), ui::Point(100, 16), ByteString("取消选择").FromUtf8());
+	clearSelection = new ui::Button(ui::Point(((WINDOWW-415)/2)+315, WINDOWH-18), ui::Point(100, 16), "取消选择");
 	clearSelection->Visible = false;
 	clearSelection->SetActionCallback({ [this] { c->ClearSelection(); } });
 	AddComponent(clearSelection);
@@ -168,34 +166,36 @@ void SearchView::doSearch()
 		c->DoSearch(searchField->GetText());
 }
 
-void SearchView::searchHelp()  
-{  
-	String info =  
-		ByteString("在搜索栏输入以自动搜索沙盘标题和标签。搜索词之间为 OR 关系。\n"  
-		"\n"  
-		"排序：点击 \bt\"按评分\"\bw / \bt\"按日期\"\bw 按钮更改沙盘显示顺序\n"  
-		"分类：若已登录，使用 \bt\"我的沙盘\"\bw 仅查看自己的沙盘，或点击星标图标查看收藏的沙盘\n"  
-		"日期范围：点击搜索框右侧的下拉菜单选择搜索的日期范围\n"  
-		"\n"  
-		"特殊搜索词：\n"  
-		"\btid:#######\bw - 按沙盘 ID 搜索\n"  
-		"\bthistory:#######\bw - 查看指定 ID 沙盘的历史版本\n"  
-		"\btuser:XXXXXX\bw - 搜索特定用户的沙盘\n"  
-		"\btbefore:YYYY-MM-DD\bw - 某日期之前创建的沙盘（月和日可选）\n"  
-		"\btafter:YYYY-MM-DD\bw - 某日期之后创建的沙盘（月和日可选）\n"  
-		"\n"  
-		"高级搜索：\n"  
-		"以 \bt~\bw 开头进行高级搜索，范围涵盖标题、描述、用户名和标签（默认仅标题和标签），且搜索词之间为 AND 关系。\n"  
-		"使用 \bt|\bw 组合搜索词，例如 \bg~bomb | nuke | explosive\bw\n"  
-		"使用 \bt!\bw 排除词，例如 \bg~city !destroyable !desert\bw\n"  
-		"使用 \bt\"\bw 创建多词搜索，例如 \bg~\"power plant\" uran | plut | polo\bw\n"  
-		"使用 \bt@title\bw 限定标题，例如 \bg~@title subframe\bw\n"  
-		"使用 \bt@description\bw 限定描述，例如 \bg~@description \"No description provided\"\bw\n"  
-		"使用 \bt@user\bw 限定用户，例如 \bg~@user 117n00b | Catelite | Fluttershy @title laser\bw\n"  
-		"使用 \bt@tags\bw 限定标签，例如 \bg~@tags resistcup @title printer | @description spider before:2024-06\bw\n"  
-		"可用括号进一步组合，例如：\bg~(@user MG99 @description complete) | (@user goglesq @tags tutorial)\bw").FromUtf8();  
-  
-	new InformationMessage(ByteString("搜索帮助").FromUtf8(), info, true);  
+void SearchView::searchHelp()
+{
+	String info =
+		"在搜索栏输入以自动搜索沙盘标题和标签。搜索词之间为 OR 关系。\n"
+		"\n"
+		"排序：点击 \bt\"按评分\"\bw / \bt\"按日期\"\bw 按钮更改沙盘显示顺序\n"
+		"分类：若已登录，使用 \bt\"我的沙盘\"\bw 仅查看自己的沙盘，或点击星标图标查看收藏的沙盘\n"
+		"日期范围：点击搜索框右侧的下拉菜单选择搜索的日期范围\n"
+		"\n"
+		"特殊搜索词：\n"
+		"\btid:#######\bw - 按沙盘 ID 搜索\n"
+		"\bthistory:#######\bw - 查看指定 ID 沙盘的历史版本\n"
+		"\btuser:XXXXXX\bw - 搜索特定用户的沙盘\n"
+		"\btbefore:YYYY-MM-DD\bw - 某日期之前创建的沙盘（月和日可选）\n"
+		"\btafter:YYYY-MM-DD\bw - 某日期之后创建的沙盘（月和日可选）\n"
+		"\n"
+		"高级搜索：\n"
+		"以 \bt~\bw 开头进行高级搜索，范围涵盖标题、描述、用户名和标签（默认仅标题和标签），且搜索词之间为 AND 关系。\n"
+		"使用 \bt|\bw 组合搜索词，例如 \bg~bomb | nuke | explosive\bw\n"
+		"使用 \bt!\bw 排除词，例如 \bg~city !destroyable !desert\bw\n"
+		"使用 \bt\"\bw 创建多词搜索，例如 \bg~\"power plant\" uran | plut | polo\bw\n"
+		"使用 \bt@title\bw 限定标题，例如 \bg~@title subframe\bw\n"
+		"使用 \bt@description\bw 限定描述，例如 \bg~@description \"No description provided\"\bw\n"
+		"使用 \bt@user\bw 限定用户，例如 \bg~@user 117n00b | Catelite | Fluttershy @title laser\bw\n"
+		"使用 \bt@tags\bw 限定标签，例如 \bg~@tags resistcup @title printer | @description spider before:2024-06\bw\n"
+		"可用括号进一步组合，例如：\bg~(@user MG99 @description complete) | (@user goglesq @tags tutorial)\bw"
+		"Parenthesis can be used to further complicate your searches. For example: \bg~(@user MG99 @description complete) | (@user goglesq @tags tutorial)\bw"
+		;
+
+	new InformationMessage("搜索帮助", info, true);
 }
 
 void SearchView::clearSearch()
@@ -258,13 +258,13 @@ void SearchView::NotifySortChanged(SearchModel * sender)
 	if(sender->GetSort() == http::sortByVotes)
 	{
 		sortButton->SetToggleState(false);
-		sortButton->SetText(ByteString("评分").FromUtf8());
+		sortButton->SetText("评分");
 		sortButton->SetIcon(IconVoteSort);
 	}
 	else
 	{
 		sortButton->SetToggleState(true);
-		sortButton->SetText(ByteString("日期").FromUtf8());
+		sortButton->SetText("日期");
 		sortButton->SetIcon(IconDateSort);
 	}
 }
@@ -315,7 +315,7 @@ void SearchView::NotifyPageChanged(SearchModel * sender)
 	}
 	else
 	{
-		String pageInfo = String::Build(ByteString("共").FromUtf8(), pageCount);
+		String pageInfo = String::Build("of ", pageCount);
 		pageCountLabel->SetText(pageInfo);
 		int width = Graphics::TextSize(pageInfo).X - 1;
 
@@ -507,9 +507,9 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 	//string messageOfTheDay = sender->GetMessageOfTheDay();
 
 	if(sender->GetShowFavourite())
-		favouriteSelected->SetText(ByteString("取消收藏").FromUtf8());
+		favouriteSelected->SetText("取消收藏");
 	else
-		favouriteSelected->SetText(ByteString("收藏").FromUtf8());
+		favouriteSelected->SetText("Favourite");
 
 	auto user = Client::Ref().GetAuthUser();
 	for (size_t i = 0; i < saveButtons.size(); i++)
@@ -545,12 +545,12 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 		loadingSpinner->Visible = false;
 		if (!errorLabel)
 		{
-			errorLabel = new ui::Label(ui::Point(0, (WINDOWH/2)-6), ui::Point(WINDOWW, 12),ByteString("错误").FromUtf8());
+			errorLabel = new ui::Label(ui::Point(0, (WINDOWH/2)-6), ui::Point(WINDOWW, 12), "错误");
 			AddComponent(errorLabel);
 		}
 		if (!sender->GetSavesLoaded())
 		{
-			errorLabel->SetText(ByteString("加载中...").FromUtf8());
+			errorLabel->SetText("加载中...");
 			loadingSpinner->Visible = true;
 		}
 		else
@@ -558,7 +558,7 @@ void SearchView::NotifySaveListChanged(SearchModel * sender)
 			if(sender->GetLastError().length())
 				errorLabel->SetText("\bo" + sender->GetLastError());
 			else
-				errorLabel->SetText(ByteString("\bo没有找到沙盘").FromUtf8());
+				errorLabel->SetText("\bo没有找到沙盘");
 		}
 	}
 	else
@@ -655,12 +655,12 @@ void SearchView::NotifySelectedChanged(SearchModel * sender)
 		pageCountLabel->Visible = false;
 		if (published <= selected.size()/2)
 		{
-			unpublishSelected->SetText(ByteString("发布").FromUtf8());
+			unpublishSelected->SetText("Publish");
 			publishButtonShown = true;
 		}
 		else
 		{
-			unpublishSelected->SetText(ByteString("取消发布").FromUtf8());
+			unpublishSelected->SetText("取消发布");
 			publishButtonShown = false;
 		}
 	}
@@ -695,7 +695,7 @@ void SearchView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctr
 {
 	if (repeat)
 		return;
-	if (key == SDLK_ESCAPE)
+	if (key == SDLK_ESCAPE || key == SDLK_AC_BACK)
 		c->Exit();
 	else if ((focusedComponent_ != pageTextbox && focusedComponent_ != searchField) && scan == SDL_SCANCODE_A && ctrl)
 		c->SelectAllSaves();

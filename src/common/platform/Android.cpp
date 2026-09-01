@@ -9,9 +9,57 @@
 
 namespace Platform
 {
+// 通过 JNI 调用 PowderActivity.openUri(String) 打开系统浏览器/关联应用
+static bool CallActivityOpenUri(ByteString uri)
+{
+	struct CheckFailed : public std::runtime_error
+	{
+		using runtime_error::runtime_error;
+	};
+	try
+	{
+		auto CHECK = [](auto thing, const char *what) {
+			if (!thing)
+			{
+				throw CheckFailed(what);
+			}
+			return thing;
+		};
+#define CHECK(a) CHECK(a, #a)
+		auto *env              = CHECK((JNIEnv *)SDL_AndroidGetJNIEnv());
+		auto activityInst      = CHECK((jobject)SDL_AndroidGetActivity());
+		auto getClassLoaderMth = env->GetMethodID(env->GetObjectClass(activityInst), "getClassLoader", "()Ljava/lang/ClassLoader;");
+		CHECK(getClassLoaderMth);
+		auto classLoaderInst   = CHECK(env->CallObjectMethod(activityInst, getClassLoaderMth));
+		auto classLoaderCls    = CHECK(env->FindClass("java/lang/ClassLoader"));
+		auto findClassMth      = CHECK(env->GetMethodID(classLoaderCls, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;"));
+		auto strClassName      = CHECK(env->NewStringUTF(ByteString::Build(APPID, ".PowderActivity").c_str()));
+		Defer deleteStrClassName([env, strClassName]() { env->DeleteLocalRef(strClassName); });
+		auto mPowderActivity   = CHECK((jclass)(env->CallObjectMethod(classLoaderInst, findClassMth, strClassName)));
+		auto funcMth           = CHECK(env->GetMethodID(mPowderActivity, "openUri", "(Ljava/lang/String;)Ljava/lang/String;"));
+		auto strUri            = CHECK(env->NewStringUTF(uri.c_str()));
+		Defer deleteStrUri([env, strUri]() { env->DeleteLocalRef(strUri); });
+		auto resultRef         = (jstring)env->CallObjectMethod(activityInst, funcMth, strUri);
+		if (resultRef)
+		{
+			env->DeleteLocalRef(resultRef);
+		}
+		return true;
+	}
+	catch (const CheckFailed &ex)
+	{
+		__android_log_print(ANDROID_LOG_ERROR, APPID, "CallActivityOpenUri failed: %s", ex.what());
+		return false;
+	}
+#undef CHECK
+}
+
 void OpenURI(ByteString uri)
 {
-	fprintf(stderr, "cannot open URI: not implemented\n");
+	if (!CallActivityOpenUri(uri))
+	{
+		fprintf(stderr, "cannot open URI: %s\n", uri.c_str());
+	}
 }
 
 long unsigned int GetTime()

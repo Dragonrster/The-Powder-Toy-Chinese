@@ -30,7 +30,7 @@ void Element::Element_RSSS()
 	Weight = 100;
 
 	HeatConduct = 130;
-	Description = ByteString("固化光刻胶,绝缘,遇NEUT液化,且会反射PHOT").FromUtf8();
+	Description = "固化光刻胶,绝缘,遇NEUT液化,且会反射PHOT";
 
 	Properties = TYPE_SOLID|PROP_NEUTPASS;
 	CarriesTypeIn = (1U << FIELD_CTYPE) | (1U << FIELD_TMP);

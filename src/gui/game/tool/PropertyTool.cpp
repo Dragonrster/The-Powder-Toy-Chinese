@@ -39,7 +39,7 @@ ui::Window(ui::Point(-1, -1), ui::Point(200, 87)),
 tool(tool_),
 sim(sim_)
 {
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), ByteString("属性笔工具").FromUtf8());
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 14), "属性笔工具");
 	messageLabel->SetTextColour(style::Colour::InformationTitle);
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignTop;
@@ -68,7 +68,7 @@ sim(sim_)
 		property->AddOption(std::pair<String, int>(properties[i].Name.FromAscii(), i));
 	}
 
-	textField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), "", ByteString("[值]").FromUtf8());
+	textField = new ui::Textbox(ui::Point(8, 46), ui::Point(Size.X-16, 16), "", "[值]");
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	textField->SetActionCallback({ [this]() {

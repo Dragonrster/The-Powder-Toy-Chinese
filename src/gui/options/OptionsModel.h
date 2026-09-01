@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "simulation/SimulationSettings.h"
+#include "FpsLimit.h"
 
 class GameModel;
 class Simulation;
@@ -42,8 +43,6 @@ public:
 	void SetEdgeMode(int edgeMode);
 	TempScale GetTemperatureScale();
 	void SetTemperatureScale(TempScale temperatureScale);
-	int GetLanguage();  
-	void SetLanguage(int language);
 	int GetThreadedRendering();
 	void SetThreadedRendering(bool newThreadedRendering);
 	int GetGravityMode();
@@ -86,5 +85,9 @@ public:
 	void SetRedirectStd(bool newRedirectStd);
 	bool GetAutoStartupRequest();
 	void SetAutoStartupRequest(bool newAutoStartupRequest);
+	SimFpsLimit GetFpsLimit();
+	void SetFpsLimit(SimFpsLimit newFpsLimit);
+	DrawLimit GetDrawLimit();
+	void SetDrawLimit(DrawLimit newDrawLimit);
 	virtual ~OptionsModel();
 };

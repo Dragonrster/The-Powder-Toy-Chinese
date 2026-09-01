@@ -25,7 +25,7 @@ private:
 
 public:
 	PropertyTool(GameModel &newGameModel):
-		Tool(0, "PROP", ByteString("属性笔工具,用于修改元素的属性").FromUtf8(),
+		Tool(0, "PROP", "属性笔工具,用于修改元素的属性",
 			0xFEA900_rgb, "DEFAULT_UI_PROPERTY", nullptr
 		), gameModel(newGameModel)
 	{}

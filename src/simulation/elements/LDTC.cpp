@@ -30,7 +30,7 @@ void Element::Element_LDTC()
 	Weight = 100;
 
 	HeatConduct = 0;
-	Description = ByteString("线性探测器,从8个方向检测粒子,并在相反方向激发导体").FromUtf8();
+	Description = "线性探测器,从8个方向检测粒子,并在相反方向激发导体";
 
 	Properties = TYPE_SOLID | PROP_NOCTYPEDRAW;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

@@ -255,11 +255,11 @@ void SearchController::ClearSelection()
 void SearchController::RemoveSelected()
 {
 	StringBuilder desc;
-	desc << ByteString("真的想要删除 ").FromUtf8() << searchModel->GetSelected().size() << ByteString(" 个沙盘").FromUtf8();
+	desc << "Are you sure you want to delete " << searchModel->GetSelected().size() << " save";
 	if(searchModel->GetSelected().size()>1)
 		desc << "s";
 	desc << "?";
-	new ConfirmPrompt(ByteString("删除沙盘").FromUtf8(), desc.Build(), { [this] {
+	new ConfirmPrompt("删除沙盘", desc.Build(), { [this] {
 		removeSelectedC();
 	} });
 }
@@ -306,11 +306,11 @@ void SearchController::removeSelectedC()
 void SearchController::UnpublishSelected(bool publish)
 {
 	StringBuilder desc;
-	desc << ByteString("真的想要").FromUtf8() << (publish ? String(ByteString("发布 ").FromUtf8()) : String(ByteString("取消发布 ").FromUtf8())) << searchModel->GetSelected().size() << ByteString(" 沙盘").FromUtf8();
+	desc << "真的想要" << (publish ? String("发布 ") : String("取消发布 ")) << searchModel->GetSelected().size() << " save";
 	if (searchModel->GetSelected().size() > 1)
 		desc << "s";
 	desc << "?";
-	new ConfirmPrompt(publish ? String(ByteString("发布沙盘").FromUtf8()) : String(ByteString("取消发布沙盘").FromUtf8()), desc.Build(), { [this, publish] {
+	new ConfirmPrompt(publish ? String("发布沙盘") : String("取消发布沙盘"), desc.Build(), { [this, publish] {
 		unpublishSelectedC(publish);
 	} });
 }
@@ -387,13 +387,14 @@ void SearchController::FavouriteSelected()
 	class FavouriteSavesTask : public Task
 	{
 		std::vector<int> saves;
+		SearchController *c;
 	public:
-		FavouriteSavesTask(std::vector<int> saves_) { saves = saves_; }
+		FavouriteSavesTask(std::vector<int> saves_, SearchController *c_) { saves = saves_; c = c_; }
 		bool doWork() override
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
-				notifyStatus(String::Build(ByteString("收藏沙盘 [").FromUtf8(), saves[i], "]"));
+				notifyStatus(String::Build("收藏沙盘 [", saves[i], "]"));
 				auto favouriteSaveRequest = std::make_unique<http::FavouriteSaveRequest>(saves[i], true);
 				favouriteSaveRequest->Start();
 				favouriteSaveRequest->Wait();
@@ -404,10 +405,12 @@ void SearchController::FavouriteSelected()
 				catch (const http::RequestError &ex)
 				{
 					notifyError(String::Build("收藏失败 [", saves[i], "]: ", ByteString(ex.what()).FromAscii()));
+					c->Refresh();
 					return false;
 				}
 				notifyProgress((i + 1) * 100 / saves.size());
 			}
+			c->Refresh();
 			return true;
 		}
 	};
@@ -415,13 +418,14 @@ void SearchController::FavouriteSelected()
 	class UnfavouriteSavesTask : public Task
 	{
 		std::vector<int> saves;
+		SearchController *c;
 	public:
-		UnfavouriteSavesTask(std::vector<int> saves_) { saves = saves_; }
+		UnfavouriteSavesTask(std::vector<int> saves_, SearchController *c_) { saves = saves_; c = c_; }
 		bool doWork() override
 		{
 			for (size_t i = 0; i < saves.size(); i++)
 			{
-				notifyStatus(String::Build(ByteString("取消收藏 [").FromUtf8(), saves[i], "]"));
+				notifyStatus(String::Build("取消收藏 [", saves[i], "]"));
 				auto unfavouriteSaveRequest = std::make_unique<http::FavouriteSaveRequest>(saves[i], false);
 				unfavouriteSaveRequest->Start();
 				unfavouriteSaveRequest->Wait();
@@ -432,18 +436,20 @@ void SearchController::FavouriteSelected()
 				catch (const http::RequestError &ex)
 				{
 					notifyError(String::Build("取消收藏失败 [", saves[i], "]: ", ByteString(ex.what()).FromAscii()));
+					c->Refresh();
 					return false;
 				}
 				notifyProgress((i + 1) * 100 / saves.size());
 			}
+			c->Refresh();
 			return true;
 		}
 	};
 
 	std::vector<int> selected = searchModel->GetSelected();
 	if (!searchModel->GetShowFavourite())
-		new TaskWindow(ByteString("收藏沙盘").FromUtf8(), new FavouriteSavesTask(selected));
+		new TaskWindow("收藏沙盘", new FavouriteSavesTask(selected, this));
 	else
-		new TaskWindow(ByteString("取消收藏").FromUtf8(), new UnfavouriteSavesTask(selected));
+		new TaskWindow("取消收藏", new UnfavouriteSavesTask(selected, this));
 	ClearSelection();
 }

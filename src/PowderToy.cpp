@@ -86,15 +86,14 @@ void LargeScreenDialog()
 {
 	StringBuilder message;
 	auto scale = ui::Engine::Ref().windowFrameOps.scale;
-	message <<  ByteString("切换到 ").FromUtf8() << scale <<  ByteString("x 模式，满足倍数缩放要求:").FromUtf8();
-	message << desktopWidth << "x" << desktopHeight <<  ByteString("<-检测到 ,").FromUtf8() << WINDOWW * scale << "x" << WINDOWH * scale <<  ByteString("<-要求").FromUtf8();
-	message <<  ByteString("\n要取消此操作，请点击\"取消\"。可以随时在设置中更改。").FromUtf8();
-	new ConfirmPrompt(ByteString("检测到高分辨率屏幕").FromUtf8(), message.Build(), { nullptr, []() {
+	message << "Switching to " << scale << "x size mode since your screen was determined to be large enough: ";
+	message << desktopWidth << "x" << desktopHeight << " detected, " << WINDOWW * scale << "x" << WINDOWH * scale << " required";
+	message << "\n要取消此操作，请点击\"取消\"。可以随时在设置中更改。";
+	new ConfirmPrompt("检测到高分辨率屏幕", message.Build(), { nullptr, []() {
 		GlobalPrefs::Ref().Set("Scale", 1);
 		ui::Engine::Ref().windowFrameOps.scale = 1;
 	} });
 }
-
 
 void TickClient()
 {
@@ -455,6 +454,19 @@ int Main(int argc, char *argv[])
 	engine.TouchUI = prefs.Get("TouchUI", DEFAULT_TOUCH_UI);
 	engine.windowFrameOps = windowFrameOps;
 
+	if (auto drawLimit = GlobalPrefs::Ref().Get<int>("DrawLimit"); drawLimit && *drawLimit == -1)
+	{
+		engine.SetDrawingFrequencyLimit(DrawLimitDisplay{});
+	}
+	else if (drawLimit && *drawLimit >= DrawLimitExplicit::minSane && *drawLimit < DrawLimitExplicit::maxSane)
+	{
+		engine.SetDrawingFrequencyLimit(DrawLimitExplicit{ *drawLimit });
+	}
+	else
+	{
+		engine.SetDrawingFrequencyLimit(DefaultDrawLimit);
+	}
+
 	SDLOpen();
 
 	if (Client::Ref().IsFirstRun() && FORCE_WINDOW_FRAME_OPS == forceWindowFrameOpsNone)
@@ -504,7 +516,7 @@ int Main(int argc, char *argv[])
 				std::vector<char> gameSaveData;
 				if (!Platform::ReadFile(gameSaveData, openArg.value()))
 				{
-					new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法读取文件").FromUtf8());
+					new ErrorMessage("错误", "无法读取文件");
 				}
 				else
 				{
@@ -517,12 +529,12 @@ int Main(int argc, char *argv[])
 			}
 			catch (std::exception & e)
 			{
-				new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法加载沙盘文件:\n").FromUtf8() + ByteString(e.what()).FromUtf8()) ;
+				new ErrorMessage("错误", "无法加载沙盘文件:\n" + ByteString(e.what()).FromUtf8()) ;
 			}
 		}
 		else
 		{
-			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法加载此文件").FromUtf8());
+			new ErrorMessage("错误", "无法加载此文件");
 		}
 	}
 
@@ -531,7 +543,7 @@ int Main(int argc, char *argv[])
 	{
 		engine.g->Clear();
 		engine.g->DrawRect(RectSized(engine.g->Size() / 2 - Vec2(100, 25), Vec2(200, 50)), 0xB4B4B4_rgb);
-		String loadingText = ByteString("沙盘加载中...").FromUtf8();
+		String loadingText = "沙盘加载中...";
 		engine.g->BlendText(engine.g->Size() / 2 - Vec2((Graphics::TextSize(loadingText).X - 1) / 2, 5), loadingText, style::Colour::InformationTitle);
 
 		blit(engine.g->Data());
@@ -565,7 +577,7 @@ int Main(int argc, char *argv[])
 		}
 		catch (std::exception & e)
 		{
-			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString(e.what()).FromUtf8());
+			new ErrorMessage("错误", ByteString(e.what()).FromUtf8());
 			Platform::MarkPresentable();
 		}
 	}

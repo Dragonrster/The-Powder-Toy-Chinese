@@ -29,7 +29,7 @@ void Element::Element_BRAY()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("BRAY,A射线发射器射线碰撞产物").FromUtf8();
+	Description = "BRAY,A射线发射器射线碰撞产物";
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC|PROP_LIFE_KILL;
 

@@ -51,26 +51,25 @@ static std::vector<wall_type> LoadWalls()
 {
 	return
 	std::vector<wall_type>{
-		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("ERASE"),           "DEFAULT_WL_ERASE",  String(ByteString("清除所有墙类").FromUtf8())},
-		{0xC0C0C0_rgb, 0x101010_rgb, 0, Renderer::WallIcon, String("CONDUCTIVE WALL"), "DEFAULT_WL_CNDTW",  String(ByteString("阻挡一切,可以当作导体").FromUtf8()) },
-		{0x808080_rgb, 0x808080_rgb, 0, Renderer::WallIcon, String("EWALL"),           "DEFAULT_WL_EWALL",  String(ByteString("电控墙,通电时允许通过").FromUtf8()) },
-		{0xFF8080_rgb, 0xFF2008_rgb, 1, Renderer::WallIcon, String("DETECTOR"),        "DEFAULT_WL_DTECT",  String(ByteString("检测器,内部存在物质时,发出电脉冲").FromUtf8()) },
-		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("STREAMLINE"),      "DEFAULT_WL_STRM",   String(ByteString("风向计,设置一个风向计的起始点").FromUtf8()) },
-		{0x8080FF_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("FAN"),             "DEFAULT_WL_FAN",    String(ByteString("风扇,风扇产生气压使用直线工具设置方向和强度").FromUtf8()) },
-		{0xC0C0C0_rgb, 0x101010_rgb, 2, Renderer::WallIcon, String("LIQUID WALL"),     "DEFAULT_WL_LIQD",   String(ByteString("液体墙,阻挡大多数物体,除了液体,可以导电").FromUtf8()) },
-		{0x808080_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("ABSORB WALL"),     "DEFAULT_WL_ABSRB",  String(ByteString("吸收墙,吸收物质,允许气压通过").FromUtf8()) },
-		{0x808080_rgb, 0x000000_rgb, 3, Renderer::WallIcon, String("WALL"),            "DEFAULT_WL_WALL",   String(ByteString("基础墙,阻挡一切").FromUtf8()) },
-		{0x3C3C3C_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("AIRONLY WALL"),    "DEFAULT_WL_AIR",    String(ByteString("压力墙,允许压力通过,阻挡一切物质").FromUtf8()) },
-		{0x575757_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("POWDER WALL"),     "DEFAULT_WL_POWDR",  String(ByteString("粉末墙,允许粉末通过,阻挡其他所有物质").FromUtf8()) },
-		{0xFFFF22_rgb, 0x101010_rgb, 2, Renderer::WallIcon, String("CONDUCTOR"),       "DEFAULT_WL_CNDTR",  String(ByteString("导体墙,允许所有物质通过.可以导电").FromUtf8()) },
-		{0x242424_rgb, 0x101010_rgb, 0, Renderer::WallIcon, String("EHOLE"),           "DEFAULT_WL_EHOLE",  String(ByteString("电锁体,吸收物质,通电时释放").FromUtf8()) },
-		{0x579777_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("GAS WALL"),        "DEFAULT_WL_GAS",    String(ByteString("气体墙,允许气体通过").FromUtf8()) },
-		{0xFFEE00_rgb, 0xAA9900_rgb, 4, Renderer::WallIcon, String("GRAVITY WALL"),    "DEFAULT_WL_GRVTY",  String(ByteString("引力墙,范围内的万有引力(注:默认的普通引力除外,可以按W切换)将失效").FromUtf8()) },
-		{0xFFAA00_rgb, 0xAA5500_rgb, 4, Renderer::WallIcon, String("ENERGY WALL"),     "DEFAULT_WL_ENRGY",  String(ByteString("能量墙,允许能量粒子通过,阻挡其他物质").FromUtf8()) },
-		{0xDCDCDC_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("AIRBLOCK WALL"),   "DEFAULT_WL_NOAIR",  String(ByteString("阻压墙,允许所有物质通过,隔绝压力").FromUtf8()) },
-		{0xDCDCDC_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("ERASEALL"),        "DEFAULT_WL_ERASEA", String(ByteString("清除墙,物质,标记").FromUtf8()) },
-		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("STASIS WALL"),     "DEFAULT_WL_STASIS", String(ByteString("静止墙,静止其内所有物质,除非通电").FromUtf8()) },
-
+		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("ERASE"),           "DEFAULT_WL_ERASE",  String("清除所有墙类")},
+		{0xC0C0C0_rgb, 0x101010_rgb, 0, Renderer::WallIcon, String("CONDUCTIVE WALL"), "DEFAULT_WL_CNDTW",  String("导电墙,阻挡一切物质,可以导电")},
+		{0x808080_rgb, 0x808080_rgb, 0, Renderer::WallIcon, String("EWALL"),           "DEFAULT_WL_EWALL",  String("电控墙,通电时变透明,允许物质通过")},
+		{0xFF8080_rgb, 0xFF2008_rgb, 1, Renderer::WallIcon, String("DETECTOR"),        "DEFAULT_WL_DTECT",  String("检测器,内部有物质时会发出电流")},
+		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("STREAMLINE"),      "DEFAULT_WL_STRM",   String("流线,画出一条跟随气流方向的线")},
+		{0x8080FF_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("FAN"),             "DEFAULT_WL_FAN",    String("风扇,推动空气.用直线工具设定风向和强度")},
+		{0xC0C0C0_rgb, 0x101010_rgb, 2, Renderer::WallIcon, String("LIQUID WALL"),     "DEFAULT_WL_LIQD",   String("液体墙,只允许液体通过,阻挡其他物质,可导电")},
+		{0x808080_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("ABSORB WALL"),     "DEFAULT_WL_ABSRB",  String("吸收墙,吸收物质,但允许气流通过")},
+		{0x808080_rgb, 0x000000_rgb, 3, Renderer::WallIcon, String("WALL"),            "DEFAULT_WL_WALL",   String("基础墙,阻挡一切")},
+		{0x3C3C3C_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("AIRONLY WALL"),    "DEFAULT_WL_AIR",    String("空气墙,只允许空气通过,阻挡所有物质")},
+		{0x575757_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("POWDER WALL"),     "DEFAULT_WL_POWDR",  String("粉末墙,只允许粉末通过,阻挡其他物质")},
+		{0xFFFF22_rgb, 0x101010_rgb, 2, Renderer::WallIcon, String("CONDUCTOR"),       "DEFAULT_WL_CNDTR",  String("导体墙,允许所有物质通过,并且导电")},
+		{0x242424_rgb, 0x101010_rgb, 0, Renderer::WallIcon, String("EHOLE"),           "DEFAULT_WL_EHOLE",  String("电洞,吸收物质,通电时释放")},
+		{0x579777_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("GAS WALL"),        "DEFAULT_WL_GAS",    String("气体墙,只允许气体通过,阻挡其他物质")},
+		{0xFFEE00_rgb, 0xAA9900_rgb, 4, Renderer::WallIcon, String("GRAVITY WALL"),    "DEFAULT_WL_GRVTY",  String("引力墙,用它围出的方框内牛顿引力不起作用")},
+		{0xFFAA00_rgb, 0xAA5500_rgb, 4, Renderer::WallIcon, String("ENERGY WALL"),     "DEFAULT_WL_ENRGY",  String("能量墙,只允许能量粒子通过,阻挡其他物质")},
+		{0xDCDCDC_rgb, 0x000000_rgb, 1, Renderer::WallIcon, String("AIRBLOCK WALL"),   "DEFAULT_WL_NOAIR",  String("隔气墙,允许所有物质通过,但阻挡空气")},
+		{0x808080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("ERASEALL"),        "DEFAULT_WL_ERASEA", String("清除墙壁,粒子和标记")},
+		{0x800080_rgb, 0x000000_rgb, 0, Renderer::WallIcon, String("STASIS WALL"),     "DEFAULT_WL_STASIS", String("静止墙,冻结墙内粒子,直到通电才解除")},
 	};
 }
 
@@ -78,22 +77,22 @@ static std::vector<menu_section> LoadMenus()
 {
 	return
 	std::vector<menu_section>{
-{0xE041, ByteString("墙").FromUtf8() , 0, 1},
-		{0xE042, ByteString("电子元件").FromUtf8(), 0, 1},
-		{0xE056, ByteString("可控材料").FromUtf8(), 0, 1},
-		{0xE019, ByteString("传感器").FromUtf8(), 0, 1},
-		{0xE062, ByteString("动力材料").FromUtf8(), 0, 1},
-		{0xE043, ByteString("爆炸物").FromUtf8(), 0, 1},
-		{0xE045, ByteString("气体").FromUtf8(), 0, 1},
-		{0xE044, ByteString("液体").FromUtf8(), 0, 1},
-		{0xE050, ByteString("粉末").FromUtf8(), 0, 1},
-		{0xE051, ByteString("固体").FromUtf8(), 0, 1},
-		{0xE046, ByteString("放射性物质").FromUtf8(), 0, 1},
-		{0xE04C, ByteString("特殊元素").FromUtf8(), 0, 1},
-		{0xE052, ByteString("生命游戏").FromUtf8(), 0, 1},
-		{0xE057, ByteString("工具").FromUtf8(), 0, 1},
-		{0xE067, ByteString("收藏夹(使用Ctrl+Shift+Click切换元素的收藏状态)").FromUtf8(), 0, 1},
-		{0xE064, ByteString("装饰工具").FromUtf8(), 0, 1},
+		{0xE041, String("墙"), 0, 1},
+		{0xE042, String("电子元件"), 0, 1},
+		{0xE056, String("可控材料"), 0, 1},
+		{0xE019, String("传感器"), 0, 1},
+		{0xE062, String("动力材料"), 0, 1},
+		{0xE043, String("爆炸物"), 0, 1},
+		{0xE045, String("气体"), 0, 1},
+		{0xE044, String("液体"), 0, 1},
+		{0xE050, String("粉末"), 0, 1},
+		{0xE051, String("固体"), 0, 1},
+		{0xE046, String("放射性物质"), 0, 1},
+		{0xE04C, String("特殊元素"), 0, 1},
+		{0xE052, String("生命游戏"), 0, 1},
+		{0xE057, String("工具"), 0, 1},
+		{0xE067, String("收藏夹(使用Ctrl+Shift+Click切换元素的收藏状态)"), 0, 1},
+		{0xE064, String("装饰工具"), 0, 1},
 	};
 }
 
@@ -270,7 +269,7 @@ String SimulationData::ElementResolve(int type, int ctype) const
 	}
 	else if (type >= 0 && type < PT_NUM)
 		return elements[type].Name;
-	return "Empty";
+	return "空";
 }
 
 String SimulationData::BasicParticleInfo(Particle const &sample_part) const
@@ -281,17 +280,17 @@ String SimulationData::BasicParticleInfo(Particle const &sample_part) const
 	int storedCtype = sample_part.tmp4;
 	if (type == PT_LAVA && IsElement(ctype))
 	{
-		sampleInfo << ByteString("熔融的 ").FromUtf8() << ElementResolve(ctype, -1);
+		sampleInfo << "熔融的 " << ElementResolve(ctype, -1);
 	}
 	else if ((type == PT_PIPE || type == PT_PPIP) && IsElement(ctype))
 	{
 		if (ctype == PT_LAVA && IsElement(storedCtype))
 		{
-			sampleInfo << ElementResolve(type, -1) << ByteString(" 含熔融的 ").FromUtf8() << ElementResolve(storedCtype, -1);
+			sampleInfo << ElementResolve(type, -1) << " 含熔融的 " << ElementResolve(storedCtype, -1);
 		}
 		else
 		{
-			sampleInfo << ElementResolve(type, -1) << ByteString(" 含 ").FromUtf8() << ElementResolve(ctype, storedCtype);
+			sampleInfo << ElementResolve(type, -1) << " 含 " << ElementResolve(ctype, storedCtype);
 		}
 	}
 	else

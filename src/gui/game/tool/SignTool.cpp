@@ -58,7 +58,7 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	signID(signID_),
 	signPosition(position_)
 {
-	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), ByteString("新建标记").FromUtf8());
+	ui::Label * messageLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 15), "新建标记");
 	messageLabel->SetTextColour(style::Colour::InformationTitle);
 	messageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	messageLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
@@ -83,21 +83,21 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 	AddComponent(okayButton);
 	SetOkayButton(okayButton);
 
-	ui::Label * tempLabel = new ui::Label(ui::Point(8, 48), ui::Point(40, 15), ByteString("指针:").FromUtf8());
+	ui::Label * tempLabel = new ui::Label(ui::Point(8, 48), ui::Point(40, 15), "指针:");
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(tempLabel);
 
 	justification = new ui::DropDown(ui::Point(52, 48), ui::Point(55, 16));
 	AddComponent(justification);
-	justification->AddOption(std::pair<String, int>(0xE020 + String(ByteString(" 左侧").FromUtf8()), (int)sign::Left));
-	justification->AddOption(std::pair<String, int>(0xE01E + String(ByteString(" 居中").FromUtf8()), (int)sign::Middle));
-	justification->AddOption(std::pair<String, int>(0xE01F + String(ByteString(" 右侧").FromUtf8()), (int)sign::Right));
-	justification->AddOption(std::pair<String, int>(0xE01D + String(ByteString("  无").FromUtf8()), (int)sign::None));
+	justification->AddOption(std::pair<String, int>(0xE020 + String(" 左侧"), (int)sign::Left));
+	justification->AddOption(std::pair<String, int>(0xE01E + String(" 居中"), (int)sign::Middle));
+	justification->AddOption(std::pair<String, int>(0xE01F + String(" 右侧"), (int)sign::Right));
+	justification->AddOption(std::pair<String, int>(0xE01D + String("  无"), (int)sign::None));
 	justification->SetOption(1);
 	justification->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 
-	textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 17), "", ByteString("[内容]").FromUtf8());
+	textField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 17), "", "[内容]");
 	textField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	textField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	textField->SetLimit(45);
@@ -113,13 +113,13 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 
 	if(signID!=-1)
 	{
-		messageLabel->SetText(ByteString("编辑标记").FromUtf8());
+		messageLabel->SetText("编辑标记");
 
 		textField->SetText(sim->signs[signID].text);
 		justification->SetOption(sim->signs[signID].ju);
 
 		ui::Point position = ui::Point(justification->Position.X+justification->Size.X+3, 48);
-		ui::Button * moveButton = new ui::Button(position, ui::Point(((Size.X-position.X-8)/2)-2, 16), ByteString("移动").FromUtf8());
+		ui::Button * moveButton = new ui::Button(position, ui::Point(((Size.X-position.X-8)/2)-2, 16), "移动");
 		moveButton->SetActionCallback({ [this] {
 			if (signID!=-1)
 			{
@@ -131,7 +131,7 @@ SignWindow::SignWindow(SignTool * tool_, Simulation * sim_, int signID_, ui::Poi
 		AddComponent(moveButton);
 
 		position = ui::Point(justification->Position.X+justification->Size.X+3, 48)+ui::Point(moveButton->Size.X+3, 0);
-		ui::Button * deleteButton = new ui::Button(position, ui::Point((Size.X-position.X-8)-1, 16), ByteString("删除").FromUtf8());
+		ui::Button * deleteButton = new ui::Button(position, ui::Point((Size.X-position.X-8)-1, 16), "删除");
 		//deleteButton->SetIcon(IconDelete);
 		deleteButton->SetActionCallback({ [this] {
 			CloseActiveWindow();

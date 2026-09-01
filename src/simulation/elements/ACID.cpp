@@ -31,7 +31,7 @@ void Element::Element_ACID()
 	Weight = 10;
 
 	HeatConduct = 34;
-	Description = ByteString("酸,可以腐蚀几乎所有物质").FromUtf8();
+	Description = "酸,可以腐蚀几乎所有物质";
 
 	Properties = TYPE_LIQUID|PROP_DEADLY;
 

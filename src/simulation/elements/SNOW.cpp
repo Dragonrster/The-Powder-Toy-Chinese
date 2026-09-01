@@ -31,7 +31,7 @@ void Element::Element_SNOW()
 
 	DefaultProperties.temp = R_TEMP - 30.0f + 273.15f;
 	HeatConduct = 46;
-	Description = ByteString("雪,轻粉末,ICE在压力下破坏形成雪加热后变成WATR").FromUtf8();
+	Description = "雪,轻粉末,ICE在压力下破坏形成雪加热后变成WATR";
 
 	Properties = TYPE_PART|PROP_NEUTPASS;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

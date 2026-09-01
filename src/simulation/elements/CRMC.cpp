@@ -31,7 +31,7 @@ void Element::Element_CRMC()
 	Weight = 100;
 
 	HeatConduct = 35;
-	Description = ByteString("陶瓷,受压时熔点增加").FromUtf8();
+	Description = "陶瓷,受压时熔点增加";
 
 	Properties = TYPE_SOLID | PROP_NEUTPASS;
 

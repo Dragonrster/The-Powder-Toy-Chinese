@@ -83,7 +83,7 @@ class InvalidConversionException: public GeneralException
 {
 public:
 	InvalidConversionException(ValueType from_, ValueType to_):
-	GeneralException("Invalid conversion from " + AnyType::TypeName(from_).FromAscii() + " to " + AnyType::TypeName(to_).FromAscii()) {
+	GeneralException("Invalid conversion from " + AnyType::TypeName(from_).FromAscii() + " 前往 " + AnyType::TypeName(to_).FromAscii()) {
 	}
 };
 

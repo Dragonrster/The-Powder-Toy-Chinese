@@ -30,7 +30,7 @@ void Element::Element_LSNS()
 
 	DefaultProperties.temp = 4.0f + 273.15f;
 	HeatConduct = 0;
-	Description = ByteString("生命探测器,当其周围元素Life值高于传感器温度时,产生电流").FromUtf8();
+	Description = "生命探测器,当其周围元素Life值高于传感器温度时,产生电流";
 
 	Properties = TYPE_SOLID;
 

@@ -30,7 +30,7 @@ void Element::Element_PQRT()
 	Weight = 90;
 
 	HeatConduct = 3;
-	Description = ByteString("石英砂,可以熔化,QRTZ的破碎形式").FromUtf8();
+	Description = "石英砂,可以熔化,QRTZ的破碎形式";
 
 	Properties = TYPE_PART | PROP_PHOTPASS | PROP_HOT_GLOW;
 

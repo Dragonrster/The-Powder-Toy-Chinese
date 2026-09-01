@@ -9,6 +9,15 @@
 
 namespace ui
 {
+	static bool IsCjkWrapBoundary(String::value_type ch)
+	{
+		// 中日韩表意文字及全角标点：每个字符都可作为断行点
+		return (ch >= 0x2E80 && ch <= 0x9FFF) ||
+		       (ch >= 0xAC00 && ch <= 0xD7AF) ||
+		       (ch >= 0xF900 && ch <= 0xFAFF) ||
+		       (ch >= 0xFF00 && ch <= 0xFFEF);
+	}
+
 	int TextWrapper::Update(String const &text, bool do_wrapping, int max_width)
 	{
 		raw_text_size = (int)text.size();
@@ -188,6 +197,10 @@ namespace ui
 					case '!':
 						word_begins_at = -1; // reset word state
 						break;
+					}
+					if (IsCjkWrapBoundary(*it))
+					{
+						word_begins_at = -1; // CJK 逐字可断行
 					}
 				}
 				break;

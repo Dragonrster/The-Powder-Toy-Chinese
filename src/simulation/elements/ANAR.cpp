@@ -30,7 +30,7 @@ void Element::Element_ANAR()
 	Weight = 85;
 
 	HeatConduct = 70;
-	Description = ByteString("反引力尘,十分轻的粉尘,遵循相反的引力/压力/速度/温度定律").FromUtf8();
+	Description = "反引力尘,十分轻的粉尘,遵循相反的引力/压力/速度/温度定律";
 
 	Properties = TYPE_PART;
 

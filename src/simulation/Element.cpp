@@ -31,7 +31,7 @@ Element::Element():
 
 	HeatConduct(128),
 	HeatCapacity(1.0f),
-	Description("No description"),
+	Description("暂无描述"),
 
 	Properties(TYPE_SOLID),
 	CarriesTypeIn(0),

@@ -25,7 +25,7 @@ namespace ui
 		ui::Button::OnMouseClick(x, y, button);
 		ClipboardPush(ButtonText.ToUtf8());
 
-		copyTextLabel->SetText(ByteString("复制成功!").FromUtf8());
+		copyTextLabel->SetText("复制成功!");
 
 		Appearance.TextInactive = ui::Colour(180, 230, 180);
 		Appearance.TextHover = ui::Colour(180, 230, 180);

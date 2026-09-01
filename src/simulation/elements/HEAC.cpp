@@ -30,7 +30,7 @@ void Element::Element_HEAC()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("导热体,导热速度比任何其他材料都快").FromUtf8();
+	Description = "导热体,导热速度比任何其他材料都快";
 
 	Properties = TYPE_SOLID;
 
@@ -133,15 +133,17 @@ static int update(UPDATE_FUNC_ARGS)
 				r = pmap[y+rry][x+rrx];
 				if (r && !sd.IsHeatInsulator(parts[ID(r)]))
 				{
-					c_heat += parts[ID(r)].temp;
-					hc_total += sd.HeatCapacityOf(parts[ID(r)]);
+					float hc = sd.HeatCapacityOf(parts[ID(r)]);
+					c_heat += parts[ID(r)].temp * hc;
+					hc_total += hc;
 				}
 
 				r = sim->photons[y+rry][x+rrx];
 				if (r && !sd.IsHeatInsulator(parts[ID(r)]))
 				{
-					c_heat += parts[ID(r)].temp;
-					hc_total += sd.HeatCapacityOf(parts[ID(r)]);
+					float hc = sd.HeatCapacityOf(parts[ID(r)]);
+					c_heat += parts[ID(r)].temp * hc;
+					hc_total += hc;
 				}
 			}
 		}

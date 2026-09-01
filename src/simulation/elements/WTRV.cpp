@@ -30,7 +30,7 @@ void Element::Element_WTRV()
 
 	DefaultProperties.temp = R_TEMP + 100.0f + 273.15f;
 	HeatConduct = 48;
-	Description = ByteString("水蒸气,水加热到100℃以上或者盐水加热到109.86℃以上时产生").FromUtf8();
+	Description = "水蒸气,水加热到100°C以上或者盐水加热到109.86°C以上时产生";
 
 	Properties = TYPE_GAS;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

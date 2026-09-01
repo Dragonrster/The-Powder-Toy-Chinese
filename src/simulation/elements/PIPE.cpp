@@ -34,7 +34,7 @@ void Element::Element_PIPE()
 
 	DefaultProperties.temp = 295.15f;
 	HeatConduct = 251;
-	Description = ByteString("动力管,可以用于向一个方向运输物质,自带动力,放置完毕后会在周围自动出现一圈砖块").FromUtf8();
+	Description = "动力管,可以用于向一个方向运输物质,自带动力,放置完毕后会在周围自动出现一圈砖块";
 
 	Properties = TYPE_SOLID | PROP_LIFE_DEC;
 	CarriesTypeIn = 1U << FIELD_CTYPE;

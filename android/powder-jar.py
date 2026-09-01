@@ -29,6 +29,22 @@ if os.path.exists(class_dir):
 	shutil.rmtree(class_dir)
 os.makedirs(class_dir)
 
+# Copy every supplied .java into a canonical package layout so javac can
+# resolve same-package references (e.g. PowderActivity -> VirtualControls).
+pkgroot = os.path.join(private_dir, 'src')
+if os.path.exists(pkgroot):
+	shutil.rmtree(pkgroot)
+os.makedirs(pkgroot)
+normalized_sources = []
+for source in javac_sources:
+	# source is relative to build_dir; resolve it, then place under uk/co/powdertoy/tpt/
+	abs_source = source if os.path.isabs(source) else os.path.join(build_dir, source)
+	basename = os.path.basename(abs_source)
+	dest = os.path.join(pkgroot, 'uk', 'co', 'powdertoy', 'tpt', basename)
+	os.makedirs(os.path.dirname(dest), exist_ok = True)
+	shutil.copyfile(abs_source, dest)
+	normalized_sources.append(dest)
+
 if subprocess.run([
 	javac,
 	'-d', class_dir,
@@ -36,7 +52,8 @@ if subprocess.run([
 	'-target', '1.8',
 	'-bootclasspath', java_runtime,
 	'-classpath', os.pathsep.join([ android_jar, sdl_jar ]),
-	*javac_sources,
+	'-sourcepath', pkgroot,
+	*normalized_sources,
 ], cwd = build_dir).returncode:
 	sys.exit(1)
 

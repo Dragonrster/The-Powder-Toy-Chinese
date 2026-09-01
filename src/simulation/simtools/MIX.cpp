@@ -10,7 +10,7 @@ void SimTool::Tool_MIX()
 	Identifier = "DEFAULT_TOOL_MIX";
 	Name = "MIX";
 	Colour = 0xFFD090_rgb;
-	Description = ByteString("混合工具,混合粒子").FromUtf8();
+	Description = "混合工具,混合粒子";
 	Perform = &perform;
 }
 
@@ -26,6 +26,9 @@ static int perform(SimTool *tool, Simulation * sim, Particle * cpart, int x, int
 		return 0;
 
 	int distance = (int)(std::pow(strength, .5f) * 10);
+
+	if (distance <= 0)
+		return 0;
 
 	if(!(elements[TYP(thisPart)].Properties & (TYPE_PART | TYPE_LIQUID | TYPE_GAS)))
 		return 0;

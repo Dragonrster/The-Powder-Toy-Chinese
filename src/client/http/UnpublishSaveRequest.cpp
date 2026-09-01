@@ -6,7 +6,7 @@ namespace http
 	UnpublishSaveRequest::UnpublishSaveRequest(int saveID) :
 		APIRequest({ ByteString::Build(SERVER, "/Browse/Delete.json"), {
 			{ "ID", ByteString::Build(saveID) },
-			{ "Mode", "Unpublish" },
+			{ "Mode", "取消发布" },
 		} }, authRequireAppendSession, true)
 	{
 	}

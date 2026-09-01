@@ -148,7 +148,7 @@ void UpdateActivity::NotifyError(Task * sender)
 		sb << "请访问该网站下载更新版本\n";
 	}
 	sb << "Error: " << sender->GetError();
-	new ConfirmPrompt("Autoupdate failed", sb.Build(), { [this] {
+	new ConfirmPrompt("自动更新失败", sb.Build(), { [this] {
 		if constexpr (!USE_UPDATESERVER)
 		{
 			Platform::OpenURI(ByteString::Build(SERVER, "/Download.html"));

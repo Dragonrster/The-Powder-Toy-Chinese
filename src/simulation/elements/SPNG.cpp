@@ -30,7 +30,7 @@ void Element::Element_SPNG()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("海绵可以从多种元素中(WATR,SLTW,DSTW,FRZW,BUBW,PSTE)吸水").FromUtf8();
+	Description = "海绵可以从多种元素中(WATR,SLTW,DSTW,FRZW,BUBW,PSTE)吸水";
 
 	Properties = TYPE_SOLID;
 
@@ -196,7 +196,7 @@ static int update(UPDATE_FUNC_ARGS)
 							parts[np].temp = parts[i].temp;
 							tmp--;
 							parts[i].life--;
-							parts[i].temp -= 20.0f;
+							parts[i].temp = restrict_flt(parts[i].temp - 20.0f, MIN_TEMP, MAX_TEMP);
 						}
 					}
 				}

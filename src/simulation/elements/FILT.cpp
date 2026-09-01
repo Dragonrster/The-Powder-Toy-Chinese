@@ -31,7 +31,7 @@ void Element::Element_FILT()
 	Weight = 100;
 
 	HeatConduct = 251;
-	Description = ByteString("滤镜,能改变通过光子的颜色").FromUtf8();
+	Description = "滤镜,能改变通过光子的颜色";
 
 	Properties = TYPE_SOLID | PROP_PHOTPASS | PROP_NOAMBHEAT | PROP_LIFE_DEC;
 
@@ -93,7 +93,7 @@ int Element_FILT_interactWavelengths(Simulation *sim, Particle* cpart, int origW
 		case 2:
 			return origWl | filtWl; //Add Colour
 		case 3:
-			return origWl & (~filtWl); //Subtract colour of filt from colour of photon
+			return origWl & (~filtWl); //Filter Colour the other way
 		case 4:
 		{
 			int shift = int((cpart->temp-273.0f)*0.025f);

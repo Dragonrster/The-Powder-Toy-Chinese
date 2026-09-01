@@ -29,7 +29,7 @@ void Element::Element_VIBR()
 
 	DefaultProperties.temp = 273.15f;
 	HeatConduct = 251;
-	Description = ByteString("振金,可以储存能量在猛烈的爆炸中释放出来").FromUtf8();
+	Description = "振金,可以储存能量在猛烈的爆炸中释放出来";
 
 	Properties = TYPE_SOLID|PROP_LIFE_DEC;
 

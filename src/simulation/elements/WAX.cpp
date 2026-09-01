@@ -27,7 +27,7 @@ void Element::Element_WAX()
 	Weight = 100;
 
 	HeatConduct = 44;
-	Description = ByteString("蜡,加热时会融化").FromUtf8();
+	Description = "蜡,加热时会融化";
 
 	Properties = TYPE_SOLID;
 

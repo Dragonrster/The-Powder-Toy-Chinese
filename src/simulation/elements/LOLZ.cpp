@@ -29,7 +29,7 @@ void Element::Element_LOLZ()
 
 	DefaultProperties.temp = 373.0f;
 	HeatConduct = 40;
-	Description = ByteString("大声笑,不要怀疑,这货就是来搞笑的").FromUtf8();
+	Description = "大声笑,不要怀疑,这货就是来搞笑的";
 
 	Properties = TYPE_SOLID;
 

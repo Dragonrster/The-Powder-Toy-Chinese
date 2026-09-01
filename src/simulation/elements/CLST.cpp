@@ -31,7 +31,7 @@ void Element::Element_CLST()
 	Weight = 55;
 
 	HeatConduct = 70;
-	Description = ByteString("粘土砂,和水结合时产生浆糊(PSTE)").FromUtf8();
+	Description = "粘土砂,和水结合时产生浆糊(PSTE)";
 
 	Properties = TYPE_PART;
 

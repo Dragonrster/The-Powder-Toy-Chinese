@@ -28,7 +28,7 @@ void Element::Element_LOVE()
 
 	DefaultProperties.temp = 373.0f;
 	HeatConduct = 40;
-	Description = ByteString("爱心,爱与和平").FromUtf8();
+	Description = "爱心,爱与和平";
 
 	Properties = TYPE_SOLID;
 

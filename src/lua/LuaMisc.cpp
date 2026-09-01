@@ -31,13 +31,13 @@ static int installScriptManager(lua_State *L)
 	lsi->AssertInterfaceEvent();
 	if (lsi->scriptManagerDownload)
 	{
-		new ErrorMessage("Script download", "A script download is already pending");
+		new ErrorMessage("脚本下载", "已有脚本下载正在处理");
 		return 0;
 	}
 	lsi->gameController->HideConsole();
 	if (ui::Engine::Ref().GetWindow() != lsi->gameController->GetView())
 	{
-		new ErrorMessage("Script download", "You must run this function from the console");
+		new ErrorMessage("脚本下载", "必须在控制台运行此函数");
 		return 0;
 	}
 	lsi->scriptManagerDownload = std::make_unique<http::Request>(format::Url{ "https://starcatcher.us/scripts/main.lua", {{ "get", "1" }} }.ToByteString());
@@ -74,15 +74,15 @@ void LuaMisc::Tick(lua_State *L)
 		auto complete = [](Status status) {
 			if (std::get_if<Status::Ok>(&status.value))
 			{
-				new InformationMessage("Install script manager", "Script manager successfully installed", false);
+				new InformationMessage("安装脚本管理器", "脚本管理器安装成功", false);
 			}
 			if (auto *requestFailed = std::get_if<Status::GetFailed>(&status.value))
 			{
-				new ErrorMessage("Install script manager", "Failed to get script manager: " + requestFailed->error);
+				new ErrorMessage("安装脚本管理器", "获取脚本管理器失败: " + requestFailed->error);
 			}
 			if (auto *runFailed = std::get_if<Status::RunFailed>(&status.value))
 			{
-				new ErrorMessage("Install script manager", "Failed to run script manager: " + runFailed->error);
+				new ErrorMessage("安装脚本管理器", "运行脚本管理器失败: " + runFailed->error);
 			}
 		};
 		try
@@ -91,7 +91,7 @@ void LuaMisc::Tick(lua_State *L)
 			auto scriptData = scriptManagerDownload->Finish().second;
 			if (!scriptData.size())
 			{
-				complete({ Status::GetFailed{ "Server did not return data" } });
+				complete({ Status::GetFailed{ "服务器未返回数据" } });
 				return;
 			}
 			if (ret != 200)
@@ -102,7 +102,7 @@ void LuaMisc::Tick(lua_State *L)
 			ByteString filename = "autorun.lua";
 			if (!Platform::WriteFile(scriptData, filename))
 			{
-				complete({ Status::GetFailed{ String::Build("Unable to write to ", filename.FromUtf8()) } });
+				complete({ Status::GetFailed{ String::Build("无法写入文件 ", filename.FromUtf8()) } });
 				return;
 			}
 			if (lsi->Autorun())
@@ -236,10 +236,6 @@ static int drawCap(lua_State *L)
 		{
 			lua_pushliteral(L, "display");
 		}
-		else if (std::holds_alternative<DrawLimitNone>(drawLimit))
-		{
-			lua_pushinteger(L, 0);
-		}
 		else
 		{
 			lua_pushinteger(L, std::get<DrawLimitExplicit>(drawLimit).value);
@@ -253,13 +249,8 @@ static int drawCap(lua_State *L)
 		return 0;
 	}
 	int drawcap = luaL_checkinteger(L, 1);
-	if(drawcap < 0)
+	if(drawcap <= 0)
 		return luaL_error(L, "draw cap too small");
-	if (drawcap == 0)
-	{
-		ui::Engine::Ref().SetDrawingFrequencyLimit(DrawLimitNone{});
-		return 0;
-	}
 	ui::Engine::Ref().SetDrawingFrequencyLimit(DrawLimitExplicit{ drawcap });
 	return 0;
 }

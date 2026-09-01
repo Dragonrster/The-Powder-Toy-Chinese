@@ -30,7 +30,7 @@ void Element::Element_MORT()
 
 	DefaultProperties.temp = R_TEMP + 4.0f + 273.15f;
 	HeatConduct = 60;
-	Description = ByteString("烟尘,会释放烟雾并缓慢的飘落下来").FromUtf8();
+	Description = "烟尘,会释放烟雾并缓慢的飘落下来";
 
 	Properties = TYPE_GAS;
 

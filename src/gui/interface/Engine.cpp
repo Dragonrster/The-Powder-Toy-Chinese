@@ -11,7 +11,7 @@
 using namespace ui;
 
 Engine::Engine():
-	drawingFrequencyLimit(DrawLimitDisplay{}),
+	drawingFrequencyLimit(DrawLimitExplicit{ 60 }),
 	FrameIndex(0),
 	state_(nullptr),
 	windowTargetPosition(0, 0),
@@ -59,7 +59,7 @@ void Engine::ConfirmExit()
 	if (!confirmingExit)
 	{
 		confirmingExit = true;
-		new ConfirmPrompt(ByteString("退出游戏").FromUtf8(), ByteString("确定要退出游戏吗?").FromUtf8(), { [] {
+		new ConfirmPrompt("退出游戏", "确定要退出游戏吗?", { [] {
 			ui::Engine::Ref().Exit();
 		}, [this] {
 			confirmingExit = false;

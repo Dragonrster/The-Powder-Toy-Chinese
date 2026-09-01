@@ -26,7 +26,7 @@ void Air::make_kernel(void) //used for velocity
 	}
 }
 
-
+// Version of vorticity used for rendering
 float Air::vorticity(const RenderableSimulation & sm, int y, int x)
 {
 	auto &vx = sm.vx;
@@ -35,7 +35,27 @@ float Air::vorticity(const RenderableSimulation & sm, int y, int x)
 	if (x > 1 && x < XCELLS-2 && y > 1 && y < YCELLS-2)
 	{
 		// dvy/dx - dvx/dy
-		return (vy[y][x+1] - vy[y][x-1] - (vx[y+1][x] - vx[y-1][x]))*0.5f;
+		auto dvydx = vy[y][x+1] - vy[y][x-1];
+		auto dvxdy = vx[y+1][x] - vx[y-1][x];
+		return (dvydx - dvxdy)*0.5f;
+	}
+	else
+		return 0.0f;
+}
+
+// Version of vorticity which takes bmap_blockair into account
+float vorticityBmap(const Simulation & sm, int y, int x)
+{
+	auto &vx = sm.vx;
+	auto &vy = sm.vy;
+	auto &bmap = sm.air->bmap_blockair;
+
+	if (x > 1 && x < XCELLS-2 && y > 1 && y < YCELLS-2)
+	{
+		// dvy/dx - dvx/dy
+		auto dvydx = (bmap[y][x] || bmap[y][x+1] || bmap[y][x-1]) ? 0.0f : vy[y][x+1] - vy[y][x-1];
+		auto dvxdy = (bmap[y][x] || bmap[y+1][x] || bmap[y-1][x]) ? 0.0f : vx[y+1][x] - vx[y-1][x];
+		return (dvydx - dvxdy)*0.5f;
 	}
 	else
 		return 0.0f;
@@ -130,7 +150,7 @@ void Air::update_airh(void)
 				{
 					tx += stepX;
 					ty += stepY;
-					if (bmap_blockairh[(int)(ty+0.5f)][(int)(tx+0.5f)]&0x8)
+					if (!InCellBounds(int(tx+0.5f), int(ty+0.5f)) || bmap_blockairh[(int)(ty+0.5f)][(int)(tx+0.5f)]&0x8)
 					{
 						tx -= stepX;
 						ty -= stepY;
@@ -148,7 +168,7 @@ void Air::update_airh(void)
 			auto j = (int)ty;
 			tx -= i;
 			ty -= j;
-			if (!(bmap_blockairh[y][x]&0x8) && i>=0 && i<XCELLS-1 && j>=0 && j<YCELLS-1)
+			if (!(bmap_blockairh[y][x]&0x8) && i>=0 && i<XCELLS-1 && j>=0 && j<YCELLS-1 && tx >= 0.0f && ty >= 0.0f)
 			{
 				auto odh = dh;
 				dh *= 1.0f - AIR_VADV;
@@ -382,7 +402,7 @@ void Air::update_air(void)
 					{
 						tx += stepX;
 						ty += stepY;
-						if (bmap_blockair[(int)(ty+0.5f)][(int)(tx+0.5f)])
+						if (!InCellBounds(int(tx+0.5f), int(ty+0.5f)) || bmap_blockair[(int)(ty+0.5f)][(int)(tx+0.5f)])
 						{
 							tx -= stepX;
 							ty -= stepY;
@@ -400,7 +420,7 @@ void Air::update_air(void)
 				auto j = (int)ty;
 				tx -= i;
 				ty -= j;
-				if (!bmap_blockair[y][x] && i>=2 && i<XCELLS-3 && j>=2 && j<YCELLS-3)
+				if (!bmap_blockair[y][x] && i>=2 && i<XCELLS-3 && j>=2 && j<YCELLS-3 && tx >= 0.0f && ty >= 0.0f)
 				{
 					dx *= 1.0f - AIR_VADV;
 					dy *= 1.0f - AIR_VADV;
@@ -421,10 +441,10 @@ void Air::update_air(void)
 				//Vorticity confinement
 				if (vorticityCoeff > 0.0f && x > 1 && x < XCELLS-2 && y > 1 && y < YCELLS-2)
 				{
-					auto dwx = (std::abs(vorticity(sim, y, x+1)) - std::abs(vorticity(sim, y, x-1)))*0.5f;
-					auto dwy = (std::abs(vorticity(sim, y+1, x)) - std::abs(vorticity(sim, y-1, x)))*0.5f;
-					auto norm = std::sqrt(dwx*dwx + dwy*dwy);
-					auto w = vorticity(sim, y, x);
+					auto dwx = (std::abs(vorticityBmap(sim, y, x+1)) - std::abs(vorticityBmap(sim, y, x-1)))*0.5f;
+					auto dwy = (std::abs(vorticityBmap(sim, y+1, x)) - std::abs(vorticityBmap(sim, y-1, x)))*0.5f;
+					auto norm = std::hypot(dwx, dwy);
+					auto w = vorticityBmap(sim, y, x);
 
 					dx += vorticityCoeff/5.0f * dwy / (norm + 0.001f) * w;
 					dy += vorticityCoeff/5.0f * (-dwx) / (norm + 0.001f) * w;

@@ -17,15 +17,22 @@ LocalBrowserView::LocalBrowserView():
 	lastChanged(0),
 	pageCount(0)
 {
-	nextButton = new ui::Button(ui::Point(WINDOWW-62, WINDOWH-18), ui::Point(60, 16), String(ByteString("下一页 ").FromUtf8()) + 0xE015);
-	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(60, 16), 0xE016 + String(ByteString(" 上一页").FromUtf8()));
-	undeleteButton = new ui::Button(ui::Point(WINDOWW-122, WINDOWH-18), ui::Point(60, 16), ByteString("刷新").FromUtf8());
+	nextButton = new ui::Button(ui::Point(WINDOWW-52, WINDOWH-18), ui::Point(50, 16), String("下一页 ") + 0xE015);
+	previousButton = new ui::Button(ui::Point(2, WINDOWH-18), ui::Point(50, 16), 0xE016 + String(" 上一页"));
+	undeleteButton = new ui::Button(ui::Point(WINDOWW-122, WINDOWH-18), ui::Point(60, 16), "刷新");
 	AddComponent(nextButton);
 	AddComponent(previousButton);
 	AddComponent(undeleteButton);
 
+	searchTextbox = new ui::Textbox(ui::Point(30, 25), ui::Point(Size.X-60, 16), "", "[搜索]");
+	searchTextbox->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
+	searchTextbox->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
+	searchTextbox->SetActionCallback({ [this] { searchChanged(); } });
+	AddComponent(searchTextbox);
+	FocusComponent(searchTextbox);
+
 	pageTextbox = new ui::Textbox(ui::Point(283, WINDOWH-18), ui::Point(41, 16), "");
-	pageTextbox->SetActionCallback({ [this] { textChanged(); } });
+	pageTextbox->SetActionCallback({ [this] { pageChanged(); } });
 	pageTextbox->SetInputType(ui::Textbox::Number);
 	pageLabel = new ui::Label(ui::Point(0, WINDOWH-18), ui::Point(30, 16), "第"); //page [TEXTBOX] of y
 	pageLabel->Appearance.HorizontalAlign = ui::Appearance::AlignRight;
@@ -45,7 +52,7 @@ LocalBrowserView::LocalBrowserView():
 
 	undeleteButton->SetActionCallback({ [this] { c->RescanStamps(); } });
 
-	removeSelected = new ui::Button(ui::Point(((WINDOWW-100)/2), WINDOWH-18), ui::Point(100, 16), ByteString("删除").FromUtf8());
+	removeSelected = new ui::Button(ui::Point(((WINDOWW-100)/2), WINDOWH-18), ui::Point(100, 16), "删除");
 	removeSelected->Visible = false;
 	removeSelected->SetActionCallback({ [this] { c->RemoveSelected(); } });
 
@@ -57,7 +64,14 @@ LocalBrowserView::LocalBrowserView():
 	AddComponent(renameSelected);
 }
 
-void LocalBrowserView::textChanged()
+void LocalBrowserView::searchChanged()
+{
+	pageTextbox->SetText("1");
+	changed = true;
+	lastChanged = GetTicks()+600;
+}
+
+void LocalBrowserView::pageChanged()
 {
 	int num = pageTextbox->GetText().ToNumber<int>(true);
 	if (num < 0) //0 is allowed so that you can backspace the 1
@@ -74,7 +88,7 @@ void LocalBrowserView::OnTick()
 	if (changed && lastChanged < GetTicks())
 	{
 		changed = false;
-		c->SetPage(std::max(pageTextbox->GetText().ToNumber<int>(true) - 1, 0));
+		c->SetSearch(searchTextbox->GetText().ToUtf8(), std::max(pageTextbox->GetText().ToNumber<int>(true) - 1, 0));
 	}
 }
 
@@ -87,7 +101,7 @@ void LocalBrowserView::NotifyPageChanged(LocalBrowserModel * sender)
 	}
 	else
 	{
-		String pageInfo = String::Build("共 ", pageCount);
+		String pageInfo = String::Build("of ", pageCount);
 		pageCountLabel->SetText(pageInfo);
 		int width = Graphics::TextSize(pageInfo).X - 1;
 
@@ -209,7 +223,7 @@ void LocalBrowserView::OnKeyPress(int key, int scan, bool repeat, bool shift, bo
 {
 	if (repeat)
 		return;
-	if (key == SDLK_ESCAPE)
+	if (key == SDLK_ESCAPE || key == SDLK_AC_BACK)
 		c->Exit();
 	else if (key == SDLK_LCTRL || key == SDLK_RCTRL)
 		c->SetMoveToFront(false);

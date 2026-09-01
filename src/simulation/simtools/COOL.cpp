@@ -7,7 +7,7 @@ void SimTool::Tool_COOL()
 	Identifier = "DEFAULT_TOOL_COOL";
 	Name = "COOL";
 	Colour = 0x00DDFF_rgb;
-	Description = ByteString("冷却工具,降低目标的温度").FromUtf8();
+	Description = "冷却工具,降低目标的温度";
 	Perform = &perform;
 }
 

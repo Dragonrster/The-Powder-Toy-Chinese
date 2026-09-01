@@ -24,7 +24,7 @@ void FontEditor::ReadDataFile(ByteString dataFile)
 	std::fstream file;
 	file.open(dataFile, std::ios_base::in | std::ios_base::binary);
 	if(!file)
-		throw std::runtime_error("Could not open " + dataFile);
+		throw std::runtime_error("无法打开 " + dataFile);
 	file.seekg(0, std::ios_base::end);
 	std::vector<char> fileData(file.tellg());
 	file.seekg(0);
@@ -36,7 +36,7 @@ void FontEditor::ReadDataFile(ByteString dataFile)
 	std::vector< std::array<int, 2> > fontRangesBuf;
 	if (BZ2WDecompress(fontDataBuf, fileData) != BZ2WDecompressOk)
 	{
-		throw std::runtime_error("Could not decompress font data");
+		throw std::runtime_error("无法解压字体数据");
 	}
 	int first = -1;
 	int last = -1;
@@ -47,26 +47,26 @@ void FontEditor::ReadDataFile(ByteString dataFile)
 	{
 		if (ptr + 4 > end)
 		{
-			throw std::runtime_error("Could not decompress font data");
+			throw std::runtime_error("无法解压字体数据");
 		}
 		auto codePoint = *reinterpret_cast<uint32_t *>(ptr) & 0xFFFFFFU;
 		if (codePoint >= 0x110000U)
 		{
-			throw std::runtime_error("Could not decompress font data");
+			throw std::runtime_error("无法解压字体数据");
 		}
 		auto width = *reinterpret_cast<uint8_t *>(ptr + 3);
 		if (width > 64)
 		{
-			throw std::runtime_error("Could not decompress font data");
+			throw std::runtime_error("无法解压字体数据");
 		}
 		if (ptr + 4 + width * 3 > end)
 		{
-			throw std::runtime_error("Could not decompress font data");
+			throw std::runtime_error("无法解压字体数据");
 		}
 		auto cp = (int)codePoint;
 		if (last >= cp)
 		{
-			throw std::runtime_error("Could not decompress font data");
+			throw std::runtime_error("无法解压字体数据");
 		}
 		if (first != -1 && last + 1 < cp)
 		{
@@ -109,7 +109,7 @@ void FontEditor::WriteDataFile(ByteString dataFile, std::vector<unsigned char> c
 	std::fstream file;
 	file.open(dataFile, std::ios_base::out | std::ios_base::trunc | std::ios_base::binary);
 	if(!file)
-		throw std::runtime_error("Could not open " + dataFile);
+		throw std::runtime_error("无法打开 " + dataFile);
 
 	std::vector<char> uncompressed;
 	size_t pos = 0;
@@ -360,7 +360,7 @@ FontEditor::FontEditor(ByteString _dataFile):
 	render->SetActionCallback({ [this] { Render(); } });
 	AddComponent(render);
 	
-	savedButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(50, 17), ByteString("保存").FromUtf8());
+	savedButton = new ui::Button(ui::Point(currentX, baseline), ui::Point(50, 17), "保存");
 	currentX += 51;
 	savedButton->SetTogglable(true);
 	savedButton->SetToggleState(true);

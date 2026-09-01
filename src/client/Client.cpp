@@ -43,7 +43,7 @@ void Client::MigrateStampsDef()
 	{
 		return;
 	}
-	for (auto i = 0; i < int(data.size()); i += 10)
+	for (auto i = 0; i + 10 <= int(data.size()); i += 10)
 	{
 		stampIDs.push_back(ByteString(data.data() + i, data.data() + i + 10));
 	}
@@ -361,15 +361,15 @@ ByteString Client::AddStamp(std::unique_ptr<GameSave> saveData)
 
 	Platform::MakeDirectory(STAMPS_DIR);
 
-	Bson stampInfo;
+	Json::Value stampInfo;
 	stampInfo["type"] = "stamp";
 	stampInfo["username"] = authUser ? authUser->Username : ByteString("");
 	stampInfo["name"] = filename;
-	stampInfo["date"] = int64_t(now);
-	if (authors.GetSize() != 0)
+	stampInfo["date"] = Json::Value::UInt64(now);
+	if (authors.size() != 0)
 	{
 		// This is a stamp, always append full authorship info (even if same user)
-		stampInfo["links"].Append(Client::Ref().authors);
+		stampInfo["links"].append(Client::Ref().authors);
 	}
 	saveData->authors = stampInfo;
 
@@ -474,28 +474,27 @@ std::unique_ptr<SaveFile> Client::LoadSaveFile(ByteString filename)
 
 // stamp-specific wrapper for MergeAuthorInfo
 // also used for clipboard and lua stamps
-void Client::MergeStampAuthorInfo(const Bson &stampAuthors)
+void Client::MergeStampAuthorInfo(Json::Value stampAuthors)
 {
-	if (stampAuthors.GetSize())
+	if (stampAuthors.size())
 	{
 		// when loading stamp/clipboard, only append info to authorship info (since we aren't replacing the save)
 		// unless there is nothing loaded currently, then set authors directly
-		if (authors.GetSize())
+		if (authors.size())
 		{
-			auto links = stampAuthors.Get("links", Bson::Type::arrayValue);
 			// Don't add if it's exactly the same
-			if (links.GetSize() == 1 && links[0] == Client::Ref().authors)
+			if (stampAuthors["links"].size() == 1 && stampAuthors["links"][0] == Client::Ref().authors)
 				return;
-			if (authors["username"] != stampAuthors.Get("username", ByteString("")))
+			if (authors["username"] != stampAuthors["username"])
 			{
 				// 2nd arg of MergeAuthorInfo needs to be an array
-				Bson toAdd;
-				toAdd.Append(stampAuthors);
+				Json::Value toAdd;
+				toAdd.append(stampAuthors);
 				MergeAuthorInfo(toAdd);
 			}
-			else if (links.GetSize())
+			else if (stampAuthors["links"].size())
 			{
-				MergeAuthorInfo(links);
+				MergeAuthorInfo(stampAuthors["links"]);
 			}
 		}
 		else
@@ -504,38 +503,38 @@ void Client::MergeStampAuthorInfo(const Bson &stampAuthors)
 }
 
 // linksToAdd is an array (NOT an object) of links to add to authors["links"]
-void Client::MergeAuthorInfo(const Bson &linksToAdd)
+void Client::MergeAuthorInfo(Json::Value linksToAdd)
 {
-	for (auto &link : linksToAdd.As<Bson::Array>())
+	for (Json::Value::ArrayIndex i = 0; i < linksToAdd.size(); i++)
 	{
 		// link is the same exact json we have open, don't do anything
-		if (link == authors)
+		if (linksToAdd[i] == authors)
 			return;
 
 		bool hasLink = false;
-		for (Json::Value::ArrayIndex j = 0; j < authors["links"].GetSize(); j++)
+		for (Json::Value::ArrayIndex j = 0; j < authors["links"].size(); j++)
 		{
 			// check everything in authors["links"] to see if it's the same json as what we are already adding
-			if (authors["links"][j] == link)
+			if (authors["links"][j] == linksToAdd[i])
 				hasLink = true;
 		}
 		if (!hasLink)
-			authors["links"].Append(link);
+			authors["links"].append(linksToAdd[i]);
 	}
 }
 
 // load current authors information into a json value (when saving everything: stamps, clipboard, local saves, and online saves)
-void Client::SaveAuthorInfo(Bson &saveInto) const
+void Client::SaveAuthorInfo(Json::Value *saveInto)
 {
-	if (authors.GetSize() != 0)
+	if (authors.size() != 0)
 	{
 		// Different username? Save full original save info
-		if (authors.Get("username", ByteString("")) != saveInto["username"])
-			saveInto["links"].Append(authors);
+		if (authors["username"] != (*saveInto)["username"])
+			(*saveInto)["links"].append(authors);
 		// This is probalby the same save
 		// Don't append another layer of links, just keep existing links
-		else if (auto links = authors.Get("links", Bson::Type::arrayValue); links.GetSize())
-			saveInto["links"] = links;
+		else if (authors["links"].size())
+			(*saveInto)["links"] = authors["links"];
 	}
 }
 
@@ -583,12 +582,12 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 				if (Platform::RenameFile(from, to, false))
 				{
 					failedCount++;
-					logFile << "无法移动 " << from << " to " << to << std::endl;
+					logFile << "无法移动 " << from << " 前往 " << to << std::endl;
 				}
 				else
 				{
 					migratedCount++;
-					logFile << "已移动 " << from << " to " << to << std::endl;
+					logFile << "已移动 " << from << " 前往 " << to << std::endl;
 				}
 			}
 			else
@@ -612,12 +611,12 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 		{
 			if (Platform::RenameFile(from, to, false))
 			{
-				logFile << "无法移动 " << from << " to " << to << std::endl;
+				logFile << "无法移动 " << from << " 前往 " << to << std::endl;
 				result << "\n\br" << filename.FromUtf8() << " migration failed\x0E";
 			}
 			else
 			{
-				logFile << "已移动 " << from << " to " << to << std::endl;
+				logFile << "已移动 " << from << " 前往 " << to << std::endl;
 				result << '\n' << filename.FromUtf8() << " migrated";
 			}
 		}
@@ -628,7 +627,7 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 		}
 
 		if (!Platform::RemoveFile(fromDir + filename)) {
-			logFile << "无法删除 " << filename << std::endl;
+			logFile << "failed to delete " << filename << std::endl;
 		}
 	};
 
@@ -656,7 +655,7 @@ String Client::DoMigration(ByteString fromDir, ByteString toDir)
 	{
 		ByteString toDelete = dirsToDelete.top();
 		if (!Platform::DeleteDirectory(fromDir + toDelete)) {
-			logFile << "删除失败 " << toDelete << std::endl;
+			logFile << "failed to delete " << toDelete << std::endl;
 		}
 		dirsToDelete.pop();
 	}

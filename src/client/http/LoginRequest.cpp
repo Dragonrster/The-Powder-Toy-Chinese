@@ -27,7 +27,7 @@ namespace http
 			loginInfo.user.UserID = document["UserID"].asInt();
 			if (!loginInfo.user.UserID)
 			{
-				throw RequestError("bad user ID");
+				throw RequestError("用户ID无效");
 			}
 			loginInfo.user.SessionID = document["SessionID"].asString();
 			loginInfo.user.SessionKey = document["SessionKey"].asString();
@@ -42,7 +42,7 @@ namespace http
 		}
 		catch (const std::exception &ex)
 		{
-			throw RequestError("\u65e0\u6cd5\u8bfb\u53d6\u54cd\u5e94\u003a\u0020" + ByteString(ex.what()));
+			throw RequestError("无法读取响应: " + ByteString(ex.what()));
 		}
 		return loginInfo;
 	}

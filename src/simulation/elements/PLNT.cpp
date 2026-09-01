@@ -33,7 +33,7 @@ void Element::Element_PLNT()
 	Weight = 100;
 
 	HeatConduct = 65;
-	Description = ByteString("植物,吸收水分生长,低温时变成蓝色").FromUtf8();
+	Description = "植物,吸收水分生长,低温时变成蓝色";
 
 	Properties = TYPE_SOLID|PROP_NEUTPENETRATE|PROP_LIFE_DEC;
 

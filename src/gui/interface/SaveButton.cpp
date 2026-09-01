@@ -203,7 +203,7 @@ void SaveButton::Draw(const Point& screenPos)
 		g->BlendImage(tex->Data(), 255, RectSized(screenPos + ((save && save->id) ? ((space - thumbBoxSize) / 2 - Vec2{ 3, 0 }) : (space - thumbSize) / 2), tex->Size()));
 	}
 	else if (file && !file->LazyGetGameSave())
-		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize("沙盘加载错误").X - 1))/2, (Size.Y-28)/2 }, "沙盘加载错误", 0xB4B4B4_rgb .WithAlpha(255));
+		g->BlendText(screenPos + Vec2{ (Size.X-(Graphics::TextSize("加载沙盘出错").X - 1))/2, (Size.Y-28)/2 }, "加载沙盘出错", 0xB4B4B4_rgb .WithAlpha(255));
 	if(save)
 	{
 		if(save->id)
@@ -269,16 +269,17 @@ void SaveButton::OnMouseClick(int x, int y, unsigned int button)
 	{
 		return; //left click only!
 	}
-	if (file && !file->LazyGetGameSave())
-	{
-		new ErrorMessage(ByteString("无法加载此沙盘").FromUtf8(), file->GetError());
-		return;
-	}
 
 	if(x>=Size.X-20 && y>=6 && y<=20 && x<=Size.X-6 && selectable)
 	{
 		selected = !selected;
 		DoSelection();
+		return;
+	}
+
+	if (file && !file->LazyGetGameSave())
+	{
+		new ErrorMessage("加载沙盘出错", file->GetError());
 		return;
 	}
 
@@ -299,18 +300,18 @@ void SaveButton::AddContextMenu(int menuType)
 	if (menuType == 0) //Save browser
 	{
 		menu = new ContextMenu(this);
-		menu->AddItem(ContextMenuItem(ByteString("打开").FromUtf8(), 0, true));
+		menu->AddItem(ContextMenuItem("打开", 0, true));
 		if (Client::Ref().GetAuthUser())
-			menu->AddItem(ContextMenuItem(ByteString("选择").FromUtf8(), 1, true));
-		menu->AddItem(ContextMenuItem(ByteString("历史").FromUtf8(), 2, true));
-		menu->AddItem(ContextMenuItem(ByteString("更多作品").FromUtf8(), 3, true));
+			menu->AddItem(ContextMenuItem("选择", 1, true));
+		menu->AddItem(ContextMenuItem("历史", 2, true));
+		menu->AddItem(ContextMenuItem("更多作品", 3, true));
 	}
 	else if (menuType == 1) //Local save browser
 	{
 		menu = new ContextMenu(this);
-		menu->AddItem(ContextMenuItem(ByteString("打开").FromUtf8(), 0, true));
-		menu->AddItem(ContextMenuItem(ByteString("重命名").FromUtf8(), 2, true));
-		menu->AddItem(ContextMenuItem(ByteString("删除").FromUtf8(), 3, true));
+		menu->AddItem(ContextMenuItem("打开", 0, true));
+		menu->AddItem(ContextMenuItem("重命名", 2, true));
+		menu->AddItem(ContextMenuItem("删除", 3, true));
 	}
 }
 
@@ -405,9 +406,9 @@ void SaveButton::DoSelection()
 	if(menu)
 	{
 		if(selected)
-			menu->SetItem(1, ByteString("取消选择").FromUtf8());
+			menu->SetItem(1, "取消选择");
 		else
-			menu->SetItem(1, ByteString("选择").FromUtf8());
+			menu->SetItem(1, "选择");
 	}
 	if (selectable && actionCallback.selected)
 		actionCallback.selected();

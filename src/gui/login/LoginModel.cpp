@@ -9,12 +9,12 @@ void LoginModel::Login(ByteString username, ByteString password)
 {
 	if (username.Contains("@"))
 	{
-		statusText =  ByteString("请使用您的TPT帐户登录，而不是邮箱。\n如果您没有TPT帐户，可以在此注册powdertoy.co.uk/register.html").FromUtf8();
+		statusText = String::Build("请使用你的 Powder Toy 账号登录，而不是邮箱。如果还没有账号，可以在 ", SERVER, "/Register.html 注册");
 		loginStatus = loginIdle;
 		notifyStatusChanged();
 		return;
 	}
-	statusText =  ByteString("登陆中...").FromUtf8();
+	statusText = "登陆中...";
 	loginStatus = loginWorking;
 	notifyStatusChanged();
 	loginRequest = std::make_unique<http::LoginRequest>(username, password);
@@ -23,7 +23,7 @@ void LoginModel::Login(ByteString username, ByteString password)
 
 void LoginModel::Logout()
 {
-	statusText = ByteString("注销中...").FromUtf8();
+	statusText = "注销中...";
 	loginStatus = loginWorking;
 	notifyStatusChanged();
 	logoutRequest = std::make_unique<http::LogoutRequest>();
@@ -54,12 +54,18 @@ void LoginModel::Tick()
 			{
 				client.AddServerNotification(item);
 			}
-			statusText = ByteString("已登陆").FromUtf8();
+			statusText = "已登陆";
 			loginStatus = loginSucceeded;
 		}
 		catch (const http::RequestError &ex)
 		{
-			statusText = ByteString(ex.what()).FromUtf8();
+			ByteString english = ByteString(ex.what());
+			// Translate common server error messages to Chinese
+			if (english == "Wrong username or password") english = "用户名或密码错误";
+			else if (english == "Unspecified Error") english = "未知错误";
+			else if (english.BeginsWith("Could not read response")) english = "无法读取服务器响应";
+			else if (english == "Error") english = "服务器错误";
+			statusText = english.FromUtf8();
 			loginStatus = loginIdle;
 		}
 		notifyStatusChanged();
@@ -72,7 +78,7 @@ void LoginModel::Tick()
 			logoutRequest->Finish();
 			auto &client = Client::Ref();
 			client.SetAuthUser(std::nullopt);
-			statusText = ByteString("已注销").FromUtf8();
+			statusText = "已注销";
 		}
 		catch (const http::RequestError &ex)
 		{

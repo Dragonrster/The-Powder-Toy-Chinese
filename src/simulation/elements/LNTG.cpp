@@ -28,7 +28,7 @@ void Element::Element_LNTG()
 
 	DefaultProperties.temp = 70.15f;
 	HeatConduct = 70;
-	Description = ByteString("液氮,遇到比它热的物质后会消失并产生压力").FromUtf8();
+	Description = "液氮,遇到比它热的物质后会消失并产生压力";
 
 	Properties = TYPE_LIQUID;
 

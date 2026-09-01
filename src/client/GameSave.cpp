@@ -16,14 +16,13 @@
 #include <stack>
 
 constexpr auto currentVersion = UPSTREAM_VERSION.displayVersion;
-constexpr auto nextVersion = Version(100, 0);
+constexpr auto nextVersion = Version(100, 1);
 static_assert(!ALLOW_FAKE_NEWER_VERSION || nextVersion >= currentVersion);
 
 constexpr auto effectiveVersion = ALLOW_FAKE_NEWER_VERSION ? nextVersion : currentVersion;
 
-static void TrimAuthorsIn(Bson &b, int depth);
-static std::set<int> GetNestedSaveIDs(const Bson &j);
-static void TrimAuthorsOut(Bson &b, int depth);
+static void ConvertJsonToBson(Bson &b, Json::Value j, int depth = 0);
+static void ConvertBsonToJson(const Bson &b, Json::Value *j, int depth = 0);
 
 GameSave::GameSave(Vec2<int> newBlockSize)
 {
@@ -85,6 +84,8 @@ void GameSave::MapPalette()
 		ignoreMissingErrors[PT_WTRV] = true;
 		ignoreMissingErrors[PT_FIRE] = true;
 		ignoreMissingErrors[PT_BRMT] = true;
+		ignoreMissingErrors[PT_FOG] = true;
+		ignoreMissingErrors[PT_RIME] = true;
 	}
 
 	auto &sd = SimulationData::CRef();
@@ -400,15 +401,21 @@ void GameSave::Transform(Mat2<int> transform, Vec2<int> nudge)
 			}
 		}
 		newPressure[newBpos] = pressure[bpos];
-		newVelocityX[newBpos] = velocityX[bpos];
-		newVelocityY[newBpos] = velocityY[bpos];
+		{
+			auto transformed = transform * Vec2{ velocityX[bpos], velocityY[bpos] };
+			newVelocityX[newBpos] = transformed.X;
+			newVelocityY[newBpos] = transformed.Y;
+		}
 		newAmbientHeat[newBpos] = ambientHeat[bpos];
 		newBlockAir[newBpos] = blockAir[bpos];
 		newBlockAirh[newBpos] = blockAirh[bpos];
 		newGravMass[newBpos] = gravMass[bpos];
 		newGravMask[newBpos] = gravMask[bpos];
-		newGravForceX[newBpos] = gravForceX[bpos];
-		newGravForceY[newBpos] = gravForceY[bpos];
+		{
+			auto transformed = transform * Vec2{ gravForceX[bpos], gravForceY[bpos] };
+			newGravForceX[newBpos] = transformed.X;
+			newGravForceY[newBpos] = transformed.Y;
+		}
 	}
 	blockMap = std::move(newBlockMap);
 	fanVelX = std::move(newFanVelX);
@@ -477,7 +484,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	unsigned partsCount = 0;
 	unsigned int savedVersion = inputData[4];
 	version = { savedVersion, 0 };
-	bool fakeNewerVersion = false; // used for development builds only
+	[[maybe_unused]] bool fakeNewerVersion = false; // used for development builds only
 
 	auto getIfType = [](const Bson &b, const char *key, Bson::Type type) -> const Bson * {
 		if (auto *node = b.Get(key))
@@ -675,11 +682,11 @@ void GameSave::readOPS(const std::vector<char> &data)
 				{
 					if (tempSign.text == "{t}")
 					{
-						tempSign.text = ByteString("温度: {t}").FromUtf8();
+						tempSign.text = "温度: {t}";
 					}
 					else if (tempSign.text == "{p}")
 					{
-						tempSign.text = ByteString("压力: {p}").FromUtf8();
+						tempSign.text = "Pressure: {p}";
 					}
 				}
 			}
@@ -757,8 +764,10 @@ void GameSave::readOPS(const std::vector<char> &data)
 	}
 	if (auto *authorsNode = getIfType(b, "authors", Bson::Type::objectValue); authorsNode && wantAuthors)
 	{
-		authors = *authorsNode;
-		TrimAuthorsIn(authors, 0);
+		// we need to clear authors because the save may be read multiple times in the stamp browser (loading and rendering twice)
+		// seems inefficient ...
+		authors.clear();
+		ConvertBsonToJson(*authorsNode, &authors);
 	}
 
 	auto paletteRemap = [this](auto maxVersion, ByteString from, ByteString to) {
@@ -783,10 +792,10 @@ void GameSave::readOPS(const std::vector<char> &data)
 	//Read wall and fan data
 	if(wallData.data())
 	{
-		auto wallDataPlane = PlaneAdapter<PlaneBase<const unsigned char>>(blockS, std::in_place, wallData.data());
 		unsigned int j = 0;
 		if (blockS.X * blockS.Y > int(wallData.size()))
 			throw ParseException(ParseException::Corrupt, "Not enough wall data");
+		auto wallDataPlane = MakePlane(blockS, wallData.data());
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
 			unsigned char bm = 0;
@@ -818,7 +827,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 			{
 				if(j+1 >= fanData.size())
 				{
-					fprintf(stderr, "Not enough fan data\n");
+					throw ParseException(ParseException::Corrupt, "Not enough fan data");
 				}
 				fanVelX[blockP + bpos] = (fanData[j++]-127.0f)/64.0f;
 				fanVelY[blockP + bpos] = (fanData[j++]-127.0f)/64.0f;
@@ -835,7 +844,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	{
 		unsigned int j = 0;
 		unsigned char i, i2;
-		if (blockS.X * blockS.Y > int(pressData.size()))
+		if (blockS.X * blockS.Y * 2 > int(pressData.size()))
 			throw ParseException(ParseException::Corrupt, "Not enough pressure data");
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
@@ -851,7 +860,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	{
 		unsigned int j = 0;
 		unsigned char i, i2;
-		if (blockS.X * blockS.Y > int(vxData.size()))
+		if (blockS.X * blockS.Y * 2 > int(vxData.size()))
 			throw ParseException(ParseException::Corrupt, "Not enough vx data");
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
@@ -866,7 +875,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	{
 		unsigned int j = 0;
 		unsigned char i, i2;
-		if (blockS.X * blockS.Y > int(vyData.size()))
+		if (blockS.X * blockS.Y * 2 > int(vyData.size()))
 			throw ParseException(ParseException::Corrupt, "Not enough vy data");
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
@@ -880,7 +889,7 @@ void GameSave::readOPS(const std::vector<char> &data)
 	if (ambientData.data())
 	{
 		unsigned int i = 0, tempTemp;
-		if (blockS.X * blockS.Y > int(ambientData.size()))
+		if (blockS.X * blockS.Y * 2 > int(ambientData.size()))
 			throw ParseException(ParseException::Corrupt, "Not enough ambient heat data");
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
@@ -895,8 +904,8 @@ void GameSave::readOPS(const std::vector<char> &data)
 	{
 		if (blockS.X * blockS.Y * 2 > int(blockAirData.size()))
 			throw ParseException(ParseException::Corrupt, "Not enough block air data");
-		auto blockAirDataPlane = PlaneAdapter<PlaneBase<const unsigned char>>(blockS, std::in_place, blockAirData.data());
-		auto blockAirhDataPlane = PlaneAdapter<PlaneBase<const unsigned char>>(blockS, std::in_place, blockAirData.data() + blockS.X * blockS.Y);
+		auto blockAirDataPlane = MakePlane(blockS, blockAirData.data());
+		auto blockAirhDataPlane = MakePlane(blockS, blockAirData.data() + blockS.X * blockS.Y);
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
 			blockAir [blockP + bpos] = blockAirDataPlane [bpos];
@@ -907,14 +916,14 @@ void GameSave::readOPS(const std::vector<char> &data)
 
 	if (gravityData.data())
 	{
-		if (blockS.X * blockS.Y * 4 > int(gravityData.size()))
+		if (blockS.X * blockS.Y * 4 * int(sizeof(float)) > int(gravityData.size()))
 		{
 			throw ParseException(ParseException::Corrupt, "Not enough gravity data");
 		}
-		auto massDataPlane   = PlaneAdapter<PlaneBase<const float   >>(blockS, std::in_place, reinterpret_cast<const float    *>(gravityData.data()                                          ));
-		auto maskDataPlane   = PlaneAdapter<PlaneBase<const uint32_t>>(blockS, std::in_place, reinterpret_cast<const uint32_t *>(gravityData.data() +     blockS.X * blockS.Y * sizeof(float)));
-		auto forceXDataPlane = PlaneAdapter<PlaneBase<const float   >>(blockS, std::in_place, reinterpret_cast<const float    *>(gravityData.data() + 2 * blockS.X * blockS.Y * sizeof(float)));
-		auto forceYDataPlane = PlaneAdapter<PlaneBase<const float   >>(blockS, std::in_place, reinterpret_cast<const float    *>(gravityData.data() + 3 * blockS.X * blockS.Y * sizeof(float)));
+		auto massDataPlane   = MakePlane(blockS, reinterpret_cast<const float    *>(gravityData.data()));
+		auto maskDataPlane   = MakePlane(blockS, reinterpret_cast<const uint32_t *>(gravityData.data() +     blockS.X * blockS.Y * sizeof(float)));
+		auto forceXDataPlane = MakePlane(blockS, reinterpret_cast<const float    *>(gravityData.data() + 2 * blockS.X * blockS.Y * sizeof(float)));
+		auto forceYDataPlane = MakePlane(blockS, reinterpret_cast<const float    *>(gravityData.data() + 3 * blockS.X * blockS.Y * sizeof(float)));
 		for (auto bpos : blockS.OriginRect().Range<LEFT_TO_RIGHT, TOP_TO_BOTTOM>())
 		{
 			gravMass  [blockP + bpos] = massDataPlane  [bpos];
@@ -1222,25 +1231,30 @@ void GameSave::readOPS(const std::vector<char> &data)
 					break;
 				case PT_PIPE:
 				case PT_PPIP:
-					if (savedVersion < 93 && !fakeNewerVersion)
+					if (savedVersion < 93)
 					{
 						if (particles[newIndex].ctype == 1)
 							particles[newIndex].tmp |= 0x00020000; //PFLAG_INITIALIZING
 						particles[newIndex].tmp |= (particles[newIndex].ctype-1)<<18;
 						particles[newIndex].ctype = particles[newIndex].tmp&0xFF;
 					}
+					if (savedVersion < 100)
+					{
+						// tmp flags now exist in the spot previously used by PIPE before ver. 93, clear them
+						particles[newIndex].tmp &= ~0xFF;
+					}
 					break;
 				case PT_TSNS:
 				case PT_HSWC:
 				case PT_PSNS:
 				case PT_PUMP:
-					if (savedVersion < 93 && !fakeNewerVersion)
+					if (savedVersion < 93)
 					{
 						particles[newIndex].tmp = 0;
 					}
 					break;
 				case PT_LIFE:
-					if (savedVersion < 96 && !fakeNewerVersion)
+					if (savedVersion < 96)
 					{
 						if (particles[newIndex].ctype >= 0 && particles[newIndex].ctype < NGOL)
 						{
@@ -1342,7 +1356,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		new_format = 1;
 	}
 	if (saveData[4]>97) // this used to respect currentVersion but no valid PSv will ever have a version > 97 so it's ok to hardcode
-		throw ParseException(ParseException::WrongVersion, "Save from newer version");
+		throw ParseException(ParseException::WrongVersion, "来自更新版本的沙盘");
 	version = { saveData[4], 0 };
 	auto ver = version[0];
 
@@ -1481,7 +1495,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	}
 	for (auto bpos : RectSized(blockP, blockS).Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
-		auto dataPlane = PlaneAdapter<PlaneBase<const unsigned char>>(blockS, std::in_place, data);
+		auto dataPlane = MakePlane(blockS, data);
 		if (dataPlane[bpos - blockP]==4||(ver>=44 && dataPlane[bpos - blockP]==O_WL_FAN))
 		{
 			if (p >= dataLength)
@@ -1491,7 +1505,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 	}
 	for (auto bpos : RectSized(blockP, blockS).Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 	{
-		auto dataPlane = PlaneAdapter<PlaneBase<const unsigned char>>(blockS, std::in_place, data);
+		auto dataPlane = MakePlane(blockS, data);
 		if (dataPlane[bpos - blockP]==4||(ver>=44 && dataPlane[bpos - blockP]==O_WL_FAN))
 		{
 			if (p >= dataLength)
@@ -1558,7 +1572,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		if (i)
 		{
 			if (ver>=44) {
-				if (p >= dataLength) {
+				if (p + 2 > dataLength) {
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
@@ -1584,7 +1598,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 			auto i = particleIDMap[pos];
 			if (i)
 			{
-				if (p >= dataLength) {
+				if (p + 2 > dataLength) {
 					throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
 				}
 				if (i <= NPART) {
@@ -1607,7 +1621,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 			}
 		}
 	}
-	auto dataPlanePty = PlaneAdapter<PlaneBase<const unsigned char>>(partS, std::in_place, data + pty);
+	auto dataPlanePty = MakePlane(partS, data + pty);
 	if (ver>=53) {
 		for (auto pos : partS.OriginRect().Range<TOP_TO_BOTTOM, LEFT_TO_RIGHT>())
 		{
@@ -1713,6 +1727,10 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 					if (ver>=42) {
 						if (new_format) {
 							ttv = (data[p++])<<8;
+							if (p >= dataLength)
+							{
+								throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
+							}
 							ttv |= (data[p++]);
 							if (particles[i-1].type==PT_PUMP) {
 								particles[i-1].temp = ttv + 0.15;//fix PUMP saved at 0, so that it loads at 0.
@@ -1730,6 +1748,10 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 				{
 					p++;
 					if (new_format) {
+						if (p >= dataLength)
+						{
+							throw ParseException(ParseException::Corrupt, "Not enough data at line " MTOS(__LINE__) " in " MTOS(__FILE__));
+						}
 						p++;
 					}
 				}
@@ -1888,6 +1910,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 						particles[i-1].tmp |= 0x00020000; //PFLAG_INITIALIZING
 					particles[i-1].tmp |= (particles[i-1].ctype-1)<<18;
 					particles[i-1].ctype = particles[i-1].tmp&0xFF;
+					particles[i-1].tmp &= ~0xFF;
 				}
 				else if (particles[i-1].type == PT_HSWC || particles[i-1].type == PT_PUMP)
 				{
@@ -1932,7 +1955,7 @@ void GameSave::readPSv(const std::vector<char> &dataVec)
 		tempSign.text = format::CleanString(ByteString(tempSignText).FromUtf8(), true, true, true).Substr(0, 45);
 		if (tempSign.text == "{t}")
 		{
-			tempSign.text = ByteString("温度: {t}").FromUtf8();
+			tempSign.text = "温度: {t}";
 		}
 		else if (tempSign.text == "{p}")
 		{
@@ -1983,7 +2006,7 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 
 	// Copy fan and wall data
 	std::vector<unsigned char> wallDataBacking(blockSize.X*blockSize.Y);
-	PlaneAdapter<PlaneBase<unsigned char>> wallData(blockSize, std::in_place, wallDataBacking.data());
+	auto wallData = MakePlane(blockSize, wallDataBacking.data());
 	bool hasWallData = false;
 	std::vector<unsigned char> fanData(blockSize.X*blockSize.Y*2);
 	std::vector<unsigned char> pressData(blockSize.X*blockSize.Y*2);
@@ -1992,14 +2015,14 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	std::vector<unsigned char> ambientData(blockSize.X*blockSize.Y*2, 0);
 
 	std::vector<unsigned char> blockAirData(blockSize.X * blockSize.Y * 2);
-	PlaneAdapter<PlaneBase<unsigned char>> blockAirDataPlane (blockSize, std::in_place, blockAirData.data()                            );
-	PlaneAdapter<PlaneBase<unsigned char>> blockAirhDataPlane(blockSize, std::in_place, blockAirData.data() + blockSize.X * blockSize.Y);
+	auto blockAirDataPlane  = MakePlane(blockSize, blockAirData.data());
+	auto blockAirhDataPlane = MakePlane(blockSize, blockAirData.data() + blockSize.X * blockSize.Y);
 
 	std::vector<unsigned char> gravityData(blockSize.X * blockSize.Y * 4 * sizeof(float));
-	PlaneAdapter<PlaneBase<float   >> massDataPlane  (blockSize, std::in_place, reinterpret_cast<float    *>(gravityData.data()                                                ));
-	PlaneAdapter<PlaneBase<uint32_t>> maskDataPlane  (blockSize, std::in_place, reinterpret_cast<uint32_t *>(gravityData.data() +     blockSize.X * blockSize.Y * sizeof(float)));
-	PlaneAdapter<PlaneBase<float   >> forceXDataPlane(blockSize, std::in_place, reinterpret_cast<float    *>(gravityData.data() + 2 * blockSize.X * blockSize.Y * sizeof(float)));
-	PlaneAdapter<PlaneBase<float   >> forceYDataPlane(blockSize, std::in_place, reinterpret_cast<float    *>(gravityData.data() + 3 * blockSize.X * blockSize.Y * sizeof(float)));
+	auto massDataPlane   = MakePlane(blockSize, reinterpret_cast<float    *>(gravityData.data()));
+	auto maskDataPlane   = MakePlane(blockSize, reinterpret_cast<uint32_t *>(gravityData.data() +     blockSize.X * blockSize.Y * sizeof(float)));
+	auto forceXDataPlane = MakePlane(blockSize, reinterpret_cast<float    *>(gravityData.data() + 2 * blockSize.X * blockSize.Y * sizeof(float)));
+	auto forceYDataPlane = MakePlane(blockSize, reinterpret_cast<float    *>(gravityData.data() + 3 * blockSize.X * blockSize.Y * sizeof(float)));
 
 	unsigned int fanDataLen = 0, pressDataLen = 0, vxDataLen = 0, vyDataLen = 0, ambientDataLen = 0;
 
@@ -2420,6 +2443,14 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			{
 				RESTRICTVERSION(98, 0);
 			}
+			if (part.type == PT_BASE || part.type == PT_SEED)
+			{
+				RESTRICTVERSION(100, 0);
+			}
+			if ((part.type == PT_PIPE || part.type == PT_PPIP) && (part.tmp & PFLAG_CAN_CONDUCT))
+			{
+				RESTRICTVERSION(100, 0);
+			}
 
 			//Get the pmap entry for the next particle in the same position
 			i = partsPosLink[i];
@@ -2666,10 +2697,10 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 			}
 		}
 	}
-	if (authors.GetSize())
+	if (authors.size())
 	{
-		auto &authorsNode = (b["authors"] = authors);
-		TrimAuthorsOut(authorsNode, 0);
+		auto &authorsNode = (b["authors"] = Bson::Type::objectValue);
+		ConvertJsonToBson(authorsNode, authors);
 	}
 
 	std::vector<char> finalData;
@@ -2720,64 +2751,64 @@ std::pair<bool, std::vector<char>> GameSave::serialiseOPS() const
 	return { fakeFromNewerVersion, outputData };
 }
 
-static void TrimAuthorsIn(Bson &b, int depth)
+static void ConvertBsonToJson(const Bson &b, Json::Value *j, int depth)
 {
-	for (auto &[ key, child ] : b.As<Bson::Object>())
+	for (auto &[ key, value ] : b.As<Bson::Object>())
 	{
-		if (child.Is<Bson::Array>())
+		if (value.GetType() == Bson::Type::stringValue)
+			(*j)[key] = value.As<Bson::String>();
+		else if (value.GetType() == Bson::Type::boolValue)
+			(*j)[key] = value.As<Bson::Bool>();
+		else if (value.GetType() == Bson::Type::int32Value)
+			(*j)[key] = value.As<Bson::Int32>();
+		else if (value.GetType() == Bson::Type::int64Value)
+			(*j)[key] = (Json::Value::UInt64)value.As<Bson::Int64>();
+		else if (value.GetType() == Bson::Type::arrayValue && depth < 5)
 		{
-			Bson newChild(Bson::Type::arrayValue);
-			if (depth < 5)
+			int length = 0, length2 = 0;
+			for (auto &item : value.As<Bson::Array>())
 			{
-				int length = 0, length2 = 0;
-				for (auto &link : child.As<Bson::Array>())
+				if (item.GetType() == Bson::Type::objectValue) // this used to check whether the """key""" (funny because this is an array) was "part"
 				{
-					if (link.Is<Bson::Object>())
-					{
-						auto &newLink = newChild.Append(link);
-						TrimAuthorsIn(newLink, depth + 1);
-						length++;
-					}
-					else if (link.Is<int32_t>())
-					{
-						newChild.Append(link.As<int32_t>());
-					}
-					length2++;
-					if (length > (40 / ((depth + 1) * (depth + 1))) || length2 > 50)
-					{
-						break;
-					}
+					Json::Value tempPart;
+					ConvertBsonToJson(item, &tempPart, depth + 1);
+					(*j)["links"].append(tempPart);
+					length++;
 				}
+				else if (item.GetType() == Bson::Type::int32Value) // this used to check whether the """key""" (funny because this is an array) was "saveID"
+				{
+					(*j)["links"].append(item.As<Bson::Int32>());
+				}
+				length2++;
+				if (length > (int)(40 / ((depth+1) * (depth+1))) || length2 > 50)
+					break;
 			}
-			child = std::move(newChild);
 		}
 	}
 }
 
-static std::set<int> GetNestedSaveIDs(const Bson &j)
+std::set<int> GetNestedSaveIDs(Json::Value j)
 {
-	std::set<int> saveIDs;
-	for (auto &[ key, member ] : j.As<Bson::Object>())
+	Json::Value::Members members = j.getMemberNames();
+	std::set<int> saveIDs = std::set<int>();
+	for (Json::Value::Members::iterator iter = members.begin(), end = members.end(); iter != end; ++iter)
 	{
-		if (member.Is<int32_t>())
+		ByteString member = *iter;
+		if (member == "id" && j[member].isInt())
+			saveIDs.insert(j[member].asInt());
+		else if (j[member].isArray())
 		{
-			saveIDs.insert(member.As<int32_t>());
-		}
-		else if (member.Is<Bson::Array>())
-		{
-			for (auto &link : member.As<Bson::Array>())
+			for (Json::Value::ArrayIndex i = 0; i < j[member].size(); i++)
 			{
 				// only supports objects and ints here because that is all we need
-				if (link.Is<int32_t>())
+				if (j[member][i].isInt())
 				{
-					saveIDs.insert(link.As<int32_t>());
+					saveIDs.insert(j[member][i].asInt());
 					continue;
 				}
-				if (!link.Is<Bson::Object>())
-				{
+				if (!j[member][i].isObject())
 					continue;
-				}
-				auto nestedSaveIDs = GetNestedSaveIDs(link);
+				std::set<int> nestedSaveIDs = GetNestedSaveIDs(j[member][i]);
 				saveIDs.insert(nestedSaveIDs.begin(), nestedSaveIDs.end());
 			}
 		}
@@ -2786,44 +2817,51 @@ static std::set<int> GetNestedSaveIDs(const Bson &j)
 }
 
 // converts a json object to bson
-static void TrimAuthorsOut(Bson &b, int depth)
+static void ConvertJsonToBson(Bson &b, Json::Value j, int depth)
 {
-	for (auto &[ key, member ] : b.As<Bson::Object>())
+	Json::Value::Members members = j.getMemberNames();
+	for (Json::Value::Members::iterator iter = members.begin(), end = members.end(); iter != end; ++iter)
 	{
-		if (member.Is<Bson::Array>())
+		ByteString member = *iter;
+		if (j[member].isString())
+			b[member.c_str()] = j[member].asCString();
+		else if (j[member].isBool())
+			b[member.c_str()] = j[member].asBool();
+		else if (j[member].type() == Json::intValue)
+			b[member.c_str()] = j[member].asInt();
+		else if (j[member].type() == Json::uintValue)
+			b[member.c_str()] = j[member].asInt64();
+		else if (j[member].isArray())
 		{
-			Bson newChild(Bson::Type::arrayValue);
-			std::set<int> saveIDs;
+			auto &array = b.Append(Bson::Type::arrayValue);
+			std::set<int> saveIDs = std::set<int>();
 			int length = 0;
-			for (auto &link : member.As<Bson::Array>())
+			for (Json::Value::ArrayIndex i = 0; i < j[member].size(); i++)
 			{
 				// only supports objects and ints here because that is all we need
-				if (link.Is<int32_t>())
+				if (j[member][i].isInt())
 				{
-					saveIDs.insert(link.As<int32_t>());
+					saveIDs.insert(j[member][i].asInt());
 					continue;
 				}
-				if (!link.Is<Bson::Object>())
-				{
+				if (!j[member][i].isObject())
 					continue;
-				}
-				if (depth > 4 || length > 40 / ((depth + 1) * (depth + 1)))
+				if (depth > 4 || length > (int)(40 / ((depth+1) * (depth+1))))
 				{
-					std::set<int> nestedSaveIDs = GetNestedSaveIDs(link);
+					std::set<int> nestedSaveIDs = GetNestedSaveIDs(j[member][i]);
 					saveIDs.insert(nestedSaveIDs.begin(), nestedSaveIDs.end());
 				}
 				else
 				{
-					auto &newLink = newChild.Append(link);
-					TrimAuthorsOut(newLink, depth + 1);
+					auto &part = array.Append(Bson::Type::objectValue);
+					ConvertJsonToBson(part, j[member][i], depth+1);
 				}
 				length++;
 			}
-			for (auto id : saveIDs)
+			for (std::set<int>::iterator iter = saveIDs.begin(), end = saveIDs.end(); iter != end; ++iter)
 			{
-				newChild.Append(id);
+				array.Append(*iter);
 			}
-			member = std::move(newChild);
 		}
 	}
 }

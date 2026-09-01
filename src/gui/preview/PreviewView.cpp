@@ -58,7 +58,7 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 
 	auto user = Client::Ref().GetAuthUser();
 
-	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), ByteString("收藏").FromUtf8());
+	favButton = new ui::Button(ui::Point(50, Size.Y-19), ui::Point(51, 19), "Fav");
 	favButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	favButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	favButton->SetTogglable(true);
@@ -71,12 +71,12 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	favButton->Enabled = bool(user);
 	AddComponent(favButton);
 
-	reportButton = new ui::Button(ui::Point(100, Size.Y-19), ui::Point(51, 19), ByteString("举报").FromUtf8());
+	reportButton = new ui::Button(ui::Point(100, Size.Y-19), ui::Point(51, 19), "举报");
 	reportButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	reportButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	reportButton->SetIcon(IconReport);
 	reportButton->SetActionCallback({ [this] {
-		new TextPrompt(ByteString("举报沙盘").FromUtf8(), ByteString("举报时需注意:\n\bw1)\bg 举报抄袭行为时请附上被抄袭沙盘ID\n\bw2)\bg 除非违反规则,否则不要要求从首页删除沙盘\n\bw3)\bg 可以举报沙盘的评论或标签(包括本人沙盘)").FromUtf8(), "", ByteString("[原因]").FromUtf8(), true, { [this](String const &resultText) {
+		new TextPrompt("举报沙盘", "举报时需注意:\n\bw1)\bg 举报抄袭行为时请附上被抄袭沙盘ID\n\bw2)\bg 除非违反规则,否则不要要求从首页删除沙盘\n\bw3)\bg 可以举报沙盘的评论或标签(包括本人沙盘)", "", "[原因]", true, { [this](String const &resultText) {
 			if (reportSaveRequest)
 			{
 				return;
@@ -88,21 +88,21 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	reportButton->Enabled = bool(user);
 	AddComponent(reportButton);
 
-	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), ByteString("打开").FromUtf8());
+	openButton = new ui::Button(ui::Point(0, Size.Y-19), ui::Point(51, 19), "打开");
 	openButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	openButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	openButton->SetIcon(IconOpen);
 	openButton->SetActionCallback({ [this] { c->DoOpen(); } });
 	AddComponent(openButton);
 
-	browserOpenButton = new ui::Button(ui::Point((XRES/2)-112, Size.Y-19), ui::Point(113, 19), ByteString("在浏览器中打开").FromUtf8());
+	browserOpenButton = new ui::Button(ui::Point((XRES/2)-107, Size.Y-19), ui::Point(108, 19), "在浏览器中打开");
 	browserOpenButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	browserOpenButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	browserOpenButton->SetIcon(IconOpen);
 	browserOpenButton->SetActionCallback({ [this] { c->OpenInBrowser(); } });
 	AddComponent(browserOpenButton);
 
-	loadErrorButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), ByteString("加载沙盘时出错").FromUtf8());
+	loadErrorButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), "加载沙盘出错");
 	loadErrorButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	loadErrorButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	loadErrorButton->SetIcon(IconDelete);
@@ -110,7 +110,7 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	loadErrorButton->Visible = false;
 	AddComponent(loadErrorButton);
 
-	missingElementsButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), ByteString("缺少自定义元素").FromUtf8());
+	missingElementsButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), "缺少自定义元素");
 	missingElementsButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	missingElementsButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	missingElementsButton->SetIcon(IconReport);
@@ -118,7 +118,7 @@ PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	missingElementsButton->Visible = false;
 	AddComponent(missingElementsButton);
 
-	fromNewerVersionButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), "Save from newer version");
+	fromNewerVersionButton = new ui::Button({ 0, 0 }, ui::Point(148, 19), "来自更新版本的沙盘");
 	fromNewerVersionButton->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	fromNewerVersionButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	fromNewerVersionButton->SetIcon(IconReport);
@@ -191,14 +191,14 @@ void PreviewView::AttachController(PreviewController * controller)
 {
 	c = controller;
 
-	int textWidth = Graphics::TextSize(ByteString("单击此框复制沙盘ID").FromUtf8()).X - 1;
-	saveIDLabel = new ui::Label(ui::Point((Size.X-textWidth-20)/2, Size.Y+5), ui::Point(textWidth+20, 16), ByteString("单击此框复制沙盘ID").FromUtf8());
+	int textWidth = Graphics::TextSize("单击此框复制沙盘ID").X - 1;
+	saveIDLabel = new ui::Label(ui::Point((Size.X-textWidth-20)/2, Size.Y+5), ui::Point(textWidth+20, 16), "单击此框复制沙盘ID");
 	saveIDLabel->SetTextColour(ui::Colour(150, 150, 150));
 	saveIDLabel->Appearance.HorizontalAlign = ui::Appearance::AlignCentre;
 	AddComponent(saveIDLabel);
 
 	textWidth = Graphics::TextSize(String::Build(c->SaveID())).X - 1;
-	saveIDLabel2 = new ui::Label(ui::Point((Size.X-textWidth-20)/2-37, Size.Y+22), ui::Point(40, 16), ByteString("沙盘ID:").FromUtf8());
+	saveIDLabel2 = new ui::Label(ui::Point((Size.X-textWidth-20)/2-37, Size.Y+22), ui::Point(40, 16), "沙盘ID:");
 	AddComponent(saveIDLabel2);
 
 	saveIDButton = new ui::CopyTextButton(ui::Point((Size.X-textWidth-10)/2, Size.Y+20), ui::Point(textWidth+10, 18), String::Build(c->SaveID()), saveIDLabel);
@@ -262,7 +262,7 @@ void PreviewView::CheckComment()
 	String text = addCommentBox->GetText().ToLower();
 	if (addCommentRequest)
 	{
-		commentWarningLabel->SetText(ByteString("正在提交评论...").FromUtf8());
+		commentWarningLabel->SetText("正在提交评论...");
 		commentHelpText = true;
 	}
 	else if (!userIsAuthor && (text.Contains("stolen") || text.Contains("copied")))
@@ -270,15 +270,15 @@ void PreviewView::CheckComment()
 		if (!commentHelpText)
 		{
 			if (interfaceRng()%2)
-				commentWarningLabel->SetText(ByteString("抄袭? 请举报抄袭沙盘").FromUtf8());
+				commentWarningLabel->SetText("抄袭? 请举报抄袭沙盘");
 			else
-				commentWarningLabel->SetText(ByteString("抄袭? 请举报抄袭沙盘").FromUtf8());
+				commentWarningLabel->SetText("抄袭? 请举报抄袭沙盘");
 			commentHelpText = true;
 		}
 	}
 	else if (userIsAuthor && text.Contains("vote"))
 	{
-		commentWarningLabel->SetText(ByteString("请勿拉赞").FromUtf8());
+		commentWarningLabel->SetText("请勿拉赞");
 		commentHelpText = true;
 	}
 	else if (CheckSwearing(text))
@@ -286,9 +286,9 @@ void PreviewView::CheckComment()
 		if (!commentHelpText)
 		{
 			if (interfaceRng()%2)
-				commentWarningLabel->SetText(ByteString("请文明发言").FromUtf8());
+				commentWarningLabel->SetText("请文明发言");
 			else
-				commentWarningLabel->SetText(ByteString("将删除不文明发言").FromUtf8());
+				commentWarningLabel->SetText("将删除不文明发言");
 			commentHelpText = true;
 		}
 	}
@@ -319,7 +319,7 @@ void PreviewView::DoDraw()
 	{
 		g->BlendFilledRect(RectSized(Position + Size / 2 - Vec2{ 101, 26 }, { 202, 52 }), 0x000000_rgb .WithAlpha(210));
 		g->BlendRect(RectSized(Position + Size / 2 - Vec2{ 100, 25 }, Vec2{ 200, 50 }), 0xFFFFFF_rgb .WithAlpha(180));
-		g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize(ByteString("沙盘加载中...").FromUtf8()).X - 1)/2), (Size.Y/2)-5}, ByteString("沙盘加载中...").FromUtf8(), style::Colour::InformationTitle.NoAlpha().WithAlpha(255));
+		g->BlendText(Position + Vec2{(Size.X/2)-((Graphics::TextSize("沙盘加载中...").X - 1)/2), (Size.Y/2)-5}, "沙盘加载中...", style::Colour::InformationTitle.NoAlpha().WithAlpha(255));
 	}
 	if (!c->GetFromUrl() || doError)
 	{
@@ -410,11 +410,11 @@ void PreviewView::OnTick()
 		{
 			reportSaveRequest->Finish();
 			c->Exit();
-			new InformationMessage(ByteString("信息").FromUtf8(), ByteString("已提交举报").FromUtf8(), false);
+			new InformationMessage("信息", "已提交举报", false);
 		}
 		catch (const http::RequestError &ex)
 		{
-			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法提交举报: ").FromUtf8() + ByteString(ex.what()).FromUtf8());
+			new ErrorMessage("错误", "无法提交举报: " + ByteString(ex.what()).FromUtf8());
 		}
 		reportSaveRequest.reset();
 	}
@@ -428,7 +428,7 @@ void PreviewView::OnTick()
 		}
 		catch (const http::RequestError &ex)
 		{
-			new ErrorMessage(ByteString("提交评论时出错").FromUtf8(), ByteString(ex.what()).FromUtf8());
+			new ErrorMessage("提交评论时出错", ByteString(ex.what()).FromUtf8());
 		}
 		isSubmittingComment = false;
 		CheckCommentSubmitEnabled();
@@ -480,13 +480,13 @@ void PreviewView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ct
 
 void PreviewView::ShowLoadError()
 {
-	new ErrorMessage(ByteString("加载沙盘时出错").FromUtf8(), doErrorMessage, {});
+	new ErrorMessage("加载沙盘出错", doErrorMessage, {});
 }
 
 void PreviewView::ShowMissingCustomElements()
 {
 	StringBuilder sb;
-	sb << ByteString("此沙盘使用了当前不可用的自定义元素。确保使用mod和/或拥有沙盘所需的所有脚本以完全加载。下面列出了缺少的自定义元素的标识符列表，这可能有助于确定如何解决此问题").FromUtf8();
+	sb << "此沙盘使用了当前不可用的自定义元素。确保使用mod和/或拥有沙盘所需的所有脚本以完全加载。下面列出了缺少的自定义元素的标识符列表，这可能有助于确定如何解决此问题";
 	auto remainingIds = missingElements.ids;
 	if (missingElements.identifiers.size())
 	{
@@ -505,18 +505,18 @@ void PreviewView::ShowMissingCustomElements()
 			sb << "\n - " << id;
 		}
 	}
-	new InformationMessage(ByteString("缺少自定义元素").FromUtf8(), sb.Build(), true);
+	new InformationMessage("缺少自定义元素", sb.Build(), true);
 }
 
 void PreviewView::ShowFromNewerVersion()
 {
 	if (fromUnstableVersion)
 	{
-		new InformationMessage("This save is from a snapshot or a beta version", String::Build("Please get the snapshot or beta version at ", SERVER), false);
+		new InformationMessage("该沙盘来自快照版或测试版", String::Build("请前往此处获取快照版或测试版：", SERVER), false);
 	}
 	else if (fromNewerVersion)
 	{
-		new InformationMessage("This save is from a newer version", String::Build("Please update TPT in game or at ", SERVER), false);
+		new InformationMessage("该沙盘来自更新的版本", String::Build("请在游戏内更新 TPT，或前往 ", SERVER), false);
 	}
 }
 
@@ -556,7 +556,7 @@ void PreviewView::NotifySaveChanged(PreviewModel * sender)
 		}
 		else
 		{
-			authorDateLabel->SetText(ByteString("\bg作者:\bw ").FromUtf8() + save->userName.FromUtf8() + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate).FromAscii());
+			authorDateLabel->SetText("\bg作者:\bw " + save->userName.FromUtf8() + " \bg" + dateType + " \bw" + format::UnixtimeToDateMini(save->updatedDate).FromAscii());
 		}
 		auto user = Client::Ref().GetAuthUser();
 		if (user && save->userName == user->Username)
@@ -625,7 +625,7 @@ void PreviewView::submitComment()
 		}
 		else if (comment.length() < 4)
 		{
-			new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("评论过短").FromUtf8());
+			new ErrorMessage("错误", "评论过短");
 		}
 		else
 		{
@@ -664,7 +664,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	}
 	if(sender->GetCommentBoxEnabled())
 	{
-		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", ByteString("评论").FromUtf8());
+		addCommentBox = new ui::Textbox(ui::Point((XRES/2)+4, Size.Y-19), ui::Point(Size.X-(XRES/2)-48, 17), "", "评论");
 		commentBoxPositionX.SetTarget(float(addCommentBox->Position.X));
 		commentBoxPositionX.SetValue(float(addCommentBox->Position.X));
 		commentBoxPositionY.SetTarget(float(addCommentBox->Position.Y));
@@ -681,7 +681,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 		addCommentBox->SetMultiline(true);
 		addCommentBox->SetLimit(1000);
 		AddComponent(addCommentBox);
-		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), ByteString("发布").FromUtf8());
+		submitCommentButton = new ui::Button(ui::Point(Size.X-40, Size.Y-19), ui::Point(40, 19), "发布");
 		submitCommentButton->SetActionCallback({ [this] { submitComment(); } });
 		AddComponent(submitCommentButton);
 
@@ -693,7 +693,7 @@ void PreviewView::NotifyCommentBoxEnabledChanged(PreviewModel * sender)
 	}
 	else
 	{
-		submitCommentButton = new ui::Button(ui::Point(XRES/2, Size.Y-19), ui::Point(Size.X-(XRES/2), 19),  ByteString("请登陆后评论").FromUtf8());
+		submitCommentButton = new ui::Button(ui::Point(XRES/2, Size.Y-19), ui::Point(Size.X-(XRES/2), 19), "请登陆后评论");
 		submitCommentButton->SetActionCallback({ [this] { c->ShowLogin(); } });
 		AddComponent(submitCommentButton);
 	}
@@ -708,7 +708,7 @@ void PreviewView::SaveLoadingError(String errorMessage)
 
 void PreviewView::NotifyCommentsPageChanged(PreviewModel * sender)
 {
-	pageInfo->SetText(String::Build(ByteString("第 ").FromUtf8(), sender->GetCommentsPageNum(), ByteString(" 共").FromUtf8(), sender->GetCommentsPageCount()));
+	pageInfo->SetText(String::Build("第 ", sender->GetCommentsPageNum(), " 共", sender->GetCommentsPageCount()));
 }
 
 void PreviewView::NotifyCommentsChanged(PreviewModel * sender)

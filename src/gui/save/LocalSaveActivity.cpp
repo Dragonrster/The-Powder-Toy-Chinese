@@ -22,19 +22,19 @@ LocalSaveActivity::LocalSaveActivity(std::unique_ptr<SaveFile> newSave, OnSaved 
 	thumbnailRenderer(nullptr),
 	onSaved(onSaved_)
 {
-	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), ByteString("保存到本地:").FromUtf8());
+	ui::Label * titleLabel = new ui::Label(ui::Point(4, 5), ui::Point(Size.X-8, 16), "保存到本地:");
 	titleLabel->SetTextColour(style::Colour::InformationTitle);
 	titleLabel->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	titleLabel->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	AddComponent(titleLabel);
 
-	filenameField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), save->GetDisplayName(), ByteString("[文件名]").FromUtf8());
+	filenameField = new ui::Textbox(ui::Point(8, 25), ui::Point(Size.X-16, 16), save->GetDisplayName(), "[文件名]");
 	filenameField->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	filenameField->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	AddComponent(filenameField);
 	FocusComponent(filenameField);
 
-	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), ByteString("取消").FromUtf8());
+	ui::Button * cancelButton = new ui::Button(ui::Point(0, Size.Y-16), ui::Point(Size.X-75, 16), "取消");
 	cancelButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	cancelButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	cancelButton->Appearance.BorderInactive = ui::Colour(200, 200, 200);
@@ -44,7 +44,7 @@ LocalSaveActivity::LocalSaveActivity(std::unique_ptr<SaveFile> newSave, OnSaved 
 	AddComponent(cancelButton);
 	SetCancelButton(cancelButton);
 
-	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), ByteString("保存").FromUtf8());
+	ui::Button * okayButton = new ui::Button(ui::Point(Size.X-76, Size.Y-16), ui::Point(76, 16), "保存");
 	okayButton->Appearance.HorizontalAlign = ui::Appearance::AlignLeft;
 	okayButton->Appearance.VerticalAlign = ui::Appearance::AlignMiddle;
 	okayButton->Appearance.TextInactive = style::Colour::InformationTitle;
@@ -78,7 +78,7 @@ void LocalSaveActivity::Save()
 {
 	if (filenameField->GetText().Contains('/') || filenameField->GetText().BeginsWith("."))
 	{
-		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无效的文件名").FromUtf8());
+		new ErrorMessage("错误", "无效的文件名");
 	}
 	else if (filenameField->GetText().length())
 	{
@@ -87,7 +87,7 @@ void LocalSaveActivity::Save()
 		save->SetFileName(finalFilename);
 		if (Platform::FileExists(finalFilename))
 		{
-			new ConfirmPrompt(ByteString("覆盖文件").FromUtf8(), ByteString("确定要覆盖吗?\n").FromUtf8()+finalFilename.FromUtf8(), { [this, finalFilename] {
+			new ConfirmPrompt("覆盖文件", "确定要覆盖吗?\n"+finalFilename.FromUtf8(), { [this, finalFilename] {
 				saveWrite(finalFilename);
 			} });
 		}
@@ -98,20 +98,20 @@ void LocalSaveActivity::Save()
 	}
 	else
 	{
-		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("文件名不能为空").FromUtf8());
+		new ErrorMessage("错误", "文件名不能为空");
 	}
 }
 
 void LocalSaveActivity::saveWrite(ByteString finalFilename)
 {
 	Platform::MakeDirectory(LOCAL_SAVE_DIR);
-	Bson localSaveInfo;
+	Json::Value localSaveInfo;
 	localSaveInfo["type"] = "localsave";
 	auto user = Client::Ref().GetAuthUser();
 	localSaveInfo["username"] = user ? user->Username : ByteString("");
 	localSaveInfo["title"] = finalFilename;
-	localSaveInfo["date"] = int64_t(time(nullptr));
-	Client::Ref().SaveAuthorInfo(localSaveInfo);
+	localSaveInfo["date"] = (Json::Value::UInt64)time(nullptr);
+	Client::Ref().SaveAuthorInfo(&localSaveInfo);
 	{
 		auto gameSave = save->TakeGameSave();
 		gameSave->authors = localSaveInfo;
@@ -120,9 +120,9 @@ void LocalSaveActivity::saveWrite(ByteString finalFilename)
 	std::vector<char> saveData;
 	std::tie(std::ignore, saveData) = save->GetGameSave()->Serialise();
 	if (saveData.size() == 0)
-		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法序列化沙盘数据").FromUtf8());
+		new ErrorMessage("错误", "无法序列化沙盘数据");
 	else if (!Platform::WriteFile(saveData, finalFilename))
-		new ErrorMessage(ByteString("错误").FromUtf8(), ByteString("无法读取沙盘数据").FromUtf8());
+		new ErrorMessage("错误", "无法写入沙盘文件。");
 	else
 	{
 		if (onSaved)
