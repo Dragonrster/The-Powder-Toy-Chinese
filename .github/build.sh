@@ -422,6 +422,9 @@ zipalign = andriod_sdk_build_tools / 'zipalign'
 apksigner = andriod_sdk_build_tools / 'apksigner'
 ANDROID_INI
 	meson_configure+=$'\t'--cross-file=.github/android-ghactions.ini
+	if [[ -n ${ANDROID_VIRTUAL_CONTROLS-} ]]; then
+		meson_configure+=$'\t'-Dandroid_virtual_controls=$ANDROID_VIRTUAL_CONTROLS
+	fi
 fi
 meson_configure+=$'\t'-Dc_args=[$c_args]
 meson_configure+=$'\t'-Dcpp_args=[$c_args]

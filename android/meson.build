@@ -1,3 +1,17 @@
+# The PowderActivity template embeds the VirtualControls call through this
+# placeholder, so it must be set before configuring the template below.
+virtual_controls_enabled = get_option('android_virtual_controls')
+if virtual_controls_enabled
+	conf_data.set('VIRTUAL_CONTROLS', 'VirtualControls.attach(this);')
+	virtual_controls_source = configure_file(
+		input: 'VirtualControls.template.java',
+		output: 'VirtualControls.java',
+		configuration: conf_data,
+	)
+else
+	conf_data.set('VIRTUAL_CONTROLS', '')
+endif
+
 android_manifest_xml = configure_file(
 	input: 'AndroidManifest.template.xml',
 	output: 'AndroidManifest.xml',
@@ -8,11 +22,6 @@ powder_jar_sources = configure_file(
 	output: 'PowderActivity.java',
 	configuration: conf_data,
 )
-virtual_controls_source = configure_file(
-	input: 'VirtualControls.template.java',
-	output: 'VirtualControls.java',
-	configuration: conf_data,
-)
 
 subdir('res')
 
@@ -20,25 +29,28 @@ android_platform_jar = meson.get_external_property('android_platform_jar')
 java_runtime_jar = meson.get_external_property('java_runtime_jar')
 android_keystore = get_option('android_keystore')
 sdl_jar = tpt_libs.get_variable('sdl_jar')
+powder_jar_command = [
+	python3_prog,
+	files('powder-jar.py'),
+	find_program('javac'),
+	find_program('jar'),
+	meson.current_source_dir(),
+	meson.project_build_root(),
+	'@PRIVATE_DIR@',
+	'@OUTPUT@',
+	android_platform_jar,
+	java_runtime_jar,
+	sdl_jar,
+	is_debug ? 'debug' : 'release',
+	powder_jar_sources,
+]
+if virtual_controls_enabled
+	powder_jar_command += virtual_controls_source
+endif
 powder_jar = custom_target(
 	'powder-jar',
 	output: app_exe + '.jar',
-	command: [
-		python3_prog,
-		files('powder-jar.py'),
-		find_program('javac'),
-		find_program('jar'),
-		meson.current_source_dir(),
-		meson.project_build_root(),
-		'@PRIVATE_DIR@',
-		'@OUTPUT@',
-		android_platform_jar,
-		java_runtime_jar,
-		sdl_jar,
-		is_debug ? 'debug' : 'release',
-		powder_jar_sources,
-		virtual_controls_source,
-	],
+	command: powder_jar_command,
 )
 unaligned_apk = custom_target(
 	'build-apk',

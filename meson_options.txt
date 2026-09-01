@@ -209,6 +209,12 @@ option(
 	description: 'App vendor prefix, used for desktop integration, do not change even if you work on a mod, only if you know what you are doing'
 )
 option(
+	'android_virtual_controls',
+	type: 'boolean',
+	value: true,
+	description: 'Add the on-screen virtual controls overlay (joystick and keyboard) to the Android app, only used for Android builds'
+)
+option(
 	'enforce_https',
 	type: 'boolean',
 	value: true,

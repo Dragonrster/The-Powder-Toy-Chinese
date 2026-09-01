@@ -134,6 +134,53 @@ jobs:
         with:
           path: build/${{ matrix.debug_asset_path }}
           name: ${{ matrix.debug_asset_name }}
+  android-official:
+    # The official-identity Android build: Chinese translation, but without
+    # the virtual controls overlay, so it installs alongside the Dev build.
+    # Only built on dev runs; release/beta/snapshot runs already produce the
+    # official-identity APK through the main build matrix.
+    runs-on: ubuntu-22.04
+    name: build+target=official-${{ matrix.arch }}-android
+    needs: [prepare]
+    if: needs.prepare.outputs.release_type == 'dev'
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86, x86_64, arm, aarch64]
+    steps:
+      - run: git config --global core.autocrlf false
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+      - run: python -m pip install meson ninja
+      - run: bash -c './.github/build.sh'
+        env:
+          BSH_HOST_ARCH: ${{ matrix.arch }}
+          BSH_HOST_PLATFORM: android
+          BSH_HOST_LIBC: bionic
+          BSH_STATIC_DYNAMIC: static
+          BSH_BUILD_PLATFORM: linux
+          BSH_DEBUG_RELEASE: release
+          BSH_LINT: no
+          ANDROID_VIRTUAL_CONTROLS: false
+          RELEASE_NAME: ${{ needs.prepare.outputs.release_name }}
+          RELEASE_TYPE: ${{ needs.prepare.outputs.release_type }}
+          MOD_ID: ${{ needs.prepare.outputs.mod_id }}
+          SEPARATE_DEBUG: no
+          PACKAGE_MODE: default
+          ASSET_PATH: powder.apk
+          DEBUG_ASSET_PATH: powder.dbg
+          APP_NAME: The Powder Toy
+          APP_COMMENT: Physics sandbox game
+          APP_EXE: powder
+          APP_ID: uk.co.powdertoy.tpt
+          APP_DATA: The Powder Toy
+          APP_VENDOR: powdertoy
+      - uses: actions/upload-artifact@v6
+        with:
+          path: build/powder.apk
+          name: powder-official-${{ matrix.arch }}
   publish:
     runs-on: ubuntu-24.04
     needs: [build, prepare]
