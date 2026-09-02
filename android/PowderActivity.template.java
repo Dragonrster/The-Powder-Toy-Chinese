@@ -20,7 +20,7 @@ public class PowderActivity extends SDLActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		@VIRTUAL_CONTROLS@
+		VirtualControls.attach(this);
 	}
 
 	public String getCertificateBundle()

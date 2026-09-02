@@ -3,13 +3,14 @@
 #include "common/Defer.h"
 #include "Config.h"
 #include <ctime>
-#include <SDL.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_system.h>
 #include <jni.h>
 #include <android/log.h>
 
 namespace Platform
 {
-// 通过 JNI 调用 PowderActivity.openUri(String) 打开系统浏览器/关联应用
+// 通过 JNI 调用 PowderActivity.openUri(String) 打开系统目录选择器/关联应用
 static bool CallActivityOpenUri(ByteString uri)
 {
 	struct CheckFailed : public std::runtime_error
@@ -26,10 +27,10 @@ static bool CallActivityOpenUri(ByteString uri)
 			return thing;
 		};
 #define CHECK(a) CHECK(a, #a)
-		auto *env              = CHECK((JNIEnv *)SDL_AndroidGetJNIEnv());
-		auto activityInst      = CHECK((jobject)SDL_AndroidGetActivity());
-		auto getClassLoaderMth = env->GetMethodID(env->GetObjectClass(activityInst), "getClassLoader", "()Ljava/lang/ClassLoader;");
-		CHECK(getClassLoaderMth);
+		auto *env              = CHECK((JNIEnv *)SDL_GetAndroidJNIEnv());
+		auto activityInst      = CHECK((jobject)SDL_GetAndroidActivity());
+		auto activityCls       = CHECK(env->GetObjectClass(activityInst));
+		auto getClassLoaderMth = CHECK(env->GetMethodID(activityCls, "getClassLoader", "()Ljava/lang/ClassLoader;"));
 		auto classLoaderInst   = CHECK(env->CallObjectMethod(activityInst, getClassLoaderMth));
 		auto classLoaderCls    = CHECK(env->FindClass("java/lang/ClassLoader"));
 		auto findClassMth      = CHECK(env->GetMethodID(classLoaderCls, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;"));
@@ -100,8 +101,8 @@ std::optional<ByteString> CallActivityStringFunc(const char *funcName)
 			return thing;
 		};
 #define CHECK(a) CHECK(a, #a)
-		auto *env              = CHECK((JNIEnv *)SDL_AndroidGetJNIEnv());
-		auto activityInst      = CHECK((jobject)SDL_AndroidGetActivity());
+		auto *env              = CHECK((JNIEnv *)SDL_GetAndroidJNIEnv());
+		auto activityInst      = CHECK((jobject)SDL_GetAndroidActivity());
 		auto activityCls       = CHECK(env->GetObjectClass(activityInst));
 		auto getClassLoaderMth = CHECK(env->GetMethodID(activityCls, "getClassLoader", "()Ljava/lang/ClassLoader;"));
 		auto classLoaderInst   = CHECK(env->CallObjectMethod(activityInst, getClassLoaderMth));

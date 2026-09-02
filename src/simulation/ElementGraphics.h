@@ -42,6 +42,7 @@ constexpr auto COLOUR_HEAT     = UINT32_C(0x00000001);
 constexpr auto COLOUR_LIFE     = UINT32_C(0x00000002);
 constexpr auto COLOUR_GRAD     = UINT32_C(0x00000004);
 constexpr auto COLOUR_BASC     = UINT32_C(0x00000008);
+constexpr auto COLOUR_DEST     = UINT32_C(0x00000010);
 
 constexpr auto COLOUR_DEFAULT  = UINT32_C(0x00000000);
 

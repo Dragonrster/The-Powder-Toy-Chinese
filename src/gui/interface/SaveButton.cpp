@@ -13,7 +13,7 @@
 #include "graphics/VideoBuffer.h"
 
 #include "SimulationConfig.h"
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 namespace ui {
 

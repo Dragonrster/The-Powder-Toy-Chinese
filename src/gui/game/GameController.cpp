@@ -67,7 +67,7 @@
 #include "gui/tags/TagsView.h"
 
 #include "Config.h"
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <iostream>
 
 GameController::GameController():

@@ -7,7 +7,7 @@
 #include "gui/interface/Engine.h"
 #include "gui/interface/Point.h"
 #include "ContextMenu.h"
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 using namespace ui;
 

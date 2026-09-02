@@ -410,6 +410,19 @@ void Renderer::render_parts()
 					colb = colour.Blue;
 					pixel_mode = PMODE_FLAT;
 				}
+				else if (colorMode & COLOUR_DEST)
+				{
+					auto score = sd.DestructibilityScore(t);
+					if (score < 100)
+					{
+						colr = colg = colb = score*1.3f;
+					}
+					else
+					{
+						colr = colg = colb = 255;
+					}
+					pixel_mode = PMODE_FLAT;
+				}
 
 				//Apply decoration colour
 				if(!(colorMode & ~COLOUR_GRAD) && decorationLevel != decorationDisabled && deca)
@@ -1419,6 +1432,12 @@ const std::vector<RenderPreset> Renderer::renderModePresets = {
 		RENDER_EFFE | RENDER_BASC,
 		DISPLAY_AIRW,
 		0,
+	},
+	{
+		"Destructibility Display",
+		RENDER_BASC,
+		0,
+		COLOUR_DEST,
 	},
 };
 

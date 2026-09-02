@@ -10,7 +10,7 @@
 
 #include "Misc.h"
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 ColourPickerActivity::ColourPickerActivity(ui::Colour initialColour, OnPicked onPicked_) :
 	WindowActivity(ui::Point(-1, -1), ui::Point(266, 215)),

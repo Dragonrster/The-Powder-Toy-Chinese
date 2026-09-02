@@ -1,7 +1,7 @@
 #include "Platform.h"
 #include "common/String.h"
 #include "Config.h"
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <memory>
 
 namespace Platform

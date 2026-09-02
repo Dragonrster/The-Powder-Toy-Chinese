@@ -4,7 +4,7 @@
 #include "gui/WindowFrameOps.h"
 #include "FpsLimit.h"
 #include <cstdint>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <variant>
 #include <optional>
 
@@ -42,3 +42,4 @@ void SaveWindowPosition();
 void LargeScreenDialog();
 void TickClient();
 void ApplyFpsLimit();
+void TptDiagLog(const char *fmt, ...);

@@ -43,7 +43,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <iostream>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 class SplitButton : public ui::Button
 {
@@ -977,15 +977,17 @@ ByteString GameView::TakeScreenshot(int captureUI, int fileType)
 		// We should be able to simply use SDL_PIXELFORMAT_XRGB8888 here with a bit depth of 32 to convert RGBA data to RGB data,
 		// and save the resulting surface directly. However, ubuntu-18.04 ships SDL2 so old that it doesn't have
 		// SDL_PIXELFORMAT_XRGB8888, so we first create an RGBA surface and then convert it.
-		auto *rgbaSurface = SDL_CreateRGBSurfaceWithFormatFrom(screenshot->Data(), screenshot->Size().X, screenshot->Size().Y, 32, screenshot->Size().X * sizeof(pixel), SDL_PIXELFORMAT_ARGB8888);
-		auto *rgbSurface = SDL_ConvertSurfaceFormat(rgbaSurface, SDL_PIXELFORMAT_RGB888, 0);
-		if (!rgbSurface || SDL_SaveBMP(rgbSurface, filename.c_str()))
+		// SDL3: SDL_CreateSurfaceFrom takes (w, h, format, pixels, pitch) and there's
+		// no separate flags argument on SDL_ConvertSurface. Use XRGB8888 to drop alpha.
+		auto *rgbaSurface = SDL_CreateSurfaceFrom(screenshot->Size().X, screenshot->Size().Y, SDL_PIXELFORMAT_ARGB8888, screenshot->Data(), screenshot->Size().X * sizeof(pixel));
+		auto *rgbSurface = SDL_ConvertSurface(rgbaSurface, SDL_PIXELFORMAT_XRGB8888);
+		if (!rgbSurface || !SDL_SaveBMP(rgbSurface, filename.c_str()))
 		{
 			std::cerr << "SDL_SaveBMP failed: " << SDL_GetError() << std::endl;
 			filename = "";
 		}
-		SDL_FreeSurface(rgbSurface);
-		SDL_FreeSurface(rgbaSurface);
+		SDL_DestroySurface(rgbSurface);
+		SDL_DestroySurface(rgbaSurface);
 	}
 	else if (fileType == 2)
 	{
@@ -1662,6 +1664,10 @@ void GameView::OnKeyPress(int key, int scan, bool repeat, bool shift, bool ctrl,
 	else if (shift && key == '0')
 	{
 		c->LoadRenderPreset(12);
+	}
+	else if (shift && key == '7')
+	{
+		c->LoadRenderPreset(13);
 	}
 	else if (key >= '0' && key <= '9')
 	{

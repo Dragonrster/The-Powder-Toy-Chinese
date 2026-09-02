@@ -14,7 +14,7 @@
 #include "gui/interface/Textbox.h"
 #include "gui/interface/Label.h"
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 TagsView::TagsView():
 	ui::Window(ui::Point(-1, -1), ui::Point(195, 250))

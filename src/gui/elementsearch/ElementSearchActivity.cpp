@@ -3,7 +3,7 @@
 #include <set>
 #include <map>
 #include <algorithm>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include "gui/interface/Textbox.h"
 #include "gui/interface/ScrollPanel.h"

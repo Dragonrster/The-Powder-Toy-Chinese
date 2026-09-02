@@ -5,7 +5,7 @@
 #include "ContextMenu.h"
 #include "graphics/Graphics.h"
 #include "graphics/FontReader.h"
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 using namespace ui;
 

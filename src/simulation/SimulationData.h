@@ -160,6 +160,7 @@ public:
 	int GetParticleType(ByteString type) const;
 	bool IsHeatInsulator(const Particle &p) const;
 	float HeatCapacityOf(const Particle &p) const;
+	float DestructibilityScore(int t) const;
 
 	bool IsElement(int type) const
 	{

@@ -3,8 +3,8 @@
 #include "client/GameSave.h"
 #include "common/platform/Platform.h"
 #include "PowderToySDL.h"
-#include <SDL.h>
-#include <SDL_syswm.h>
+#include "WindowSubsystem.h"
+#include <SDL3/SDL.h>
 #include <iostream>
 #include <windows.h>
 
@@ -82,59 +82,50 @@ namespace Clipboard
 			std::cerr << "transferred save data" << std::endl;
 		}
 
-		static int TransferWatchWrapper(void *userdata, SDL_Event *event)
+		static bool TransferWatchWrapper(void *userdata, MSG *msg)
 		{
-			return reinterpret_cast<WindowsClipboardImpl *>(userdata)->TransferWatch(event);
+			return reinterpret_cast<WindowsClipboardImpl *>(userdata)->TransferWatch(msg);
 		}
 
-		int TransferWatch(SDL_Event *event)
+		bool TransferWatch(MSG *msg)
 		{
-			// SDL documentation says we have to be very careful with what we do here because
-			// the callback can come from any random thread, and we indeed are: WM_RENDERFORMAT
-			// and WM_RENDERALLFORMATS are only posted to windows that have announced data on
-			// the clipboard, and only our main thread ever owns a window, so we don't touch
-			// the WindowsClipboardImpl outside of these events.
-			switch (event->type)
+			// SDL3 delivers raw Windows messages through SDL_SetWindowsMessageHook
+			// instead of the removed SDL_SYSWMEVENT. WM_RENDERFORMAT and
+			// WM_RENDERALLFORMATS are only posted to windows that have announced
+			// data on the clipboard, and only our main thread ever owns a window.
+			switch (msg->message)
 			{
-			case SDL_SYSWMEVENT:
-				switch (event->syswm.msg->msg.win.msg)
+			case WM_RENDERFORMAT:
+				if (msg->wParam == saveClipboardFormat)
 				{
-				case WM_RENDERFORMAT:
-					if (event->syswm.msg->msg.win.wParam == saveClipboardFormat)
-					{
-						Transfer(); 
-					}
-					break; 
+					Transfer();
+				}
+				break;
 
-				case WM_RENDERALLFORMATS:
+			case WM_RENDERALLFORMATS:
+				{
+					ClipboardSession cs(ourHwnd);
+					if (cs)
 					{
-						ClipboardSession cs(ourHwnd);
-						if (cs)
+						if (ourHwnd && ::GetClipboardOwner() == ourHwnd)
 						{
-							if (ourHwnd && ::GetClipboardOwner() == ourHwnd)
-							{
-								Transfer();
-							}
-						}
-						else
-						{
-							std::cerr << "cannot place save on clipboard: OpenClipboard failed: " << ::GetLastError() << std::endl;
+							Transfer();
 						}
 					}
-					break;
+					else
+					{
+						std::cerr << "cannot place save on clipboard: OpenClipboard failed: " << ::GetLastError() << std::endl;
+					}
 				}
 				break;
 			}
-			return 0;
+			return true;
 		}
 
 	public:
 		WindowsClipboardImpl()
 		{
-			SDL_SysWMinfo info;
-			SDL_VERSION(&info.version);
-			SDL_GetWindowWMInfo(sdl_window, &info);
-			ourHwnd = info.info.win.window;
+			ourHwnd = reinterpret_cast<HWND>(SDL_GetPointerProperty(SDL_GetWindowProperties(sdl_window), SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr));
 			saveClipboardFormat = ::RegisterClipboardFormatW(Platform::WinWiden(clipboardFormatName).c_str());
 			if (!saveClipboardFormat)
 			{
@@ -142,14 +133,12 @@ namespace Clipboard
 				return;
 			}
 			std::cerr << "save clipboard format registered" << std::endl;
-			SDL_EventState(SDL_SYSWMEVENT, SDL_ENABLE);
-			SDL_AddEventWatch(&WindowsClipboardImpl::TransferWatchWrapper, this);
+			SDL_SetWindowsMessageHook(&WindowsClipboardImpl::TransferWatchWrapper, this);
 		}
 
 		~WindowsClipboardImpl()
 		{
-			SDL_DelEventWatch(&WindowsClipboardImpl::TransferWatchWrapper, this);
-			SDL_EventState(SDL_SYSWMEVENT, SDL_DISABLE);
+			SDL_SetWindowsMessageHook(nullptr, nullptr);
 		}
 
 		void SetClipboardData() final override

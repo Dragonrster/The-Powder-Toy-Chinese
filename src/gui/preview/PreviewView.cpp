@@ -33,7 +33,7 @@
 
 #include "graphics/VideoBuffer.h"
 #include "SimulationConfig.h"
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 PreviewView::PreviewView(std::unique_ptr<VideoBuffer> newSavePreview):
 	ui::Window(ui::Point(-1, -1), ui::Point((XRES/2)+210, (YRES/2)+150)),

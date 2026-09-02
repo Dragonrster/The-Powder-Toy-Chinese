@@ -25,7 +25,6 @@ if [[ -z           ${APP_DATA-} ]]; then >&2 echo           "APP_DATA not set"; 
 if [[ -z         ${APP_VENDOR-} ]]; then >&2 echo         "APP_VENDOR not set"; exit 1; fi
 
 x86_old=no
-bsh_host_arch_init=$BSH_HOST_ARCH
 if [[ $BSH_HOST_ARCH == x86_old ]]; then
 	export BSH_HOST_ARCH=x86
 	x86_old=yes
@@ -377,7 +376,7 @@ if [[ $RELEASE_TYPE == tptlibsdev ]] && ([[ $BSH_HOST_PLATFORM-$BSH_HOST_LIBC ==
 	tpt_libs_vtag=v00000000000000
 	if [[ ! -f build-tpt-libs/tpt-libs/.ok ]]; then
 		cd build-tpt-libs/tpt-libs
-		BSH_HOST_ARCH=$bsh_host_arch_init BSH_VTAG=$tpt_libs_vtag ./.github/build.sh
+		BSH_VTAG=$tpt_libs_vtag ./.github/build.sh
 		touch .ok
 		cd ../../subprojects
 		for i in tpt-libs-prebuilt-*; do
@@ -422,9 +421,6 @@ zipalign = andriod_sdk_build_tools / 'zipalign'
 apksigner = andriod_sdk_build_tools / 'apksigner'
 ANDROID_INI
 	meson_configure+=$'\t'--cross-file=.github/android-ghactions.ini
-	if [[ -n ${ANDROID_VIRTUAL_CONTROLS-} ]]; then
-		meson_configure+=$'\t'-Dandroid_virtual_controls=$ANDROID_VIRTUAL_CONTROLS
-	fi
 fi
 meson_configure+=$'\t'-Dc_args=[$c_args]
 meson_configure+=$'\t'-Dcpp_args=[$c_args]

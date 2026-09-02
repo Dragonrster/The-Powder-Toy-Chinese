@@ -3,8 +3,9 @@
 #include "client/GameSave.h"
 #include "prefs/GlobalPrefs.h"
 #include "PowderToySDL.h"
+#include "WindowSubsystem.h"
 #include "ClipboardImpls.h"
-#include <SDL_syswm.h>
+#include <SDL3/SDL.h>
 #include <iostream>
 
 namespace Clipboard
@@ -113,12 +114,10 @@ namespace Clipboard
 
 	void RecreateWindow()
 	{
-		// old window is gone (or doesn't exist), associate clipboard data with the new one
-		SDL_SysWMinfo info;
-		SDL_VERSION(&info.version);
-		SDL_GetWindowWMInfo(sdl_window, &info);
+		// SDL3 removed SDL_GetWindowWMInfo/SDL_SysWMinfo; detect the active
+		// windowing subsystem from the current video driver name instead.
 		clipboard.reset();
-		currentSubsystem = info.subsystem;
+		currentSubsystem = DetectWindowSubsystem();
 		if (enabled)
 		{
 			for (auto *impl = clipboardImpls; impl->factory; ++impl)

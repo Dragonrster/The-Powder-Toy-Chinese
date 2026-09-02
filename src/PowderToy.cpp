@@ -29,7 +29,8 @@
 #include <climits>
 #include <iostream>
 #include <csignal>
-#include <SDL.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
 #include <exception>
 #include <cstdlib>
 
@@ -51,19 +52,24 @@ void LoadWindowPosition()
 	if (borderTop == 0)
 		borderTop = 5;
 
-	int numDisplays = SDL_GetNumVideoDisplays();
+	int numDisplays = 0;
+	SDL_DisplayID *displays = SDL_GetDisplays(&numDisplays);
 	SDL_Rect displayBounds;
 	bool ok = false;
-	for (int i = 0; i < numDisplays; i++)
+	if (displays)
 	{
-		SDL_GetDisplayBounds(i, &displayBounds);
-		if (savedWindowX + borderTop > displayBounds.x && savedWindowY + borderLeft > displayBounds.y &&
-				savedWindowX + borderTop < displayBounds.x + displayBounds.w &&
-				savedWindowY + borderLeft < displayBounds.y + displayBounds.h)
+		for (int i = 0; i < numDisplays; i++)
 		{
-			ok = true;
-			break;
+			SDL_GetDisplayBounds(displays[i], &displayBounds);
+			if (savedWindowX + borderTop > displayBounds.x && savedWindowY + borderLeft > displayBounds.y &&
+					savedWindowX + borderTop < displayBounds.x + displayBounds.w &&
+					savedWindowY + borderLeft < displayBounds.y + displayBounds.h)
+			{
+				ok = true;
+				break;
+			}
 		}
+		SDL_free(displays);
 	}
 	if (ok)
 		SDL_SetWindowPosition(sdl_window, savedWindowX + borderLeft, savedWindowY + borderTop);
@@ -146,7 +152,7 @@ static void BlueScreen(String detailMessage, std::optional<std::vector<String>> 
 	{
 		while (SDL_PollEvent(&event))
 		{
-			if (event.type == SDL_QUIT)
+			if (event.type == SDL_EVENT_QUIT)
 			{
 				running = false;
 			}
@@ -265,7 +271,7 @@ int Main(int argc, char *argv[])
 
 
 	// https://bugzilla.libsdl.org/show_bug.cgi?id=3796
-	if (SDL_Init(0) < 0)
+	if (!SDL_Init(0))
 	{
 		fprintf(stderr, "Initializing SDL: %s\n", SDL_GetError());
 		return 1;

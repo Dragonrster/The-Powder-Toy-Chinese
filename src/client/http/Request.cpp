@@ -291,7 +291,7 @@ namespace http
 
 				if (status != 1)
 				{
-					throw RequestError(ByteString(root.get("Error", "Unspecified Error").asString()));
+					throw RequestError(ByteString(root.get("错误", "Unspecified Error").asString()));
 				}
 			}
 			break;

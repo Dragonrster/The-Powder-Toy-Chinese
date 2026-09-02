@@ -13,7 +13,7 @@
 #include <iomanip>
 #include <iostream>
 #include <cstdint>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 extern unsigned char *font_data;
 extern unsigned int *font_ptrs;

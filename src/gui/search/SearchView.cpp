@@ -15,7 +15,7 @@
 #include "graphics/Graphics.h"
 #include "graphics/VideoBuffer.h"
 #include "SimulationConfig.h"
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 SearchView::SearchView():
 	ui::Window(ui::Point(0, 0), ui::Point(WINDOWW, WINDOWH)),

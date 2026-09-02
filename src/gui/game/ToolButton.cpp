@@ -2,7 +2,7 @@
 #include "graphics/Graphics.h"
 #include "graphics/VideoBuffer.h"
 #include "Favorite.h"
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 ToolButton::ToolButton(ui::Point position, ui::Point size, String text, ByteString toolIdentifier, String toolTip):
 	ui::Button(position, size, text, toolTip),

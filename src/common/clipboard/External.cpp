@@ -3,13 +3,13 @@
 #include "client/GameSave.h"
 #include "prefs/GlobalPrefs.h"
 #include "PowderToySDL.h"
+#include "WindowSubsystem.h"
 #include <iostream>
 #include <stdio.h>
 #include <optional>
 #include <algorithm>
 #include <signal.h>
 #include <map>
-#include <SDL_syswm.h>
 
 namespace Clipboard
 {
